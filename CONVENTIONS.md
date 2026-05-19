@@ -58,8 +58,9 @@ Every project that follows the Code-Crash Framework has this top-level structure
 │           └── story.yml                 # 4-Schrader-block template (BOO-11/27/30)
 ├── ARCHITECTURE_DESIGN.md                # §1-9 hub doc, single source of truth
 ├── CHANGELOG.md
-├── CLAUDE.md                             # Project context for AI tools (also for Codex)
-├── CONVENTIONS.md                        # Project-local contract: mode, isolation, active gates
+├── AGENTS.md                             # Codex entry point: repo rules + runtime handoff
+├── CLAUDE.md                             # Claude Code entry + compatibility bridge
+├── CONVENTIONS.md                        # Adapter contract: runtime, backlog, mode, isolation, active gates
 ├── GOVERNANCE.md                         # Project-specific rules and tool stack
 ├── Projekt-Governance.md                 # SecondBrain-side governance (if Obsidian active)
 ├── README.md
@@ -267,6 +268,8 @@ Every project declares a `governance_mode` in its project-local `CONVENTIONS.md`
 
 The mode is not a quality ranking. It is a friction budget. A weekend script should not carry the same operational weight as a payment service; a payment service should not be allowed to run like a weekend script.
 
+Governance modes must never delete or omit the baseline artifacts that make a project portable. `lite`, `standard`, and `heavy` control gate strictness, required evidence, and defaults. They do not remove the basic skill/artifact spine: `AGENTS.md` and/or `CLAUDE.md` per runtime, `CONVENTIONS.md`, `ARCHITECTURE_DESIGN.md`, `GOVERNANCE.md`, `SECURITY.md`, `specs/TEMPLATE.md`, `journal/`, Backlog Record template, and the selected skill baseline.
+
 `lite` is the light-governance path for weekend builds and experiments. It keeps the framework spine but leaves out heavyweight evidence by default:
 
 | Area | `lite` leaves out by default | `standard` adds | `heavy` adds |
@@ -279,6 +282,51 @@ The mode is not a quality ranking. It is a friction budget. A weekend script sho
 | Parallelism | worktrees | write scopes for sub-agents | worktrees for agentic lanes |
 
 `none` is not a governance mode. It belongs to execution isolation and means no special parallel-agent isolation.
+
+### Runtime and adapter contract
+
+Every project declares `runtime_target` in `CONVENTIONS.md`:
+
+| Runtime | Entry point | Contract |
+|---|---|---|
+| `claude-code` | `CLAUDE.md` | Claude Code is primary; `AGENTS.md` may exist as a Codex bridge |
+| `codex` | `AGENTS.md` | Codex is primary; `CLAUDE.md` remains a compatibility bridge |
+| `cross-tool` | `AGENTS.md` + `CLAUDE.md` | both entries are active; `CONVENTIONS.md` resolves conflicts |
+| `unknown` | `AGENTS.md` + `CLAUDE.md` | scaffold portable baseline; tighten once the runtime is known |
+
+Role split:
+- `AGENTS.md` is the Codex entry point. It carries repo-local working rules, sandbox/scope expectations, and points to `CONVENTIONS.md`.
+- `CLAUDE.md` is the Claude Code entry point and compatibility bridge for existing Claude workflows. It may repeat important rules for Claude, but tool-neutral truth belongs in `CONVENTIONS.md`.
+- `CONVENTIONS.md` is the adapter contract. Skills read it for `runtime_target`, `backlog_adapter`, `governance_mode`, `execution_isolation`, active gates, report paths, and postflight status.
+
+### Backlog record and adapters
+
+The framework uses a neutral Backlog Record. Linear, GitHub Issues, Jira, Azure DevOps Boards, Microsoft Planner, and `none` are adapters onto that record; none of them is mandatory.
+
+Required Backlog Record fields:
+
+```yaml
+id: {ISSUE-PREFIX}XXX
+title: "Short outcome-oriented title"
+status: Backlog | In Progress | In Review | QA Failed | Done | Cancelled
+priority: low | medium | high | critical
+estimate: 1 | 2 | 3 | 5 | 8
+intent: "Measurable user/business outcome"
+acceptance_criteria:
+  - "Observable criterion"
+links:
+  spec: specs/{ISSUE-PREFIX}XXX.md
+adapter_url: null
+adapter:
+  type: linear | github | jira | azure-devops | planner | none
+  external_id: null
+```
+
+Adapter rules:
+- Framework IDs keep the project prefix even when the external tool has its own ID.
+- External workflow states map to the six framework states above.
+- With `backlog_adapter: none`, specs and Backlog Records are sufficient; no Linear account or other tracker is required.
+- Tool-specific automations may enrich the record, but must not make the framework depend on that provider.
 
 ### Execution isolation and worktrees
 
@@ -296,7 +344,7 @@ This is the operational boundary between a controlled pipeline and autonomous ag
 
 ### Codex execution adapter
 
-Codex may decompose a Linear story into an internal plan, task list, sandbox runs or sub-agent work. That is allowed and expected. The story does not decide whether Codex may think in tasks; it decides which governance boundaries apply.
+Codex may decompose a Backlog Record story into an internal plan, task list, sandbox runs or sub-agent work. That is allowed and expected. The story does not decide whether Codex may think in tasks; it decides which governance boundaries apply.
 
 | Story contract | Codex may do | Codex must not do |
 |---|---|---|
@@ -333,7 +381,7 @@ These components run as plain bash / pure files — they don't depend on Claude 
 
 These differ depending on the AI coding tool in use:
 
-- **Skill invocation** — Claude Code: slash commands `/bootstrap`, `/implement`. Codex: `@Codex` in Linear issue or direct CLI. Cursor: `.cursorrules` + manual prompt.
+- **Skill invocation** — Claude Code: slash commands `/bootstrap`, `/implement`. Codex: direct CLI/app invocation, Backlog Record handoff, or adapter-triggered task. Cursor: `.cursorrules` + manual prompt.
 - **Skill location** — Claude Code: `~/.claude/skills/<name>/SKILL.md`. Codex: `.codex/skills/<name>/SKILL.md` (same format). Cursor: maps via `.cursorrules`.
 - **MCP integrations** — Anthropic-specific; Codex needs context-bridges via `CLAUDE.md` or n8n; other tools usually have no MCP.
 - **Sub-agent / parallel execution** — Claude Code has built-in sub-agents; Codex achieves this via parallel worktrees + TOML automations.
@@ -346,12 +394,13 @@ A project follows the Code-Crash Framework conventions (and is therefore tool-po
 
 - [ ] Directory layout matches §1 (including `intents/` and `pitch/` since bootstrap v3.23.0)
 - [ ] Project-local `CONVENTIONS.md` exists and declares `governance_mode` + `execution_isolation`
+- [ ] Project-local `CONVENTIONS.md` declares `runtime_target` + `backlog_adapter`
 - [ ] `specs/TEMPLATE.md` exists with the frontmatter from §2
 - [ ] `hooks/spec-gate.sh` is installed in `.git/hooks/pre-commit`
 - [ ] `.github/workflows/` has the CI gates relevant for the stack
 - [ ] `journal/` exists (at minimum with `learnings.md` for L1)
 - [ ] `.claude/environment.json` exists with paths + tools_available
-- [ ] `CLAUDE.md` documents the project state (used by Claude Code AND Codex)
+- [ ] `AGENTS.md` and/or `CLAUDE.md` exist according to `runtime_target`, with `CONVENTIONS.md` as the shared contract
 - [ ] `metadata.hermes` block in skill frontmatter (only relevant if Hermes-Bridge active)
 
 If yes → operator can switch AI coding tools (Claude Code → Codex → Cursor → local LLM) without re-running bootstrap. The framework itself is unchanged.
@@ -427,8 +476,9 @@ Jedes Projekt, das dem Code-Crash Framework folgt, hat diese Top-Level-Struktur.
 │           └── story.yml                 # 4-Schrader-Block-Template (BOO-11/27/30)
 ├── ARCHITECTURE_DESIGN.md                # §1-9 Hub-Doku, Single Source of Truth
 ├── CHANGELOG.md
-├── CLAUDE.md                             # Projekt-Kontext fuer KI-Tools (auch fuer Codex)
-├── CONVENTIONS.md                        # Projekt-lokaler Vertrag: Modus, Isolation, aktive Gates
+├── AGENTS.md                             # Codex-Einstieg: Repo-Regeln + Runtime-Handoff
+├── CLAUDE.md                             # Claude-Code-Einstieg + Kompatibilitaetsbruecke
+├── CONVENTIONS.md                        # Adapter-Vertrag: Runtime, Backlog, Modus, Isolation, aktive Gates
 ├── GOVERNANCE.md                         # Projekt-spezifische Regeln und Tool-Stack
 ├── Projekt-Governance.md                 # SecondBrain-seitige Governance (wenn Obsidian aktiv)
 ├── README.md
@@ -636,6 +686,8 @@ Jedes Projekt deklariert `governance_mode` in seiner projektlokalen `CONVENTIONS
 
 Der Modus ist keine Qualitaetswertung. Er ist ein Reibungsbudget. Ein Wochenend-Skript soll nicht das operative Gewicht eines Payment-Services tragen; ein Payment-Service darf nicht wie ein Wochenend-Skript laufen.
 
+Governance-Modi duerfen nie die Baseline-Artefakte loeschen oder auslassen, die ein Projekt portabel machen. `lite`, `standard` und `heavy` steuern Gate-Strenge, erforderliche Nachweise und Defaults. Sie entfernen nicht die grundlegende Skill-/Artefakt-Wirbelsaeule: `AGENTS.md` und/oder `CLAUDE.md` gemaess Runtime, `CONVENTIONS.md`, `ARCHITECTURE_DESIGN.md`, `GOVERNANCE.md`, `SECURITY.md`, `specs/TEMPLATE.md`, `journal/`, Backlog-Record-Template und die gewaehlte Skill-Baseline.
+
 `lite` ist der Light-Governance-Pfad fuer Wochenend-Builds und Experimente. Er behaelt die Wirbelsaeule des Frameworks, laesst aber schwere Nachweise standardmaessig weg:
 
 | Bereich | `lite` laesst default weg | `standard` ergaenzt | `heavy` ergaenzt |
@@ -648,6 +700,51 @@ Der Modus ist keine Qualitaetswertung. Er ist ein Reibungsbudget. Ein Wochenend-
 | Parallelitaet | Worktrees | Write-Scopes fuer Subagents | Worktrees fuer agentische Spuren |
 
 `none` ist kein Governance-Modus. Es gehoert zur Execution-Isolation und bedeutet: keine besondere Isolation fuer parallele Agentenarbeit.
+
+### Runtime- und Adapter-Vertrag
+
+Jedes Projekt deklariert `runtime_target` in `CONVENTIONS.md`:
+
+| Runtime | Einstieg | Vertrag |
+|---|---|---|
+| `claude-code` | `CLAUDE.md` | Claude Code ist primaer; `AGENTS.md` darf als Codex-Bruecke existieren |
+| `codex` | `AGENTS.md` | Codex ist primaer; `CLAUDE.md` bleibt Kompatibilitaetsbruecke |
+| `cross-tool` | `AGENTS.md` + `CLAUDE.md` | beide Einstiege sind aktiv; `CONVENTIONS.md` loest Konflikte |
+| `unknown` | `AGENTS.md` + `CLAUDE.md` | portable Baseline anlegen; spaeter schaerfen |
+
+Rollentrennung:
+- `AGENTS.md` ist der Codex-Einstieg. Die Datei traegt repo-lokale Arbeitsregeln, Sandbox-/Scope-Erwartungen und verweist auf `CONVENTIONS.md`.
+- `CLAUDE.md` ist der Claude-Code-Einstieg und die Kompatibilitaetsbruecke fuer bestehende Claude-Workflows. Sie darf wichtige Regeln fuer Claude wiederholen, aber tool-neutrale Wahrheit gehoert in `CONVENTIONS.md`.
+- `CONVENTIONS.md` ist der Adapter-Vertrag. Skills lesen daraus `runtime_target`, `backlog_adapter`, `governance_mode`, `execution_isolation`, aktive Gates, Report-Pfade und Postflight-Status.
+
+### Backlog-Record und Adapter
+
+Das Framework nutzt einen neutralen Backlog-Record. Linear, GitHub Issues, Jira, Azure DevOps Boards, Microsoft Planner und `none` sind Adapter darauf; keiner davon ist Pflicht.
+
+Pflichtfelder des Backlog-Records:
+
+```yaml
+id: {ISSUE-PREFIX}XXX
+title: "Kurzer outcome-orientierter Titel"
+status: Backlog | In Progress | In Review | QA Failed | Done | Cancelled
+priority: low | medium | high | critical
+estimate: 1 | 2 | 3 | 5 | 8
+intent: "Messbares Nutzer-/Business-Outcome"
+acceptance_criteria:
+  - "Beobachtbares Kriterium"
+links:
+  spec: specs/{ISSUE-PREFIX}XXX.md
+adapter_url: null
+adapter:
+  type: linear | github | jira | azure-devops | planner | none
+  external_id: null
+```
+
+Adapter-Regeln:
+- Framework-IDs behalten den Projekt-Prefix, auch wenn das externe Tool eigene IDs hat.
+- Externe Workflow-States mappen auf die sechs Framework-States oben.
+- Mit `backlog_adapter: none` reichen Specs und Backlog-Records aus; kein Linear-Account oder anderer Tracker ist erforderlich.
+- Tool-spezifische Automationen duerfen den Record anreichern, aber das Framework nicht von diesem Provider abhaengig machen.
 
 ### Execution-Isolation und Worktrees
 
@@ -665,7 +762,7 @@ Das ist die operative Grenze zwischen kontrollierter Pipeline und autonomerer Ag
 
 ### Codex-Ausfuehrungsadapter
 
-Codex darf eine Linear-Story intern in Plan, Taskliste, Sandbox-Laeufe oder Subagent-Arbeit zerlegen. Das ist erlaubt und erwartet. Die Story entscheidet nicht, ob Codex in Tasks denken darf; sie entscheidet, welche Governance-Grenzen gelten.
+Codex darf eine Backlog-Record-Story intern in Plan, Taskliste, Sandbox-Laeufe oder Subagent-Arbeit zerlegen. Das ist erlaubt und erwartet. Die Story entscheidet nicht, ob Codex in Tasks denken darf; sie entscheidet, welche Governance-Grenzen gelten.
 
 | Story-Vertrag | Codex darf | Codex darf nicht |
 |---|---|---|
@@ -702,7 +799,7 @@ Diese Komponenten laufen als plain Bash / pure Files — sie haengen ueberhaupt 
 
 Diese unterscheiden sich je nach KI-Coding-Tool:
 
-- **Skill-Aufruf** — Claude Code: Slash-Commands `/bootstrap`, `/implement`. Codex: `@Codex` im Linear-Issue oder direkter CLI-Call. Cursor: `.cursorrules` + manueller Prompt.
+- **Skill-Aufruf** — Claude Code: Slash-Commands `/bootstrap`, `/implement`. Codex: direkter CLI-/App-Aufruf, Backlog-Record-Handoff oder adapter-getriggerte Aufgabe. Cursor: `.cursorrules` + manueller Prompt.
 - **Skill-Ablage** — Claude Code: `~/.claude/skills/<name>/SKILL.md`. Codex: `.codex/skills/<name>/SKILL.md` (gleiches Format). Cursor: Mapping via `.cursorrules`.
 - **MCP-Integrationen** — Anthropic-spezifisch; Codex braucht Kontext-Bruecken via `CLAUDE.md` oder n8n; andere Tools haben meist kein MCP.
 - **Sub-Agent / Parallel-Ausfuehrung** — Claude Code hat eingebaute Sub-Agents; Codex erreicht das via parallele Worktrees + TOML-Automationen.
@@ -715,12 +812,13 @@ Ein Projekt folgt den Code-Crash-Framework-Konventionen (und ist damit tool-port
 
 - [ ] Verzeichnis-Layout matched §1 (inkl. `intents/` und `pitch/` seit Bootstrap v3.23.0)
 - [ ] Projektlokale `CONVENTIONS.md` existiert und deklariert `governance_mode` + `execution_isolation`
+- [ ] Projektlokale `CONVENTIONS.md` deklariert `runtime_target` + `backlog_adapter`
 - [ ] `specs/TEMPLATE.md` existiert mit dem Frontmatter aus §2
 - [ ] `hooks/spec-gate.sh` ist in `.git/hooks/pre-commit` installiert
 - [ ] `.github/workflows/` hat die fuer den Stack relevanten CI-Gates
 - [ ] `journal/` existiert (mindestens mit `learnings.md` fuer L1)
 - [ ] `.claude/environment.json` existiert mit Pfaden + tools_available
-- [ ] `CLAUDE.md` dokumentiert den Projekt-Stand (genutzt von Claude Code UND Codex)
+- [ ] `AGENTS.md` und/oder `CLAUDE.md` existieren gemaess `runtime_target`, mit `CONVENTIONS.md` als gemeinsamem Vertrag
 - [ ] `metadata.hermes`-Block in Skill-Frontmatter (nur relevant, wenn Hermes-Bruecke aktiv)
 
 Wenn ja → Operator kann KI-Coding-Tools wechseln (Claude Code → Codex → Cursor → lokales LLM), ohne neu zu bootstrappen. Das Framework selbst bleibt unveraendert.

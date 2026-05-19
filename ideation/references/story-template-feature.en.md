@@ -43,6 +43,19 @@ Every feature story MUST follow this structure.
 ### 7. Acceptance criteria
 - Checkboxes, testable, concrete
 
-### 8. Dependencies
+### 8. Security Impact (MANDATORY)
+- Change type: `none | api | auth | data | dependency | ci | governance | external-provider`
+- New or changed attack surface?
+- Are personal data, secrets, tokens, cookies, or external providers touched?
+- Which sections from `SECURITY.md` and which security references must `/implement` read?
+- If there is no security impact: explicitly explain why; do not leave this empty.
+
+### 9. Security Validation (MANDATORY for code, security, tooling, dependency, CI, or governance changes)
+- Which local checks must run? (e.g. Semgrep, dependency-check, tests, manual review)
+- Which sensitive paths may be affected?
+- What evidence must be documented before `Done`?
+- Which risks remain knowingly accepted?
+
+### 10. Dependencies
 - Only if stdlib is insufficient
 - Reason why

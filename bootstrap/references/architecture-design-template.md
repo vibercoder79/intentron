@@ -117,6 +117,19 @@ Beantwortet "Warum haben wir X so gebaut?" für neue Entwickler und KI-Assistent
 | 10 | **Cost Efficiency** | API-Kosten kalkuliert? Günstigere Alternative? |
 | 11 | **Domain Quality** | Verbessert Kern-Qualität des Projekts? |
 
+### Kontextvalidierung fuer dieses Projekt
+
+> Diese Fragen muessen beim Bootstrap und bei groesseren Architektur-Aenderungen beantwortet werden.
+> Ein Blueprint ist erst gueltig, wenn er zur tatsaechlichen Projektlage passt.
+
+| Frage | Antwort / Projektentscheidung |
+|-------|-------------------------------|
+| Welche Dimensionen sind fuer dieses Projekt wirklich kritisch? | [ausfuellen] |
+| Welche Dimensionen sind bewusst nur leichtgewichtig aktiv? | [ausfuellen] |
+| Welche externen Provider, Datenquellen oder Plattformen praegen die Architektur? | [ausfuellen] |
+| Welche Security-/Privacy-Grenzen duerfen nie automatisch ueberschrieben werden? | [ausfuellen] |
+| Welche Annahmen muessen nach dem ersten echten Implementierungsdurchlauf ueberprueft werden? | [ausfuellen] |
+
 ---
 
 ## §6 Referenzen

@@ -43,6 +43,19 @@ Jede Feature-Story MUSS folgende Struktur haben.
 ### 7. Acceptance Criteria
 - Checkboxen, testbar, konkret
 
-### 8. Dependencies
+### 8. Security Impact (PFLICHT)
+- Change-Type: `none | api | auth | data | dependency | ci | governance | external-provider`
+- Neue oder veraenderte Angriffsoberflaeche?
+- Werden personenbezogene Daten, Secrets, Tokens, Cookies oder externe Provider beruehrt?
+- Welche Sektionen aus `SECURITY.md` und welche Security-Referenzen muessen in `/implement` gelesen werden?
+- Falls kein Security-Impact: explizit begruenden, nicht nur leer lassen.
+
+### 9. Security Validation (PFLICHT bei Code-, Security-, Tooling-, Dependency-, CI- oder Governance-Aenderungen)
+- Welche lokalen Checks muessen laufen? (z.B. Semgrep, dependency-check, tests, manuelle Review)
+- Welche sensiblen Pfade koennen betroffen sein?
+- Welche Evidenz muss vor `Done` dokumentiert werden?
+- Welche Risiken bleiben bewusst akzeptiert?
+
+### 10. Dependencies
 - Nur wenn stdlib nicht reicht
 - Begruendung warum
