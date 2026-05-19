@@ -113,7 +113,7 @@ The bootstrap is structured as **4 interview blocks (A-D)** followed by **execut
 | **Block C** — Doc architecture | 3-layer proposal (Story-Specs, Component-Docs, Architecture-Guidelines) + Hub-auto-linking | Confirmation / customization |
 | **Phase 4** — Base structure | Directories, Git, core files, `.claudeignore`, hooks, component skeletons | `.env` confirmation |
 | **Phase 5** — Skills via git-clone | Skills copied from `claudecodeskills` repo (no VPS symlinks) | Skill tier |
-| **Block D** — Optional components | Self-Healing / DocSync / Automation-Daemon / Learning-Loop (L1/L2/L3) — all at the end | 4 yes/no + loop level |
+| **Block D** — Optional components | Self-Healing / DocSync / Automation-Daemon / Learning-Loop / SonarQube / Research / Visualize / Monitoring — all at the end | targeted questions + provider postflight |
 | **Phase 7** — Registry + finalization | Obsidian PMO hub + project index + final commit | None |
 
 ---
@@ -243,7 +243,9 @@ Backlog is adapter-neutral: Linear, GitHub Issues, Jira, Azure DevOps, Planner, 
 
 Governance modes (`lite`, `standard`, `heavy`) control gate strictness and evidence requirements. They must not remove baseline artifacts or skills: runtime entry, `CONVENTIONS.md`, hub docs, spec template, `journal/`, Backlog Record, and skill baseline always remain.
 
-The closing report uses `OK`, `WARN`, `SKIP`, `FAIL`. External providers are verified separately; local files alone do not make GitHub, Linear/Jira/Azure/Planner, SonarQube, Grafana, Telegram, or Obsidian sync `OK`. Secrets must never land in chat, repo files, logs, or the closing report.
+The closing report uses `OK`, `WARN`, `SKIP`, `FAIL`. External providers are verified separately; local files alone do not make GitHub, Linear/Jira/Azure/Planner, SonarQube, Grafana, Telegram, or Obsidian sync `OK`. Secrets must never land in chat, repo files, logs, or the closing report. Existing projects follow the upgrade path in `references/framework-upgrade.en.md`: `inspect`, `apply-safe`, `apply-with-confirmation`, with an optional report under `journal/reports/framework-upgrade/YYYY-MM-DD.md`.
+
+Provider postflight evaluates GitHub, backlog adapters, Research, Visualize/Miro, Monitoring, and Obsidian separately from skill installation status. Details: `references/provider-postflight.en.md`.
 
 Copy the `bootstrap/` folder anywhere → it works immediately.
 

@@ -253,12 +253,14 @@ Keine Abhängigkeiten auf andere Dateien. Alle Templates sind in `references/` e
 
 **Block C (Doku-Architektur):** Bootstrap schlägt 3 Schichten + Hub vor — du bestätigst oder passt an.
 
-**Block D (Optional-Komponenten, am Ende):** 4 Ja/Nein-Fragen (Self-Healing / DocSync / Automation-Daemon / Learning-Loop L1/L2/L3).
+**Block D (Optional-Komponenten, am Ende):** Self-Healing, DocSync, Automation-Daemon, Learning-Loop L1/L2/L3, SonarQube, Research, Visualize/Miro und Monitoring-Postflight.
 
 **Optionale API-Keys (kannst du auch später nachtragen):**
 - Telegram Bot Token (für Self-Healing Alerts)
 - OpenRouter/Perplexity API Key (für `/research` Deep-Tier)
 - Grafana Cloud URL + API Key (für Monitoring-Dashboards)
+
+**Provider-Postflight:** Bootstrap bewertet externe Provider separat vom Skill-Installationsstatus. GitHub, Backlog-Adapter, Research, Visualize/Miro, Monitoring und Obsidian bekommen `OK`, `WARN`, `SKIP` oder `FAIL`; Secrets werden dabei nie angezeigt oder in Dateien geschrieben. Details: `references/provider-postflight.md`.
 
 ---
 
@@ -323,7 +325,7 @@ Der Bootstrap ist in **4 Interview-Bloecken (A-D)** plus **Execution-Phasen (4-7
 | **Block C** — Doku-Architektur | 3-Schichten-Vorschlag (Story-Specs, Component-Docs, Architektur-Vorgaben) + Hub-Auto-Verlinkung | Bestaetigung / Anpassung |
 | **Phase 4** — Grundstruktur | Verzeichnisse, Git, Kerndateien, `.claudeignore`, Hooks, Component-Skelette | `.env`-Bestaetigung |
 | **Phase 5** — Skills via git-clone | Skills aus `claudecodeskills` kopieren (keine VPS-Symlinks) | Skill-Tier |
-| **Block D** — Optional-Komponenten | Self-Healing / DocSync / Automation-Daemon / Learning-Loop (L1/L2/L3) — alle am Ende | 4 Ja/Nein + Loop-Level |
+| **Block D** — Optional-Komponenten | Self-Healing / DocSync / Automation-Daemon / Learning-Loop / SonarQube / Research / Visualize / Monitoring — alle am Ende | gezielte Fragen + Provider-Postflight |
 | **Phase 7** — Registry + Finalisierung | Obsidian PMO-Hub + Projekt-Index + Final-Commit | Keine |
 
 ```mermaid
@@ -569,7 +571,7 @@ Backlog ist adapter-neutral: Linear, GitHub Issues, Jira, Azure DevOps, Planner 
 
 Governance-Modi (`lite`, `standard`, `heavy`) steuern die Strenge der Gates und Nachweise. Sie duerfen keine Basis-Artefakte oder Skills entfernen: Runtime-Einstieg, `CONVENTIONS.md`, Hub-Doku, Spec-Template, `journal/`, Backlog-Record und Skill-Baseline bleiben immer vorhanden.
 
-Der Abschlussbericht nutzt `OK`, `WARN`, `SKIP`, `FAIL`. Externe Provider werden separat geprueft; lokale Dateien allein machen GitHub, Linear/Jira/Azure/Planner, SonarQube, Grafana, Telegram oder Obsidian-Sync nicht automatisch `OK`. Secrets duerfen nie in Chat, Repo, Logs oder Abschlussbericht landen.
+Der Abschlussbericht nutzt `OK`, `WARN`, `SKIP`, `FAIL`. Externe Provider werden separat geprueft; lokale Dateien allein machen GitHub, Linear/Jira/Azure/Planner, SonarQube, Grafana, Telegram oder Obsidian-Sync nicht automatisch `OK`. Secrets duerfen nie in Chat, Repo, Logs oder Abschlussbericht landen. Bestehende Projekte folgen dem Upgrade-Pfad aus `references/framework-upgrade.md`: `inspect`, `apply-safe`, `apply-with-confirmation`, inklusive optionalem Report unter `journal/reports/framework-upgrade/YYYY-MM-DD.md`.
 
 Den `bootstrap/` Ordner irgendwohin kopieren → es funktioniert sofort.
 

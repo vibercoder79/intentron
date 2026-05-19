@@ -268,6 +268,40 @@ SonarQube Cloud — Verify:
 - `tools_available.sonarqube_cloud = false` in `environment.json`
 - Hinweis: "SonarQube Cloud kann spaeter aktiviert werden — `references/optional-components.md` §D.5"
 
+## D.6 — Research als Companion oder Framework-Skill
+
+Research ist optional und wird getrennt bewertet:
+
+- Skill-Quelle: im Framework enthalten, Companion aus `claudecodeskills/research`, global installiert, oder nicht genutzt.
+- Provider: Perplexity MCP, Perplexity API, OpenRouter oder kein Provider.
+- Status: Nur `OK`, wenn Skill-Quelle und Provider-Verifikation getrennt positiv bewertet wurden.
+
+Siehe `provider-postflight.md`.
+
+## D.7 — Visualize und Miro
+
+Visualisierung ist optional. Bootstrap fragt nach:
+
+- `visualize` Skill,
+- Miro als Ziel,
+- Miro-Konto,
+- Miro-MCP,
+- Verbindungstest,
+- Fallback: Excalidraw, Mermaid oder keiner.
+
+Ohne Miro-Verifikation ist Miro `WARN`, nicht `OK`. Ein bewusster Excalidraw- oder Mermaid-Fallback ist `SKIP` fuer Miro und `OK` fuer den Fallback.
+
+## D.8 — Monitoring-/Logging-Plattform
+
+Monitoring ist eine Architekturentscheidung, kein reines Skill-Installationsdetail. Bootstrap unterscheidet:
+
+- zentrale Plattform nutzen,
+- projektspezifische Monitoring-Loesung vorbereiten,
+- als offene Architekturfrage dokumentieren.
+
+Der Logging-Vertrag gehoert in `docs/MONITORING.md` oder eine klar markierte Governance-/Observability-Sektion.
+
+
 ## Finalisierung nach Block D
 
 Skill fasst Optional-Komponenten-Status zusammen:

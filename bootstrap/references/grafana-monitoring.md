@@ -36,6 +36,29 @@ Self-Healing / Daemons
 **Wichtig:** Grafana liest — Claude Code schreibt nicht direkt in Grafana.
 Der `/grafana` Skill sendet nur Dashboard-Definitionen (JSON) via Grafana MCP.
 
+## Bootstrap-Entscheidung: Plattform vs. Observability-Vertrag
+
+Bootstrap richtet nicht automatisch eine Monitoring-Plattform ein. Es klaert zuerst:
+
+```text
+Gibt es bereits eine Monitoring-/Logging-Plattform?
+  a) Ja, zentrale Plattform nutzen
+  b) Nein, Projekt soll eigene Monitoring-Loesung vorbereiten
+  c) Noch unklar, als Architekturfrage dokumentieren
+```
+
+Unabhaengig von Grafana muss das Projekt einen Logging-Vertrag dokumentieren:
+
+- Format,
+- Ablage oder Transport,
+- Pflichtfelder: `timestamp`, `level`, `service`, `run_id`, `trace_id`, `message`,
+- verbotene Inhalte: Secrets, Tokens, Cookies, personenbezogene Rohdaten,
+- Metriken,
+- Health-Endpunkte,
+- Verantwortliche Stelle.
+
+Wenn Grafana nicht aktiv ist, ist das kein Fehler. Dann wird Monitoring im Provider-Postflight als `SKIP` oder `WARN` dokumentiert und der Fallback/naechste Schritt benannt.
+
 ---
 
 ## Schritt 1 — Grafana Cloud einrichten

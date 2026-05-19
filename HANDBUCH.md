@@ -272,7 +272,7 @@ Claude walks you through four short interview blocks (A–D), then builds everyt
 | **Block C** — Doc architecture | Proposal + review | 3-layer proposal (Story-Specs, Component-Docs, Architecture-Guidelines) + `ARCHITECTURE_DESIGN.md` Hub with auto-linking |
 | **Phase 4** — Base structure | Automatic (~2 min) | Files, Git init, linting, governance hooks, component skeletons |
 | **Phase 5** — Install skills | Automatic | Skills pulled via `git clone` from `claudecodeskills` (no symlinks) |
-| **Block D** — Optional components | 4 yes/no at the end | Self-Healing / DocSync / Automation-Daemon / Learning-Loop (L1/L2/L3) |
+| **Block D** — Optional components | Targeted questions at the end | Self-Healing / DocSync / Automation-Daemon / Learning-Loop / SonarQube / Research / Visualize / Monitoring |
 | **Phase 7** — Finalization | Automatic | SecondBrain integration, global registry entry, final commit |
 
 > **Why blocks instead of a 14-question batch?** Single questions are easier to answer, and each block builds on the previous one — your doc-architecture proposal in Block C already knows your stack (A.1) and existing infra (B).
@@ -374,7 +374,7 @@ d) Pick manually
 
 ### Block D — Optional components (at the end)
 
-After the base project is set up, bootstrap asks 4 yes/no questions:
+After the base project is set up, bootstrap asks targeted optional-component and provider-postflight questions:
 
 | Component | What it does | Cost |
 |-----------|--------------|------|
@@ -382,6 +382,9 @@ After the base project is set up, bootstrap asks 4 yes/no questions:
 | **DocSync to Obsidian** | Auto-mirror docs to your vault | None (if Obsidian exists) |
 | **Automation daemon** | Linear webhook → auto-`/implement` on "In Progress" | Requires Linear + webhook endpoint |
 | **Learning-Loop (L1/L2/L3)** | Framework gets smarter with every sprint — see next section | L1 free, L3 adds SQLite |
+| **Research** | Framework, companion or global skill plus Perplexity/OpenRouter/MCP provider status | Provider-dependent |
+| **Visualize/Miro** | Diagram skill plus Miro MCP verification or Excalidraw/Mermaid fallback | Miro-dependent |
+| **Monitoring** | Central platform, project-owned setup or documented architecture question | Platform-dependent |
 
 ### Learning-Loop (L1/L2/L3)
 
@@ -1470,6 +1473,12 @@ The new conventions now have dedicated OWLIST sketches for governance modes, exe
 | Provider postflight matrix | done | `docs/provider-postflight-matrix.en.excalidraw` |
 | Upgrade path for existing projects | done | `docs/upgrade-path-existing-projects.en.excalidraw` |
 | Quality-gate layer update | still open | add governance intensity to the existing quality-gate sketch |
+
+### Provider Postflight And Upgrade
+
+Bootstrap treats provider readiness as a separate postflight dimension. A local skill copy is not enough for `OK`: GitHub, backlog adapters, Research, Visualize/Miro, Monitoring and Obsidian each get `OK`, `WARN`, `SKIP` or `FAIL` with a next action. The operational contract is in `bootstrap/references/provider-postflight.en.md`.
+
+Existing projects use the upgrade path in `bootstrap/references/framework-upgrade.en.md`: `inspect`, `apply-safe`, `apply-with-confirmation`. The upgrade report can be written to `journal/reports/framework-upgrade/YYYY-MM-DD.md` and uses release notes from `docs/releases/` as migration input.
 
 ### The central config file: `lib/config.js`
 
@@ -2825,7 +2834,7 @@ d) Manuell auswählen
 
 ### Block D — Optional-Komponenten (am Ende)
 
-Nachdem das Basisprojekt steht, stellt Bootstrap 4 Ja/Nein-Fragen:
+Nachdem das Basisprojekt steht, stellt Bootstrap gezielte Optional-Komponenten- und Provider-Postflight-Fragen:
 
 | Komponente | Was sie macht | Kosten |
 |------------|---------------|--------|
@@ -2833,6 +2842,9 @@ Nachdem das Basisprojekt steht, stellt Bootstrap 4 Ja/Nein-Fragen:
 | **DocSync zu Obsidian** | Auto-Spiegel der Docs in deinen Vault | Keine (wenn Vault existiert) |
 | **Automation-Daemon** | Linear-Webhook → automatisches `/implement` bei "In Progress" | Braucht Linear + Webhook-Endpoint |
 | **Learning-Loop (L1/L2/L3)** | Framework wird mit jedem Sprint klüger — siehe nächste Sektion | L1 gratis, L3 bringt SQLite |
+| **Research** | Framework-, Companion- oder globaler Skill plus Perplexity/OpenRouter/MCP-Providerstatus | Provider-abhaengig |
+| **Visualize/Miro** | Diagramm-Skill plus Miro-MCP-Verifikation oder Excalidraw/Mermaid-Fallback | Miro-abhaengig |
+| **Monitoring** | zentrale Plattform, projektlokales Setup oder dokumentierte Architekturfrage | Plattform-abhaengig |
 
 ### Learning-Loop (L1/L2/L3)
 
@@ -4184,6 +4196,12 @@ Die neuen Konventionen haben jetzt dedizierte OWLIST-Sketches fuer Governance-Mo
 | Upgrade-Pfad bestehender Projekte | erledigt | `docs/upgrade-path-existing-projects.excalidraw` |
 | Quality-Gate-Layer aktualisieren | offen | Governance-Intensitaet ergaenzen |
 
+### Provider-Postflight und Upgrade
+
+Bootstrap behandelt Provider-Bereitschaft als eigene Postflight-Dimension. Eine lokale Skill-Kopie reicht nicht fuer `OK`: GitHub, Backlog-Adapter, Research, Visualize/Miro, Monitoring und Obsidian bekommen jeweils `OK`, `WARN`, `SKIP` oder `FAIL` mit naechster Aktion. Der operative Vertrag steht in `bootstrap/references/provider-postflight.md`.
+
+Bestehende Projekte nutzen den Upgrade-Pfad in `bootstrap/references/framework-upgrade.md`: `inspect`, `apply-safe`, `apply-with-confirmation`. Der Upgrade-Report kann unter `journal/reports/framework-upgrade/YYYY-MM-DD.md` abgelegt werden und nutzt die Release Notes aus `docs/releases/` als Migrationsinput.
+
 ### Die zentrale Konfigurations-Datei: `lib/config.js`
 
 Alles läuft über eine einzige Datei — das ist der **Single Source of Truth (SSoT)** Prinzip.
@@ -4482,6 +4500,11 @@ Bestehende Projekte werden nicht blind ueberschrieben. Ein Framework-Upgrade fol
 Der Grundsatz ist: Framework-Versionen duerfen ein Projekt haerter oder klarer machen, aber nicht
 heimlich umdeuten. Wenn ein bestehendes Projekt bewusst von der neuen Empfehlung abweicht, wird die
 Abweichung dokumentiert statt ueberschrieben.
+
+Der operative Ablauf ist in `bootstrap/references/framework-upgrade.md` beschrieben. Vor dem Upgrade
+werden die Release Notes in `docs/releases/` gelesen; der Report dokumentiert alte/neue Version,
+aktualisierte Skills, neu angelegte Dateien, bewusst nicht ueberschriebene Dateien, manuelle TODOs
+und Provider-Postflight.
 
 ---
 
