@@ -1455,14 +1455,20 @@ Codex note: Codex may still break the story into an internal plan, task list and
 
 ### Sketch status
 
-The new conventions now have three dedicated OWLIST sketches:
+The new conventions now have dedicated OWLIST sketches for governance modes, execution isolation, project structure, runtime adapters, validation loops, provider checks, and upgrade paths:
 
 | Sketch | Status | Files |
 |---|---|---|
 | Governance modes | done | `docs/governance-modes.en.png` / `docs/governance-modes.en.excalidraw` |
 | Execution isolation | done | `docs/execution-isolation-worktrees.en.png` / `docs/execution-isolation-worktrees.en.excalidraw` |
 | Bootstrap tree | done | `docs/bootstrap-project-tree.en.png` / `docs/bootstrap-project-tree.en.excalidraw` |
-| Artifact map update | still open | add `CONVENTIONS.md` to the existing artifact map |
+| Codex artifact map | done | `docs/artifact-map-codex.en.excalidraw` |
+| Cross-tool artifact map | done | `docs/artifact-map-cross-tool.en.excalidraw` |
+| Runtime decision tree | done | `docs/runtime-decision-tree.en.excalidraw` |
+| Backlog record / adapter model | done | `docs/backlog-record-adapter-model.en.excalidraw` |
+| Validate-Fix-Learn loop | done | `docs/validate-fix-learn.en.excalidraw` |
+| Provider postflight matrix | done | `docs/provider-postflight-matrix.en.excalidraw` |
+| Upgrade path for existing projects | done | `docs/upgrade-path-existing-projects.en.excalidraw` |
 | Quality-gate layer update | still open | add governance intensity to the existing quality-gate sketch |
 
 ### The central config file: `lib/config.js`
@@ -4162,14 +4168,20 @@ Rueckgabeformat. Das optionale Story-Feld `codex_execution_hint` kann `single-ag
 
 ### Sketch-Status
 
-Die neuen Konventionen haben jetzt drei dedizierte OWLIST-Sketches:
+Die neuen Konventionen haben jetzt dedizierte OWLIST-Sketches fuer Governance-Modi, Execution-Isolation, Projektstruktur, Runtime-Adapter, Validierungsschleifen, Provider-Checks und Upgrade-Pfade:
 
 | Sketch | Status | Dateien |
 |---|---|---|
 | Governance-Modi | erledigt | `docs/governance-modes.png` / `docs/governance-modes.excalidraw` |
 | Execution-Isolation | erledigt | `docs/execution-isolation-worktrees.png` / `docs/execution-isolation-worktrees.excalidraw` |
 | Bootstrap-Tree | erledigt | `docs/bootstrap-project-tree.png` / `docs/bootstrap-project-tree.excalidraw` |
-| Artefakte-Landkarte aktualisieren | offen | `CONVENTIONS.md` dort ergaenzen |
+| Codex-Artefakte-Landkarte | erledigt | `docs/artifact-map-codex.excalidraw` |
+| Cross-Tool-Artefakte-Landkarte | erledigt | `docs/artifact-map-cross-tool.excalidraw` |
+| Runtime-Entscheidungsbaum | erledigt | `docs/runtime-decision-tree.excalidraw` |
+| Backlog-Record/Adapter-Modell | erledigt | `docs/backlog-record-adapter-model.excalidraw` |
+| Validate-Fix-Learn-Schleife | erledigt | `docs/validate-fix-learn.excalidraw` |
+| Provider-Postflight-Matrix | erledigt | `docs/provider-postflight-matrix.excalidraw` |
+| Upgrade-Pfad bestehender Projekte | erledigt | `docs/upgrade-path-existing-projects.excalidraw` |
 | Quality-Gate-Layer aktualisieren | offen | Governance-Intensitaet ergaenzen |
 
 ### Die zentrale Konfigurations-Datei: `lib/config.js`
