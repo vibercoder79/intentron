@@ -61,7 +61,29 @@ Beispiele:
 }
 ```
 
-## 6. Incident-Notiz
+## 6. Security-Unterartefakte
+
+`SECURITY.md` ist der operative Security-Vertrag. Es verweist auf Unterartefakte, die konkrete Evidenz und technische Regeln enthalten:
+
+| Artefakt | Zweck | Wann aktualisieren? |
+|---|---|---|
+| `ARCHITECTURE_DESIGN.md` | Lead-Dokument fuer Architektur, Quality Attributes und Security-/Privacy-Grenzen | Wenn eine Security-Entscheidung Architektur oder Runtime-Grenzen veraendert |
+| `API_INVENTORY.md` | Externe APIs, Provider, Datenfluss, Auth-Mechanik | Bei jeder neuen oder geaenderten externen Schnittstelle |
+| `.semgrep.yml` | SAST-Regeln und Security-Patterns | Wenn neue Risiko-Klassen, Frameworks oder Sprachen dazukommen |
+| `.codex/hooks.json` / `.claude/settings.json` | Runtime-Hooks und Guardrails | Wenn Security-Gates, sensitive Pfade oder Bypass-Regeln geaendert werden |
+| `.claude/sensitive-paths.json` / `.codex/sensitive-paths.json` | Dateien/Pfade mit Human-Review-Pflicht | Wenn neue kritische Bereiche entstehen |
+| `docs/security/threat-model-*.md` | Threat Models fuer riskante Features | Bei Auth, API, externem Input, Datenfluss, Webhooks, Agent-Automation |
+| Privacy-/Compliance-Dokumente | Rechtsgrundlagen, DPIA, Audit Trail | Wenn personenbezogene Daten oder regulierte Prozesse betroffen sind |
+
+## 7. Security-by-Design-Ablauf
+
+1. `/ideation` schreibt `Security Impact` und, falls relevant, `Security Validation` in die Story.
+2. `/implement` liest `ARCHITECTURE_DESIGN.md`, `SECURITY.md` und die passenden Unterartefakte.
+3. `/implement` fuehrt Gates aus: Lint, Semgrep/SAST, Tests/Smoke und Security-Checklist.
+4. `/security-architect` ergaenzt Threat Models, Policies oder Security-Reviews bei riskanten Aenderungen.
+5. `/sprint-review` prueft, ob Security-Schulden, offene Findings oder wiederkehrende Muster entstanden sind.
+
+## 8. Incident-Notiz
 
 Wenn ein Security-Finding erst nach Merge/Release sichtbar wird:
 

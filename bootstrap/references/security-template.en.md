@@ -61,7 +61,29 @@ Example:
 }
 ```
 
-## 6. Incident Note
+## 6. Security Sub-Artifacts
+
+`SECURITY.md` is the operational security contract. It points to sub-artifacts that contain concrete evidence and technical rules:
+
+| Artifact | Purpose | When to update? |
+|---|---|---|
+| `ARCHITECTURE_DESIGN.md` | Lead document for architecture, quality attributes, and security/privacy boundaries | When a security decision changes architecture or runtime boundaries |
+| `API_INVENTORY.md` | External APIs, providers, data flow, auth mechanics | On every new or changed external interface |
+| `.semgrep.yml` | SAST rules and security patterns | When new risk classes, frameworks, or languages are added |
+| `.codex/hooks.json` / `.claude/settings.json` | Runtime hooks and guardrails | When security gates, sensitive paths, or bypass rules change |
+| `.claude/sensitive-paths.json` / `.codex/sensitive-paths.json` | Files/paths requiring human review | When new critical areas appear |
+| `docs/security/threat-model-*.md` | Threat models for risky features | For auth, API, external input, data flow, webhooks, agent automation |
+| Privacy/compliance documents | Legal basis, DPIA, audit trail | When personal data or regulated processes are involved |
+
+## 7. Security-by-Design Flow
+
+1. `/ideation` writes `Security Impact` and, when relevant, `Security Validation` into the story.
+2. `/implement` reads `ARCHITECTURE_DESIGN.md`, `SECURITY.md`, and the matching sub-artifacts.
+3. `/implement` runs gates: lint, Semgrep/SAST, tests/smoke, and security checklist.
+4. `/security-architect` adds threat models, policies, or security reviews for risky changes.
+5. `/sprint-review` checks whether security debt, open findings, or recurring patterns appeared.
+
+## 8. Incident Note
 
 If a security finding appears after merge/release:
 

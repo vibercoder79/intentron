@@ -672,6 +672,20 @@ Rules · architecture · process · history.
 | `journal/LEARNINGS.md` | Outcome tracking | `/implement` (after issue-close) | `/sprint-review` |
 | `lib/config.js` | Single source of truth: VERSION + DOC_FILES | bootstrap | self-healing, doc-version-sync |
 
+### Security Documentation Model
+
+Security in the Code-Crash Framework is not a single checklist. It is a linked documentation model:
+
+| Layer | Artifact | Role |
+|---|---|---|
+| Lead architecture contract | `ARCHITECTURE_DESIGN.md` | Names Security as a quality dimension, records security/privacy boundaries, and links to the security contract. |
+| Operational security contract | `SECURITY.md` | Defines the security principle, secrets policy, change-type matrix, validation evidence, sensitive paths, and incident notes. |
+| Security sub-artifacts | `API_INVENTORY.md`, `.semgrep.yml`, `.codex/hooks.json`, `.claude/sensitive-paths.json`, `.codex/sensitive-paths.json`, threat models, privacy/compliance docs | Hold concrete evidence, provider/API details, technical gates, and human-review rules. |
+
+The flow is deliberate: `/ideation` writes `Security Impact` and, when relevant, `Security Validation` into the story. `/implement` reads `ARCHITECTURE_DESIGN.md`, `SECURITY.md`, and the matching sub-artifacts before changing code. `/security-architect` adds threat models, policies, or reviews for risky changes. `/architecture-review` checks whether security remains consistent with the architecture target state. `/sprint-review` looks for security debt, open findings, and recurring patterns.
+
+This makes Security by Design operational: plan the security impact, implement against the contract, validate with gates, update the affected artifacts, and feed repeated findings back into the learning loop.
+
 #### Group B — Checklists + guardrails
 
 Machine-enforced rules and reference lists.
@@ -3195,6 +3209,20 @@ Regeln · Architektur · Prozess · Historie.
 | `journal/STRATEGY_LOG.md` | Strategische Entscheidungen | du + `/ideation` | `/ideation` (Pflicht vor Story-Erstellung) |
 | `journal/LEARNINGS.md` | Outcome-Tracking | `/implement` (nach Issue-Close) | `/sprint-review` |
 | `lib/config.js` | Single Source of Truth: VERSION + DOC_FILES | bootstrap | Self-Healing, doc-version-sync |
+
+### Security-Dokumentationsmodell
+
+Security im Code-Crash Framework ist keine einzelne Checkliste, sondern ein verknuepftes Dokumentationsmodell:
+
+| Ebene | Artefakt | Rolle |
+|---|---|---|
+| Architektur-Leitvertrag | `ARCHITECTURE_DESIGN.md` | Nennt Security als Qualitaetsdimension, dokumentiert Security-/Privacy-Grenzen und verweist auf den Security-Vertrag. |
+| Operativer Security-Vertrag | `SECURITY.md` | Definiert Security-Grundsatz, Secrets-Policy, Change-Type-Matrix, Validation Evidence, sensitive Pfade und Incident-Notizen. |
+| Security-Unterartefakte | `API_INVENTORY.md`, `.semgrep.yml`, `.codex/hooks.json`, `.claude/sensitive-paths.json`, `.codex/sensitive-paths.json`, Threat Models, Privacy-/Compliance-Dokumente | Enthalten konkrete Evidenz, Provider-/API-Details, technische Gates und Human-Review-Regeln. |
+
+Der Ablauf ist bewusst gesteuert: `/ideation` schreibt `Security Impact` und, falls relevant, `Security Validation` in die Story. `/implement` liest `ARCHITECTURE_DESIGN.md`, `SECURITY.md` und die passenden Unterartefakte, bevor Code geaendert wird. `/security-architect` ergaenzt Threat Models, Policies oder Reviews bei riskanten Aenderungen. `/architecture-review` prueft, ob Security weiter zum Architektur-Zielbild passt. `/sprint-review` sucht nach Security-Schulden, offenen Findings und wiederkehrenden Mustern.
+
+Damit wird Security by Design operativ: Security Impact planen, gegen den Vertrag implementieren, mit Gates validieren, betroffene Artefakte aktualisieren und wiederkehrende Findings in den Learning Loop zurueckspielen.
 
 #### Gruppe B — Checklists + Guardrails
 
