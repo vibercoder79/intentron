@@ -4,7 +4,7 @@ Stand: 2026-05-19
 
 ## Zweck
 
-Wave C dokumentiert die offenen Provider-, Diagramm- und Upgrade-Aspekte aus dem Dry-Run so, dass sie in der naechsten Umsetzung nicht wieder verschwimmen. In diesem Schnitt wurden keine neuen Excalidraw-/PNG-Dateien erzeugt; die Release Note haelt fest, welche visuellen Artefakte und Provider-Pruefungen als naechste konkrete Aufgaben folgen.
+Wave C dokumentiert die offenen Provider-, Diagramm- und Upgrade-Aspekte aus dem Dry-Run so, dass sie in der naechsten Umsetzung nicht wieder verschwimmen. Der erste Schnitt hielt die visuellen Artefakte als Folgearbeit fest; BOO-59 ergaenzt jetzt die Excalidraw-Quellen im Olli Corporate Design.
 
 ## Betroffene Stories
 
@@ -35,15 +35,17 @@ Bestehende Projekte werden nicht ueberschrieben. Der sichere Pfad lautet:
 
 ### Diagramm-Folgearbeit
 
-BOO-59 bleibt fuer die visuelle Nachfuehrung relevant. Nach diesem Textschnitt muessen die vorhandenen Olli-Corporate-Design-Sketches fuer folgende Sichten geprueft oder neu gezeichnet werden:
+BOO-59 zieht die visuellen Sichten als Excalidraw-Quellen nach:
 
-- Codex Artifact Map,
-- Cross-Tool Artifact Map,
-- Runtime-Entscheidungsbaum,
-- Backlog-Record/Adapter-Modell,
-- Validate-Fix-Learn-Schleife,
-- Provider-Postflight-Matrix,
-- Upgrade-Pfad bestehender Projekte.
+- Codex Artifact Map: `docs/artifact-map-codex.excalidraw`
+- Cross-Tool Artifact Map: `docs/artifact-map-cross-tool.excalidraw`
+- Runtime-Entscheidungsbaum: `docs/runtime-decision-tree.excalidraw`
+- Backlog-Record/Adapter-Modell: `docs/backlog-record-adapter-model.excalidraw`
+- Validate-Fix-Learn-Schleife: `docs/validate-fix-learn.excalidraw`
+- Provider-Postflight-Matrix: `docs/provider-postflight-matrix.excalidraw`
+- Upgrade-Pfad bestehender Projekte: `docs/upgrade-path-existing-projects.excalidraw`
+
+Alle sieben Skizzen liegen auch als englische `.en.excalidraw`-Varianten vor. PNG-Exports bleiben ein optionaler Publishing-Schritt, wenn die Bilder fuer README, GitHub oder Praesentationen gerendert werden sollen.
 
 ## Referenz-Matrix
 
@@ -61,10 +63,10 @@ BOO-59 bleibt fuer die visuelle Nachfuehrung relevant. Nach diesem Textschnitt m
 - `HANDBUCH.md`
 - `bootstrap/SKILL.md`
 - `bootstrap/SKILL.en.md`
+- `docs/*.excalidraw` fuer BOO-59
 - `docs/releases/wave-c.md`
 
 ## Offene Folgearbeit
 
-- Excalidraw-Sketches im Olli Corporate Design aktualisieren.
 - Provider-Postflight ggf. als eigenes maschinenlesbares Template aus `bootstrap/SKILL.md` herausziehen.
 - Upgrade-Report als Template in `bootstrap/references/` anlegen, sobald die Upgrade-Funktion nicht nur dokumentiert, sondern skriptbar wird.
