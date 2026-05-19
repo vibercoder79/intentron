@@ -26,6 +26,8 @@ References:
 - `references/skills-setup.en.md` — pulling skills from GitHub
 - `references/global-registry-update.en.md` — SecondBrain integration
 - `references/hooks-setup.en.md` — governance hooks
+- `references/provider-postflight.en.md` — external providers, monitoring, Research, Visualize/Miro
+- `references/framework-upgrade.en.md` — upgrade mode for existing projects
 
 ---
 
@@ -39,7 +41,7 @@ Bootstrap v3.0 — I'll walk you through 4 blocks:
   Block A — Project core          (9 questions, ~4 min)
   Block B — Existing infra        (5 questions, ~3 min)
   Block C — Docs architecture     (proposal + review)
-  Block D — Optional components   (4 yes/no at the end)
+  Block D — Optional components   (targeted yes/no questions at the end)
 
 After that I'll scaffold the project. Total ~15 min.
 Ready? [yes / later]
@@ -249,6 +251,35 @@ Warning: {PROJECT_PATH} already contains files.
 **Remember:** `EXISTING_INFRA = {...}` for the following phases.
 
 Phase 2 checkpoint: print a summary.
+
+### B.6 Prepare provider and platform postflight (BOO-58)
+
+Read `references/provider-postflight.en.md`. Bootstrap must separate local skill installation from external provider verification.
+
+Additional questions after Block B:
+
+```
+Is there an existing monitoring/logging platform?
+  a) Yes, use the central platform
+  b) No, prepare a project-owned monitoring setup
+  c) Not clear yet, document as an architecture question
+```
+
+```
+Should the Research skill be installed or connected?
+  Source: Framework / companion / globally installed / do not install
+  Provider: Perplexity MCP / Perplexity API / OpenRouter / no provider
+```
+
+```
+Visualization:
+  - Install visualize skill?
+  - Use Miro as diagram target?
+  - Is Miro MCP available and should it be checked?
+  - Fallback: Excalidraw / Mermaid / none?
+```
+
+**Remember:** `PROVIDER_POSTFLIGHT = {...}` for the closing report and optional `docs/MONITORING.md`.
 
 ---
 
@@ -1081,7 +1112,7 @@ Activate a self-hosted runner for performance tests?
 On `yes`: pure HANDBUCH pointers (no auto-setup, because VPS installation is operator territory). `migrate_boo_46()` patches `perf.yml` later (`runs-on: ubuntu-latest` -> `self-hosted`, threshold 1.20 -> 1.10) once the operator has installed the runner.
 On `no`: no entry in `environment.json`, no perf.yml patch.
 
-Phase 6 checkpoint: optional-components status (D.1–D.6).
+Phase 6 checkpoint: optional-components status including provider postflight and intentionally deselected options.
 
 ---
 
@@ -1130,13 +1161,32 @@ The closing report uses one postflight status model:
 | Block C | Docs architecture (3 layers + hub) | OK/SKIP/WARN | report the Obsidian layer separately |
 | Phase 4 | Base structure (files, git, linting, hooks, Backlog Record) | OK/WARN/FAIL | baseline artifacts must not be missing |
 | Phase 5 | Skills installed ({skill_count}) | OK/WARN/FAIL | name target path `.claude/skills` and/or `.codex/skills` |
-| Block D | Optional components | OK/SKIP/WARN/FAIL | list every option D.1-D.6 separately |
+| Block D | Optional components | OK/SKIP/WARN/FAIL | list every selected option separately |
 | Phase 7 | SecondBrain + registry + final commit | OK/SKIP/WARN/FAIL | verify external providers separately |
 
 Mandatory closing checks:
 - Do not write secrets into repo files, chat, `.env.example`, logs, or the closing report.
 - Verify external providers separately and do not mark them `OK` just because local files exist: GitHub, Linear, Jira, Azure DevOps, Planner, SonarQube, Grafana, Telegram, Obsidian sync.
+- Print the provider postflight matrix from `references/provider-postflight.en.md`: GitHub, backlog, Research, Visualize/Miro, Monitoring, Obsidian.
 - Document the upgrade principle: existing skills/artifacts remain; migrations add missing baseline and tighten gates, they do not delete project-specific customizations without explicit operator approval.
+
+### 7.4a Upgrade mode for existing projects (BOO-60)
+
+If Bootstrap runs in a project with an existing framework installation, **do not bootstrap from scratch**. Read `references/framework-upgrade.en.md` and ask:
+
+```
+Existing framework installation detected. Which upgrade mode?
+  a) inspect — show differences only, write no files
+  b) apply-safe — add only new files/missing sections
+  c) apply-with-confirmation — confirm potentially overwriting changes one by one
+```
+
+Rules:
+- `inspect` writes no project files.
+- `apply-safe` overwrites no existing content.
+- `apply-with-confirmation` requires operator approval per risky file.
+- `.env`, secrets, local reports, and session files are never changed.
+- The upgrade report is produced as closing output and can optionally be stored under `journal/reports/framework-upgrade/YYYY-MM-DD.md`.
 
 ### 7.5 VS Code extensions (optional, based on STACK_CHOICE)
 

@@ -54,6 +54,18 @@ claude mcp add --scope user claude_ai_Miro <connection-details>
 1. Auf [miro.com](https://miro.com) ein neues leeres Board erstellen
 2. Board-URL notieren (Format: `https://miro.com/app/board/uXXXXXXX=`)
 
+### Bootstrap-Postflight
+
+`visualize` ist nur dann `OK`, wenn Skill und Ziel getrennt bewertet wurden:
+
+| Teil | `OK` bedeutet |
+|---|---|
+| Visualize Skill | Skill ist installiert und in der Runtime verfuegbar |
+| Miro MCP | Miro-Konto, MCP-Verbindung und Board-Zugriff wurden verifiziert |
+| Fallback | Excalidraw oder Mermaid ist bewusst als Alternative gewaehlt |
+
+Wenn Miro nicht verifiziert ist, meldet Bootstrap `WARN` fuer Miro und dokumentiert den Fallback. Secrets, OAuth-Tokens oder private Session-Daten werden nie in Projektdateien geschrieben.
+
 ### 4. Architekturdokumentation
 
 Der Skill liest Markdown-Dateien. **Mindestanforderung:** Eine Datei die Architektur-Layer beschreibt.

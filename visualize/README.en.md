@@ -53,6 +53,18 @@ claude mcp add --scope user claude_ai_Miro <connection-details>
 1. Create a new empty board on [miro.com](https://miro.com)
 2. Note the board URL (format: `https://miro.com/app/board/uXXXXXXX=`)
 
+### Bootstrap postflight
+
+`visualize` is `OK` only when skill and target were evaluated separately:
+
+| Part | `OK` means |
+|---|---|
+| Visualize skill | Skill is installed and available in the runtime |
+| Miro MCP | Miro account, MCP connection, and board access were verified |
+| Fallback | Excalidraw or Mermaid was deliberately selected as an alternative |
+
+If Miro is not verified, Bootstrap reports `WARN` for Miro and documents the fallback. Secrets, OAuth tokens, or private session data are never written into project files.
+
 ### 4. Architecture documentation
 
 The skill reads markdown files. **Minimum:** one file describing your architecture layers.
@@ -238,4 +250,3 @@ visualize/
 ---
 
 ---
-

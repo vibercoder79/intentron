@@ -131,6 +131,39 @@ Default: L1. Which level?
 
 **Details:** See `learning-loop.en.md` for the full specification.
 
+## D.6 — Research as companion or framework skill
+
+Research is optional and evaluated separately:
+
+- Skill source: included in the framework, companion from `claudecodeskills/research`, globally installed, or not used.
+- Provider: Perplexity MCP, Perplexity API, OpenRouter, or no provider.
+- Status: Only `OK` when skill source and provider verification were evaluated separately and positively.
+
+See `provider-postflight.en.md`.
+
+## D.7 — Visualize and Miro
+
+Visualization is optional. Bootstrap asks for:
+
+- `visualize` skill,
+- Miro as target,
+- Miro account,
+- Miro MCP,
+- connection test,
+- fallback: Excalidraw, Mermaid, or none.
+
+Without Miro verification, Miro is `WARN`, not `OK`. A deliberate Excalidraw or Mermaid fallback is `SKIP` for Miro and `OK` for the fallback.
+
+## D.8 — Monitoring/logging platform
+
+Monitoring is an architecture decision, not just a skill installation detail. Bootstrap distinguishes:
+
+- use central platform,
+- prepare a project-owned monitoring setup,
+- document as an open architecture question.
+
+The logging contract belongs in `docs/MONITORING.md` or a clearly marked governance/observability section.
+
 ## Finalization after Block D
 
 Skill summarizes optional components status:

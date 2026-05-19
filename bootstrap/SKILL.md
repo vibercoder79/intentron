@@ -25,6 +25,8 @@ Referenzen:
 - `references/skills-setup.md` — Skills aus GitHub ziehen
 - `references/global-registry-update.md` — SecondBrain-Integration
 - `references/hooks-setup.md` — Governance-Hooks
+- `references/provider-postflight.md` — externe Provider, Monitoring, Research, Visualize/Miro
+- `references/framework-upgrade.md` — Upgrade-Modus fuer bestehende Projekte
 
 ---
 
@@ -38,7 +40,7 @@ Bootstrap v3.0 — ich fuehre dich durch 4 Bloecke:
   Block A — Projekt-Kern           (9 Fragen,  ~4 min)
   Block B — Bestehende Infra       (5 Fragen,  ~3 min)
   Block C — Doku-Architektur       (Vorschlag + Review)
-  Block D — Optional-Komponenten   (4 Ja/Nein-Fragen am Ende)
+  Block D — Optional-Komponenten   (gezielte Ja/Nein-Fragen am Ende)
 
 Danach lege ich das Projekt an. Gesamt ~15 min.
 Bereit? [ja / spaeter]
@@ -248,6 +250,35 @@ Warnung: {PROJECT_PATH} enthaelt bereits Dateien.
 **Merken:** `EXISTING_INFRA = {...}` fuer weitere Phasen.
 
 Phase-2-Checkpoint: Zusammenfassung ausgeben.
+
+### B.6 Provider- und Plattform-Postflight vormerken (BOO-58)
+
+Lies `references/provider-postflight.md`. Der Bootstrap muss lokale Skill-Installation und externe Provider-Verifikation trennen.
+
+Zusaetzliche Fragen nach Block B:
+
+```
+Gibt es bereits eine Monitoring-/Logging-Plattform?
+  a) Ja, zentrale Plattform nutzen
+  b) Nein, Projekt soll eigene Monitoring-Loesung vorbereiten
+  c) Noch unklar, als Architekturfrage dokumentieren
+```
+
+```
+Soll der Research-Skill installiert oder angebunden werden?
+  Quelle: Framework / Companion / global installiert / nicht installieren
+  Provider: Perplexity MCP / Perplexity API / OpenRouter / kein Provider
+```
+
+```
+Visualisierung:
+  - visualize-Skill installieren?
+  - Miro als Diagramm-Ziel nutzen?
+  - Miro-MCP vorhanden und pruefen?
+  - Fallback: Excalidraw / Mermaid / keiner?
+```
+
+**Merken:** `PROVIDER_POSTFLIGHT = {...}` fuer Abschlussbericht und optional `docs/MONITORING.md`.
 
 ---
 
@@ -1080,7 +1111,7 @@ Self-Hosted-Runner fuer Performance-Tests aktivieren?
 Wenn `ja`: Reine HANDBUCH-Verweise (kein Auto-Setup, weil VPS-Installation Operator-Hoheit ist). `migrate_boo_46()` patcht spaeter `perf.yml` (`runs-on: ubuntu-latest` -> `self-hosted`, Threshold 1.20 -> 1.10) wenn Operator den Runner installiert hat.
 Wenn `nein`: kein Eintrag in `environment.json`, kein perf.yml-Patch.
 
-Phase-6-Checkpoint: Optional-Komponenten-Status (D.1–D.6).
+Phase-6-Checkpoint: Optional-Komponenten-Status inkl. Provider-Postflight und bewusst abgewaehlter Optionen.
 
 ---
 
@@ -1129,13 +1160,32 @@ Der Abschlussbericht nutzt ein einheitliches Postflight-Statusmodell:
 | Block C | Doku-Architektur (3 Schichten + Hub) | OK/SKIP/WARN | Obsidian-Schicht separat ausweisen |
 | Phase 4 | Grundstruktur (Dateien, Git, Linting, Hooks, Backlog-Record) | OK/WARN/FAIL | Baseline-Artefakte duerfen nicht fehlen |
 | Phase 5 | Skills installiert ({skill_count}) | OK/WARN/FAIL | Zielpfad `.claude/skills` und/oder `.codex/skills` nennen |
-| Block D | Optional-Komponenten | OK/SKIP/WARN/FAIL | jede Option D.1-D.6 einzeln listen |
+| Block D | Optional-Komponenten | OK/SKIP/WARN/FAIL | jede ausgewaehlte oder bewusst abgewaehlte Option einzeln listen |
 | Phase 7 | SecondBrain + Registry + Final-Commit | OK/SKIP/WARN/FAIL | externe Provider separat pruefen |
 
 Pflicht-Checks im Abschluss:
 - Keine Secrets in Repo-Dateien, Chat, `.env.example`, Logs oder Abschlussbericht schreiben.
 - Externe Provider separat pruefen und nicht als `OK` markieren, nur weil lokale Dateien existieren: GitHub, Linear, Jira, Azure DevOps, Planner, SonarQube, Grafana, Telegram, Obsidian-Sync.
+- Provider-Postflight-Matrix aus `references/provider-postflight.md` ausgeben: GitHub, Backlog, Research, Visualize/Miro, Monitoring, Obsidian.
 - Upgrade-Grundsatz dokumentieren: bestehende Skills/Artefakte bleiben erhalten; Migrationen ergaenzen fehlende Baseline und schaerfen Gates, sie loeschen keine projektspezifischen Anpassungen ohne explizite Operator-Freigabe.
+
+### 7.4a Upgrade-Modus fuer bestehende Projekte (BOO-60)
+
+Wenn Bootstrap in einem Projekt mit bestehender Framework-Installation laeuft, **nicht neu bootstrappen**. Lies `references/framework-upgrade.md` und frage:
+
+```
+Bestehende Framework-Installation erkannt. Welcher Upgrade-Modus?
+  a) inspect — nur Unterschiede zeigen, keine Dateien schreiben
+  b) apply-safe — nur neue Dateien/fehlende Sektionen additiv ergaenzen
+  c) apply-with-confirmation — potenziell ueberschreibende Aenderungen einzeln bestaetigen
+```
+
+Regeln:
+- `inspect` schreibt keine Projektdateien.
+- `apply-safe` ueberschreibt keine bestehenden Inhalte.
+- `apply-with-confirmation` braucht pro Risiko-Datei eine Operator-Freigabe.
+- `.env`, Secrets, lokale Reports und Session-Dateien werden nie veraendert.
+- Der Upgrade-Report wird als Abschlussausgabe erstellt und optional unter `journal/reports/framework-upgrade/YYYY-MM-DD.md` gespeichert.
 
 ### 7.5 VS Code Extensions (optional, basierend auf STACK_CHOICE)
 
