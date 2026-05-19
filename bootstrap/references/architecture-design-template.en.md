@@ -117,8 +117,13 @@ Answers "Why did we build X like this?" for new engineers and AI assistants.]
 | System architecture | `SYSTEM_ARCHITECTURE.md` | Components, data flow |
 | Component inventory | `COMPONENT_INVENTORY.md` | Detailed component list |
 | Governance | `GOVERNANCE.md` | Framework rules, ADRs |
+| Security contract | `SECURITY.md` | Security principle, change-type matrix, security validation, sensitive paths |
 | API inventory | `API_INVENTORY.md` | External APIs (must be updated!) |
 | Process catalog | `PROCESS_CATALOG.md` | How the system works |
+
+### Security reference model
+
+`ARCHITECTURE_DESIGN.md` is the lead document: it names Security as a quality dimension, records security/privacy boundaries, and links to `SECURITY.md`. `SECURITY.md` is the operational security contract and points to sub-artifacts such as `API_INVENTORY.md`, `.semgrep.yml`, `.codex/hooks.json`, `.claude/sensitive-paths.json`, `.codex/sensitive-paths.json`, threat models, and privacy/compliance documents.
 
 ---
 

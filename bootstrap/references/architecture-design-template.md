@@ -141,8 +141,13 @@ Beantwortet "Warum haben wir X so gebaut?" für neue Entwickler und KI-Assistent
 | System-Architektur | `SYSTEM_ARCHITECTURE.md` | Komponenten, Datenfluss |
 | Komponenten-Inventar | `COMPONENT_INVENTORY.md` | Detaillierte Komponentenliste |
 | Governance | `GOVERNANCE.md` | Framework-Regeln, ADRs |
+| Security-Vertrag | `SECURITY.md` | Security-Grundsatz, Change-Type-Matrix, Security Validation, sensitive Pfade |
 | API-Inventar | `API_INVENTORY.md` | Externe APIs (Update-Pflicht!) |
 | Prozess-Katalog | `PROCESS_CATALOG.md` | Wie das System arbeitet |
+
+### Security-Referenzmodell
+
+`ARCHITECTURE_DESIGN.md` ist das Lead-Dokument: Es nennt Security als Qualitaetsdimension, dokumentiert Security-/Privacy-Grenzen und verlinkt auf `SECURITY.md`. `SECURITY.md` ist der operative Security-Vertrag und verweist auf Unterartefakte wie `API_INVENTORY.md`, `.semgrep.yml`, `.codex/hooks.json`, `.claude/sensitive-paths.json`, `.codex/sensitive-paths.json`, Threat Models sowie Privacy-/Compliance-Unterlagen.
 
 ---
 
