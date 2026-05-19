@@ -29,3 +29,14 @@ Fuer Bug-Fixes, Refactorings und kleine Aenderungen. Weniger Overhead als Featur
 
 ### 5. Acceptance Criteria
 - Checkboxen, testbar
+
+### 6. Security Impact (PFLICHT)
+- Change-Type: `none | api | auth | data | dependency | ci | governance | external-provider`
+- Beruehrt der Fix sensible Pfade, externe Inputs, Secrets, Auth, Datenhaltung oder CI/Governance?
+- Welche Sektionen aus `SECURITY.md` muessen in `/implement` gelesen werden?
+- Falls kein Security-Impact: kurz begruenden.
+
+### 7. Security Validation (PFLICHT bei Code-, Security-, Tooling-, Dependency-, CI- oder Governance-Aenderungen)
+- Welche Checks muessen vor `Done` laufen?
+- Welche Evidenz gehoert in den Abschlusskommentar?
+- Welche Restrisiken bleiben bewusst akzeptiert?

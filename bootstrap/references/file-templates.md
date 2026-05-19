@@ -70,11 +70,11 @@ module.exports = { VERSION, DOC_FILES, CONFIG };
 
 ## Regeln (NIEMALS)
 
-1. **NIEMALS** Code ändern ohne Linear Issue
+1. **NIEMALS** Code ändern ohne Backlog-Record oder Adapter-Story
 2. **NIEMALS** Code ändern ohne Spec-File (`specs/{{PREFIX}}XXX.md`)
-3. **NIEMALS** Issue schließen ohne Git Push + Changelog
+3. **NIEMALS** Backlog-Record/Adapter-Story schließen ohne Git Push + Changelog
 4. **NIEMALS** API Keys im Chat — User trägt direkt in .env ein
-5. **NIEMALS** Issue ohne Labels anlegen
+5. **NIEMALS** Backlog-Record ohne Klassifikation/Labels/Tags anlegen
 6. **NIEMALS** `config.js` VERSION erhöhen ohne alle DOC_FILES zu bumpen
 7. **NIEMALS** Sub-Task direkt von Backlog → Done — immer zuerst "In Progress"
 8. **NIEMALS** neue Datei anlegen ohne Eintrag in `ARCHITECTURE_DESIGN.md §Referenzen` + `INDEX.md`

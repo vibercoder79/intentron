@@ -36,7 +36,7 @@ Inform the operator first, then start:
 ```
 Bootstrap v3.0 — I'll walk you through 4 blocks:
 
-  Block A — Project core          (7 questions, ~3 min)
+  Block A — Project core          (9 questions, ~4 min)
   Block B — Existing infra        (5 questions, ~3 min)
   Block C — Docs architecture     (proposal + review)
   Block D — Optional components   (4 yes/no at the end)
@@ -95,6 +95,26 @@ On `later`: no templates are scaffolded. The operator can catch up via `migrate_
 
 Remember `LIGHTHOUSE_CHOICE = yes | later` for Phase 4.
 
+### A.1c Target runtime / tool adapter (BOO-53/54)
+
+```
+Which AI runtime should the project primarily use?
+  a) Claude Code — AGENTS.md as optional Codex entry, CLAUDE.md is the active runtime file
+  b) Codex — AGENTS.md is the active entry, CLAUDE.md remains a compatibility bridge
+  c) Cross-tool — both entries active, CONVENTIONS.md is the hard adapter contract
+  d) unclear — scaffold the cross-tool baseline, tighten later in CONVENTIONS.md
+  Default: unclear
+```
+
+**Remember:** `RUNTIME_TARGET = claude-code | codex | cross-tool | unknown`
+
+Roles:
+- `AGENTS.md` = Codex entry with repo rules, sandbox/scope notes, and a pointer to `CONVENTIONS.md`.
+- `CLAUDE.md` = Claude Code entry and compatibility bridge for existing Claude workflows; it must not be the sole truth for tool-neutral rules.
+- `CONVENTIONS.md` = adapter contract: runtime, backlog adapter, governance mode, execution isolation, active gates, and postflight status.
+
+For `codex`, `cross-tool`, or `unknown`, always scaffold `AGENTS.md`. For `claude-code`, `AGENTS.md` may still be scaffolded as a portable Codex entry; skip it only on explicit operator request.
+
 ### A.2 Project identity (3 questions)
 
 ```
@@ -110,10 +130,30 @@ Remember `LIGHTHOUSE_CHOICE = yes | later` for Phase 4.
 5. Primary language for docs? (de / en, default: de)
 ```
 
+### A.3b Backlog adapter (BOO-54)
+
+```
+Which backlog system should be used as the primary adapter?
+  a) Linear
+  b) GitHub Issues
+  c) Jira
+  d) Azure DevOps Boards
+  e) Microsoft Planner
+  f) none — backlog record as Markdown/file only, no external tool
+  Default: none
+```
+
+**Remember:** `BACKLOG_ADAPTER = linear | github | jira | azure-devops | planner | none`
+
+Bootstrap creates a neutral **Backlog Record** as the contract shape. External tools are adapters onto it, not the framework's source:
+- Required fields: `id`, `title`, `status`, `priority`, `estimate`, `intent`, `acceptance_criteria`, `links`, `adapter`.
+- `id` follows the issue prefix (`{ISSUE_PREFIX}XXX`) even when the external tool has its own IDs.
+- Linear is a supported adapter, but not a prerequisite.
+
 ### A.4 Architecture dimensions + add-ons (1 question)
 
 ```
-6. Standard dimensions (always on): Reliability, Data Integrity, Security,
+7. Standard dimensions (always on): Reliability, Data Integrity, Security,
    Performance, Observability, Maintainability, Testability, Scalability, AI-Readiness.
 
    Activate additional add-ons (multi-select)?
@@ -130,7 +170,7 @@ Each activated add-on extends the architecture dimensions in `ARCHITECTURE_DESIG
 ### A.5 Governance intensity (BOO-51)
 
 ```
-7. Governance intensity for this project?
+8. Governance intensity for this project?
    a) Lite/Light — small experiments/scripts: core context, CONVENTIONS.md, spec-gate, basic linting; no heavy CI/audit/performance gates
    b) Standard — serious solo/client projects: security gates, CI lint/SAST, sensitive paths, learning loop L1
    c) Heavy — regulated/revenue-critical systems: coverage, performance, SonarQube, branch protection, audit trail, mandatory review
@@ -142,7 +182,7 @@ Each activated add-on extends the architecture dimensions in `ARCHITECTURE_DESIG
 ### A.6 Execution isolation / worktrees (BOO-52)
 
 ```
-8. Isolate parallel agent work?
+9. Isolate parallel agent work?
    a) none — linear work only, no parallel agents
    b) write-scope — parallel subagents only with clearly separated file/module scopes
    c) git-worktree — each parallel agent gets its own Git worktree/branch
@@ -184,11 +224,13 @@ Do you already have the following? (answer each individually)
    [a] Yes + absolute path
    [b] No, document in the repo only
 
-4. Backlog system?
+4. Backlog system / adapter?
    [a] Linear + team slug
-   [b] Microsoft 365 Planner
-   [c] GitHub Issues
-   [d] None
+   [b] GitHub Issues + repo
+   [c] Jira + project key
+   [d] Azure DevOps Boards + project
+   [e] Microsoft Planner + plan
+   [f] None / Markdown-only
 
 5. API keys for the project?
    [a] Already exist in .env
@@ -270,7 +312,7 @@ Phase 3 checkpoint: confirm the docs structure.
 ### 4.1 Directory structure
 
 ```bash
-mkdir -p {PROJECT_PATH}/{lib,agents,.claude/skills,.claude/hooks,specs,docs,journal,intents,pitch}
+mkdir -p {PROJECT_PATH}/{lib,agents,.claude/skills,.claude/hooks,.codex,specs,docs,journal,intents,pitch}
 ```
 
 ### 4.2 Initialize git repo (if not yet present)
@@ -291,8 +333,9 @@ From `references/file-templates.en.md`, populate with block A values:
 | File | Template section |
 |------|------------------|
 | `lib/config.js` | config.js |
-| `CLAUDE.md` | CLAUDE.md (with hub rule) |
-| `CONVENTIONS.md` | CONVENTIONS.md (project-local contract: governance mode + execution isolation) |
+| `AGENTS.md` | AGENTS.md (Codex entry; required for runtime `codex`/`cross-tool`/`unknown`) |
+| `CLAUDE.md` | CLAUDE.md (Claude Code entry + compatibility bridge, with hub rule) |
+| `CONVENTIONS.md` | CONVENTIONS.md (adapter contract: runtime, backlog adapter, governance mode, execution isolation, active gates) |
 | `SYSTEM_ARCHITECTURE.md` | SYSTEM_ARCHITECTURE.md |
 | `ARCHITECTURE_DESIGN.md` | ARCHITECTURE_DESIGN.md (hub with §9 References) |
 | `INDEX.md` | INDEX.md |
@@ -303,7 +346,9 @@ From `references/file-templates.en.md`, populate with block A values:
 
 > **AI architecture block (BOO-24):** the `ARCHITECTURE_DESIGN.md` template already contains the mandatory block "AI architecture principles + anti-patterns" in §2 (Design Rationale). Reference: `code-crash-framework/references/ki-architektur-prinzipien.md`. The block is populated automatically during template rendering — no manual step needed. `/architecture-review` (BOO-7) reactively checks all 8 checks on every story.
 
-> **CONVENTIONS.md (BOO-51/52):** this document is the project-local contract between all skills. `/ideation` reads `governance_mode` and `execution_isolation`, `/implement` uses it as the pre-flight for worktree/write-scope requirements, `/sprint-review` later checks drift against the selected governance intensity.
+> **CONVENTIONS.md (BOO-51/52/53/54):** this document is the project-local adapter contract between all skills and runtimes. `/ideation` reads `runtime_target`, `backlog_adapter`, `governance_mode`, and `execution_isolation`; `/implement` uses it as the pre-flight for worktree/write-scope requirements and active gates; `/sprint-review` later checks drift against the selected governance intensity.
+
+> **Baseline rule for governance modes (BOO-61):** Lite/Standard/Heavy must not destroy the skill or artifact baseline. Always scaffold at least `AGENTS.md`/`CLAUDE.md` according to runtime, `CONVENTIONS.md`, `ARCHITECTURE_DESIGN.md`, `GOVERNANCE.md`, `SECURITY.md`, `specs/TEMPLATE.md`, `journal/`, a Backlog Record template, and the selected skill baseline. The modes only control gate strictness, defaults, and required evidence.
 
 From `references/governance-template.en.md`:
 - `GOVERNANCE.md` with project name + prefix + activated add-ons
@@ -311,13 +356,13 @@ From `references/governance-template.en.md`:
 From `references/issue-writing-guidelines-template.md` (version 3.1, BOO-30):
 - `.claude/ISSUE_WRITING_GUIDELINES.md` with ISSUE_PREFIX
 - Contains since v3.1 the mandatory section `## Definition of Done (Required)` as a 5-item checklist (local gates, PR merge, required status checks, no "QA Failed", spec file update) — 1:1 from BOO-30
-- Operator note: Linear workflow states (Backlog → In Progress → In Review → QA Failed → Done → Cancelled) must be created manually per project in the Linear team once — see phase 4.4l
+- Operator note: workflow states (`Backlog`, `In Progress`, `In Review`, `QA Failed`, `Done`, `Cancelled`) are described in the neutral Backlog Record. External adapters map them onto Linear/GitHub/Jira/Azure DevOps/Planner — see phase 4.4l.
 
 Plus skeletons:
 - `DEVELOPMENT_PROCESS.md` — reference to GOVERNANCE.md
 - `SECURITY.md` — minimal skeleton (add-on sections: privacy/compliance if activated)
 
-> **CORE RULE in CLAUDE.md:** every new file MUST be registered immediately in `ARCHITECTURE_DESIGN.md §9 References` AND `INDEX.md` — before `git commit`.
+> **CORE RULE in the runtime entry (`AGENTS.md`/`CLAUDE.md`):** every new file MUST be registered immediately in `ARCHITECTURE_DESIGN.md §9 References` AND `INDEX.md` — before `git commit`.
 
 ### 4.4 Linting configuration
 
@@ -650,15 +695,17 @@ NEVER name real keys in chat.
 
 Wait for confirmation `done` before continuing.
 
-### 4.8 Set up backlog labels
+### 4.8 Set up backlog adapter
 
-If `B.4 == Linear`: the skill offers to create standard labels via Linear MCP:
+The skill first creates the neutral Backlog Record (`docs/backlog/record-template.md` or `specs/backlog-record-template.md`, depending on project layout). The external adapter is optional.
+
+If `BACKLOG_ADAPTER == linear`: the skill offers to create standard labels via Linear MCP:
 - `architecture`, `bug`, `feature`, `refactor`, `docs`, `infra`
 - Plus add-on labels: `privacy` (if Privacy activated), `compliance` (if Compliance activated)
 
-If `B.4 == M365 Planner` / `GitHub Issues`: the operator gets the label list to create manually.
+If `BACKLOG_ADAPTER == github | jira | azure-devops | planner`: the operator gets the label/field list and mapping table for manual or adapter-assisted setup.
 
-If `B.4 == None`: skip.
+If `BACKLOG_ADAPTER == none`: external tool setup is `SKIP`; neutral Backlog Records remain active.
 
 ### 4.9 First git commit
 
@@ -760,15 +807,15 @@ If `B.2 == no/c` (no GitHub wanted): skip phase 4.4k completely — branch prote
 
 > **Issue reference:** BOO-29. Source: `scripts/setup-branch-protection.sh` (v3.18.0, 2026-05-12). Migration for existing projects: `references/migration-checklist-v1-to-v2.en.md` §BOO-29.
 
-### 4.4l Linear workflow states + GitHub integration (BOO-30, manual operator step)
+### 4.4l Backlog workflow states + repo integration (BOO-30/54, manual operator step)
 
-**Run only when `B.4 == Linear`** (backlog tool is Linear). Skip for `M365 Planner` / `GitHub Issues` / `None`.
+**Run only for external backlog adapters.** For `BACKLOG_ADAPTER == none`, skip and document `SKIP` in the closing report.
 
 **Clear separation:**
 - **Automated (by /bootstrap):** Issue template is rendered in phase 4.3 with mandatory DoD section (see above). DoD checklist lives in `.claude/ISSUE_WRITING_GUIDELINES.md` v3.1 and is anchored in the issue template `.github/ISSUE_TEMPLATE/story.yml` via `migrate_boo_27()`.
-- **Manual per project (operator task):** Create Linear workflow states + activate the GitHub integration in Linear. The Linear API could automate this, but the effort/benefit ratio is poor (one-off setup per project, the Linear UI is well-guided) — deliberate decision.
+- **Manual/adapter per project:** Create workflow states and repo integration in the selected tool. The neutral Backlog Record remains the framework language; the external tool is only an adapter.
 
-**Operator instructions:** full step-by-step guide in HANDBOOK §8g Linear setup per project. The skill only lists the checkpoint here.
+**Operator instructions:** the skill lists the checkpoint and mapping here. Tool-specific details belong in adapter docs, not the framework contract.
 
 **Workflow states (1:1 from BOO-30):**
 
@@ -781,9 +828,20 @@ If `B.2 == no/c` (no GitHub wanted): skip phase 4.4k completely — branch prote
 | Done | PR merged, all checks green | auto on PR merge |
 | Cancelled | Discarded | manual |
 
-**GitHub integration (manual inside the Linear team):**
-1. Linear → Settings → Integrations → GitHub → Connect Repository → select the project repo.
-2. Auto-recognition kicks in immediately for:
+**Adapter mapping:**
+
+| Adapter | External ID | State mapping | Repo integration |
+|---|---|---|---|
+| Linear | Linear key optional, framework ID remains `{ISSUE_PREFIX}XXX` | Workflow states in the team | GitHub integration in Linear |
+| GitHub Issues | Issue number optional | Labels/Projects or issue status | native in repo |
+| Jira | Project key optional | Jira workflow | Development integration |
+| Azure DevOps | Work item ID optional | Boards state | Repos/Pipelines link |
+| Planner | Task ID optional | Buckets/labels | manual |
+| none | only `{ISSUE_PREFIX}XXX` | Markdown status | none |
+
+**Repo integration (if supported by the adapter):**
+1. Connect the adapter to the project repo.
+2. Auto-recognition kicks in for:
    - branch names with `{ISSUE_PREFIX}-XX` prefix (e.g. `BOO-30-feature-foo`)
    - PR titles with `{ISSUE_PREFIX}-XX`
    - commit messages with `{ISSUE_PREFIX}-XX`
@@ -791,11 +849,11 @@ If `B.2 == no/c` (no GitHub wanted): skip phase 4.4k completely — branch prote
 3. PR-open transitions issue → `In Review`, merge transitions issue → `Done`.
 
 **Operator checkpoint:**
-- [ ] 6 workflow states created in the Linear team (exact names: `Backlog`, `In Progress`, `In Review`, `QA Failed`, `Done`, `Cancelled`)
-- [ ] GitHub integration connected to the project repo
+- [ ] 6 workflow states created in the backlog adapter or justified as `SKIP` (exact names: `Backlog`, `In Progress`, `In Review`, `QA Failed`, `Done`, `Cancelled`)
+- [ ] Repo integration connected to the project repo or justified as `SKIP`
 - [ ] Test story with branch `{ISSUE_PREFIX}-XX-test` created — PR open transitions the issue to `In Review`
 
-> **Issue reference:** BOO-30. Source: `references/issue-writing-guidelines-template.md` v3.1 + HANDBOOK §8g. Migration for existing projects: `references/migration-checklist-v1-to-v2.en.md` §BOO-30 (issue-template extension is auto-applied, Linear setup remains manual).
+> **Issue reference:** BOO-30/54. Source: `references/issue-writing-guidelines-template.md` v3.1 + neutral Backlog Record. Migration for existing projects: `references/migration-checklist-v1-to-v2.en.md` §BOO-30 (issue-template extension is auto-applied, tool-adapter setup remains project-specific).
 
 ### Phase 4.10: Domain Deep Research (MANDATORY)
 
@@ -850,7 +908,10 @@ Phase 4 checkpoint: summary of files created.
 
 Read `references/skills-setup.en.md` for details.
 
-Skills are fetched from the official GitHub repo via `git clone` into a temp folder and copied into `{PROJECT_PATH}/.claude/skills/`.
+Skills are fetched from the official GitHub repo via `git clone` into a temp folder and copied according to `RUNTIME_TARGET`:
+- `claude-code` → `{PROJECT_PATH}/.claude/skills/`
+- `codex` → `{PROJECT_PATH}/.codex/skills/`
+- `cross-tool` / `unknown` → both target paths, identical skill revision
 
 ```bash
 # Temp folder for skill source
@@ -889,11 +950,15 @@ for skill in $SELECTED_SKILLS; do
   else
     SRC_PATH="$SKILL_SRC/$skill"
   fi
-  cp -R "$SRC_PATH" "{PROJECT_PATH}/.claude/skills/$skill"
+  # Derive target paths from RUNTIME_TARGET:
+  # claude-code => .claude/skills
+  # codex => .codex/skills
+  # cross-tool/unknown => both
+  cp -R "$SRC_PATH" "{PROJECT_PATH}/{TARGET_SKILLS_DIR}/$skill"
 done
 ```
 
-Result: all skills land **flat** in `.claude/skills/<skill>/` — the `code-crash-framework/` nesting only exists in the repo, not in the installation.
+Result: all skills land **flat** in `.claude/skills/<skill>/` and/or `.codex/skills/<skill>/` — the `code-crash-framework/` nesting only exists in the repo, not in the installation.
 
 ### Project-specific adjustments (generic, not trading-specific)
 
@@ -914,7 +979,7 @@ Phase 5 checkpoint: list the installed skills.
 
 Read `references/optional-components.en.md` for implementation details.
 
-> **Operator note (BOO-30):** Block D is the right place to finalize the manual Linear setup from phase 4.4l — create workflow states + activate the GitHub integration — before the first stories are produced via `/ideation`. Issue-template rendering itself is already automated in phase 4.3 (mandatory DoD section). Full operator guide: HANDBOOK §8g Linear setup per project.
+> **Operator note (BOO-30/54):** Block D is the right place to finalize the manual backlog adapter from phase 4.4l — create workflow states + activate repo integration — before the first stories are produced via `/ideation`. Issue-template rendering itself is already automated in phase 4.3 (mandatory DoD section). With `BACKLOG_ADAPTER=none`, the neutral Backlog Record remains the leading form.
 
 Ask each question individually with a clear recommendation and default:
 
@@ -943,17 +1008,17 @@ Recommended if an Obsidian vault is configured.
 
 On `yes`: render `lib/doc-sync.js` from `references/doc-sync-template.js` + mapping repo → vault.
 
-### D.3 Automation daemon (Linear webhook listener)
+### D.3 Automation daemon (backlog webhook listener)
 
 ```
 Automation daemon?
-(Fully automatic story execution without operator approval — Linear webhook triggers /implement)
+(Fully automatic story execution without operator approval — backlog adapter webhook triggers /implement)
 
-Only for advanced setups with Linear. Mind the security implications.
+Only for advanced setups with an external backlog adapter. Mind the security implications.
 [yes / no (default)]
 ```
 
-On `yes`: setup steps for Linear webhook + daemon.
+On `yes`: setup steps for the matching adapter webhook + daemon.
 
 ### D.4 Learning-loop level
 
@@ -1049,15 +1114,29 @@ git push  # only if B.2 == yes
 
 ### 7.4 Closing table
 
-| Phase | What | Status |
-|-------|------|--------|
-| Block A | Project core + stack + add-ons | done |
-| Block B | Existing infrastructure | done |
-| Block C | Docs architecture (3 layers + hub) | done |
-| Phase 4 | Base structure (files, git, linting, hooks, labels) | done |
-| Phase 5 | Skills installed ({skill_count}) | done |
-| Block D | Optional components | {D-status} |
-| Phase 7 | SecondBrain + registry + final commit | done |
+The closing report uses one postflight status model:
+
+| Status | Meaning |
+|--------|---------|
+| `OK` | created, verified, or consciously confirmed as active |
+| `WARN` | created, but with follow-up work/risk/missing external verification |
+| `SKIP` | intentionally not relevant or deselected by the operator |
+| `FAIL` | should have been set up, but failed or is blocked |
+
+| Phase | What | Status | Note |
+|-------|------|--------|------|
+| Block A | Project core + stack + runtime + add-ons | OK/WARN/FAIL | name `RUNTIME_TARGET`, `GOVERNANCE_MODE`, `EXECUTION_ISOLATION` |
+| Block B | Existing infrastructure | OK/WARN/FAIL | only reference existing paths/remotes, do not overwrite |
+| Block C | Docs architecture (3 layers + hub) | OK/SKIP/WARN | report the Obsidian layer separately |
+| Phase 4 | Base structure (files, git, linting, hooks, Backlog Record) | OK/WARN/FAIL | baseline artifacts must not be missing |
+| Phase 5 | Skills installed ({skill_count}) | OK/WARN/FAIL | name target path `.claude/skills` and/or `.codex/skills` |
+| Block D | Optional components | OK/SKIP/WARN/FAIL | list every option D.1-D.6 separately |
+| Phase 7 | SecondBrain + registry + final commit | OK/SKIP/WARN/FAIL | verify external providers separately |
+
+Mandatory closing checks:
+- Do not write secrets into repo files, chat, `.env.example`, logs, or the closing report.
+- Verify external providers separately and do not mark them `OK` just because local files exist: GitHub, Linear, Jira, Azure DevOps, Planner, SonarQube, Grafana, Telegram, Obsidian sync.
+- Document the upgrade principle: existing skills/artifacts remain; migrations add missing baseline and tighten gates, they do not delete project-specific customizations without explicit operator approval.
 
 ### 7.5 VS Code extensions (optional, based on STACK_CHOICE)
 
@@ -1079,8 +1158,8 @@ git push  # only if B.2 == yes
 Bootstrap done. Continue with:
 
   1. Install VS Code extensions (list above)
-  2. cd {PROJECT_PATH} && claude
-  3. /ideation — create your first story
+  2. Start runtime: Claude Code (`cd {PROJECT_PATH} && claude`) or Codex in the project path
+  3. /ideation or the matching Codex invocation — create your first story
   4. If learning loop active: run /sprint-review after 1–2 sprints
 ```
 
@@ -1091,7 +1170,7 @@ Bootstrap done. Continue with:
 | Problem | Solution |
 |---------|----------|
 | git push fails | Check SSH key: `ssh -T git@github.com` |
-| Linear API error | Check Linear API key in .env, validate team slug |
+| Backlog adapter error | Check adapter credentials/project key; with `none`, use only the local Backlog Record |
 | Obsidian path unreachable | Verify path with `ls`, check if iCloud sync is active |
 | Hook blocks commit | Create spec file from `specs/TEMPLATE.md`, fill agent pattern |
 | doc-version-sync blocks | Update all DOC_FILES to the new VERSION, then `git add` |

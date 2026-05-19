@@ -23,20 +23,20 @@
 
 ## 1. Overview
 
-This framework links four platforms into one end-to-end development lifecycle:
+This framework links project artifacts and optional tool adapters into one end-to-end development lifecycle:
 
 | Platform | Role |
 |----------|------|
-| **Linear** | Backlog, sprint planning, issue tracking — every work starts with an issue |
+| **Backlog adapter** | Backlog, sprint planning, story tracking — every work item starts with a Backlog Record or adapter entry |
 | **GitHub** | Code repository, versioning — no code without commit + push |
 | **Obsidian** | Documentation, change log, knowledge management — external knowledge base |
 | **Telegram** (optional) | Operator communication, alerts, system notifications |
 
 ### Core principles
 
-1. **No code without an issue.** Every change is authorized by a Linear issue.
-2. **No issue without structure.** Every story follows a defined template with mandatory sections.
-3. **No issue without a spec file.** Before every implementation: create `specs/{{ISSUE_PREFIX}}XXX.md` from `specs/TEMPLATE.md` + operator OK. ⛔ Git hook `spec-gate.sh` blocks commit without spec.
+1. **No code without a Backlog Record.** Every change is authorized by a neutral Backlog Record or its adapter entry.
+2. **No Backlog Record without structure.** Every story follows a defined template with mandatory sections.
+3. **No Backlog Record without a spec file.** Before every implementation: create `specs/{{ISSUE_PREFIX}}XXX.md` from `specs/TEMPLATE.md` + operator OK. ⛔ Hook `spec-gate.sh` blocks commit without spec.
 4. **No change without documentation.** Every code change triggers doc updates.
 5. **Single source of truth.** `config.js → VERSION` drives every version number centrally. ⛔ Git hook `doc-version-sync.sh` blocks VERSION bump without doc sync.
 6. **Automatic monitoring.** Self-healing agent checks every 15 min whether docs and code are in sync.
@@ -85,13 +85,13 @@ const DOC_FILES = {
 Every story follows this path:
 
 ```
-Idea → /ideation → Linear issue (with ACs + dependencies)
+Idea → /ideation → Backlog Record / adapter issue (with ACs + dependencies)
       → /backlog → prioritization
       → /implement → Spec file → code → commit → push
-      → Linear issue closed → changelog entry
+      → Backlog Record / adapter issue closed → changelog entry
 ```
 
-### Mandatory sections in every Linear issue
+### Mandatory sections in every Backlog Record / adapter issue
 
 - **Was / What:** technical description of what will be built
 - **Warum / Why:** business value or technical reason
@@ -143,12 +143,12 @@ See `references/self-healing-template.js` for the full implementation skeleton.
 
 Claude follows these rules across the entire framework — they are enforced by hooks where possible:
 
-1. **Never implement without a Linear issue** — every change must be traceable
-2. **Never close an issue without a changelog** — history must be complete
+1. **Never implement without a Backlog Record or adapter issue** — every change must be traceable
+2. **Never close a Backlog Record / adapter issue without a changelog** — history must be complete
 3. **Never change code without asking first** — human-in-the-loop for risk control
 4. **Never claim "done" without git push** — code must always be on remote
-5. **Never shorten an operator briefing in Linear** — original text is truth
-6. **Never create an issue without labels** — labels are essential for filtering
+5. **Never shorten an operator briefing when entering it into the backlog adapter** — original text is truth
+6. **Never create a Backlog Record without classification/labels/tags** — classification is essential for filtering
 7. **Never move sub-tasks directly to Done** — always through "In Progress" first
 8. **Never add an API integration without updating the API inventory**
 

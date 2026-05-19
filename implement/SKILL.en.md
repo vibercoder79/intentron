@@ -27,7 +27,8 @@ Systematically implement a user story from the Linear backlog. 8 steps + governa
 2. Read project-local `CONVENTIONS.md` if present. Extract `governance_mode` and `execution_isolation`. Fallback: `governance_mode: standard`, `execution_isolation: write-scope`.
 3. Extract paths from `paths.*` as needed (e.g. `paths.reports_local`, `paths.lessons_l3`, `paths.specs`, `paths.architecture_design`, `paths.conventions`).
 4. Before any tool invocation, check `tools_available.<tool>` (e.g. `tools_available.eslint`, `tools_available.semgrep`, `tools_available.tests`). If `false` or missing, the skill skips the call and notes it in the output.
-5. Missing-file fallback: assume the schema defaults (`journal/`, `journal/reports/local/`, `specs/`, `ARCHITECTURE_DESIGN.md`, `CONVENTIONS.md`) and add a note to the output: "Note: `.claude/environment.json` is missing — defaults active. Recommendation: re-run `/bootstrap` or create the file manually."
+5. Read `SECURITY.md` if present. If missing, warn and add a TODO to the result table for every security-relevant change.
+6. Missing-file fallback: assume the schema defaults (`journal/`, `journal/reports/local/`, `specs/`, `ARCHITECTURE_DESIGN.md`, `CONVENTIONS.md`, `SECURITY.md`) and add a note to the output: "Note: `.claude/environment.json` is missing — defaults active. Recommendation: re-run `/bootstrap` or create the file manually."
 
 ### Step 0b: Token-window pre-flight (BOO-40, soft)
 
@@ -166,9 +167,16 @@ See [references/governance-validation.en.md](references/governance-validation.en
    Is a dimension missing that the planned change affects?
 2. **Security checklist:** read the Security-by-Design section in the issue.
    Walk through the SECURITY.md checklist for the change type (new API? webhook? external input?).
-3. **Validate ADD (for features):** check the Architecture Design Document against current code.
+3. **Check Security Impact + Security Validation:** every story must contain a `## Security Impact` section. For code, security, tooling, dependency, CI, or governance changes, `## Security Validation` must also be filled. If either section is missing, STOP and point back to `/ideation` or manual remediation.
+4. **Load the security reference stack:** depending on change type, load the relevant references:
+   - `auth` / `api`: `SECURITY.md`, API inventory, sensitive paths, OWASP/API checklist if present
+   - `data`: `SECURITY.md`, data-flow/privacy section, schema/storage docs
+   - `dependency`: `SECURITY.md`, dependency/supply-chain rules, `.semgrep.yml`, manifest diff
+   - `ci` / `governance`: `SECURITY.md`, hook/CI rules, `CONVENTIONS.md`
+   - `none`: carry over the story rationale and run only the baseline secrets/logging check
+5. **Validate ADD (for features):** check the Architecture Design Document against current code.
    Do the listed files still exist? Are the integration points correct?
-4. **Missing artifacts:** if 8-dimensions, security section or ACs are missing:
+6. **Missing artifacts:** if 8-dimensions, security section, security validation or ACs are missing:
    - **Warn the operator:** "Issue PREFIX-XX is missing [section]. Should I add it retroactively?"
    - **Do NOT silently continue** — governance gaps must be visible
 
@@ -196,7 +204,7 @@ See [references/governance-validation.en.md](references/governance-validation.en
    d. **Ask the operator to confirm explicitly:**
       Output: `"Spec file created: specs/PREFIX-XXX.md — please review and confirm, then we continue."`
    e. **Wait for operator OK** — only then continue to step 4
-   f. Linear issue comment: link to the spec file
+   f. Backlog Record / adapter comment: link to the spec file
 
 4. **No exceptions** — even for small fixes, hotfixes, config changes.
    Only exception: pure doc commits without code changes.
@@ -289,9 +297,22 @@ Without explicit confirmation, the commit will not proceed.
 
 > **Without `review-ok` confirmation:** Step 6 is NOT reached. No exceptions, no auto-bypass.
 
-### Step 6: Post-implement validation
+### Step 6: Post-implement validation — Validate-Fix-Learn
 
 Validation BEFORE the issue is set to "Done". See [references/validation-checklist.en.md](references/validation-checklist.en.md)
+
+This step is a loop, not a one-shot check:
+
+```text
+Validate -> Interpret -> Decide -> Fix -> Re-Validate -> PASS/FAIL -> Learn
+```
+
+Rules:
+- Every failed gate run is interpreted before code is patched.
+- Fixes address identified causes, not just symptoms.
+- After each fix, the same gate must run again.
+- `Done` is allowed only when all blocking gates are green or an operator confirms a documented exception.
+- After PASS/FAIL, write a learning when a repeatable pattern appeared.
 
 **6-Prelude) Iteration-run setup — persistence directory for raw tool outputs (BOO-36)**
 
@@ -530,14 +551,21 @@ Step 2 — syntax & runtime:
 - What is safe? What was mitigated?
 - Open risks that were accepted?
 - For LOW-risk stories: "Security: no new attack vectors" is enough
+- Cross-check against `## Security Validation` from the story: every promised validation needs evidence or a documented exception.
+- Check whether `SECURITY.md`, `API_INVENTORY.md`, `.semgrep.yml`, `.claude/sensitive-paths.json`, `.codex/hooks.json`, `ARCHITECTURE_DESIGN.md`, or `CONVENTIONS.md` must be updated by the change.
 
 **6f) Result**
-- **PASS:** continue to step 7 (Linear → Done, change log, push)
+- **PASS:** continue to step 7 (Backlog Record / adapter → Done, change log, push)
 - **FAIL:** back to step 5, fix, re-validate
-- Document validation result as a comment in the Linear issue
+- Document validation result as a comment/result note in the Backlog Record or adapter issue
+
+**6g) Learn**
+- If a gate failed repeatedly, write a short lesson to the active learning loop (`journal/learnings.md`, L2, or L3 depending on `.learning-loop`).
+- If no learning loop is active: note `Learning: SKIP intentional — learning loop not enabled` in the closing report.
+- Lesson format: cause, fix tried, future prevention, affected gate/tool category.
 
 After successful validation:
-- Linear → Done + comment (incl. validation result)
+- Backlog Record / adapter → Done + comment/result note (incl. validation result)
 - Obsidian change log via `linear.writeChangeLog()`
 
 **6f-bis) Write meta.json (BOO-36)**
@@ -586,7 +614,7 @@ EOF
 ```
 
 **Field convention:**
-- `story_id`: Linear issue key (e.g. `BOO-36`)
+- `story_id`: Backlog Record / adapter issue key (e.g. `BOO-36`)
 - `started_at` / `completed_at`: ISO-8601 UTC (`date -u +%Y-%m-%dT%H:%M:%SZ`)
 - `iterations.<gate>`: number of iterations per gate, 0 if the gate was skipped
 - `final_status`: `passed` (all gates green) | `failed` (gate blocked without hitting the iteration limit) | `stopped_iteration_limit` (iteration 5 reached without green)
@@ -615,7 +643,7 @@ After completion ALWAYS print a summary table:
 | Tests/verification | ✅ detail |
 | Documentation | ✅ detail |
 | Git push | ✅ commit hash |
-| Linear → Done | ✅ |
+| Backlog Record / adapter → Done | ✅ |
 | Obsidian change log | ✅ |
 ```
 

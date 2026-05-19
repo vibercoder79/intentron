@@ -23,20 +23,20 @@
 
 ## 1. Uebersicht
 
-Dieses Framework verbindet vier Plattformen zu einem durchgaengigen Development Lifecycle:
+Dieses Framework verbindet Projektartefakte und optionale Tool-Adapter zu einem durchgaengigen Development Lifecycle:
 
 | Plattform | Rolle |
 |-----------|-------|
-| **Linear** | Backlog, Sprint Planning, Issue Tracking — jede Arbeit beginnt mit einem Issue |
+| **Backlog-Adapter** | Backlog, Sprint Planning, Story Tracking — jede Arbeit beginnt mit einem Backlog-Record oder Adapter-Eintrag |
 | **GitHub** | Code Repository, Versionierung — kein Code ohne Commit + Push |
 | **Obsidian** | Dokumentation, Change-Log, Wissensmanagement — externe Wissensbasis |
 | **Telegram** (optional) | Operator-Kommunikation, Alerts, System-Notifications |
 
 ### Kernprinzipien
 
-1. **Kein Code ohne Issue.** Jede Aenderung wird durch ein Linear-Issue autorisiert.
-2. **Kein Issue ohne Struktur.** Jede Story folgt einem definierten Template mit Pflicht-Sektionen.
-3. **Kein Issue ohne Spec-File.** Vor jeder Implementierung: `specs/{{ISSUE_PREFIX}}XXX.md` aus `specs/TEMPLATE.md` erstellen + Operator-OK. ⛔ Git Hook `spec-gate.sh` blockiert Commit ohne Spec.
+1. **Kein Code ohne Backlog-Record.** Jede Aenderung wird durch einen neutralen Backlog-Record oder dessen Adapter-Eintrag autorisiert.
+2. **Kein Backlog-Record ohne Struktur.** Jede Story folgt einem definierten Template mit Pflicht-Sektionen.
+3. **Kein Backlog-Record ohne Spec-File.** Vor jeder Implementierung: `specs/{{ISSUE_PREFIX}}XXX.md` aus `specs/TEMPLATE.md` erstellen + Operator-OK. ⛔ Hook `spec-gate.sh` blockiert Commit ohne Spec.
 4. **Keine Aenderung ohne Dokumentation.** Jede Code-Aenderung zieht Doku-Updates nach sich.
 5. **Single Source of Truth.** `config.js → VERSION` steuert alle Versions-Nummern zentral. ⛔ Git Hook `doc-version-sync.sh` blockiert VERSION-Bump ohne Doku-Sync.
 6. **Automatische Ueberwachung.** Self-Healing Agent prueft alle 15 Min, ob Doku und Code synchron sind.
@@ -247,7 +247,7 @@ Da dieses Setup oft ein **Ein-Personen-Dev-Team mit AI-Unterstuetzung** ist, gel
 ### 4.1 Der komplette Lifecycle
 
 ```
-Idee → /ideation → Linear Issue → /backlog → Priorisierung → /implement → Code + Doku → Git Push → Done
+Idee → /ideation → Backlog-Record/Adapter → /backlog → Priorisierung → /implement → Code + Doku → Git Push → Done
                                                                                ↑
                                                                     /architecture-review
                                                                     (ad-hoc oder bei Bedarf)
@@ -267,7 +267,7 @@ Jederzeit:  /research (fuer externe Recherchen)
 | 3 | **ADD erstellen** (Architecture Design Document) | Layer-Analyse, Komponenten, 8-Dimensionen-Bewertung, Risiken |
 | 4 | **Story entwerfen** (ADD + Template) | Draft mit allen Pflicht-Sektionen + ADD als Anhang |
 | 5 | **Draft praesentieren** ← HUMAN-IN-THE-LOOP | Operator prueft, gibt OK oder Aenderungen |
-| 6 | **Linear Issue erstellen** | Issue + ADD-Kommentar angelegt, betroffene Issues aktualisiert |
+| 6 | **Backlog-Record erstellen** | Story + ADD-Kommentar/Anhang angelegt, betroffene Records aktualisiert |
 
 ### 4.3 Implementierungs-Prozess (/implement)
 
@@ -275,13 +275,13 @@ Jederzeit:  /research (fuer externe Recherchen)
 
 | Schritt | Aktion | Details |
 |---------|--------|---------|
-| 1 | **Issue identifizieren** | Linear Issue laden, Description lesen, Pflicht-Sektionen pruefen |
+| 1 | **Backlog-Record identifizieren** | Record/Adapter-Eintrag laden, Beschreibung lesen, Pflicht-Sektionen pruefen |
 | 2 | **Abhaengigkeiten pruefen** | Benoetigt-Issues done? Beeinflusst-Issues notieren |
 | 3 | **Context sammeln** (parallel) | Betroffene Dateien, CLAUDE.md, SYSTEM_ARCHITECTURE.md, config.js |
 | 4 | **Spec + Agent-Team-Check + Approval** ← HUMAN-IN-THE-LOOP | Spec-File erstellen, `## Agent Team Setup` aus Issue lesen → Solo/Subagent/Team-Plan, Operator-Freigabe |
 | 5 | **Implementieren** | Code, Doku-Update, Change-Checklist, Git Commit + Push |
 | 6 | **Validation** | Syntax, Akzeptanzkriterien, Smoke Test → PASS/FAIL |
-| 7 | **Backlog aktualisieren** | Issue → Done + Kommentar, Obsidian Change-Log |
+| 7 | **Backlog aktualisieren** | Record/Adapter-Eintrag → Done + Kommentar/Ergebnisnotiz, Obsidian Change-Log |
 | 8 | **Ergebnis-Tabelle ausgeben** | Was wurde implementiert (Datei/Komponente), Status, Bemerkungen |
 | 9 | **Outcome-Check planen** | Linear-Kommentar: "⏰ Outcome-Check fällig {{+7 Tage}}: War {{METRIC_PRIMARY}} = {{METRIC_TARGET}} erreicht?" + Reminder in `journal/LEARNINGS.md` eintragen |
 
@@ -300,7 +300,7 @@ Nach Ablauf des Outcome-Check-Datums:
 
 ### 4.4 Automatischer Prozess (Daemon, optional)
 
-**Trigger:** Linear Issue auf "In Progress" → Webhook → Automation Queue → Daemon
+**Trigger:** Adapter-Story auf "In Progress" → Webhook/Automation → Queue → Daemon
 
 Der Daemon nutzt denselben Flow wie `/implement`, aber **ueberspringt Schritt 4** (Operator-Approval).
 
@@ -430,12 +430,12 @@ Spiegelt Quell-Dokumentation ins Obsidian Vault:
 
 | # | Regel | Begruendung |
 |---|-------|-------------|
-| 1 | **NIEMALS einen Plan umsetzen ohne Issue.** | Jede Arbeit muss trackbar sein |
-| 2 | **NIEMALS ein Issue schliessen ohne Change-Log.** | Aenderungshistorie muss lueckenlos sein |
+| 1 | **NIEMALS einen Plan umsetzen ohne Backlog-Record oder Adapter-Story.** | Jede Arbeit muss trackbar sein |
+| 2 | **NIEMALS einen Backlog-Record / eine Adapter-Story schliessen ohne Change-Log.** | Aenderungshistorie muss lueckenlos sein |
 | 3 | **NIEMALS Code aendern ohne vorherige Rueckfrage beim Operator.** | Human-in-the-Loop fuer Risiko-Kontrolle |
 | 4 | **NIEMALS eine Umsetzung als abgeschlossen melden ohne Git-Push.** | Code muss immer im Remote-Repository sein |
-| 5 | **NIEMALS ein Operator-Briefing kuerzen oder umformulieren beim Eintragen in Linear.** | Originaltext ist die Wahrheit |
-| 6 | **NIEMALS ein Issue ohne Labels anlegen.** | Labels sind essentiell fuer Filterung |
+| 5 | **NIEMALS ein Operator-Briefing kuerzen oder umformulieren beim Eintragen in den Backlog-Adapter.** | Originaltext ist die Wahrheit |
+| 6 | **NIEMALS einen Backlog-Record ohne Klassifikation/Labels/Tags anlegen.** | Klassifikation ist essentiell fuer Filterung |
 | 7 | **NIEMALS einen Sub-Task direkt von Backlog → Done setzen.** | IMMER zuerst "In Progress" |
 | 8 | **NIEMALS eine neue API-Integration ohne API-Inventar-Update.** | Alle externen Abhaengigkeiten muessen dokumentiert sein |
 
@@ -451,7 +451,7 @@ Skills sind codierte, wiederholbare Workflows, gespeichert unter `.claude/skills
 
 | Skill | Trigger | Output | HitL? |
 |-------|---------|--------|:-----:|
-| `/ideation` | "Ich hab eine Idee" | Linear Issue + ADD | Ja |
+| `/ideation` | "Ich hab eine Idee" | Backlog-Record / Adapter-Story + ADD | Ja |
 | `/implement` | "los", "Hol dir ISSUE-XX" | Code + Doku + Push | Ja |
 | `/backlog` | "Was steht an?" | Priorisierte Issue-Liste | Nein |
 | `/architecture-review` | "Architektur pruefen" | 8-Dimensionen-Report | Nein |

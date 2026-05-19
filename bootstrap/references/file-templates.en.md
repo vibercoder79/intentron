@@ -74,15 +74,15 @@ module.exports = { VERSION, DOC_FILES, CONFIG };
 
 ## Rules (NEVER)
 
-1. **NEVER** change code without a Linear issue
+1. **NEVER** change code without a Backlog Record or adapter story
 2. **NEVER** change code without a spec file (`specs/{{PREFIX}}XXX.md`)
-3. **NEVER** close an issue without git push + changelog
+3. **NEVER** close a Backlog Record / adapter story without git push + changelog
 4. **NEVER** put API keys in chat — user enters them directly into .env
-5. **NEVER** create an issue without labels
+5. **NEVER** create a Backlog Record without classification/labels/tags
 6. **NEVER** bump `config.js` VERSION without updating all DOC_FILES
 7. **NEVER** move a sub-task directly from Backlog → Done — always through "In Progress" first
 8. **NEVER** create a new file without entering it in `ARCHITECTURE_DESIGN.md §References` + `INDEX.md`
-9. **NEVER** close an issue without an integration-test check (new component covered?)
+9. **NEVER** close a Backlog Record / adapter story without an integration-test check (new component covered?)
 10. [add project-specific rules]
 
 ## Governance hooks
@@ -278,7 +278,7 @@ journal/reports/local/
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `story_id` | string | Linear issue key (e.g. `BOO-36`) |
+| `story_id` | string | Backlog Record / adapter issue key (e.g. `BOO-36`) |
 | `started_at` | ISO-8601 UTC | Run start (`date -u +%Y-%m-%dT%H:%M:%SZ`) |
 | `completed_at` | ISO-8601 UTC | Run end |
 | `iterations.eslint` | int | Number of ESLint iterations (0 if gate skipped) |

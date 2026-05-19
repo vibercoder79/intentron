@@ -688,13 +688,13 @@ Machine-enforced rules and reference lists.
 
 #### Group C — Specs + traceability
 
-The path Idea → Issue → Spec → Commit → Changelog.
+The path Idea → Backlog Record / adapter issue → Spec → Commit → Changelog.
 
 | Artifact | Purpose | Anatomy |
 |----------|---------|---------|
 | `specs/TEMPLATE.md` | Template for new specs | Why · What · Constraints · Current State · Tasks (T1, T2…) |
 | `specs/ISSUE-XX.md` | One spec per story (mandatory before commit) | Filled from TEMPLATE + `## Summary` filled by `/implement` step 8 |
-| Linear Issues | External story tracking | **5 required sections (Governance v2):** Schrader Prompt Components (Insight · Constraints · Success Criteria · Desired Outcome) + Definition of Done + Execution Mode. See `bootstrap/references/issue-writing-guidelines-template.md` |
+| Backlog Records / adapter issues | Story tracking in Linear, GitHub Issues, Jira, Planner, Azure DevOps, or Markdown | **5 required sections (Governance v2):** Schrader Prompt Components (Insight · Constraints · Success Criteria · Desired Outcome) + Definition of Done + Execution Mode. See `bootstrap/references/issue-writing-guidelines-template.md` |
 | Git Commits | Format: `T1: ISSUE-XX — description` | Gated by spec-gate.sh |
 | Obsidian Vault | Change logs + project memory | Auto-synced by `doc-sync.js` |
 
@@ -819,7 +819,7 @@ Existing projects: `bash <skill-repo>/bootstrap/scripts/migrate-to-v2.sh --issue
 ```
 
 Field convention:
-- `story_id` — Linear issue key
+- `story_id` — Backlog Record / adapter issue key
 - `started_at` / `completed_at` — ISO-8601 UTC
 - `iterations.<gate>` — number of iterations per gate, 0 if the gate was skipped
 - `final_status` — `passed` | `failed` | `stopped_iteration_limit`
@@ -876,7 +876,7 @@ This structure is not negotiable — the spec-gate hook enforces the file's exis
 The [Artifact Map](bootstrap/docs/artifact-map.en.png) above shows the full matrix visually.
 Quick summary:
 
-- **`/ideation`** writes: Linear issue, ADD section, spec placeholder. Reads: ARCHITECTURE_DESIGN.md, STRATEGY_LOG.md
+- **`/ideation`** writes: Backlog Record / adapter issue, ADD section, spec placeholder. Reads: ARCHITECTURE_DESIGN.md, STRATEGY_LOG.md
 - **`/implement`** writes: code, specs/ISSUE-XX.md (summary), CHANGELOG.md, LEARNINGS.md. Reads: spec, ARCHITECTURE_DESIGN.md, change-checklist
 - **`/architecture-review`** reads: ALL group-A docs + ADD + all ADRs. Writes: review report
 - **`/sprint-review`** reads: ALL group-A docs + LEARNINGS.md + Git log. Writes: audit report
@@ -952,7 +952,7 @@ On problems: Telegram alert (if set up) or log entry in `journal/`.
 The simplest yet most powerful rule:
 
 ```
-NEVER change code without a Linear issue
+NEVER change code without a Backlog Record or adapter issue
 NEVER commit code without a spec file (specs/ISSUE-ID.md)
 NEVER bypass the operator (= you) — always show, then act
 ```
@@ -1540,7 +1540,7 @@ Step 1 — Formalize the idea:
 Step 2 — Implement:
 /implement SHOP-XX
 → Claude shows plan → You approve → code is written
-→ Automatically: tests, git push, Linear issue closed
+→ Automatically: tests, git push, Backlog Record / adapter issue closed
 
 Step 3 — Verify:
 /integration-test
@@ -2670,6 +2670,12 @@ ls ~/.claude/skills/bootstrap/
 > **Warum nur den Bootstrap Skill?** Der Bootstrap Skill installiert in Phase 5 (via `git clone`)
 > automatisch alle weiteren Skills die du brauchst — keine Symlinks, lokal und portabel.
 
+> **Bootstrap Skill vs. Code-Crash Framework:** Der Bootstrap Skill ist der Installer und
+> Projekt-Initializer. Er legt Governance-Dateien, Skill-Kopien, Hooks und optionale Adapter im
+> Zielprojekt an. Das Code-Crash Framework ist der Vergleichsgegenstand und die Methodik: die
+> Regeln, Gates, Artefakte und Rollen, gegen die ein Projekt später geprüft wird. Anders gesagt:
+> Bootstrap bringt das Framework ins Projekt; das Framework selbst ist nicht "der Bootstrap".
+
 ### Schritt 4: Neues Projekt anlegen
 
 ```bash
@@ -2973,7 +2979,7 @@ Bei `nein` stoppt der Skill, der Operator faehrt `/architecture-review`, danach 
 5. Tests
 6. Git Commit + Push
 7. Deploy Health Check
-8. Linear Issue schließen
+8. Backlog-Record oder Adapter-Story schließen
 9. Changelog aktualisieren
 10. Ergebnis präsentieren
 
@@ -3197,7 +3203,7 @@ Der Pfad Idee → Issue → Spec → Commit → Changelog.
 |----------|-------|--------|
 | `specs/TEMPLATE.md` | Template fuer neue Specs | Why · What · Constraints · Current State · Tasks (T1, T2…) |
 | `specs/ISSUE-XX.md` | Eine Spec pro Story (Pflicht vor Commit) | Aus TEMPLATE gefuellt + `## Zusammenfassung` von `/implement` Schritt 8 |
-| Linear Issues | Externes Story-Tracking | Feature-Template oder Fix/Refactor-Template |
+| Backlog-Records / Adapter-Stories | Externes oder lokales Story-Tracking | Feature-Template oder Fix/Refactor-Template |
 | Git Commits | Format: `T1: ISSUE-XX — Beschreibung` | Durch spec-gate.sh gegated |
 | Obsidian Vault | Change-Logs + Projekt-Memory | Auto-sync durch `doc-sync.js` |
 
@@ -3322,7 +3328,7 @@ Bestands-Projekte: `bash <skill-repo>/bootstrap/scripts/migrate-to-v2.sh --issue
 ```
 
 Feld-Konvention:
-- `story_id` — Linear-Issue-Key
+- `story_id` — Backlog-Record- oder Adapter-Key
 - `started_at` / `completed_at` — ISO-8601 UTC
 - `iterations.<gate>` — Anzahl Iterationen pro Gate, 0 wenn Gate uebersprungen
 - `final_status` — `passed` | `failed` | `stopped_iteration_limit`
@@ -3379,7 +3385,7 @@ und `/implement` Schritt 3c validiert die Form bevor die Plan-Phase beginnt.
 Die [Artefakte-Landkarte](bootstrap/docs/artifact-map.png) oben zeigt die volle Matrix visuell.
 Kurzzusammenfassung:
 
-- **`/ideation`** schreibt: Linear-Issue, ADD-Sektion, Spec-Platzhalter. Liest: ARCHITECTURE_DESIGN.md, STRATEGY_LOG.md
+- **`/ideation`** schreibt: Backlog-Record / Adapter-Story, ADD-Sektion, Spec-Platzhalter. Liest: ARCHITECTURE_DESIGN.md, STRATEGY_LOG.md
 - **`/implement`** schreibt: Code, specs/ISSUE-XX.md (Zusammenfassung), CHANGELOG.md, LEARNINGS.md. Liest: Spec, ARCHITECTURE_DESIGN.md, Change-Checklist
 - **`/architecture-review`** liest: ALLE Gruppe-A-Dokumente + ADD + alle ADRs. Schreibt: Review-Report
 - **`/sprint-review`** liest: ALLE Gruppe-A-Dokumente + LEARNINGS.md + Git-Log. Schreibt: Audit-Report
@@ -3455,7 +3461,7 @@ Bei Problemen: Telegram-Alert (wenn eingerichtet) oder Log-Eintrag in `journal/`
 Die einfachste aber mächtigste Regel:
 
 ```
-NIEMALS Code ändern ohne Linear-Issue
+NIEMALS Code ändern ohne Backlog-Record oder Adapter-Story
 NIEMALS Code committen ohne Spec-File (specs/ISSUE-ID.md)
 NIEMALS Operator (= du) übergehen — immer erst zeigen dann tun
 ```
@@ -4036,6 +4042,14 @@ dass Code-Formatierung konsistent ist — egal wer am Projekt arbeitet.
 
 Die `code-crash-framework/CONVENTIONS.md` im Framework ist die Spezifikation. Die `CONVENTIONS.md` im Projekt ist die Anpassung fuer ein konkretes Repository: gewaehlter Modus, gewaehlte Isolation und aktive Gates.
 
+Codex-ready gelesen ist das Framework keine Blackbox und kein vollautonomer Developer-Agent,
+sondern eine sequenzielle Engineering-Pipeline mit Quality-Gates. Jede Story laeuft durch eine
+kontrollierte Kette aus Intent, Backlog-Record, Spec, Implementierung, lokalen Checks,
+Remote-Checks, Review und Ergebnis-Dokumentation. Subagents sind darin spezialisierte
+Ausfuehrungshelfer mit begrenztem Auftrag und Write-Scope; sie ersetzen nicht den Story-Vertrag
+und duerfen Quality-Gates nicht umgehen. Codex, Claude, Cursor oder lokale LLMs sind Adapter auf
+diesen Vertrag, nicht die Governance selbst.
+
 | Frage | Antwort in `CONVENTIONS.md` |
 |---|---|
 | Wie viel Governance braucht dieses Projekt? | `governance_mode` |
@@ -4043,6 +4057,22 @@ Die `code-crash-framework/CONVENTIONS.md` im Framework ist die Spezifikation. Di
 | Brauchen wir Git Worktrees? | `git-worktree` in der Isolation-Strategie |
 | Welche Gates sind aktiv? | Gate-Tabelle |
 | Ist das Framework selbst autonom? | nein: es ist eine sequenzielle Engineering-Pipeline mit Quality-Gates |
+
+### Backlog-Record und Tool-Adapter
+
+Das Framework spricht absichtlich von einem **Backlog-Record**, nicht zwingend von einem
+Linear-Issue. Ein Backlog-Record ist der neutrale Story-Vertrag: ID/Prefix, Intent, Kontext,
+Akzeptanzkriterien, Definition of Done, `execution_mode`, `execution_isolation`, `write_scopes`,
+Risiken und Referenzen auf Specs oder ADRs. Linear ist der empfohlene Adapter, weil Workflow,
+Labels, GitHub-Integration und API gut passen. GitHub Issues, Microsoft Planner oder ein
+Markdown-Backlog koennen denselben Record aber ebenfalls tragen, solange die Pflichtfelder und
+Gates erhalten bleiben.
+
+Die Adapter-Regel lautet: Das Tool darf anders aussehen, der Record nicht. Wenn ein Adapter ein
+Feld nicht nativ kennt, wird es im Body, Frontmatter oder einer verlinkten Spec abgelegt. Skills
+lesen zuerst den neutralen Record und uebersetzen erst danach in Linear-, GitHub- oder
+Markdown-spezifische Aktionen. Deshalb ist "kein Linear" kein Framework-Bruch; "kein
+Backlog-Record" ist einer.
 
 ### Governance-Modi: lite, standard, heavy
 
@@ -4075,6 +4105,21 @@ Der Modus ist kein Reifegrad-Abzeichen, sondern eine Kostenentscheidung. Zu weni
 
 Anders gesagt: `lite` ist der Modus fuer "ich will am Wochenende schnell etwas bauen". Er behaelt die Wirbelsaeule des Frameworks: Kontext, Konvention, Spec, Basis-Gates. Er laesst bewusst die teuren Teile weg: schwere CI, SonarQube, Branch Protection, Performance-Baselines, Audit-Trails und verpflichtende Deep Reviews. Alles davon kann spaeter nachgezogen werden, ohne das Framework zu wechseln.
 
+Was `lite` **nicht** weglassen darf: einen lesbaren Projektvertrag, einen Backlog-Record oder
+eine Spec pro nicht-trivialer Aenderung, Secrets-Hygiene, lokale Checks passend zum Stack und eine
+kurze Ergebnis-Dokumentation. `standard` laesst keine Kern-Gates weg, sondern macht sie
+produktfaehig: Issue-Qualitaet, Architektur-/Security-Baseline, CI und Sprint-Review werden zum
+Normalfall. `heavy` laesst ebenfalls nichts weg; es fuegt Nachweislast hinzu: Audit-Trail,
+Pflicht-Reviews, Coverage-/Performance-Gates, Branch Protection und Compliance-Evidenz.
+
+Kurzform:
+
+| Modus | Wird bewusst weggelassen | Wird nicht weggelassen |
+|---|---|---|
+| `lite` | schwere CI, SonarQube, Branch Protection, Performance-Baselines, Audit-Trails, verpflichtende Deep Reviews | Projektvertrag, Backlog-Record, Spec, Secrets-Hygiene, lokale Basis-Gates, Ergebnisnotiz |
+| `standard` | regulatorische Nachweislast, verpflichtende Worktrees, volle Audit-Routinen, L2/L3-Learning als Pflicht | Issue-/Spec-Gates, Security-Basis, Lint/Test, CI wo vorhanden, Sprint-Review |
+| `heavy` | nichts aus `standard`; nur bewusst irrelevante Add-ons werden nicht aktiviert | alle Standard-Gates plus Review-, Audit-, Security-, Compliance- und Produktionsnachweise |
+
 ![Governance-Modi — Lite Standard Heavy](docs/governance-modes.png)
 
 *Gleiches Framework, anderes Reibungsbudget. Lite behaelt die Wirbelsaeule, Standard ergaenzt produktfaehige Gates, Heavy ergaenzt Produktions- und Audit-Nachweise. ([Excalidraw-Quelle](docs/governance-modes.excalidraw))*
@@ -4091,7 +4136,14 @@ Anders gesagt: `lite` ist der Modus fuer "ich will am Wochenende schnell etwas b
 
 Hier werden Worktrees im Framework verankert. Sie sind nicht fuer jede Story noetig. Sie werden Pflicht, wenn das Framework agentisch genutzt wird: ein Developer-Agent bekommt Backlog/Kontext und laesst mehrere Spuren parallel arbeiten. Fuer normale sequenzielle Arbeit reichen Spec-Gate und Write-Scopes. Fuer echte agentische Ausfuehrung verhindern Worktrees, dass parallele Agenten sich gegenseitig ueberschreiben, und geben dem Integration Owner einen sauberen Merge-Punkt.
 
-Codex-Hinweis: Codex darf die Story trotzdem intern in Plan, Taskliste und Sandbox-Schritte zerlegen. Das ist kein Governance-Verstoss. Die Grenze liegt beim Schreibverhalten: `linear` bedeutet eine sequenzielle Schreibspur, `sub-agents` bedeutet begrenzte Helfer-Spuren, und `agentic` bedeutet isolierte Worktree-Spuren. Das optionale Story-Feld `codex_execution_hint` kann `single-agent`, `parallel-workers` oder `worktree-required` empfehlen, ueberschreibt aber niemals `execution_mode`, `execution_isolation`, `write_scopes` oder die Gates.
+Codex-Hinweis: Codex darf die Story trotzdem intern in Plan, Taskliste und Sandbox-Schritte
+zerlegen. Das ist kein Governance-Verstoss. Die Grenze liegt beim Schreibverhalten: `linear`
+bedeutet eine sequenzielle Schreibspur, `sub-agents` bedeutet begrenzte Helfer-Spuren, und
+`agentic` bedeutet isolierte Worktree-Spuren. Subagents sind keine Freifahrtscheine fuer
+vollautonome Entwicklung; sie bekommen Rolle, Kontext, konkrete Aufgabe, erlaubte Dateien und
+Rueckgabeformat. Das optionale Story-Feld `codex_execution_hint` kann `single-agent`,
+`parallel-workers` oder `worktree-required` empfehlen, ueberschreibt aber niemals
+`execution_mode`, `execution_isolation`, `write_scopes` oder die Gates.
 
 ![Execution-Isolation — none write-scope git-worktree](docs/execution-isolation-worktrees.png)
 
@@ -4178,7 +4230,7 @@ Du bist der Lead-Entwickler für MeinShop — einen E-Commerce für handgemachte
 
 ## Regeln
 
-- NIEMALS Code ändern ohne Linear-Issue
+- NIEMALS Code ändern ohne Backlog-Record oder Adapter-Story
 - NIEMALS Spec-File vergessen
 - [Deine eigenen Regeln]
 ```
@@ -4241,7 +4293,7 @@ Schritt 1 — Idee formalisieren:
 Schritt 2 — Implementieren:
 /implement SHOP-XX
 → Claude zeigt Plan → Du bestätigst → Code wird geschrieben
-→ Automatisch: Tests, Git Push, Linear Issue geschlossen
+→ Automatisch: Tests, Git Push, Backlog-Record/Adapter-Story geschlossen
 
 Schritt 3 — Prüfen:
 /integration-test
@@ -4401,6 +4453,24 @@ cd /tmp && rm -rf ki-skills
 /bootstrap --update
 ```
 
+### Upgrade-Pfad fuer bestehende Projekte
+
+Bestehende Projekte werden nicht blind ueberschrieben. Ein Framework-Upgrade folgt drei Stufen:
+
+1. **inspect:** aktuellen Projektvertrag lesen (`CONVENTIONS.md`, `CLAUDE.md`/`AGENTS.md`,
+   `.claude/environment.json`, Specs, Hooks, Workflows, Backlog-Adapter) und Abweichungen zum
+   neuen Framework-Stand als Diff oder Checkliste ausgeben.
+2. **apply-safe:** nur additive, idempotente Aenderungen automatisch anwenden, zum Beispiel neue
+   optionale Templates, fehlende Dokumentationsabschnitte, neue ignorierte Report-Ordner oder
+   Backlog-Felder ohne bestehende Inhalte zu veraendern.
+3. **apply-with-confirmation:** alles, was bestehende Regeln, Hooks, CI, Issue-Templates,
+   Branch-Protection, Governance-Modus, Adapter-Konfiguration oder Skill-Versionen veraendert,
+   braucht explizite Operator-Bestaetigung.
+
+Der Grundsatz ist: Framework-Versionen duerfen ein Projekt haerter oder klarer machen, aber nicht
+heimlich umdeuten. Wenn ein bestehendes Projekt bewusst von der neuen Empfehlung abweicht, wird die
+Abweichung dokumentiert statt ueberschrieben.
+
 ---
 
 ## Anhang A: Checkliste vor dem ersten Bootstrap
@@ -4451,7 +4521,9 @@ BOOTSTRAP SKILL:
 | **SSoT** | Single Source of Truth — eine einzige Quelle für eine Information |
 | **Governance** | Regeln und Prozesse die sicherstellen dass ein System gesund bleibt |
 | **Spec** | Spec-File — kurzes Dokument das beschreibt was und warum gebaut wird |
-| **Issue** | Eine Aufgabe/Story in Linear |
+| **Backlog-Record** | Tool-neutraler Story-Vertrag mit Intent, ACs, DoD, Modus, Isolation, Write-Scopes und Referenzen |
+| **Issue** | Adapter-spezifische Darstellung eines Backlog-Records, oft in Linear oder GitHub Issues |
+| **Linear-Adapter** | Empfohlener Backlog-Adapter; speichert und synchronisiert den neutralen Backlog-Record in Linear |
 | **Git Hook** | Automatischer Check der bei Git-Befehlen ausgeführt wird |
 | **Self-Healing** | System das Probleme selbst erkennt und (wenn möglich) behebt |
 | **Daemon** | Ein Prozess der dauerhaft im Hintergrund läuft |
@@ -4882,6 +4954,12 @@ Das ist was jede Sektion dieses Handbuchs standardmaessig beschreibt.
 ### Codex (sekundaer, kompatibel)
 
 OpenAI Codex nutzt dasselbe **SKILL.md-Format** wie Claude Code. Die Methodologie ist uebertragbar; nur der Aufruf unterscheidet sich.
+
+Wichtig: Codex macht aus dem Framework keinen vollautonomen Developer-Agent. Codex ist ein
+Adapter, der den neutralen Story-Vertrag liest und in seine eigene Arbeitsweise uebersetzt. Die
+Framework-Logik bleibt sequenziell und gate-basiert: Backlog-Record → Spec → kontrollierte
+Umsetzung → Checks → Review → Ergebnisnotiz. Subagents oder parallele Worker sind nur
+spezialisierte Ausfuehrungshelfer innerhalb dieser Story.
 
 **Setup:**
 - Symlink oder Kopie der Skills: `ln -s ~/.claude/skills ~/.codex/skills` (oder einzelne Skills kopieren)

@@ -26,7 +26,8 @@ User Story aus dem Linear-Backlog systematisch umsetzen. 8 Schritte + Governance
 2. Lese `CONVENTIONS.md` (falls vorhanden) als projektlokalen Vertrag fuer `governance_mode` und `execution_isolation`. Fallback: `governance_mode=standard`, `execution_isolation=write-scope`.
 3. Bei Bedarf Pfade extrahieren aus `paths.*` (z.B. `paths.reports_local`, `paths.lessons_l3`, `paths.specs`, `paths.architecture_design`, `paths.conventions`).
 4. Bei Tool-Aufruf pruefen: ist Tool in `tools_available.<tool>` aktiv (z.B. `tools_available.eslint`, `tools_available.semgrep`, `tools_available.tests`)? Bei `false` oder fehlendem Eintrag: Skill ueberspringt den Aufruf und gibt einen Hinweis im Output.
-5. Fallback bei fehlender Datei: Standard-Pfade aus dem Schema annehmen (`journal/`, `journal/reports/local/`, `specs/`, `ARCHITECTURE_DESIGN.md`, `CONVENTIONS.md`) und im Output vermerken: "Hinweis: `.claude/environment.json` fehlt — Defaults aktiv. Empfehlung: `/bootstrap` re-rennen oder die Datei manuell anlegen."
+5. Lese `SECURITY.md` falls vorhanden. Bei fehlender Datei Warnung ausgeben und fuer jede Security-relevante Aenderung ein TODO in der Ergebnis-Tabelle notieren.
+6. Fallback bei fehlender Datei: Standard-Pfade aus dem Schema annehmen (`journal/`, `journal/reports/local/`, `specs/`, `ARCHITECTURE_DESIGN.md`, `CONVENTIONS.md`, `SECURITY.md`) und im Output vermerken: "Hinweis: `.claude/environment.json` fehlt — Defaults aktiv. Empfehlung: `/bootstrap` re-rennen oder die Datei manuell anlegen."
 
 ### Schritt 0b: Token-Window-Pre-Flight (BOO-40, weich)
 
@@ -213,9 +214,16 @@ Siehe [references/governance-validation.md](references/governance-validation.md)
    Fehlt eine Dimension die durch die geplante Aenderung betroffen ist?
 2. **Security-Checklist:** Security-by-Design Sektion im Issue lesen.
    SECURITY.md Checkliste fuer den Change-Type durchgehen (neue API? Webhook? externer Input?).
-3. **ADD validieren (bei Features):** Architecture Design Document gegen aktuellen Code pruefen.
+3. **Security Impact + Security Validation pruefen:** Jede Story muss eine Sektion `## Security Impact` enthalten. Bei Code-, Security-, Tooling-, Dependency-, CI- oder Governance-Aenderungen muss zusaetzlich `## Security Validation` befuellt sein. Fehlt eine der Sektionen, STOPP mit Hinweis auf `/ideation` oder manuelle Nachpflege.
+4. **Security-Referenzstack laden:** Je nach Change-Type die passenden Referenzen laden:
+   - `auth` / `api`: `SECURITY.md`, API-Inventar, sensitive-paths, OWASP/API-Checkliste falls im Projekt vorhanden
+   - `data`: `SECURITY.md`, Datenfluss-/Privacy-Sektion, Schema-/Storage-Doku
+   - `dependency`: `SECURITY.md`, Dependency-/Supply-Chain-Regeln, `.semgrep.yml`, Manifest-Diff
+   - `ci` / `governance`: `SECURITY.md`, Hook-/CI-Regeln, `CONVENTIONS.md`
+   - `none`: Begruendung aus der Story uebernehmen und nur Basis-Secret-/Logging-Check durchfuehren
+5. **ADD validieren (bei Features):** Architecture Design Document gegen aktuellen Code pruefen.
    Stimmen die genannten Dateien noch? Sind die Integrationspunkte korrekt?
-4. **Fehlende Artefakte:** Falls 8-Dimensionen, Security-Sektion oder ACs im Issue fehlen:
+6. **Fehlende Artefakte:** Falls 8-Dimensionen, Security-Sektion, Security-Validation oder ACs im Issue fehlen:
    - **Operator warnen:** "Issue CLAW-XX fehlt [Sektion]. Soll ich die Sektion nachtraeglich ergaenzen?"
    - **NICHT stillschweigend weitermachen** — Governance-Luecken muessen sichtbar sein
 
@@ -243,7 +251,7 @@ Siehe [references/governance-validation.md](references/governance-validation.md)
    d. **Operator explizit bestaetigen lassen:**
       Ausgabe: `"Spec-File erstellt: specs/CLAW-XXX.md — bitte prüfen und bestätigen, dann geht es weiter."`
    e. **Warten auf Operator-OK** — erst danach weiter zu Schritt 4
-   f. Linear Issue Kommentar: Link zum Spec-File
+   f. Backlog-Record-/Adapter-Kommentar: Link zum Spec-File
 
 4. **Keine Ausnahmen** — auch bei kleinen Fixes, Hotfixes, Config-Aenderungen.
    Einzige Ausnahme: reine Doku-Commits ohne Code-Aenderungen.
@@ -336,9 +344,22 @@ Ohne explizite Bestätigung wird der Commit nicht durchgeführt.
 
 > **Ohne `review-ok`-Bestätigung:** Schritt 6 wird NICHT erreicht. Keine Ausnahme, kein Auto-Bypass.
 
-### Schritt 6: Post-Implement Validation
+### Schritt 6: Post-Implement Validation — Validate-Fix-Learn
 
 Validierung BEVOR das Issue auf "Done" gesetzt wird. Siehe [references/validation-checklist.md](references/validation-checklist.md)
+
+Dieser Schritt ist eine Schleife, kein einmaliger Check:
+
+```text
+Validate -> Interpret -> Decide -> Fix -> Re-Validate -> PASS/FAIL -> Learn
+```
+
+Regeln:
+- Jeder fehlgeschlagene Gate-Lauf wird interpretiert, bevor Code gepatcht wird.
+- Fixes werden nur fuer erkannte Ursachen gemacht, nicht blind fuer Symptome.
+- Nach jedem Fix muss derselbe Gate erneut laufen.
+- `Done` ist erst erlaubt, wenn alle blockierenden Gates gruen sind oder ein Operator eine dokumentierte Ausnahme bestaetigt.
+- Nach PASS/FAIL wird ein Learning geschrieben, wenn ein wiederholbares Muster sichtbar wurde.
 
 **6-Prelude) Iteration-Run-Setup — Persistenz-Verzeichnis fuer raw Tool-Outputs (BOO-36)**
 
@@ -578,14 +599,21 @@ Schritt 2 — Syntax & Laufzeit:
 - Was ist sicher? Was wurde mitigiert?
 - Offene Risiken die akzeptiert wurden?
 - Bei LOW-Risk Stories genuegt: "Security: Keine neuen Angriffsvektoren"
+- Abgleich mit `## Security Validation` aus der Story: Jede versprochene Validierung braucht Evidenz oder eine dokumentierte Ausnahme.
+- Pruefen ob `SECURITY.md`, `API_INVENTORY.md`, `.semgrep.yml`, `.claude/sensitive-paths.json`, `.codex/hooks.json`, `ARCHITECTURE_DESIGN.md` oder `CONVENTIONS.md` durch die Aenderung aktualisiert werden muessen.
 
 **6f) Ergebnis**
-- **PASS:** Weiter zu Schritt 7 (Linear → Done, Change-Log, Push)
+- **PASS:** Weiter zu Schritt 7 (Backlog-Record/Adapter → Done, Change-Log, Push)
 - **FAIL:** Zurueck zu Schritt 5, Fix implementieren, erneut validieren
-- Validation-Ergebnis als Kommentar im Linear Issue dokumentieren
+- Validation-Ergebnis als Kommentar/Ergebnisnotiz im Backlog-Record oder Adapter dokumentieren
+
+**6g) Learn**
+- Wenn ein Gate mehrfach fehlschlug, eine knappe Lesson in den aktiven Learning-Loop schreiben (`journal/learnings.md`, L2 oder L3 je nach `.learning-loop`).
+- Wenn kein Learning-Loop aktiv ist: im Abschlussbericht notieren `Learning: SKIP bewusst — Learning-Loop nicht aktiviert`.
+- Lesson-Format: Ursache, erprobter Fix, kuenftige Vorbeugung, betroffene Gate-/Tool-Kategorie.
 
 Nach erfolgreicher Validation:
-- Linear → Done + Kommentar (inkl. Validation-Ergebnis)
+- Backlog-Record/Adapter → Done + Kommentar/Ergebnisnotiz (inkl. Validation-Ergebnis)
 - Obsidian Change-Log via `linear.writeChangeLog()`
 
 **6f-bis) meta.json schreiben (BOO-36)**

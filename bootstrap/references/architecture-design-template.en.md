@@ -93,6 +93,19 @@ Answers "Why did we build X like this?" for new engineers and AI assistants.]
 | 9 | **Cost Efficiency** | API costs calculated? Cheaper alternative? |
 | 10 | **Domain Quality** | Does it improve the core quality of the project? |
 
+### Context validation for this project
+
+> These questions must be answered during bootstrap and major architecture changes.
+> A blueprint is only valid when it matches the actual project context.
+
+| Question | Answer / project decision |
+|----------|---------------------------|
+| Which dimensions are truly critical for this project? | [fill in] |
+| Which dimensions are intentionally lightweight? | [fill in] |
+| Which external providers, data sources, or platforms shape the architecture? | [fill in] |
+| Which security/privacy boundaries must never be overwritten automatically? | [fill in] |
+| Which assumptions must be re-checked after the first real implementation run? | [fill in] |
+
 ---
 
 ## §6 References

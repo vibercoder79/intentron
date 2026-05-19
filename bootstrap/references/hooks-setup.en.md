@@ -1,7 +1,17 @@
-# Git Hook Templates — Governance Enforcement
+# Hook Templates — Governance Enforcement
 
 These hooks enforce the core governance rules at the machine level.
 Both hooks live under `.claude/hooks/` and are activated via Claude Code `settings.json`.
+
+Important: in the Code-Crash Framework, "hook" first means a **coding/runtime hook** of the active AI tool, not necessarily a native Git hook in `.git/hooks/`.
+
+| Layer | Purpose | Examples |
+|-------|---------|----------|
+| AI runtime hook | Blocks risky tool calls while work is happening | Claude Code `PreToolUse`, Codex `.codex/hooks.json` |
+| Local Git hook | Optional protection directly before commit/push | `.git/hooks/pre-commit`, `.git/hooks/commit-msg` |
+| CI gate | Independent proof on GitHub/GitLab/Azure | ESLint/Ruff, Semgrep, tests, coverage, Sonar |
+
+Bootstrap may optionally mirror rules into Git hooks, but the framework obligation lives in the project contract: `CONVENTIONS.md` describes active gates, runtime hooks enforce early, CI proves independently.
 
 ---
 

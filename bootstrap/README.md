@@ -2,7 +2,7 @@
 
 # Bootstrap Skill
 
-> Ein **portabler Claude Code Skill**, der ein vollständiges KI-gesteuertes Entwicklungs-Governance-Framework für jedes neue Projekt einrichtet — in 4 Interview-Blöcken (A-D) plus 7 Setup-Phasen, ohne externe Abhängigkeiten.
+> Ein **portabler Bootstrap-Skill** fuer Claude Code, Codex oder Cross-Tool-Setups, der ein vollstaendiges KI-gesteuertes Entwicklungs-Governance-Framework fuer jedes neue Projekt einrichtet — in 4 Interview-Bloecken (A-D) plus 7 Setup-Phasen, ohne externe Abhaengigkeiten.
 
 **Version 3.0 (April 2026)** — generisch, interview-freundlich, mit portablem Learning-Loop (L1/L2/L3). Kein Projekt-Typ-Lock-in, keine trading-spezifischen Altlasten mehr.
 **Grundlage:** Claude Code Best Practice Checkliste v10 (OWLIST GmbH, 2026) — Context Engineering, Global Settings, Kontextschutz und Agent-Patterns sind als integraler Bestandteil in den Bootstrap-Prozess eingeflossen.
@@ -24,7 +24,7 @@ Die meisten AI-Development-Frameworks sind entweder zu viel Automation (Black Bo
 | Stärke | Was das bedeutet |
 |--------|-----------------|
 | 🔒 **Governance-Enforcement durch Git Hooks** | `spec-gate.sh` blockiert jeden Commit ohne Spec-File. `doc-version-sync.sh` blockiert jeden Push bei Versions-Drift. Kein anderes AI-Framework erzwingt das maschinell. |
-| 🔗 **Vollständige Traceability** | Jede Änderung folgt dem Pfad: Idee → Linear Issue → Spec → Commit → Changelog. Lückenlos nachvollziehbar, auch Monate später. |
+| 🔗 **Vollständige Traceability** | Jede Änderung folgt dem Pfad: Idee → Backlog-Record/Adapter → Spec → Commit → Changelog. Lückenlos nachvollziehbar, auch Monate später. |
 | 🔄 **Self-Healing als Safety-Net** | Ein Cron-Agent prüft alle 15 Minuten: Versionen synchron? Dateien vorhanden? Daemons laufen? Und korrigiert automatisch — ohne menschliche Intervention. |
 | 👤 **Human-in-the-Loop konsequent erzwungen** | Kein Code-Change ohne Operator-Freigabe. Kein Issue ohne Spec. Kein Spec ohne Architekturdimensionen. Claude fragt — du entscheidest. |
 
@@ -76,7 +76,7 @@ Kein anderes Framework in diesem Vergleich hat das.
 
 Jede Änderung hinterlässt automatisch eine vollständige Spur:
 ```
-💡 Idee → /ideation → 📋 Linear Issue (4 Perspektiven + ACs)
+💡 Idee → /ideation → 📋 Backlog-Record/Adapter (4 Perspektiven + ACs)
 → specs/ISSUE-XX.md (Operator-Freigabe) → git commit "T1: ..."
 → CHANGELOG.md (auto) → Obsidian Vault (auto-sync) → Issue Done
 ```
@@ -113,13 +113,13 @@ Läuft auf Mac, VPS, Claude Code Desktop — überall gleich.
 - Langlebiges Projekt (>3 Monate) das wartbar bleiben muss
 - Produktion mit echten Business-Metriken (WinRate, Conversion, Latenz)
 - Compliance oder Audit-Anforderungen (vollständige Traceability benötigt)
-- Claude Code als primäres AI-Tool
+- Claude Code, Codex oder ein Cross-Tool-Setup als primaeres AI-Tool
 
 ⚠️ **Nicht ideal wenn:**
 - Kurzes Experiment oder Proof-of-Concept (<2 Wochen)
 - Großes Team (>10) mit eigener CI/CD-Pipeline (→ CrewAI oder AutoGen besser)
 - Maximale Ausgabequalität wichtiger als Governance (→ AutoGen Debate-Pattern)
-- Kein Linear-Account gewünscht (Ticket-System ist Kernvoraussetzung)
+- Gar keine Backlog-/Spec-Disziplin gewuenscht ist (ein externer Tracker ist optional, der neutrale Backlog-Record nicht)
 
 ---
 
@@ -130,12 +130,13 @@ Wenn du `/bootstrap` in Claude Code eingibst, führt er dich durch die Einrichtu
 | Was | Warum |
 |-----|-------|
 | **GOVERNANCE.md** | Blueprint für den KI-gesteuerten Entwicklungslebenszyklus — Regeln, Workflows, Qualitätsgates |
-| **CLAUDE.md** | Identitäts- und Regeldatei für Claude als KI-Operator |
+| **AGENTS.md / CLAUDE.md** | Runtime-Einstiege: Codex ueber AGENTS.md, Claude Code ueber CLAUDE.md, beide gebunden durch CONVENTIONS.md |
+| **CONVENTIONS.md** | Adapter-Vertrag fuer Runtime, Backlog-Adapter, Governance-Modus, Execution-Isolation und Gates |
 | **Self-Healing Agent** | Überwacht Dokumentversionen + Daemon-Gesundheit alle 15 Min (Cron) |
 | **Doc-Sync-Modul** | Hält alle Docs auf derselben Version, optional gespiegelt nach Obsidian |
 | **Issue-Schreibrichtlinien** | Strukturiertes Story-Format für KI + Mensch-Kollaboration |
 | **Skills-Installation** | Verknüpft ideation, implement, backlog, architecture-review und mehr |
-| **Linear + GitHub + Obsidian** | Verbindet deine Toolchain zu einem kohärenten Lebenszyklus |
+| **Backlog-Adapter + GitHub + Obsidian** | Verbindet Linear, GitHub Issues, Jira, Azure DevOps, Planner oder `none` zu einem kohaerenten Lebenszyklus |
 
 ---
 
@@ -143,11 +144,11 @@ Wenn du `/bootstrap` in Claude Code eingibst, führt er dich durch die Einrichtu
 
 Dieses Framework orientiert sich an den bewährten Entwicklungspraktiken führender Tech-Unternehmen wie **Google, Amazon und Meta** und bildet deren **7-stufigen Software Development Lifecycle (SDLC)** vollständig mit KI-unterstützten Skills ab.
 
-> **Kernprinzip:** Jede Entwicklungsphase — von der Idee bis zur Überwachung — wird durch einen dedizierten Claude Code Skill unterstützt. Claude Code ist der Operator, der diese Skills orchestriert und sicherstellt, dass Governance-Regeln in jeder Phase eingehalten werden.
+> **Kernprinzip:** Jede Entwicklungsphase — von der Idee bis zur Ueberwachung — wird durch einen dedizierten Skill unterstuetzt. Claude Code oder Codex kann der Operator sein; `CONVENTIONS.md` haelt die Runtime- und Adapter-Regeln zusammen.
 
 | # | Phase | Google/Amazon-Standard | Unser Äquivalent | Skill(s) | Status |
 |---|-------|------------------------|------------------|----------|--------|
-| 1 | **Anforderungen** | PRD, User Stories, Stakeholder Input | `/ideation` → Linear Issue (4 Perspektiven, ACs, Abhängigkeiten) | `/ideation` | ✅ Abgedeckt |
+| 1 | **Anforderungen** | PRD, User Stories, Stakeholder Input | `/ideation` → Backlog-Record/Adapter (4 Perspektiven, ACs, Abhängigkeiten) | `/ideation` | ✅ Abgedeckt |
 | 2 | **Design** | Design Doc, Architecture Review, ADRs | `/ideation` (8 Dimensionen) + Architecture Design Doc im Issue + `/architecture-review` | `/ideation`, `/architecture-review` | ✅ Abgedeckt |
 | 3 | **Planung** | Task Breakdown, Sprint Planning, Spec | `/implement` Schritt 4 → `specs/ISSUE-XX.md` (neu!) + `/backlog` für Priorisierung | `/implement`, `/backlog` | ✅ Abgedeckt |
 | 4 | **Build** | Code, Tests, CI Pipeline | `/implement` Schritte 5–6 → Tasks aus Spec (T1→Verify→Commit→T2...) | `/implement` | ✅ Abgedeckt |
@@ -159,7 +160,7 @@ Dieses Framework orientiert sich an den bewährten Entwicklungspraktiken führen
 
 ```mermaid
 flowchart LR
-    P1["1️⃣ Anforderungen\n/ideation\nLinear Issue"] --> P2["2️⃣ Design\n/ideation\n/architecture-review"]
+    P1["1️⃣ Anforderungen\n/ideation\nBacklog-Record"] --> P2["2️⃣ Design\n/ideation\n/architecture-review"]
     P2 --> P3["3️⃣ Planung\n/implement\n/backlog + Spec"]
     P3 --> P4["4️⃣ Build\n/implement\nT1→T2→... Commits"]
     P4 --> P5["5️⃣ Review\n/implement\nPost-Validation"]
@@ -173,11 +174,11 @@ flowchart LR
 ## Die Kernidee
 
 ```
-Idee → /ideation → Linear Issue → /backlog → /implement → Code + Docs → Git Push → Fertig
+Idee → /ideation → Backlog-Record/Adapter → /backlog → /implement → Code + Docs → Git Push → Fertig
 ```
 
 Jede Änderung ist:
-1. **Autorisiert** durch ein Linear-Issue (kein Code ohne Ticket)
+1. **Autorisiert** durch einen Backlog-Record oder Adapter-Eintrag (kein Code ohne nachvollziehbare Story)
 2. **Dokumentiert** im selben Commit (kein Code ohne Doku-Update)
 3. **Überwacht** durch den Self-Healing Agent (Versions-Drift in 15 Min erkannt)
 4. **Reproduzierbar**, weil jeder Workflow ein Skill ist
@@ -185,7 +186,7 @@ Jede Änderung ist:
 ```mermaid
 flowchart LR
     A["💡 Idee"] --> B["/ideation\nRecherche + Story"]
-    B --> C["📋 Linear Issue"]
+    B --> C["📋 Backlog-Record"]
     C --> D["/implement\n7-stufiger SDLC"]
     D --> E{"🔒 spec-gate.sh\nSpec vorhanden?"}
     E -->|"Kein Spec"| F["Erstelle\nspecs/ISSUE-XX.md"]
@@ -234,11 +235,12 @@ Keine Abhängigkeiten auf andere Dateien. Alle Templates sind in `references/` e
 
 ### Bereithalten — was Bootstrap dich im Interview fragt
 
-**Block A (Projekt-Kern, 7 Fragen):**
+**Block A (Projekt-Kern, 9 Fragen):**
 - Stack (Node.js / Frontend / Full-Stack / Python / Anderes)
 - Projektname + Ein-Satz-Beschreibung
 - Absoluter Pfad zum Projektverzeichnis
-- Backlog-Tool (`linear` / `github-issues` / `none`) + Issue-Präfix (z.B. `PROJ-`)
+- Ziel-Runtime (`claude-code` / `codex` / `cross-tool` / `unknown`)
+- Backlog-Adapter (`linear` / `github-issues` / `jira` / `azure-devops` / `planner` / `none`) + Issue-Praefix (z.B. `PROJ-`)
 - Startversion (z.B. `1.0.0`)
 - Architektur-Add-ons: Privacy / Cost / Signal / Compliance (beliebige Kombination, auch keine)
 
@@ -316,7 +318,7 @@ Der Bootstrap ist in **4 Interview-Bloecken (A-D)** plus **Execution-Phasen (4-7
 | Phase | Was passiert | Eingabe noetig? |
 |-------|-------------|----------------|
 | **Phase 0** — Briefing | Skill kuendigt den 4-Block-Flow an | Bestaetigung "bereit" |
-| **Block A** — Projekt-Kern | Stack + Name + Prefix + Version + Add-ons (Privacy, Cost, Signal, Compliance) | 7 Fragen |
+| **Block A** — Projekt-Kern | Stack + Name + Runtime + Backlog-Adapter + Prefix + Version + Add-ons (Privacy, Cost, Signal, Compliance) | 9 Fragen |
 | **Block B** — Bestehende Infrastruktur | GitHub/Obsidian/Backlog/Env — integriert in bestehenden Stand | 5 Fragen |
 | **Block C** — Doku-Architektur | 3-Schichten-Vorschlag (Story-Specs, Component-Docs, Architektur-Vorgaben) + Hub-Auto-Verlinkung | Bestaetigung / Anpassung |
 | **Phase 4** — Grundstruktur | Verzeichnisse, Git, Kerndateien, `.claudeignore`, Hooks, Component-Skelette | `.env`-Bestaetigung |
@@ -327,7 +329,7 @@ Der Bootstrap ist in **4 Interview-Bloecken (A-D)** plus **Execution-Phasen (4-7
 ```mermaid
 flowchart LR
     P0["📋 Phase 0\nBriefing\nFlow ankuendigen"]
-    BA["🅰️ Block A\nProjekt-Kern\nStack + 7 Fragen\n+ Add-ons"]
+    BA["🅰️ Block A\nProjekt-Kern\nStack + 9 Fragen\n+ Runtime/Adapter"]
     BB["🅱️ Block B\nBestehende Infra\nGitHub · Obsidian\nBacklog · Env"]
     BC["🇨 Block C\nDoku-Architektur\n3 Schichten + Hub"]
     P4["🏗️ Phase 4\nGrundstruktur\nDateien · Git · Hooks"]
@@ -348,12 +350,14 @@ flowchart LR
 
 Nach `/bootstrap` hat dein Projekt und deine globale Umgebung:
 
-### Global (einmalig — gilt für alle Projekte)
+### Global / Runtime (einmalig — gilt fuer alle Projekte)
 
 ```
-~/.claude/
-├── settings.json          ← autoMemoryEnabled + Agent Teams + Permissions
+~/.claude/                 ← Claude Code Runtime, falls aktiv
 └── CLAUDE.md              ← Modell-Routing, Agent-Strategie, Secrets-Policy
+
+~/.codex/                  ← Codex Runtime, falls aktiv
+└── AGENTS.md              ← Codex-Regeln und Adapter-Hinweise
 ```
 
 ### Im Projekt
@@ -366,7 +370,9 @@ mein-projekt/
 ├── agents/
 │   └── self-healing.js    ← Cron-Gesundheitsmonitor (alle 15 Min)
 │
-├── CLAUDE.md              ← Projekt-Identität, Regeln, Quick-Referenz
+├── AGENTS.md              ← Codex-Einstieg, Repo-Regeln, Scope-Hinweise
+├── CLAUDE.md              ← Claude-Code-Einstieg + Kompatibilitaetsbruecke
+├── CONVENTIONS.md         ← Runtime-/Backlog-/Governance-Adapter-Vertrag
 ├── CLAUDE.local.md        ← Persönliche Overrides (gitignored)
 ├── ARCHITECTURE_DESIGN.md ← Einstiegsdokument für Architekturentscheidungen
 ├── SYSTEM_ARCHITECTURE.md ← Komponenten, Datenfluss, externe Abhängigkeiten
@@ -390,6 +396,11 @@ mein-projekt/
 │   ├── STRATEGY_LOG.md    ← Pflichtlektüre vor /ideation — verhindert Wiederholungen
 │   └── LEARNINGS.md       ← Outcome-Tracking nach Issue-Close
 │
+├── .claude/ oder .codex/  ← je nach RUNTIME_TARGET, cross-tool nutzt beide
+│   └── skills/
+│       ├── ideation/
+│       ├── implement/
+│       └── backlog/
 └── .claude/
     ├── settings.json      ← Projekt-Permissions + Hooks (spec-gate, guard, format, Stop)
     ├── ISSUE_WRITING_GUIDELINES.md
@@ -413,11 +424,11 @@ mein-projekt/
 
 Claude folgt diesen Regeln im gesamten Framework:
 
-1. **Niemals ohne Linear-Issue implementieren** — jede Änderung muss nachverfolgbar sein
+1. **Niemals ohne Backlog-Record oder Adapter-Story implementieren** — jede Aenderung muss nachverfolgbar sein
 2. **Niemals ein Issue ohne Changelog schließen** — die Geschichte muss vollständig sein
 3. **Niemals Code ändern ohne vorherige Rückfrage** — Mensch-in-der-Schleife für Risikokontrolle
 4. **Niemals "fertig" behaupten ohne Git Push** — Code muss immer im Remote sein
-5. **Niemals ein Operator-Briefing in Linear kürzen** — Originaltext ist Wahrheit
+5. **Niemals ein Operator-Briefing im Backlog-Adapter kuerzen** — Originaltext ist Wahrheit
 6. **Niemals ein Issue ohne Labels anlegen** — Labels sind essenziell für die Filterung
 7. **Niemals Sub-Tasks direkt nach Done verschieben** — immer durch "In Progress" zuerst
 8. **Niemals eine API-Integration hinzufügen ohne das API-Inventar zu aktualisieren**
@@ -468,9 +479,9 @@ Dieser Bootstrap-Skill richtet dein Projekt für folgende Skills ein:
 
 | Skill | Auslöser | Zweck | SDLC Phase |
 |-------|---------|-------|------------|
-| `/ideation` | "Ich habe eine Idee" | Recherche → Architektur-Design → Linear Issue | 1, 2 |
+| `/ideation` | "Ich habe eine Idee" | Recherche → Architektur-Design → Backlog-Record/Adapter | 1, 2 |
 | `/implement` | "los", "starte ISSUE-XX" | 7-stufiger SDLC-Workflow mit Qualitätsgates | 3, 4, 5 |
-| `/backlog` | "was steht an" | Sprint-Planung + Abhängigkeitsanalyse | 3 |
+| `/backlog` | "was steht an" | Sprint-Planung + Abhaengigkeitsanalyse ueber neutralen Backlog-Record und Adapter | 3 |
 | `/architecture-review` | "Architektur prüfen" | 8-Dimensionen-Qualitätsbericht | 2 |
 | `/sprint-review` | "Sprint Review" | Quartals-Audit + Tech Debt | 5 |
 | `/research` | "recherchiere X" | 2-Tier: WebSearch + Perplexity Deep Research | 1, 2 |
@@ -543,6 +554,23 @@ Dieser Skill hat **keine externen Abhängigkeiten**:
 | Issue-Richtlinien | `references/issue-writing-guidelines-template.md` (eingebettet) |
 | Datei-Templates | `references/file-templates.md` (eingebettet) |
 
+### Runtime, Backlog und Governance-Modi
+
+Bootstrap fragt explizit nach der Ziel-Runtime:
+
+| Runtime | Einstieg | Rolle |
+|---------|----------|-------|
+| `claude-code` | `CLAUDE.md` | Claude Code ist primaer; `AGENTS.md` kann als Codex-Bruecke mitlaufen |
+| `codex` | `AGENTS.md` | Codex ist primaer; `CLAUDE.md` bleibt Kompatibilitaetsbruecke |
+| `cross-tool` | beide | beide Einstiege aktiv, `CONVENTIONS.md` ist der harte Vertrag |
+| `unknown` | beide | portable Baseline, spaeter schaerfen |
+
+Backlog ist adapter-neutral: Linear, GitHub Issues, Jira, Azure DevOps, Planner und `none` mappen auf denselben Backlog-Record. Linear ist unterstuetzt, aber keine Voraussetzung.
+
+Governance-Modi (`lite`, `standard`, `heavy`) steuern die Strenge der Gates und Nachweise. Sie duerfen keine Basis-Artefakte oder Skills entfernen: Runtime-Einstieg, `CONVENTIONS.md`, Hub-Doku, Spec-Template, `journal/`, Backlog-Record und Skill-Baseline bleiben immer vorhanden.
+
+Der Abschlussbericht nutzt `OK`, `WARN`, `SKIP`, `FAIL`. Externe Provider werden separat geprueft; lokale Dateien allein machen GitHub, Linear/Jira/Azure/Planner, SonarQube, Grafana, Telegram oder Obsidian-Sync nicht automatisch `OK`. Secrets duerfen nie in Chat, Repo, Logs oder Abschlussbericht landen.
+
 Den `bootstrap/` Ordner irgendwohin kopieren → es funktioniert sofort.
 
 ---
@@ -556,8 +584,8 @@ Den `bootstrap/` Ordner irgendwohin kopieren → es funktioniert sofort.
 | **Claude Code** | claude.ai/claude-code — der KI-Operator |
 | **Node.js** | für self-healing + doc-sync |
 | **GitHub Repository** | bereits angelegt (leer oder mit Code) |
-| **SSH-Zugang zu GitHub** | damit `git push` ohne Passwort funktioniert — **siehe unten** |
-| **Linear** Account | Issue-Tracking (Free Tier reicht) |
+| **SSH-Zugang zu GitHub** | falls ein GitHub-Remote genutzt und gepusht werden soll — **siehe unten** |
+| **Backlog-Entscheidung** | externer Adapter oder `none` fuer lokale Backlog-Records |
 
 ### SSH-Zugang zu GitHub einrichten
 

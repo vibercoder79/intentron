@@ -29,3 +29,14 @@ For bug fixes, refactors, and small changes. Less overhead than the feature temp
 
 ### 5. Acceptance criteria
 - Checkboxes, testable
+
+### 6. Security Impact (MANDATORY)
+- Change type: `none | api | auth | data | dependency | ci | governance | external-provider`
+- Does the fix touch sensitive paths, external inputs, secrets, auth, data storage, or CI/governance?
+- Which sections from `SECURITY.md` must `/implement` read?
+- If there is no security impact: briefly explain why.
+
+### 7. Security Validation (MANDATORY for code, security, tooling, dependency, CI, or governance changes)
+- Which checks must run before `Done`?
+- What evidence belongs in the closing comment?
+- Which residual risks remain knowingly accepted?
