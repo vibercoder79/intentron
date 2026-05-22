@@ -115,6 +115,7 @@ Set by `/ideation` step 5b (or manually for stories not created via AI tool):
 ```yaml
 ---
 story_id: {ISSUE-PREFIX}XXX
+change_type: api                           # none | api | auth | data | dependency | ci | governance | external-provider | workflow | config | infrastructure | content   (BOO-68)
 estimate: 3                                # Story points (1, 2, 3, 5, 8)
 token_estimate: 38000                      # Absolute tokens (BOO-39 heuristic output)
 execution_mode: sub-agents                 # linear | sub-agents | agentic
@@ -123,6 +124,8 @@ estimation_basis: |
   Prose: how the token estimate was derived
 ---
 ```
+
+`change_type` controls how `/implement` step 5.7 routes the quality gates. Non-code values (`workflow | config | infrastructure | content`) skip code gates explicitly and promote 6c/6d/6e to hard gates — see `implement/references/non-code-flow.md`.
 
 ### Skill frontmatter (`SKILL.md` in any skill)
 
@@ -554,6 +557,7 @@ Gesetzt von `/ideation` Schritt 5b (oder manuell fuer Stories, die nicht via KI-
 ```yaml
 ---
 story_id: {ISSUE-PREFIX}XXX
+change_type: api                           # none | api | auth | data | dependency | ci | governance | external-provider | workflow | config | infrastructure | content   (BOO-68)
 estimate: 3                                # Story Points (1, 2, 3, 5, 8)
 token_estimate: 38000                      # Absolute Tokens (BOO-39-Heuristik-Output)
 execution_mode: sub-agents                 # linear | sub-agents | agentic
@@ -562,6 +566,8 @@ estimation_basis: |
   Prosa: wie das Token-Estimate hergeleitet wurde
 ---
 ```
+
+`change_type` steuert, wie `/implement` Schritt 5.7 die Quality Gates routet. Non-Code-Werte (`workflow | config | infrastructure | content`) skippen die Code-Gates explizit und heben 6c/6d/6e auf Hard Gate — Details: `implement/references/non-code-flow.md`.
 
 ### Skill-Frontmatter (`SKILL.md` in jedem Skill)
 

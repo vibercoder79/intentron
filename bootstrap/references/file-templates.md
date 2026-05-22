@@ -3658,7 +3658,14 @@ Platzierung: `.claude/sensitive-paths.json` (im `.gitignore` NICHT — explizit 
     "**/*credential*",
     "**/*personal*",
     "**/*pii*",
-    "**/*gdpr*"
+    "**/*gdpr*",
+    "n8n/**",
+    "workflows/**/*.json",
+    "infra/**",
+    "**/*.tf",
+    "**/*.tfvars",
+    "config/production/**",
+    ".env.production"
   ],
   "review_required_by": ["{{OPERATOR_NAME}}"],
   "human_review_reminder": "Diese Story berührt sensitive Pfade — bitte Zeile-für-Zeile prüfen, nicht nur Plan freigeben."
@@ -3670,4 +3677,4 @@ Platzierung: `.claude/sensitive-paths.json` (im `.gitignore` NICHT — explizit 
 |-------------|------|
 | `{{OPERATOR_NAME}}` | GitHub-Handle oder Name des verantwortlichen Reviewers |
 
-**Hinweis:** Die Pattern-Liste ist ein Minimal-Default. Operator ergänzt projektspezifische sensitive Pfade (z.B. `src/api/**` für kritische API-Endpunkte, `stripe/**` für Payment-Integration).
+**Hinweis:** Die Pattern-Liste ist ein Minimal-Default. Die Non-Code-Patterns (`n8n/**`, `workflows/**/*.json`, `infra/**`, `**/*.tf`, `**/*.tfvars`, `config/production/**`, `.env.production`) wurden mit BOO-68 hinzugefuegt — sie sind Pflicht, wenn das Projekt Non-Code-Stories (workflow / infrastructure / config) erwartet. Operator ergänzt projektspezifische sensitive Pfade (z.B. `src/api/**` für kritische API-Endpunkte, `stripe/**` für Payment-Integration).
