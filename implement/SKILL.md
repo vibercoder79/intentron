@@ -346,6 +346,90 @@ Ohne explizite Bestätigung wird der Commit nicht durchgeführt.
 
 > **Ohne `review-ok`-Bestätigung:** Schritt 6 wird NICHT erreicht. Keine Ausnahme, kein Auto-Bypass.
 
+### Schritt 5.7: Change-Type-Verzweigung (BOO-68)
+
+Vor dem Eintritt in die Quality Gates wird der `Change-Type` aus dem Spec-Frontmatter
+(Sektion 8 Security Impact der Story; im Spec-File als `change_type` im Frontmatter)
+gelesen und das Gate-Verhalten entsprechend gesetzt.
+
+**Hintergrund:** Stories ohne klassischen Code-Diff (n8n/Make/Zapier-Workflow, Terraform/Pulumi/
+CloudFormation-IaC, reine Cloud-/App-Configs, CMS-Content) wuerden ohne diese Verzweigung
+alle Code-Gates leer durchlaufen und `final_status: passed` melden — obwohl niemand die
+echten Risiken (Webhook-Auth, Credentials, IAM-Drift, oeffentliche Buckets) geprueft hat.
+Schrader-Prinzip: "kein Output ohne Verify". Details siehe
+[references/non-code-flow.md](references/non-code-flow.md).
+
+**Ablauf:**
+
+1. `change_type` aus Spec-Frontmatter lesen. Fallback wenn fehlt: `none` (Default = code-strict).
+2. Pruefen, ob `change_type` in der Non-Code-Menge liegt:
+   `{workflow, config, infrastructure, content}`.
+3. Wenn **Code-Strict** (alle anderen Werte einschliesslich `none`): kein Verhaltenswechsel,
+   weiter zu Schritt 6 wie bisher.
+4. Wenn **Non-Code**: Gate-Modus auf `non-code` setzen. Wirkung:
+
+| Gate | Code-Strict (Default) | Non-Code (`workflow`/`config`/`infrastructure`/`content`) |
+|---|---|---|
+| 6a ESLint/Ruff | Iterations-Loop, Hard | **Skip mit Begruendung in meta.json** |
+| 6a-bis Semgrep | Iterations-Loop, Hard | **Skip mit Begruendung in meta.json** |
+| 6a-tris Dependency | Hard bei Manifest-Diff | **Skip ausser Manifest tatsaechlich im Diff** |
+| 6a-quart Coverage | Hard >=80% | **Skip mit Begruendung in meta.json** |
+| 6b Akzeptanzkriterien | Hard | Hard (unveraendert) |
+| 6c Architektur-Check | Soft | **Hard — Pflicht-Dokumentation** |
+| 6d Smoke Test | Soft | **Hard — Pflicht-Ausfuehrung in Test-Env** |
+| 6e Security-Findings | Dokumentation | **Hard — Pflicht-Dokumentation pro Domain-Risiko** |
+| 5.5 Sensitive-Paths | Hard bei Treffer | Hard bei Treffer (unveraendert — Pattern fuer n8n/IaC/Config erweitern) |
+
+5. **Skip-Begruendung in meta.json:** Skip ist NICHT stillschweigend. Jeder uebersprungene
+   Code-Gate erscheint in `meta.json.skipped_gates` mit Grund:
+
+   ```json
+   "skipped_gates": {
+     "eslint": "non-code: change_type=workflow",
+     "semgrep": "non-code: change_type=workflow",
+     "dependency": "non-code: no manifest in diff",
+     "coverage": "non-code: change_type=workflow"
+   }
+   ```
+
+6. **Optionale Domain-Gates (best-effort, nur wenn `tools_available.<tool>` aktiv):**
+   - `change_type=workflow`: `tools_available.n8n_lint`, `tools_available.workflow_jsonschema`
+   - `change_type=infrastructure`: `tools_available.tflint`, `tools_available.tfsec`, `tools_available.checkov`
+   - `change_type=config`: `tools_available.yamllint`, `tools_available.jsonschema`, `tools_available.opa`
+   - `change_type=content`: `tools_available.markdownlint`, `tools_available.broken_links`
+
+   Fehlt das Tool: Skip mit Hinweis "Domain-Gate fuer change_type=X empfohlen — `tools_available.X` nicht aktiv".
+   Konkrete Tool-Integrationen sind eigene Folge-Stories — diese Story etabliert nur den Mechanismus.
+
+7. **meta.json bekommt zusaetzliches Feld `change_type`** (Audit-Spur fuer `/sprint-review`):
+
+   ```json
+   {
+     "story_id": "BOO-XX",
+     "change_type": "workflow",
+     "iterations": { "eslint": 0, "tests": 0, "semgrep": 0, "coverage": 0 },
+     "skipped_gates": { "eslint": "non-code: change_type=workflow", ... },
+     "final_status": "passed"
+   }
+   ```
+
+8. **PASS-Kriterien Non-Code (ueberschreiben validation-checklist.md PASS):**
+   - 6b: alle ACs mit Evidenz abgehakt
+   - 6c: Architektur-Quick-Check mit konkretem Befund dokumentiert (nicht leer)
+   - 6d: Smoke Test ausgefuehrt + Output dokumentiert (Workflow getriggert, Plan/Apply gelaufen, Config angewendet)
+   - 6e: Security-Findings pro Domain (Webhook-Auth / Credentials / IAM / Public Surface) dokumentiert oder explizit als "n/a — Begruendung" markiert
+   - 5.5: bei Treffer `review-ok` vorhanden (unveraendert)
+
+9. **FAIL-Kriterien Non-Code (ueberschreiben):**
+   - 6c leer / "n/a" ohne Begruendung
+   - 6d nicht ausgefuehrt oder Output nicht dokumentiert
+   - 6e leer / "keine Pruefung" ohne Begruendung
+
+> **Diese Verzweigung ersetzt nicht die `tools_available`-Logik aus Schritt 0.4** — sie ergaenzt
+> sie. `tools_available` regelt "Tool da oder nicht", Schritt 5.7 regelt "Story-Natur Code oder
+> nicht". Beide Mechanismen koennen denselben Gate skippen — `meta.json.skipped_gates`
+> dokumentiert den Grund eindeutig.
+
 ### Schritt 6: Post-Implement Validation — Validate-Fix-Learn
 
 Validierung BEVOR das Issue auf "Done" gesetzt wird. Siehe [references/validation-checklist.md](references/validation-checklist.md)
@@ -628,10 +712,13 @@ RUN_COMPLETED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 # RUN_FINAL_STATUS aus Schritt 6f setzen: "passed" | "failed" | "stopped_iteration_limit"
 # ENVIRONMENT aus .claude/environment.json laden (mac/vps/ci) — Default "unknown" wenn Datei fehlt
 ENVIRONMENT=$(jq -r .environment .claude/environment.json 2>/dev/null || echo "unknown")
+# CHANGE_TYPE aus Spec-Frontmatter (Schritt 5.7) — Default "none" wenn nicht gesetzt
+# SKIPPED_GATES_JSON wird in Schritt 5.7 / 6 pro uebersprungenem Gate gefuellt — Default "{}"
 
 cat > "${RUN_DIR}/meta.json" <<EOF
 {
   "story_id": "${STORY_ID}",
+  "change_type": "${CHANGE_TYPE:-none}",
   "started_at": "${RUN_STARTED_AT}",
   "completed_at": "${RUN_COMPLETED_AT}",
   "iterations": {
@@ -640,17 +727,19 @@ cat > "${RUN_DIR}/meta.json" <<EOF
     "semgrep": ${ITER_SEMGREP},
     "coverage": ${ITER_COVERAGE}
   },
+  "skipped_gates": ${SKIPPED_GATES_JSON:-"{}"},
   "final_status": "${RUN_FINAL_STATUS}",
   "environment": "${ENVIRONMENT}"
 }
 EOF
 ```
 
-**Schema (Fixwert, nicht erweiterbar in dieser Iteration):**
+**Schema (Fixwert, nicht erweiterbar ausser durch eigene Story):**
 
 ```json
 {
   "story_id": "BOO-15",
+  "change_type": "api",
   "started_at": "2026-04-27T14:30:00Z",
   "completed_at": "2026-04-27T14:34:00Z",
   "iterations": {
@@ -659,6 +748,32 @@ EOF
     "semgrep": 1,
     "coverage": 1
   },
+  "skipped_gates": {},
+  "final_status": "passed",
+  "environment": "mac"
+}
+```
+
+**Non-Code Beispiel (`change_type: workflow`):**
+
+```json
+{
+  "story_id": "BOO-72",
+  "change_type": "workflow",
+  "started_at": "2026-05-22T10:00:00Z",
+  "completed_at": "2026-05-22T10:08:00Z",
+  "iterations": {
+    "eslint": 0,
+    "tests": 0,
+    "semgrep": 0,
+    "coverage": 0
+  },
+  "skipped_gates": {
+    "eslint": "non-code: change_type=workflow",
+    "semgrep": "non-code: change_type=workflow",
+    "dependency": "non-code: no manifest in diff",
+    "coverage": "non-code: change_type=workflow"
+  },
   "final_status": "passed",
   "environment": "mac"
 }
@@ -666,8 +781,10 @@ EOF
 
 **Feld-Konvention:**
 - `story_id`: Issue-Key aus Linear (z.B. `BOO-36`)
+- `change_type`: aus Spec-Frontmatter (Schritt 5.7). Werte: `none | api | auth | data | dependency | ci | governance | external-provider | workflow | config | infrastructure | content` (BOO-68)
 - `started_at` / `completed_at`: ISO-8601 UTC (`date -u +%Y-%m-%dT%H:%M:%SZ`)
 - `iterations.<gate>`: Anzahl Iterationen pro Gate, 0 wenn Gate uebersprungen
+- `skipped_gates.<gate>`: Grund pro uebersprungenem Gate (z.B. `"non-code: change_type=workflow"` oder `"tools_available.eslint == false"`). Leer `{}` wenn nichts geskippt.
 - `final_status`: `passed` (Gate alle gruen) | `failed` (Gate-Block ohne Iterations-Limit) | `stopped_iteration_limit` (Iteration 5 erreicht ohne gruen)
 - `environment`: `mac` | `vps` | `ci` | `unknown` (aus `.claude/environment.json`)
 

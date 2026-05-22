@@ -42,6 +42,25 @@ This skill runs the full 8-step protocol. Every step has an explicit purpose and
 | 6e | **Security Findings** | Documented — what was checked, what's safe, what was mitigated |
 | 6f | **Result: PASS / FAIL** | PASS → Linear Done + changelog + Obsidian sync |
 
+### Non-code stories (Step 5.7 — BOO-68)
+
+Not every story produces code. n8n / Make / Zapier workflows, Terraform / Pulumi / IaC, pure
+cloud or app configs, and CMS content are real implementations with real risk, but they have
+no classic code diff.
+
+Before step 6, the skill reads `change_type` from the spec frontmatter. If the value is in
+`{workflow, config, infrastructure, content}`, it switches to **non-code mode**:
+
+- Code gates 6a / 6a-bis / 6a-tris / 6a-quart are skipped **explicitly** (not silently) — the
+  reason lands in `meta.json.skipped_gates`
+- Soft gates 6c / 6d / 6e become **hard gates** with mandatory evidence
+- The sensitive-paths gate 5.5 still fires — patterns should cover `n8n/**`, `infra/**`,
+  `**/*.tf`, `workflows/**/*.json`
+- Optional domain gates (n8n-lint, tfsec, tflint, yamllint) run when `tools_available.<tool>`
+  is active
+
+Full explanation with flow sketch: [references/non-code-flow.md](references/non-code-flow.md).
+
 ---
 
 ## The Spec-File Gate (Hard Gate)
@@ -112,6 +131,7 @@ implement/
     ├── architecture-checklist.md               ← Relevant-dimensions checklist
     ├── change-checklist.md                     ← Per-change validation
     ├── governance-validation.md                ← Governance artifact check
+    ├── non-code-flow.md                        ← Step 5.7: non-code branching (BOO-68)
     └── validation-checklist.md                 ← Post-implement sub-steps
 ```
 
