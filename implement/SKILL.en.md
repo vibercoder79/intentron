@@ -1,11 +1,12 @@
 ---
 name: implement
+recommended_model: sonnet  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
 description: |
   Implementation protocol for user stories. 8-step workflow from issue identification
   to closing table including post-implement validation. Use when the operator says "go",
   wants to implement a story, or runs "/implement". Also used by the automation daemon
   (no human in the loop).
-version: 2.9.0
+version: 2.10.0
 language: en
 metadata:
   hermes:
@@ -652,9 +653,11 @@ After successful validation:
 - Backlog Record / adapter → Done + comment/result note (incl. validation result)
 - Obsidian change log via `linear.writeChangeLog()`
 
-**6f-bis) Write meta.json (BOO-36)**
+**6f-bis) Write meta.json (BOO-36, extended by BOO-84 for token tracking)**
 
 At the end of the run — pass, fail, or stop — `meta.json` is written into the run directory. Audit trail for `/sprint-review`.
+
+Since BOO-84 the schema additionally contains **three levels of token tracking** (per iteration, per skill invocation, per story) plus **cache hit rate** and an **override audit trail**. Actual token values are ideally captured via Claude-Code PostToolUse hook into `.claude/last-run-tokens.json` and merged when writing meta.json. If the hook is not active: operator pastes the token counts manually (Claude Code shows them at session end), or the fields stay `null` (no cost aggregate in sprint review for this story).
 
 ```bash
 RUN_COMPLETED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
@@ -663,6 +666,22 @@ RUN_COMPLETED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 ENVIRONMENT=$(jq -r .environment .claude/environment.json 2>/dev/null || echo "unknown")
 # CHANGE_TYPE from spec frontmatter (step 5.7) — default "none" if missing
 # SKIPPED_GATES_JSON is populated by step 5.7 / 6 per skipped gate — default "{}"
+
+# BOO-84: load token-tracking data from optional hook cache, else empty skeleton
+TOKEN_CACHE=".claude/last-run-tokens.json"
+if [ -f "$TOKEN_CACHE" ]; then
+  TOKENS_JSON=$(cat "$TOKEN_CACHE")
+else
+  TOKENS_JSON='{"iterations": [], "skill_invocations": [], "story_totals": null, "cache_hit_rate": null}'
+fi
+
+# BOO-84: load override audit trail from optional cache, else empty array
+OVERRIDE_CACHE=".claude/last-run-overrides.json"
+if [ -f "$OVERRIDE_CACHE" ]; then
+  OVERRIDE_JSON=$(cat "$OVERRIDE_CACHE")
+else
+  OVERRIDE_JSON='[]'
+fi
 
 cat > "${RUN_DIR}/meta.json" <<EOF
 {
@@ -678,12 +697,17 @@ cat > "${RUN_DIR}/meta.json" <<EOF
   },
   "skipped_gates": ${SKIPPED_GATES_JSON:-"{}"},
   "final_status": "${RUN_FINAL_STATUS}",
-  "environment": "${ENVIRONMENT}"
+  "environment": "${ENVIRONMENT}",
+  "token_tracking": ${TOKENS_JSON},
+  "override_audit": ${OVERRIDE_JSON}
 }
 EOF
+
+# After successful write: clear caches so the next run starts fresh
+rm -f "$TOKEN_CACHE" "$OVERRIDE_CACHE"
 ```
 
-**Schema (fixed, only extended by an explicit story):**
+**Schema (extended by BOO-68 change_type + skipped_gates and BOO-84 token_tracking + override_audit):**
 
 ```json
 {
@@ -724,7 +748,50 @@ EOF
     "coverage": "non-code: change_type=workflow"
   },
   "final_status": "passed",
-  "environment": "mac"
+  "environment": "mac",
+  "token_tracking": {
+    "iterations": [
+      {
+        "iteration_label": "step-6a-eslint-1",
+        "skill_invoked": "implement-iterations",
+        "model_used": "claude-haiku-4-5-20251001",
+        "model_tier": "haiku",
+        "input_tokens": 4500,
+        "output_tokens": 800,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 12000
+      }
+    ],
+    "skill_invocations": [
+      {
+        "skill_invoked": "implement-iterations",
+        "model_tier_default": "haiku",
+        "iterations_count": 3,
+        "input_tokens_total": 13500,
+        "output_tokens_total": 2400,
+        "cache_creation_tokens_total": 0,
+        "cache_read_tokens_total": 36000
+      }
+    ],
+    "story_totals": {
+      "input_tokens": 28000,
+      "output_tokens": 5400,
+      "cache_creation_tokens": 4500,
+      "cache_read_tokens": 72000,
+      "estimated_cost_usd": 0.18
+    },
+    "cache_hit_rate": 0.85
+  },
+  "override_audit": [
+    {
+      "skill": "implement-iterations",
+      "recommended_tier": "haiku",
+      "actual_model": "claude-sonnet-4-6",
+      "override_origin": "cli-flag",
+      "operator": "tobias",
+      "timestamp": "2026-04-27T14:32:00Z"
+    }
+  ]
 }
 ```
 
@@ -736,6 +803,18 @@ EOF
 - `skipped_gates.<gate>`: reason per skipped gate (e.g. `"non-code: change_type=workflow"` or `"tools_available.eslint == false"`). Empty `{}` when nothing was skipped.
 - `final_status`: `passed` (all gates green) | `failed` (gate blocked without hitting the iteration limit) | `stopped_iteration_limit` (iteration 5 reached without green)
 - `environment`: `mac` | `vps` | `ci` | `unknown` (from `.claude/environment.json`)
+- `token_tracking.iterations[]`: one entry per iteration — finest drill-down
+- `token_tracking.skill_invocations[]`: aggregated per skill invocation
+- `token_tracking.story_totals`: total per story + USD cost (pricing from `bootstrap/references/model-tiers.json`)
+- `token_tracking.cache_hit_rate`: `cache_read_tokens / (input_tokens + cache_read_tokens)` — optimisation effect
+- `override_audit[]`: every time the operator overrides the recommended model (CLI flag or CLAUDE.md), it is logged here
+- `override_audit[].override_origin`: `cli-flag` | `claude-md` | `none` (none means: recommended tier was used, normally no entry)
+
+**Responsibilities (BOO-84):**
+- Claude-Code PostToolUse hook (optional, follow-up setup) writes `.claude/last-run-tokens.json` and `.claude/last-run-overrides.json` during the run.
+- `/implement` step 6f-bis merges these into `meta.json` and clears the caches.
+- If the hook is not active: the fields stay empty (`token_tracking: { ... cache_hit_rate: null }` and `override_audit: []`). No story run is blocked, but sprint review shows no cost aggregate for this story.
+- USD cost calculation happens OPTIONALLY in the `/sprint-review` skill using `bootstrap/references/model-tiers.json` — pricing is central, not duplicated in every meta.json.
 
 **Important — responsibility separation:**
 - `/implement` writes ONLY raw outputs to `journal/reports/local/` — including `meta.json`.

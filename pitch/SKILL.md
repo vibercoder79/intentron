@@ -1,6 +1,7 @@
 ---
 name: pitch
-version: 1.0.0
+recommended_model: sonnet  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
+version: 1.1.0
 description: |
   Schliesst Schraders 4P-Pipeline (Perceive/Prompt/Produce/Pitch).
   Sammelt Evidenz (Metriken, Architektur-Diff, Intent-Erfuellung) als

@@ -1,12 +1,13 @@
 ---
 name: visualize
+recommended_model: sonnet  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
 description: |
   Auto-generate architecture diagrams in Miro from documentation files.
   Reads architecture docs from the project and creates a complete set of flowcharts/diagrams
   in Miro — overview + detail diagrams per layer.
   Use when the operator says "visualize", "create diagram", "visualize architecture",
   "Miro diagram" or "/visualize".
-version: 2.2.0
+version: 2.3.0
 language: en
 author: Tobias Schmidt
 metadata:

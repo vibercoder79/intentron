@@ -1,10 +1,11 @@
 ---
 name: architecture-review
+recommended_model: opus  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
 description: |
   Architektur-Review fuer einzelne Stories oder das Gesamtsystem. Prueft die aktiven
   Architektur-Dimensionen (8 Standard + aktive Add-ons) und identifiziert Risiken, Tech Debt und Verbesserungspotential.
   Verwenden wenn der Operator "Architektur pruefen", "Review", "passt das architektonisch" oder "/architecture-review" sagt.
-version: 1.11.0
+version: 1.12.0
 metadata:
   hermes:
     category: governance

@@ -1,11 +1,12 @@
 ---
 name: ideation
+recommended_model: sonnet  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
 description: |
   Deep research, architecture check and user-story creation. Before creating a story, reads the
   learning loop (if active) and warns on anti-pattern matches. Use when the user has a new idea,
   suggests a feature, or says "ideation" / "new story".
   Triggers: "I have an idea", "new feature", "we need X", "/ideation".
-version: 2.5.0
+version: 2.6.0
 language: en
 metadata:
   hermes:

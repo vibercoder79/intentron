@@ -955,6 +955,31 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 
 ---
 
+### BOO-84 — Token-Effizienz-Policy (Modell-Routing + Prompt-Caching)
+
+**Status:** ✓ in v2-Bundle enthalten — additive Migration, keine Verhaltens-Aenderung in Bestands-Projekten
+**Aufwand:** klein (~5 Min pro Projekt)
+**Linear:** https://linear.app/owlist/issue/BOO-84
+**Auto-Schritt:** ja (`migrate_boo_84` in `migrate-to-v2.sh`)
+**Schritte:**
+1. **`[AUTO]`** `cd ~/Documents/GitHub/claudecodeskills && git pull origin main` — neuer `bootstrap/references/model-tiers.json`, erweiterte Skill-Frontmatter, neuer Anhang N im HANDBUCH liegen jetzt im Bundle.
+2. **`[AUTO]`** `bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-84` — schreibt **Model-Routing-Policy + Prompt-Caching** Sektionen idempotent in die projekt-lokale `CLAUDE.md`. Re-Run gefahrlos: wenn Sektion schon da, Skip.
+3. **`[MANUAL]`** Operator: HANDBUCH Anhang N einmal lesen — versteht Modell-Tiers, Override-Mechanik (CLI-Flag + `model_overrides:`), Audit-Trail-Konvention und Caching-Constraints.
+4. **`[MANUAL]`** Optional: Claude-Code PostToolUse-Hook fuer Token-Capture aktivieren (schreibt `.claude/last-run-tokens.json` und `.claude/last-run-overrides.json` waehrend des Runs). Ohne Hook bleiben `meta.json.token_tracking`-Felder leer, kein Story-Lauf blockiert.
+5. **`[MANUAL]`** Optional: in projekt-lokaler `CLAUDE.md` den `model_overrides:`-Block befuellen, wenn vom Skill-Default abgewichen werden soll. Praezedenz: CLI-Flag > CLAUDE.md > Skill-Default.
+
+**Test:**
+- `CLAUDE.md` enthaelt Sektionen "Model-Routing-Policy (BOO-84)" und "Prompt-Caching (BOO-84)".
+- `grep "recommended_model:" code-crash-framework/*/SKILL.md` zeigt 11 Treffer (alle Bundle-Skills).
+- `bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-84` zweites Mal: meldet `[SKIP] CLAUDE.md enthaelt bereits Model-Routing-Policy`.
+- Naechster `/implement`-Lauf schreibt `meta.json` mit `token_tracking`-Skelett (leer ohne Hook, gefuellt mit Hook).
+
+**Rollback:** Operator entfernt die zwei Sektionen aus `CLAUDE.md` manuell — andere Bundle-Aenderungen bleiben funktional, sie sind alle additive (neues Feld, neue Sub-Phase, neues optionales File).
+**Abhaengigkeiten:** keine. `meta.json`-Erweiterung in BOO-36 ist Vor-Bedingung — automatisch erfuellt im aktuellen Bundle.
+**Skill-Quelle:** `bootstrap/references/model-tiers.json` + `bootstrap/SKILL.md` Phase 4.4m + `implement/SKILL.md` Schritt 6f-bis + `sprint-review/SKILL.md` Schritt 2b + `HANDBUCH.md` Anhang N.
+
+---
+
 ## Nicht-Skill-Issues (uebersprungen)
 
 Diese Issues betreffen Operator-Tooling, Meta-Arbeit oder Doppelungen und brauchen **keine** Migration in Bestands-Projekten. Sie erscheinen in `migration-status.md` mit Status ✗.

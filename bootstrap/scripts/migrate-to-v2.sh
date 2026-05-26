@@ -2886,6 +2886,70 @@ migrate_boo_33() {
     return 0
 }
 
+migrate_boo_84() {
+    # BOO-84 — Token-Effizienz-Policy (Modell-Routing + Prompt-Caching)
+    # https://linear.app/owlist/issue/BOO-84
+    log_info "BOO-84: Model-Routing-Sektion + Prompt-Caching-Hinweis in CLAUDE.md"
+
+    if [[ ! -f "CLAUDE.md" ]]; then
+        log_warn "CLAUDE.md nicht gefunden — Migration uebersprungen. Bootstrap-Skill nutzen, um CLAUDE.md anzulegen."
+        return 0
+    fi
+
+    # Idempotenter Append: nur einfuegen wenn Sektion noch nicht da
+    if grep -q "^## Model-Routing-Policy (BOO-84)" CLAUDE.md; then
+        log_skip "CLAUDE.md enthaelt bereits 'Model-Routing-Policy (BOO-84)'"
+    else
+        if [[ "$DRY_RUN" == "true" ]]; then
+            log_dry "append Model-Routing-Policy + Prompt-Caching sections to CLAUDE.md"
+        else
+            cat >> CLAUDE.md <<'EOF'
+
+## Model-Routing-Policy (BOO-84)
+
+Pro Skill ist ein **empfohlenes Modell-Tier** definiert (siehe Skill-Frontmatter `recommended_model`). Tier-zu-Version + Pricing zentral in `bootstrap/references/model-tiers.json` des Code-Crash Frameworks.
+
+| Tier | Wofuer | Default fuer Skills |
+|------|-------|---------------------|
+| `haiku` | Iterations-Loops, Lints, Frage-Generierung, kleine Smoke-Tests | `/implement` Schritte 6a/6a-bis/6a-tris/6a-quart, Lint-Loops |
+| `sonnet` | Sicherer Default fuer die meisten Skill-Aufgaben | `bootstrap`, `backlog`, `visualize`, `sprint-review`, `pitch`, `ideation`, `intent`, `grafana` |
+| `opus` | Architektur-Reviews, Security-Findings, Threat Modeling | `architecture-review`, `cloud-system-engineer`, `/implement` Schritt 6e |
+
+### Projekt-weite Overrides
+
+```yaml
+model_overrides:
+  # Skill-Name: gewuenschtes Tier (haiku | sonnet | opus)
+  # Beispiel: implement-iterations: sonnet
+```
+
+### Einmalige Overrides
+
+CLI-Flag, z.B. `/implement --model opus`. Praezedenz: **CLI-Flag > CLAUDE.md `model_overrides:` > Skill-Default**. Audit in `meta.json` (`override_audit[]`).
+
+### Pflicht-Bleibt-Opus
+
+Security-relevante Skills (`architecture-review`, `cloud-system-engineer`, `/implement` Schritt 6e) duerfen pro Story-Lauf nicht automatisch downgrade-en. Operator-Override moeglich, im Audit-Trail festgehalten.
+
+## Prompt-Caching (BOO-84)
+
+Prompt-Caching nutzt Anthropics ephemeral cache markers fuer:
+
+- **SKILL.md-Files** aller geladenen Skills
+- `CONVENTIONS.md`, `SECURITY.md`, `ARCHITECTURE_DESIGN.md`
+- Repo-Map (in `/implement` Schritt 3 erzeugt)
+
+Constraints: Mindest-Block-Groesse 1024 Tokens, Cache TTL 5 Minuten, keine Secrets in Cache-Bloecken. Cache-Hit-Rate in `meta.json.token_tracking.cache_hit_rate`.
+EOF
+            log_info "CLAUDE.md um Model-Routing + Prompt-Caching Sektionen erweitert"
+        fi
+    fi
+
+    log_manual "Operator: optionalen PostToolUse-Hook fuer Token-Capture aktivieren (siehe HANDBUCH Anhang N.2). Ohne Hook: meta.json.token_tracking bleibt leer, kein Story-Lauf blockiert."
+    log_manual "Operator: pro Skill-Frontmatter pruefen, ob 'recommended_model:' jetzt vorhanden ist (Framework-Pull noetig fuer Bestands-Projekte)"
+    return 0
+}
+
 # -----------------------------------------------------------------------------
 # Aggregator / All-in-one
 # -----------------------------------------------------------------------------
@@ -2944,6 +3008,9 @@ migrate_all() {
     migrate_boo_32
     migrate_boo_33
 
+    # Wave I — Token-Efficiency (BOO-84)
+    migrate_boo_84
+
     log_info "DE: Migration abgeschlossen. Status pro Projekt in migration-status.md eintragen."
     log_info "EN: Migration finished. Record per-project status in migration-status.md."
 }
@@ -2961,6 +3028,7 @@ ALL_ISSUES=(
     BOO-11 BOO-17 BOO-18 BOO-19
     BOO-20 BOO-37
     BOO-31 BOO-32 BOO-33
+    BOO-84
 )
 
 print_help() {

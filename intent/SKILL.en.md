@@ -1,5 +1,6 @@
 ---
 name: intent
+recommended_model: sonnet  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
 description: |
   Operationalizes Schrader's "Intent before Implementation" (Code Crash ch. 4) — a 5-step session
   distills the desired user outcome into a measurable intent statement, which then feeds /ideation.
@@ -7,7 +8,7 @@ description: |
   Use when the operator starts a new initiative, says "/intent", or wants to sharpen an idea
   before /ideation builds stories. Triggers: "new initiative", "intent for X", "we want Y",
   "/intent".
-version: 1.2.0
+version: 1.3.0
 metadata:
   hermes:
     category: governance

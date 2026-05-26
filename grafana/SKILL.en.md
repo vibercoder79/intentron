@@ -1,12 +1,13 @@
 ---
 name: grafana
+recommended_model: sonnet  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
 description: |
   Grafana dashboard development and metric queries.
   Uses the official Grafana MCP server to create, read and update dashboards directly
   in Grafana Cloud and to run PromQL queries.
   Use when the operator says "Grafana", "dashboard", "panel", "query metric",
   "alert rule", "build grafana" or "/grafana".
-version: 1.0.0
+version: 1.1.0
 language: en
 requires_mcp:
   - name: grafana
