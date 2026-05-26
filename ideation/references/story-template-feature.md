@@ -44,11 +44,19 @@ Jede Feature-Story MUSS folgende Struktur haben.
 - Checkboxen, testbar, konkret
 
 ### 8. Security Impact (PFLICHT)
-- Change-Type: `none | api | auth | data | dependency | ci | governance | external-provider`
+- Change-Type: `none | api | auth | data | dependency | ci | governance | external-provider | workflow | config | infrastructure | content`
 - Neue oder veraenderte Angriffsoberflaeche?
 - Werden personenbezogene Daten, Secrets, Tokens, Cookies oder externe Provider beruehrt?
 - Welche Sektionen aus `SECURITY.md` und welche Security-Referenzen muessen in `/implement` gelesen werden?
 - Falls kein Security-Impact: explizit begruenden, nicht nur leer lassen.
+
+> **Non-Code Change-Types** (`workflow | config | infrastructure | content`):
+> Bei diesen Typen produziert die Story keinen klassischen Code-Diff (n8n/Make/Zapier-Workflow,
+> Terraform/Pulumi/CloudFormation, reine Configs/IAM/DNS/CORS, CMS-Content). `/implement` skippt
+> die Code-Gates (6a/6a-bis/6a-tris/6a-quart) explizit und hebt 6c/6d/6e auf **Hard Gate** —
+> kein PASS ohne dokumentierte Architektur-, Smoke-Test- und Security-Evidenz. Sensitive-Paths
+> in `.claude/sensitive-paths.json` (z.B. `n8n/**`, `infra/**`, `**/*.tf`) loesen weiterhin den
+> Mandatory Human Review aus. Details: `implement/references/non-code-flow.md`.
 
 ### 9. Security Validation (PFLICHT bei Code-, Security-, Tooling-, Dependency-, CI- oder Governance-Aenderungen)
 - Welche lokalen Checks muessen laufen? (z.B. Semgrep, dependency-check, tests, manuelle Review)

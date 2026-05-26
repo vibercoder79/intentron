@@ -19,6 +19,10 @@ Derive the change type from the Linear label or the affected area. Then update t
 | **Hook / governance hook change** | `GOVERNANCE.md`, `.claude/settings.json` + `settings.local.json`, `hooks-setup.md` if skill-level |
 | **Phase transition** (e.g. Phase 0 → 1) | PMO hub (Obsidian), `ARCHITECTURE_DESIGN.md §6 phase mapping`, all component docs (phase status), `CHANGELOG.md` |
 | **Onboarding/handoff-relevant change** | `DEVELOPER_ONBOARDING.md`, project hub / PMO hub, `ARCHITECTURE_DESIGN.md` if target architecture is affected, `SECURITY.md` if security rules are affected |
+| **Workflow** (n8n / Make / Zapier, `change_type: workflow`) | `SECURITY.md` (webhook auth, credentials), `ARCHITECTURE_DESIGN.md` (integration), workflow JSON committed, component doc for automation, `.env.example` for new secrets |
+| **Infrastructure** (Terraform / Pulumi / CFN, `change_type: infrastructure`) | `SECURITY.md` (IAM, public surface), `ARCHITECTURE_DESIGN.md` (topology), `infra/README.md`, `.tfvars.example`, ADR for architecture drift |
+| **Config** (pure cloud/app configs, `change_type: config`) | `SECURITY.md` (hardening), `.env.example`, affected component doc, `CONVENTIONS.md` if a project-wide rule is touched |
+| **Content** (CMS migrations, doc bulk, `change_type: content`) | `INDEX.md`, affected component doc, `CHANGELOG.md` (content), for external publishing: release sign-off reference |
 
 **Always:**
 - Update the affected component's component doc (stack, phase status, linked stories, open questions)
@@ -124,6 +128,48 @@ For privacy-relevant changes: update the Privacy section of `SECURITY.md`.
 - [ ] `GOVERNANCE.md` updated if project-global rule affected
 - [ ] Bump version in skill frontmatter (`version:` in SKILL.md)
 - [ ] Run `publish_skill.py` if skill should go into master repo
+
+### Add / change workflow (n8n / Make / Zapier — `change_type: workflow`, BOO-68)
+
+- [ ] Workflow JSON exported and committed to `n8n/` / `workflows/` (not "lives in the UI only")
+- [ ] **Webhook auth:** HMAC signing or header token set — the webhook is not "open"
+- [ ] **Credentials:** referenced via the n8n credentials store, NOT as a literal string in a node body
+- [ ] **Error branches:** every external API call has an error output branch (no silent ignore)
+- [ ] **Rate limits / timeouts:** set on every HTTP node
+- [ ] Smoke test: workflow triggered for real in a test environment, output documented in the spec
+- [ ] `SECURITY.md` webhook inventory section updated
+- [ ] Optional: `tools_available.n8n_lint` active and green, `tools_available.workflow_jsonschema` active and green
+
+### Change Infrastructure-as-Code (Terraform / Pulumi / CFN — `change_type: infrastructure`, BOO-68)
+
+- [ ] `terraform plan` (or equivalent) executed, diff documented in the spec
+- [ ] **IAM:** no `*` in resource/action statements without an explicit justification
+- [ ] **Public surface:** S3 buckets / storage / endpoints not unintentionally public
+- [ ] **Secrets:** no plaintext in `.tfvars` — use a secret manager or SOPS
+- [ ] **State file:** not in Git, backend configured correctly
+- [ ] Smoke test: `apply` executed in a non-production account / workspace
+- [ ] `infra/README.md` and `ARCHITECTURE_DESIGN.md` updated
+- [ ] Optional: `tools_available.tflint`, `tools_available.tfsec`, `tools_available.checkov` active and green
+
+### Pure config change (cloud / app configs — `change_type: config`, BOO-68)
+
+- [ ] Diff reviewed line-by-line (not "it's just YAML")
+- [ ] **Schema validation:** config checked against schema (yamllint / jsonschema)
+- [ ] **Secrets:** no plaintext credentials in the config
+- [ ] **Rollback plan:** documented how to restore the old config
+- [ ] Smoke test: config applied in a test environment, app starts/runs
+- [ ] `.env.example` and component doc updated
+- [ ] Optional: `tools_available.yamllint`, `tools_available.jsonschema`, `tools_available.opa` active and green
+
+### Content migration / doc bulk (`change_type: content`, BOO-68)
+
+- [ ] Before/after diff documented in the spec (at least a sample of 3 pages)
+- [ ] **Broken-link check:** all internal and external links validated
+- [ ] **PII check:** no accidental publication of personal data
+- [ ] **Sign-off:** for externally visible publication, operator sign-off documented
+- [ ] Smoke test: content visible and rendered correctly in the target system (CMS / website)
+- [ ] `INDEX.md` / sitemap updated
+- [ ] Optional: `tools_available.markdownlint`, `tools_available.broken_links` active and green
 
 ---
 

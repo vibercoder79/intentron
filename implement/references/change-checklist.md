@@ -19,6 +19,10 @@ Aus dem Linear-Label oder dem geaenderten Bereich den Aenderungs-Typ ableiten. D
 | **Hook / Governance-Hook-Aenderung** | `GOVERNANCE.md`, `.claude/settings.json` + `settings.local.json`, `hooks-setup.md` falls Skill-Teil |
 | **Phase-Uebergang** (z.B. Phase 0 → 1) | PMO-Hub (Obsidian), `ARCHITECTURE_DESIGN.md §6 Phasen-Mapping`, alle Component-Docs (Phase-Status), `CHANGELOG.md` |
 | **Onboarding-/Handoff-relevante Aenderung** | `DEVELOPER_ONBOARDING.md`, Project Hub / PMO-Hub, `ARCHITECTURE_DESIGN.md` falls Zielarchitektur betroffen, `SECURITY.md` falls Security-Regeln betroffen |
+| **Workflow** (n8n / Make / Zapier, `change_type: workflow`) | `SECURITY.md` (Webhook-Auth, Credentials), `ARCHITECTURE_DESIGN.md` (Integration), Workflow-JSON committet, Component-Doc fuer Automation, `.env.example` fuer neue Secrets |
+| **Infrastructure** (Terraform / Pulumi / CFN, `change_type: infrastructure`) | `SECURITY.md` (IAM, Public Surface), `ARCHITECTURE_DESIGN.md` (Topologie), `infra/README.md`, `.tfvars.example`, ADR falls Architektur-Drift |
+| **Config** (reine Cloud-/App-Configs, `change_type: config`) | `SECURITY.md` (Hardening), `.env.example`, betroffene Komponenten-Doku, `CONVENTIONS.md` wenn projekt-globale Regel betroffen |
+| **Content** (CMS-Migrationen, Doku-Bulk, `change_type: content`) | `INDEX.md`, betroffene Component-Doc, `CHANGELOG.md` (Inhalt), bei externer Veroeffentlichung: Freigabe-Verweis |
 
 **Immer gilt:**
 - Component-Doc der betroffenen Komponente aktualisieren (Stack, Phase-Status, Verbundene Stories, offene Fragen)
@@ -124,6 +128,48 @@ Bei Privacy-relevanten Aenderungen: `SECURITY.md` Privacy-Sektion aktualisieren.
 - [ ] `GOVERNANCE.md` aktualisieren wenn projekt-globale Regel betroffen
 - [ ] Version im Skill-Frontmatter erhoehen (`version:` in SKILL.md)
 - [ ] `publish_skill.py` laufen lassen wenn Skill ins Master-Repo soll
+
+### Workflow aendern / hinzufuegen (n8n / Make / Zapier — `change_type: workflow`, BOO-68)
+
+- [ ] Workflow-JSON exportiert und in `n8n/` / `workflows/` committed (kein "lebt nur in der UI")
+- [ ] **Webhook-Auth:** HMAC-Signing oder Header-Token gesetzt — Webhook ist nicht "open"
+- [ ] **Credentials:** ueber n8n Credentials-Store referenziert, NICHT als String im Node-Body
+- [ ] **Error-Branches:** jeder externe API-Call hat einen Error-Output-Branch (nicht "ignore")
+- [ ] **Rate-Limits / Timeouts:** auf jedem HTTP-Node gesetzt
+- [ ] Smoke Test: Workflow in Test-Env real getriggert, Output dokumentiert in Spec
+- [ ] `SECURITY.md` Sektion fuer Webhook-Inventory aktualisiert
+- [ ] Optional: `tools_available.n8n_lint` aktiv und gruen, `tools_available.workflow_jsonschema` aktiv und gruen
+
+### Infrastructure-as-Code aendern (Terraform / Pulumi / CFN — `change_type: infrastructure`, BOO-68)
+
+- [ ] `terraform plan` (oder Equivalent) gelaufen, Diff im Spec dokumentiert
+- [ ] **IAM:** keine `*` in Resource-/Action-Statements ohne explizite Begruendung
+- [ ] **Public Surface:** S3-Buckets / Storage / Endpoints nicht ungewollt oeffentlich
+- [ ] **Secrets:** kein Klartext in `.tfvars` — Secret-Manager oder SOPS
+- [ ] **State-File:** nicht in Git, Backend korrekt konfiguriert
+- [ ] Smoke Test: `apply` in nicht-produktivem Account/Workspace gelaufen
+- [ ] `infra/README.md` und `ARCHITECTURE_DESIGN.md` aktualisiert
+- [ ] Optional: `tools_available.tflint`, `tools_available.tfsec`, `tools_available.checkov` aktiv und gruen
+
+### Reine Config-Aenderung (Cloud / App-Configs — `change_type: config`, BOO-68)
+
+- [ ] Diff manuell Zeile-fuer-Zeile reviewed (kein "ist ja nur YAML")
+- [ ] **Schema-Validierung:** Config gegen Schema gepruefte (yamllint / jsonschema)
+- [ ] **Secrets:** keine Klartext-Credentials in der Config
+- [ ] **Rollback-Plan:** dokumentiert, wie die alte Config wiederhergestellt wird
+- [ ] Smoke Test: Config in Test-Env angewendet, App startet/laeuft
+- [ ] `.env.example` und Component-Doc nachgezogen
+- [ ] Optional: `tools_available.yamllint`, `tools_available.jsonschema`, `tools_available.opa` aktiv und gruen
+
+### Content-Migration / Bulk-Doku (`change_type: content`, BOO-68)
+
+- [ ] Vorher-/Nachher-Diff in der Spec dokumentiert (mind. Stichprobe von 3 Seiten)
+- [ ] **Broken-Links-Check:** alle internen und externen Links validiert
+- [ ] **PII-Check:** kein versehentliches Veroeffentlichen personenbezogener Daten
+- [ ] **Freigabe:** bei extern sichtbarer Veroeffentlichung Operator-Freigabe dokumentiert
+- [ ] Smoke Test: Inhalt im Ziel-System (CMS / Website) sichtbar und korrekt gerendert
+- [ ] `INDEX.md` / Sitemap nachgezogen
+- [ ] Optional: `tools_available.markdownlint`, `tools_available.broken_links` aktiv und gruen
 
 ---
 

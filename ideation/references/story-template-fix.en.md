@@ -31,10 +31,13 @@ For bug fixes, refactors, and small changes. Less overhead than the feature temp
 - Checkboxes, testable
 
 ### 6. Security Impact (MANDATORY)
-- Change type: `none | api | auth | data | dependency | ci | governance | external-provider`
+- Change type: `none | api | auth | data | dependency | ci | governance | external-provider | workflow | config | infrastructure | content`
 - Does the fix touch sensitive paths, external inputs, secrets, auth, data storage, or CI/governance?
 - Which sections from `SECURITY.md` must `/implement` read?
 - If there is no security impact: briefly explain why.
+
+> **Non-code fixes** (`workflow | config | infrastructure | content`): For pure n8n / IaC / config / content fixes,
+> `/implement` skips the code gates and promotes 6c/6d/6e to mandatory. Details: `implement/references/non-code-flow.md`.
 
 ### 7. Security Validation (MANDATORY for code, security, tooling, dependency, CI, or governance changes)
 - Which checks must run before `Done`?

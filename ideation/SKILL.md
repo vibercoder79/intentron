@@ -199,6 +199,13 @@ ADD + Story-Template kombinieren. Der Draft besteht aus:
 - **Feature/Agent**: Siehe [references/story-template-feature.md](references/story-template-feature.md)
 - **Fix/Refactoring**: Siehe [references/story-template-fix.md](references/story-template-fix.md)
 
+> **Change-Type aktiv waehlen — auch fuer Non-Code-Stories.** Das Feld `Change-Type` in
+> Sektion 8 (Security Impact) ist NICHT optional. Wenn die Story keinen klassischen Code-Diff
+> erzeugt (n8n-/Make-/Zapier-Workflow, Terraform/Pulumi/IaC, reine Cloud-/App-Configs,
+> CMS-Content-Migration), setze einen Non-Code-Wert: `workflow | config | infrastructure | content`.
+> Dadurch verzweigt `/implement` Schritt 5.7 und macht die Soft-Gates 6c/6d/6e zu Hard Gates,
+> statt die Code-Gates leer durchlaufen zu lassen. Erklaerung: `implement/references/non-code-flow.md`.
+
 **ADD als Anhang** (bei Features):
 - Das ADD wird als Kommentar an die Linear-Story angehaengt
 - Oder als eingeklappte Sektion (`<details>`) im Story-Body

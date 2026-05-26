@@ -44,11 +44,19 @@ Every feature story MUST follow this structure.
 - Checkboxes, testable, concrete
 
 ### 8. Security Impact (MANDATORY)
-- Change type: `none | api | auth | data | dependency | ci | governance | external-provider`
+- Change type: `none | api | auth | data | dependency | ci | governance | external-provider | workflow | config | infrastructure | content`
 - New or changed attack surface?
 - Are personal data, secrets, tokens, cookies, or external providers touched?
 - Which sections from `SECURITY.md` and which security references must `/implement` read?
 - If there is no security impact: explicitly explain why; do not leave this empty.
+
+> **Non-code change types** (`workflow | config | infrastructure | content`):
+> These stories do not produce a classic code diff (n8n/Make/Zapier workflow,
+> Terraform/Pulumi/CloudFormation, pure config/IAM/DNS/CORS, CMS content). `/implement`
+> explicitly skips the code gates (6a/6a-bis/6a-tris/6a-quart) and promotes 6c/6d/6e to
+> **hard gates** — no PASS without documented architecture, smoke test, and security evidence.
+> Sensitive paths declared in `.claude/sensitive-paths.json` (e.g. `n8n/**`, `infra/**`, `**/*.tf`)
+> still trigger the mandatory human review. Details: `implement/references/non-code-flow.md`.
 
 ### 9. Security Validation (MANDATORY for code, security, tooling, dependency, CI, or governance changes)
 - Which local checks must run? (e.g. Semgrep, dependency-check, tests, manual review)

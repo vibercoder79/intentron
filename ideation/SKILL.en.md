@@ -199,6 +199,13 @@ Combine the ADD + story template. The draft consists of:
 - **Feature/agent:** see [references/story-template-feature.en.md](references/story-template-feature.en.md)
 - **Fix/refactor:** see [references/story-template-fix.en.md](references/story-template-fix.en.md)
 
+> **Actively pick a change type — including for non-code stories.** The `Change type` field in
+> section 8 (Security Impact) is NOT optional. If the story does not produce a classic code diff
+> (n8n / Make / Zapier workflow, Terraform / Pulumi / IaC, pure cloud or app configs, CMS content
+> migration), set a non-code value: `workflow | config | infrastructure | content`. This causes
+> `/implement` step 5.7 to branch and promote soft gates 6c/6d/6e to hard gates, instead of
+> letting the code gates pass empty. Reference: `implement/references/non-code-flow.md`.
+
 **ADD as attachment** (for features):
 - The ADD gets attached as a comment on the Linear story
 - Or as a collapsed section (`<details>`) in the story body

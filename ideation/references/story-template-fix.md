@@ -31,10 +31,13 @@ Fuer Bug-Fixes, Refactorings und kleine Aenderungen. Weniger Overhead als Featur
 - Checkboxen, testbar
 
 ### 6. Security Impact (PFLICHT)
-- Change-Type: `none | api | auth | data | dependency | ci | governance | external-provider`
+- Change-Type: `none | api | auth | data | dependency | ci | governance | external-provider | workflow | config | infrastructure | content`
 - Beruehrt der Fix sensible Pfade, externe Inputs, Secrets, Auth, Datenhaltung oder CI/Governance?
 - Welche Sektionen aus `SECURITY.md` muessen in `/implement` gelesen werden?
 - Falls kein Security-Impact: kurz begruenden.
+
+> **Non-Code Fixes** (`workflow | config | infrastructure | content`): Bei reinen n8n-/IaC-/Config-/Content-Fixes
+> skippt `/implement` die Code-Gates und macht 6c/6d/6e zur Pflicht. Details: `implement/references/non-code-flow.md`.
 
 ### 7. Security Validation (PFLICHT bei Code-, Security-, Tooling-, Dependency-, CI- oder Governance-Aenderungen)
 - Welche Checks muessen vor `Done` laufen?
