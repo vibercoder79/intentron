@@ -1,10 +1,11 @@
 ---
 name: architecture-review
+recommended_model: opus  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
 description: |
   Architecture review for individual stories or the whole system. Checks the active
   architecture dimensions (8 standard + active add-ons) and identifies risks, tech debt and improvement potential.
   Use when the operator says "check architecture", "review", "does this fit architecturally" or "/architecture-review".
-version: 1.11.0
+version: 1.12.0
 language: en
 metadata:
   hermes:

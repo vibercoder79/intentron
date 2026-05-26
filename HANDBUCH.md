@@ -2479,6 +2479,76 @@ The bundle is Tobias' operating system for Code-Crash engineering. Schrader desc
 
 Schrader delivers the theory. This bundle delivers the practice — skill code, conventions, hooks, CI gates. Every concept in the book has an executable counterpart here. The decoder you just read is the skeleton for a follow-up book Tobias is planning: a hands-on companion that expands each chapter into concrete operating instructions and shows how to actually run a Schrader-style engineering org day to day.
 
+## Appendix N: Token-Efficiency Policy (BOO-84) — Model Routing + Prompt Caching
+
+Code-Crash operators waste Anthropic tokens when every skill runs on the operator's default model (usually Opus). This appendix explains both levers the framework uses by default — **per-skill model routing** and **prompt caching for reused blocks**. Both follow the lightweight design decision: recommendation rather than hard lock, operator override always possible, audit trail for compliance.
+
+### N.1 Model-Routing Policy
+
+Each skill carries `recommended_model: haiku | sonnet | opus` in its frontmatter — a **tier**, not a version number. Tier-to-version mapping (Haiku 4.5, Sonnet 4.6, Opus 4.7) lives centrally in `bootstrap/references/model-tiers.json` and is updated once per Anthropic release. No operator has to touch 11 skill files when a new model ships.
+
+**Routing table**
+
+| Tier | Model class | What for | Default skills |
+|------|-------------|----------|----------------|
+| `haiku` | Claude Haiku | Iteration loops, lints, question generation, small smoke tests | `/implement` steps 6a/6a-bis/6a-tris/6a-quart, lint loops |
+| `sonnet` | Claude Sonnet | Safe default for most skill tasks | `bootstrap`, `backlog`, `visualize`, `sprint-review`, `pitch`, `ideation`, `intent`, `grafana` |
+| `opus` | Claude Opus | Architecture reviews, security findings, threat modeling | `architecture-review`, `cloud-system-engineer`, `/implement` step 6e (security findings) |
+
+**Operator override (two-tier)**
+
+1. **CLI flag** for one-off exceptions: `/implement --model opus`
+2. **CLAUDE.md `model_overrides:` section** for project-wide default changes:
+
+```yaml
+model_overrides:
+  implement-iterations: sonnet   # instead of haiku, because our iterations are more complex
+```
+
+**Precedence:** CLI flag > CLAUDE.md override > skill default tier.
+
+Every override is recorded in `meta.json` under `override_audit` with skill, recommended tier, actual model, operator and timestamp.
+
+**Mandatory Opus (audit argument)**
+
+Security-relevant skills MUST NOT auto-downgrade during a story run. Operator override is possible but logged in the audit trail. That is the hard argument for regulated industries (FINMA, BaFin, MaRisk): per story we can prove which model was used for which task — who switched to a weaker model and why.
+
+**FinOps argument**
+
+For a typical customer engagement (6 months, ~80 stories, all lints + tests + coverage iterated): naive Opus usage costs roughly $400-500 for iteration loops alone. With Haiku routing for these loops: ~$30-40. **Factor 12x cheaper, margin lever 15-25%.** This argument goes into every discovery conversation: "Code-Crash optimises your LLM costs by design."
+
+### N.2 Prompt Caching Explained
+
+Anthropic offers a **90% discount on cached input tokens** (ephemeral cache with 5-min TTL). Code-Crash uses this systematically for blocks read multiple times within a story iteration — without the operator having to set cache markers manually.
+
+**What gets cached**
+
+- **SKILL.md files** of all loaded skills (5-15k tokens each) — read on every iteration of the skill.
+- **Project constitution** (`CONVENTIONS.md`, 20-50k tokens) — read on every skill invocation.
+- **`SECURITY.md`, `ARCHITECTURE_DESIGN.md`** — read in architecture reviews and security findings.
+- **Repository map** (`/implement` step 3) — read on every iteration of the implementation phase.
+
+**Constraints**
+
+| Constraint | Value | Why |
+|------------|-------|-----|
+| Minimum block size | 1024 tokens | Anthropic minimum; smaller blocks are not cached. |
+| Cache TTL | 5 minutes | After 5 min without read the cache expires, next iteration pays full price again. |
+| Cache write surcharge | approx. +25% | First write to cache is more expensive than a normal read. Pays off from 2 reads onwards. |
+| Secrets in cache | forbidden | No API key, token or credential may go into a cache block. |
+
+**How we measure it**
+
+Cache hit rate (`cache_read_tokens / (input_tokens + cache_read_tokens)`) is stored per story in `meta.json` as a separate value. `/sprint-review` aggregates it per sprint. Target: above 60% cache hit rate for multi-iteration stories. If the rate is permanently below 30%: cache blocks likely don't fit the skill structure — follow-up story to tune.
+
+**What that means for iteration pain**
+
+A story with 5 lint iterations re-reads `SKILL.md` (10k tokens) and the constitution (30k tokens) on every iteration. Without caching: 5x40k = 200k tokens billed in full. With caching: 1x40k full, then 4x4k (90% discount) = 56k effective cost. **Savings: ~70% from caching alone.** Combined with Haiku routing for these iterations: ~95% cheaper than naive Opus without cache.
+
+**Design-decision note**
+
+Caching is optionally enabled via a Claude-Code hook. If the hook is not set up: everything keeps working, just without the caching benefit and without cost aggregate in the sprint review (`meta.json.token_tracking` stays empty). No hard block — operator can retro-fit caching at any time.
+
 ---
 
 *This handbook is part of the Code-Crash Framework.*
@@ -5319,6 +5389,76 @@ Das Bundle ist mein Operating System fuer Code-Crash-Engineering. Schrader besch
 ![Buch-Uebersicht](docs/schrader-sketches/chapter-overview.png)
 
 Schrader liefert die Theorie, das Bundle liefert die Praxis — Skill-Code, Konventionen, Hooks, CI-Gates. Jedes zentrale Konzept des Buchs hat eine ausfuehrbare Entsprechung in einem Skill, einer BOO oder einer HANDBUCH-Sektion. Dieser Decoder ist gleichzeitig das Skelett fuer ein geplantes Folge-Buch, das die Uebersetzung von Schraders Theorie in operative Praxis vertieft: nicht "was sollte sich aendern", sondern "so machst du es konkret". Bis dahin ist dieser Anhang die kuerzeste Brueckenversion — eine Seite Theorie, eine Seite Bundle, pro Kapitel.
+
+## Anhang N: Token-Effizienz-Policy (BOO-84) — Modell-Routing + Prompt-Caching
+
+Code-Crash-Operatoren bezahlen unnoetig viele Anthropic-Tokens, wenn jeder Skill auf dem Operator-Default-Modell laeuft (meist Opus). Diese Sektion erklaert beide Hebel, die das Framework standardmaessig nutzt — **Modell-Routing pro Skill** und **Prompt-Caching fuer wiederverwendete Bloecke**. Beide folgen dem Designentscheid Leichtgewicht: Empfehlung statt Hard-Lock, Operator-Override jederzeit moeglich, Audit-Trail fuer Compliance.
+
+### N.1 Modell-Routing-Policy
+
+Jeder Skill traegt im Frontmatter `recommended_model: haiku | sonnet | opus` — ein **Tier**, keine Versionsnummer. Die Zuordnung Tier-zu-Version (z.B. Haiku 4.5, Sonnet 4.6, Opus 4.7) lebt zentral in `bootstrap/references/model-tiers.json` und wird einmalig pro Anthropic-Release zentral aktualisiert. So muss kein Operator 11 Skill-Files anfassen, wenn ein neues Modell erscheint.
+
+**Routing-Tabelle**
+
+| Tier | Modell-Klasse | Wofuer | Default-Skills |
+|------|---------------|--------|----------------|
+| `haiku` | Claude Haiku | Iterations-Loops, Lints, Frage-Generierung, kleine Smoke-Tests | `/implement` Schritte 6a/6a-bis/6a-tris/6a-quart, Lint-Loops |
+| `sonnet` | Claude Sonnet | Sicherer Default fuer die meisten Skill-Aufgaben | `bootstrap`, `backlog`, `visualize`, `sprint-review`, `pitch`, `ideation`, `intent`, `grafana` |
+| `opus` | Claude Opus | Architektur-Reviews, Security-Findings, Threat Modeling | `architecture-review`, `cloud-system-engineer`, `/implement` Schritt 6e (Security-Findings) |
+
+**Operator-Override (zweistufig)**
+
+1. **CLI-Flag** fuer einmalige Ausnahmen: `/implement --model opus`
+2. **CLAUDE.md `model_overrides:` Sektion** fuer projekt-weite Default-Aenderung:
+
+```yaml
+model_overrides:
+  implement-iterations: sonnet   # statt haiku, weil unsere Iterationen komplexer sind
+```
+
+**Praezedenz:** CLI-Flag > CLAUDE.md-Override > Skill-Default-Tier.
+
+Jeder Override wird in `meta.json` unter `override_audit` festgehalten mit Skill, empfohlenem Tier, genutztem Modell, Operator und Zeitstempel.
+
+**Pflicht-Bleibt-Opus (Audit-Argument)**
+
+Security-relevante Skills duerfen pro Story-Lauf **nicht** automatisch auf ein schwaecheres Tier downgrade-en. Operator-Override moeglich, aber im Audit-Trail festgehalten. Das ist das harte Argument fuer regulierte Branchen (FINMA, BaFin, MaRisk): wir koennen pro Story nachweisen, welches Modell fuer welche Aufgabe genutzt wurde — wer auf ein schwaecheres Modell gewechselt hat und warum.
+
+**FinOps-Argument**
+
+Bei einem typischen Kunden-Engagement (6 Monate, ~80 Stories, alle Lints + Tests + Coverage iteriert): naive Opus-Nutzung kostet ca. $400-500 nur fuer Iterations-Loops. Mit Haiku-Routing fuer diese Loops: ~$30-40. **Faktor 12x guenstiger, Marge-Hebel 15-25%.** Dieses Argument geht in jedes Discovery-Gespraech: "Code-Crash optimiert deine LLM-Kosten by design."
+
+### N.2 Prompt-Caching technisch erklaert
+
+Anthropic gibt einen **90% Rabatt auf gecachte Input-Tokens** (Ephemeral Cache mit 5-Min-TTL). Code-Crash nutzt das systematisch fuer Bloecke, die innerhalb einer Story-Iteration mehrfach gelesen werden — ohne dass der Operator manuell Cache-Marker setzen muss.
+
+**Was wird gecacht**
+
+- **SKILL.md-Files** aller geladenen Skills (jeweils 5-15k Tokens) — werden in jeder Iteration des Skills gelesen.
+- **Project-Constitution** (`CONVENTIONS.md`, 20-50k Tokens) — wird in jedem Skill-Aufruf gelesen.
+- **`SECURITY.md`, `ARCHITECTURE_DESIGN.md`** — gelesen in Architektur-Reviews und Security-Findings.
+- **Repository-Map** (`/implement` Schritt 3) — gelesen in jeder Iteration der Implementierungs-Phase.
+
+**Constraints**
+
+| Constraint | Wert | Warum |
+|------------|------|-------|
+| Mindest-Block-Groesse | 1024 Tokens | Anthropic-Minimum; kleinere Bloecke werden nicht gecacht. |
+| Cache TTL | 5 Minuten | Nach 5 Min ohne Read laeuft der Cache ab, naechste Iteration zahlt wieder voll. |
+| Cache-Write-Aufschlag | ca. +25% | Erster Write ins Cache ist teurer als ein normaler Read. Lohnt sich ab 2 Reads. |
+| Secrets im Cache | verboten | Kein API-Key, Token oder Credential darf in einen Cache-Block. |
+
+**Wie wir das messen**
+
+Cache-Hit-Rate (`cache_read_tokens / (input_tokens + cache_read_tokens)`) wird in jeder Story-`meta.json` als eigener Wert gespeichert. `/sprint-review` aggregiert das pro Sprint. Ziel-Wert: ueber 60% Cache-Hit-Rate bei mehr-iterativen Stories. Wenn die Rate dauerhaft unter 30% liegt: vermutlich passen Cache-Bloecke nicht zur Skill-Struktur — Folge-Story zur Tuning-Iteration.
+
+**Was das fuer Iterations-Schmerzen heisst**
+
+Bei einer Story mit 5 Lint-Iterationen liest jeder Iterations-Aufruf die `SKILL.md` (10k Tokens) und die Constitution (30k Tokens) neu. Ohne Caching: 5x40k = 200k Tokens voll bezahlt. Mit Caching: 1x40k voll, dann 4x4k (90% Rabatt) = 56k effektive Kosten. **Ersparnis: ~70% nur durch Caching.** Kombiniert mit Haiku-Routing fuer diese Iterationen: ~95% guenstiger als naive Opus + kein Cache.
+
+**Designentscheid-Hinweis**
+
+Cache ist optional aktivierbar via Claude-Code-Hook. Wenn der Hook nicht eingerichtet ist: alles funktioniert weiter, nur ohne Caching-Vorteil und ohne Cost-Aggregat im Sprint-Review (`meta.json.token_tracking` bleibt leer). Kein Hard-Block — Operator kann Caching jederzeit nachruesten.
 
 ---
 

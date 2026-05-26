@@ -1,12 +1,13 @@
 ---
 name: cloud-system-engineer
+recommended_model: opus  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
 description: |
   Cloud System Engineer for VPS environments. Checks infrastructure, security,
   Docker container status, DNS, firewall and resources. Can be used as a teammate in
   agent teams (ideation, implementation) or standalone for infrastructure tasks.
   Use when the operator says "check environment", "infrastructure", "cloud", "firewall",
   "server status", "VPS", "Hostinger" or "/cloud-system-engineer".
-version: 1.0.0
+version: 1.1.0
 language: en
 requires_mcp:
   - name: hostinger-mcp

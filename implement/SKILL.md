@@ -1,11 +1,12 @@
 ---
 name: implement
+recommended_model: sonnet  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
 description: |
   Implementierungs-Protokoll fuer CLAW User Stories. 8-Schritte-Workflow von Issue-Identifikation
   bis Ergebnis-Tabelle inkl. Post-Implement Validation. Verwenden wenn der Operator "los" sagt,
   eine Story umsetzen will, oder "/implement" ausfuehrt. Wird auch vom Automation Daemon genutzt
   (ohne Human-in-the-Loop).
-version: 2.9.0
+version: 2.10.0
 metadata:
   hermes:
     category: coding
@@ -619,15 +620,33 @@ Nach erfolgreicher Validation:
 - Backlog-Record/Adapter → Done + Kommentar/Ergebnisnotiz (inkl. Validation-Ergebnis)
 - Obsidian Change-Log via `linear.writeChangeLog()`
 
-**6f-bis) meta.json schreiben (BOO-36)**
+**6f-bis) meta.json schreiben (BOO-36, erweitert um BOO-84 Token-Tracking)**
 
 Am Ende des Runs — egal ob PASS, FAIL oder STOP — wird `meta.json` ins Run-Verzeichnis geschrieben. Audit-Spur fuer `/sprint-review`.
+
+Seit BOO-84 enthaelt das Schema zusaetzlich **drei Ebenen Token-Tracking** (pro Iteration, pro Skill-Aufruf, pro Story) plus **Cache-Hit-Rate** und einen **Override-Audit-Trail**. Tatsaechliche Token-Werte werden idealerweise via Claude-Code-PostToolUse-Hook in `.claude/last-run-tokens.json` zwischengespeichert und beim meta.json-Schreiben gemerged. Wenn Hook nicht aktiv: Operator paste die Token-Counts manuell ein (Claude Code zeigt sie am Session-Ende an), oder die Felder bleiben `null` (kein Cost-Aggregat im Sprint-Review fuer diese Story).
 
 ```bash
 RUN_COMPLETED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 # RUN_FINAL_STATUS aus Schritt 6f setzen: "passed" | "failed" | "stopped_iteration_limit"
 # ENVIRONMENT aus .claude/environment.json laden (mac/vps/ci) — Default "unknown" wenn Datei fehlt
 ENVIRONMENT=$(jq -r .environment .claude/environment.json 2>/dev/null || echo "unknown")
+
+# BOO-84: Token-Tracking-Daten aus optionalem Hook-Cache laden, sonst leeres Skelett
+TOKEN_CACHE=".claude/last-run-tokens.json"
+if [ -f "$TOKEN_CACHE" ]; then
+  TOKENS_JSON=$(cat "$TOKEN_CACHE")
+else
+  TOKENS_JSON='{"iterations": [], "skill_invocations": [], "story_totals": null, "cache_hit_rate": null}'
+fi
+
+# BOO-84: Override-Audit-Trail aus optionalem Cache laden, sonst leeres Array
+OVERRIDE_CACHE=".claude/last-run-overrides.json"
+if [ -f "$OVERRIDE_CACHE" ]; then
+  OVERRIDE_JSON=$(cat "$OVERRIDE_CACHE")
+else
+  OVERRIDE_JSON='[]'
+fi
 
 cat > "${RUN_DIR}/meta.json" <<EOF
 {
@@ -641,12 +660,17 @@ cat > "${RUN_DIR}/meta.json" <<EOF
     "coverage": ${ITER_COVERAGE}
   },
   "final_status": "${RUN_FINAL_STATUS}",
-  "environment": "${ENVIRONMENT}"
+  "environment": "${ENVIRONMENT}",
+  "token_tracking": ${TOKENS_JSON},
+  "override_audit": ${OVERRIDE_JSON}
 }
 EOF
+
+# Nach erfolgreichem Schreiben: Caches loeschen, damit naechster Run frisch startet
+rm -f "$TOKEN_CACHE" "$OVERRIDE_CACHE"
 ```
 
-**Schema (Fixwert, nicht erweiterbar in dieser Iteration):**
+**Schema (BOO-84-erweitert):**
 
 ```json
 {
@@ -660,7 +684,50 @@ EOF
     "coverage": 1
   },
   "final_status": "passed",
-  "environment": "mac"
+  "environment": "mac",
+  "token_tracking": {
+    "iterations": [
+      {
+        "iteration_label": "step-6a-eslint-1",
+        "skill_invoked": "implement-iterations",
+        "model_used": "claude-haiku-4-5-20251001",
+        "model_tier": "haiku",
+        "input_tokens": 4500,
+        "output_tokens": 800,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 12000
+      }
+    ],
+    "skill_invocations": [
+      {
+        "skill_invoked": "implement-iterations",
+        "model_tier_default": "haiku",
+        "iterations_count": 3,
+        "input_tokens_total": 13500,
+        "output_tokens_total": 2400,
+        "cache_creation_tokens_total": 0,
+        "cache_read_tokens_total": 36000
+      }
+    ],
+    "story_totals": {
+      "input_tokens": 28000,
+      "output_tokens": 5400,
+      "cache_creation_tokens": 4500,
+      "cache_read_tokens": 72000,
+      "estimated_cost_usd": 0.18
+    },
+    "cache_hit_rate": 0.85
+  },
+  "override_audit": [
+    {
+      "skill": "implement-iterations",
+      "recommended_tier": "haiku",
+      "actual_model": "claude-sonnet-4-6",
+      "override_origin": "cli-flag",
+      "operator": "tobias",
+      "timestamp": "2026-04-27T14:32:00Z"
+    }
+  ]
 }
 ```
 
@@ -670,6 +737,18 @@ EOF
 - `iterations.<gate>`: Anzahl Iterationen pro Gate, 0 wenn Gate uebersprungen
 - `final_status`: `passed` (Gate alle gruen) | `failed` (Gate-Block ohne Iterations-Limit) | `stopped_iteration_limit` (Iteration 5 erreicht ohne gruen)
 - `environment`: `mac` | `vps` | `ci` | `unknown` (aus `.claude/environment.json`)
+- `token_tracking.iterations[]`: pro Iteration eine Zeile — feinster Drill-Down
+- `token_tracking.skill_invocations[]`: pro Skill-Aufruf aggregiert
+- `token_tracking.story_totals`: gesamte Story-Summe + USD-Cost (Pricing aus `bootstrap/references/model-tiers.json`)
+- `token_tracking.cache_hit_rate`: `cache_read_tokens / (input_tokens + cache_read_tokens)` — Optimierungs-Effekt
+- `override_audit[]`: jedes Mal wenn der Operator das empfohlene Modell uebergeht (CLI-Flag oder CLAUDE.md), wird hier protokolliert
+- `override_audit[].override_origin`: `cli-flag` | `claude-md` | `none` (none bedeutet: empfohlenes Tier wurde genutzt, normalerweise kein Eintrag)
+
+**Verantwortlichkeiten (BOO-84):**
+- Claude-Code-PostToolUse-Hook (optional, Folge-Setup) schreibt `.claude/last-run-tokens.json` und `.claude/last-run-overrides.json` waehrend des Runs.
+- `/implement` Schritt 6f-bis mergt diese in `meta.json` und loescht die Caches.
+- Wenn Hook nicht aktiv: Felder bleiben leer (`token_tracking: { ... cache_hit_rate: null }` und `override_audit: []`). Kein Story-Lauf blockiert, aber Sprint-Review zeigt fuer diese Story kein Cost-Aggregat.
+- USD-Cost-Berechnung passiert OPTIONAL im `/sprint-review`-Skill mittels `bootstrap/references/model-tiers.json` — Pricing zentral, nicht in jeder meta.json dupliziert.
 
 **Wichtig — Verantwortlichkeits-Trennung:**
 - `/implement` schreibt NUR raw Outputs nach `journal/reports/local/` — inkl. `meta.json`.

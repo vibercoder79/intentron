@@ -1,10 +1,11 @@
 ---
 name: backlog
+recommended_model: sonnet  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
 description: |
   Sprint planning and backlog overview. Loads all issues, analyzes dependencies
   and proposes a prioritized order.
   Use when the operator says "what's up", "backlog", "sprint planning", "priorities" or "/backlog".
-version: 1.4.0
+version: 1.5.0
 language: en
 metadata:
   hermes:

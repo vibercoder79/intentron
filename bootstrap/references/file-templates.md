@@ -117,6 +117,47 @@ Nach Feature-Entwicklung:
 1. Code committen + pushen
 2. CLAUDE.md + Changelog updaten
 3. Operator informieren: "Feature X fertig"
+
+## Model-Routing-Policy (BOO-84)
+
+Pro Skill ist ein **empfohlenes Modell-Tier** definiert (siehe Skill-Frontmatter `recommended_model`). Die Tier-zu-Version-Mappings und Pricing sind zentral in `bootstrap/references/model-tiers.json` des Code-Crash Frameworks gepflegt.
+
+| Tier | Modell-Klasse | Wofuer | Default fuer Skills |
+|------|--------------|--------|---------------------|
+| `haiku` | Claude Haiku | Iterations-Loops, Lints, Frage-Generierung, kleine Smoke-Tests | `/implement` Schritte 6a/6a-bis/6a-tris/6a-quart, Lint-Loops |
+| `sonnet` | Claude Sonnet | Sicherer Default fuer die meisten Skill-Aufgaben | `bootstrap`, `backlog`, `visualize`, `sprint-review`, `pitch`, `ideation`, `intent` |
+| `opus` | Claude Opus | Architektur-Reviews, Security-Findings, Threat Modeling | `architecture-review`, `cloud-system-engineer`, `/implement` Schritt 6e (Security-Findings) |
+
+### Projekt-weite Overrides
+
+```yaml
+model_overrides:
+  # Skill-Name: gewuenschtes Tier (haiku | sonnet | opus)
+  # Beispiel:
+  # implement-iterations: sonnet   # statt haiku (default), wenn Iterationen komplexer sind
+```
+
+### Einmalige Overrides
+
+Pro Aufruf via CLI-Flag, z.B. `/implement --model opus`. Praezedenz: **CLI-Flag > CLAUDE.md `model_overrides:` > Skill-Default**. Jeder Override wird in `meta.json` mit Skill, empfohlenem Tier, genutztem Modell, Operator und Zeitstempel im `override_audit` festgehalten.
+
+### Pflicht-Bleibt-Opus
+
+Security-relevante Skills (`architecture-review`, `cloud-system-engineer`, `/implement` Schritt 6e) duerfen pro Story-Lauf **nicht** automatisch auf ein schwaecheres Tier downgrade-en. Operator-Override moeglich, aber dokumentiert im Audit-Trail.
+
+## Prompt-Caching (BOO-84)
+
+Prompt-Caching nutzt Anthropics ephemeral cache markers fuer Komponenten mit hoher Wiederverwendung innerhalb einer Story-Iteration. Geltungsbereich:
+
+- **SKILL.md-Files** aller geladenen Skills
+- `CONVENTIONS.md`, `SECURITY.md`, `ARCHITECTURE_DESIGN.md`
+- Repo-Map (in `/implement` Schritt 3 erzeugt)
+
+Constraints:
+- Mindest-Block-Groesse 1024 Tokens (kleinere Bloecke werden ignoriert)
+- Cache TTL 5 Minuten
+- Cache-Bloecke duerfen keine Secrets enthalten (kein API-Key, kein Token)
+- Cache-Hit-Rate wird in `meta.json` als separater Wert getrackt
 ```
 
 ---

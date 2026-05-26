@@ -1,11 +1,12 @@
 ---
 name: sprint-review
+recommended_model: sonnet  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
 description: |
   Periodisches Audit fuer Architektur-Gesundheit, Tech Debt und Backlog-Hygiene — plus
   Learning-Loop-Eintrag (L1/L2/L3) als Pflicht-Schritt. Verwenden fuer periodische Reviews
   oder wenn der Operator "Sprint Review", "Architektur Audit", "Tech Debt", "Aufraumen"
   oder "/sprint-review" sagt.
-version: 2.4.0
+version: 2.5.0
 metadata:
   hermes:
     category: governance
@@ -124,6 +125,57 @@ done | jq -s '
 '
 ```
 
+**Cost-Aggregation (BOO-84):**
+
+Lies `token_tracking` aus allen meta.json des Sprints und berechne Cost-Aggregate via `bootstrap/references/model-tiers.json` (Pricing zentral, nicht in jeder meta.json dupliziert).
+
+```bash
+TIERS_FILE="$(git rev-parse --show-toplevel)/../code-crash-framework/bootstrap/references/model-tiers.json"
+# Fallback: an typischen Framework-Pfaden suchen (Operator-Setup)
+if [ ! -f "$TIERS_FILE" ]; then
+  TIERS_FILE=$(find ~/Documents/GitHub/code-crash-framework -name model-tiers.json -maxdepth 4 2>/dev/null | head -1)
+fi
+
+if [ -n "$TIERS_FILE" ] && [ -f "$TIERS_FILE" ]; then
+  # Cost pro Story aus token_tracking.story_totals.estimated_cost_usd (vom implement-Skill bereits gefuellt wenn Hook aktiv)
+  find journal/reports/local -name "meta.json" -mtime -${SPRINT_DAYS} | while read m; do
+    jq -r '
+      if .token_tracking and .token_tracking.story_totals
+      then
+        {
+          story_id: .story_id,
+          model_breakdown: (
+            (.token_tracking.skill_invocations // [])
+            | group_by(.model_tier_default)
+            | map({tier: .[0].model_tier_default, input: (map(.input_tokens_total) | add), output: (map(.output_tokens_total) | add)})
+          ),
+          cache_hit_rate: .token_tracking.cache_hit_rate,
+          estimated_cost_usd: .token_tracking.story_totals.estimated_cost_usd,
+          override_count: (.override_audit // [] | length)
+        }
+      else
+        {story_id: .story_id, model_breakdown: null, cache_hit_rate: null, estimated_cost_usd: null, override_count: 0}
+      end
+    ' "$m"
+  done | jq -s '
+    {
+      total_cost_usd: (map(.estimated_cost_usd // 0) | add),
+      stories_with_token_data: (map(select(.estimated_cost_usd != null)) | length),
+      stories_without_token_data: (map(select(.estimated_cost_usd == null)) | length),
+      cache_hit_rate_avg: (map(.cache_hit_rate) | map(select(. != null)) | if length > 0 then add / length else null end),
+      override_count_total: (map(.override_count) | add),
+      tier_breakdown: (
+        map(.model_breakdown // []) | flatten
+        | group_by(.tier)
+        | map({tier: .[0].tier, input_tokens: (map(.input) | add), output_tokens: (map(.output) | add)})
+      )
+    }
+  '
+fi
+```
+
+Wenn `model-tiers.json` nicht gefunden wird oder keine Story Token-Daten enthaelt: graceful skip mit `[!info] Cost-Aggregat uebersprungen — model-tiers.json nicht gefunden oder Token-Tracking-Hook nicht aktiv`.
+
 **CI-Reports-Aggregation:**
 
 ```bash
@@ -165,6 +217,23 @@ metrics:
   sonarqube_hotspots_new: 1
   sonarqube_hotspots_resolved: 3
   sonarqube_cognitive_complexity_trend: "stable"
+  # BOO-84 Token-Effizienz-Metriken (alle optional, leer wenn Hook nicht aktiv)
+  cost_breakdown:
+    total_cost_usd: 1.23
+    stories_with_token_data: 3
+    stories_without_token_data: 0
+    cache_hit_rate_avg: 0.78
+    override_count_total: 0
+    tier_breakdown:
+      - tier: haiku
+        input_tokens: 45000
+        output_tokens: 8000
+      - tier: sonnet
+        input_tokens: 85000
+        output_tokens: 18000
+      - tier: opus
+        input_tokens: 12000
+        output_tokens: 4000
 ---
 ```
 

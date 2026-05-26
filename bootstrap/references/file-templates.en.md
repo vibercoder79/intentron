@@ -103,6 +103,47 @@ module.exports = { VERSION, DOC_FILES, CONFIG };
 ## System architecture
 
 See `SYSTEM_ARCHITECTURE.md` and `ARCHITECTURE_DESIGN.md`.
+
+## Model-Routing Policy (BOO-84)
+
+Each skill declares a **recommended model tier** in its frontmatter (`recommended_model`). Tier-to-version mappings and pricing live centrally in `bootstrap/references/model-tiers.json` of the Code-Crash Framework.
+
+| Tier | Model Class | Used For | Default Skills |
+|------|-------------|----------|----------------|
+| `haiku` | Claude Haiku | Iteration loops, lints, question generation, small smoke tests | `/implement` steps 6a/6a-bis/6a-tris/6a-quart, lint loops |
+| `sonnet` | Claude Sonnet | Safe default for most skill tasks | `bootstrap`, `backlog`, `visualize`, `sprint-review`, `pitch`, `ideation`, `intent` |
+| `opus` | Claude Opus | Architecture reviews, security findings, threat modeling | `architecture-review`, `cloud-system-engineer`, `/implement` step 6e (security findings) |
+
+### Project-wide overrides
+
+```yaml
+model_overrides:
+  # skill-name: desired tier (haiku | sonnet | opus)
+  # example:
+  # implement-iterations: sonnet   # instead of haiku (default), when iterations get more complex
+```
+
+### One-off overrides
+
+Per invocation via CLI flag, e.g. `/implement --model opus`. Precedence: **CLI flag > CLAUDE.md `model_overrides:` > skill default**. Every override is recorded in `meta.json` under `override_audit` with skill, recommended tier, actual model, operator and timestamp.
+
+### Mandatory Opus
+
+Security-relevant skills (`architecture-review`, `cloud-system-engineer`, `/implement` step 6e) MUST NOT automatically downgrade to a weaker tier during a story run. Operator override is possible but logged in the audit trail.
+
+## Prompt Caching (BOO-84)
+
+Prompt caching uses Anthropic's ephemeral cache markers for components with high reuse within a story iteration. Scope:
+
+- **SKILL.md files** of all loaded skills
+- `CONVENTIONS.md`, `SECURITY.md`, `ARCHITECTURE_DESIGN.md`
+- Repo map (produced in `/implement` step 3)
+
+Constraints:
+- Minimum block size 1024 tokens (smaller blocks are ignored)
+- Cache TTL 5 minutes
+- Cache blocks must contain no secrets (no API key, no token)
+- Cache hit rate is tracked in `meta.json` as a separate value
 ```
 
 ---

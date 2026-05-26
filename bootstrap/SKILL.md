@@ -1,6 +1,7 @@
 ---
 name: bootstrap
-version: 3.25.0
+recommended_model: sonnet  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
+version: 3.26.0
 description: Setzt ein neues Projekt mit Governance-Framework auf — interaktiver Block-Interview-Flow in 4 Schritten, Doku-Architektur mit Hub-Auto-Verlinkung, optionaler Learning-Loop L1/L2/L3. Verwenden wenn der Operator ein neues Projekt aufsetzen will oder "/bootstrap" sagt.
 tools: [Read, Write, Edit, Bash, Glob, Grep]
 metadata:
@@ -899,6 +900,28 @@ Bei `B.2 == nein/c` (kein GitHub gewuenscht): Phase 4.4k komplett skippen — Br
 - [ ] Test-Story mit Branch `{ISSUE_PREFIX}-XX-test` erstellt — PR-Open transitioniert Issue auf `In Review`
 
 > **Issue-Referenz:** BOO-30/54. Quelle: `references/issue-writing-guidelines-template.de.md` v3.1 + neutraler Backlog-Record. Migration fuer Bestands-Projekte: `references/migration-checklist-v1-to-v2.md` §BOO-30 (Issue-Template-Erweiterung wird automatisch nachgezogen, Tool-Adapter-Setup bleibt projektspezifisch).
+
+### 4.4m Token-Effizienz-Setup (BOO-84)
+
+**Zweck:** Aktiviert das Modell-Routing pro Skill + Prompt-Caching fuer das neue Projekt. Folgt dem Designentscheid Leichtgewichtigkeit: Empfehlung statt Hard-Lock, Operator-Override jederzeit moeglich.
+
+**Schritte:**
+
+1. **Model-Routing-Sektion in `CLAUDE.md` einfuegen.** Das Template aus `references/file-templates.md` §`CLAUDE.md (Minimum)` enthaelt die Sektionen "Model-Routing-Policy (BOO-84)" und "Prompt-Caching (BOO-84)" bereits — beim Rendern automatisch uebernommen.
+2. **`model-tiers.json` referenzieren.** Das zentrale Mapping `bootstrap/references/model-tiers.json` ist Framework-Owned und wird nicht ins Projekt kopiert. Skills lesen es per Framework-Pfad. Operator findet es bei Fragen via `code-crash-framework/bootstrap/references/model-tiers.json`.
+3. **`meta.json`-Schema erweitern.** Implement-Skill (Schritt 6f-bis) schreibt ab jetzt zusaetzliche Felder: `input_tokens`, `output_tokens`, `cache_creation_input_tokens`, `cache_read_input_tokens`, `model_used`, `skill_invoked`, `story_id`, `iteration_label`, plus `override_audit: []` Array fuer Override-Eintraege. Siehe `implement/SKILL.md` §6f-bis.
+4. **Override-Praezedenz dokumentieren.** Operator wird im Briefing informiert: **CLI-Flag `--model <tier>` > CLAUDE.md `model_overrides:` > Skill-Default-Tier**. Jeder Override schreibt einen Audit-Trail-Eintrag.
+5. **Pflicht-Bleibt-Opus dokumentieren.** Security-relevante Skills (`architecture-review`, `cloud-system-engineer`, `/implement` Schritt 6e) duerfen nicht automatisch downgrade-en. Operator-Override moeglich, aber im Audit-Trail festgehalten — Audit-Argument fuer FINMA/BaFin/MaRisk.
+
+**Checkpoint Operator:**
+- [ ] `CLAUDE.md` enthaelt Sektion "Model-Routing-Policy (BOO-84)"
+- [ ] `CLAUDE.md` enthaelt Sektion "Prompt-Caching (BOO-84)"
+- [ ] Operator weiss, dass `bootstrap/references/model-tiers.json` (Framework-Pfad) die Source of Truth fuer Tier-zu-Version + Pricing ist
+- [ ] `meta.json` wird beim ersten `/implement`-Lauf um die neuen Felder erweitert (automatisch durch Skill)
+
+> **Issue-Referenz:** BOO-84. Quelle: `references/file-templates.md` §`CLAUDE.md (Minimum)`, `references/model-tiers.json`. Migration fuer Bestands-Projekte: `references/migration-checklist-v1-to-v2.md` §BOO-84.
+
+> **Designentscheid-Hinweis:** Diese Story folgt dem Code-Crash-Leitsatz "leichtgewichtig + pragmatisch, ohne Security-Kompromisse". Modell-Routing ist eine Empfehlung mit Override-Pfad — kein Hard-Lock. Security-Skills bleiben dokumentiert auf Opus (Audit-Pflicht).
 
 ### Phase 4.10: Domain Deep Research (PFLICHT)
 
