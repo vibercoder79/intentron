@@ -2623,6 +2623,8 @@ The operator maintains `PRIVACY.md` after the initial generation manually — fi
 
 This appendix describes four established setup patterns for the Code-Crash Framework, from a solo operator on a Mac to a multi-user VPS coding factory. It exists because the bootstrap script deliberately asks only **one** additional question (default Solo-Mac) and the details land here, rather than bloating bootstrap. Operators pick their scenario via the decision matrix, read the matching scenario section, and walk through the setup steps once. The framework itself behaves identically in all four scenarios — only the surrounding environment differs.
 
+![Deployment scenarios — the four setup topologies from Solo-Mac to coding factory](docs/assets/boo-70-deployment-scenarios.png)
+
 ### Decision Matrix
 
 | Operator Profile | Recommended Scenario | Primary Reason |
@@ -2828,9 +2830,12 @@ On `a)` the existing bootstrap path runs unchanged. On `b)` bootstrap emits only
 - **Appendix Q (Sovereignty Stack Guide):** Inspiration layer for EU-compliant provider alternatives when data sovereignty is an explicit driver.
 
 Based on BOO-9 (VPS rollout) and BOO-83 (VPS multi-user pattern).
+
 ## Appendix Q: Sovereignty Stack Guide + LLM Proxy Hook (BOO-71)
 
 Code-Crash operators increasingly work in regulated industries — FINMA, BaFin, MaRisk, NIS-2 sectors, public-sector contracts. In those contexts the default stack composition (GitHub, Anthropic USA, iCloud) is not sovereignty-compliant, and an auditor will eventually ask for EU alternatives. This appendix is the **inspiration layer** of the framework: a curated table of EU-compliant components plus a single hook point (`llm_proxy_url`) for operator-run anonymisation or routing proxies. **No anonymisation engine inside the framework itself** — that is runtime infrastructure and belongs in the operator's hands.
+
+![Sovereignty stack — US default vs. EU alternative per component, plus the optional LLM proxy hook](docs/assets/boo-71-sovereignty-stack.png)
 
 ### When is a sovereignty switch worth it?
 

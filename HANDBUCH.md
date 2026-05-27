@@ -3140,6 +3140,8 @@ Operator pflegt `PRIVACY.md` nach der Erstausgabe manuell — fuellt Rechtsgrund
 
 Dieser Anhang beschreibt vier gelebte Setup-Patterns fuer das Code-Crash-Framework, vom Solo-Operator am Mac bis zur Multi-User-VPS-Coding-Factory. Er existiert, weil das Bootstrap-Skript bewusst nur **eine** zusaetzliche Frage stellt (Default Solo-Mac) und Details hier landen, statt den Bootstrap aufzublaehen. Operatoren waehlen ihr Szenario via Decision-Matrix, lesen die zugehoerige Szenario-Sektion und arbeiten die Setup-Schritte einmalig ab. Das Framework selbst funktioniert in allen vier Szenarien gleich — nur die Umgebung drumherum unterscheidet sich.
 
+![Deployment-Szenarien — die vier Setup-Topologien von Solo-Mac bis Coding-Factory](docs/assets/boo-70-deployment-scenarios.png)
+
 ### Decision-Matrix
 
 | Operator-Profil | Empfohlenes Szenario | Hauptgrund |
@@ -3348,6 +3350,8 @@ Basiert auf BOO-9 (VPS-Rollout) und BOO-83 (VPS-Multi-User-Pattern).
 ## Anhang Q: Souveraenitaets-Stack-Guide + LLM-Proxy-Hook (BOO-71)
 
 Code-Crash-Operatoren arbeiten zunehmend in regulierten Branchen — FINMA, BaFin, MaRisk, NIS-2-Pflichtsektoren, Behoerden-Auftraege. In diesen Kontexten ist die Default-Stack-Zusammensetzung (GitHub, Anthropic USA, iCloud) nicht souveraenitaetskonform, und ein Auditor fragt frueher oder spaeter nach EU-Alternativen. Dieser Anhang ist die **Inspirations-Schicht** des Frameworks: eine kuratierte Tabelle EU-konformer Komponenten plus ein einziger Hook-Punkt (`llm_proxy_url`) fuer Operator-seitige Anonymisierungs- oder Routing-Proxys. **Keine Anonymisierungs-Engine im Framework selbst** — das ist Runtime-Infrastruktur und gehoert in die Hand des Operators.
+
+![Souveraenitaets-Stack — US-Default vs. EU-Alternative pro Komponente, plus optionaler LLM-Proxy-Hook](docs/assets/boo-71-sovereignty-stack.png)
 
 ### Wann lohnt der Souveraenitaets-Switch?
 
