@@ -3767,6 +3767,22 @@ Die Skill-Frage ist nur ein Teil. Operatoren mit mehreren Projekten auf einer VP
 
 **Faustregel:** System-Tools + globaler Skill-Pool = einmal pro Maschine, dann egal wie viele Projekte. **Aber Git-Hooks und `environment.json` sind pro Projekt** — bei jedem neuen Repo/Clone neu aufsetzen (Bootstrap bzw. `generate-environment-json.sh` erledigen das). Wer Hooks wirklich einmal will, setzt `core.hooksPath` global.
 
+### Container-Profil (optional, BOO-81)
+
+Der **Default** bleibt System-Install (oben). Fuer **Team-Setups**, wo alle Operatoren eine **identische, reproduzierbare Toolchain** brauchen ("kein works on my machine"), gibt es ein optionales Container-Profil:
+
+- `bootstrap/references/devcontainer/Dockerfile` — schlankes Node+Python-Image mit Semgrep, Ruff, ESLint, jq.
+- `bootstrap/references/devcontainer/devcontainer.json` — VS-Code/CLI-DevContainer, `postCreateCommand` ruft `generate-environment-json.sh`, sodass die Skills die Container-Tools erkennen.
+- Kopieren via Bootstrap-Option oder `migrate-to-v2.sh --issue BOO-81` → landet als `.devcontainer/` im Projekt.
+
+| | System-Install (Default) | Container-Profil (optional) |
+|---|---|---|
+| **Fuer wen** | Solo + die meisten Faelle | Teams mit Versions-Gleichschritt, CI |
+| **Pro** | leichtgewichtig, kein Docker noetig | identische Toolchain fuer alle, CI-wiederverwendbar |
+| **Contra** | Tool-Versionen pro Maschine moeglich verschieden | Docker-Abhaengigkeit, Image-Build-Zeit |
+
+**Entscheid:** Container ist **opt-in**, kein neuer Pflicht-Schritt im Bootstrap — Code-Crash-Leichtgewicht-Prinzip. Wer ihn nutzt, fuehrt im Container `bash scripts/verify-setup.sh` (Anhang T) aus, um die Toolchain zu bestaetigen. Details: `bootstrap/references/devcontainer/README.md`.
+
 ### Verwandte Anhaenge
 
 - **Anhang P (Deployment-Szenarien):** definiert die vier Umgebungen, auf die sich die Decision-Matrix oben bezieht. Szenario 3 (Multi-User-VPS) ist der Haupt-Anwendungsfall fuer den System-Pool.

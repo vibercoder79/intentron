@@ -1229,6 +1229,29 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 
 ---
 
+## §BOO-81 — Optionales Container-Profil (.devcontainer/) — Wave S
+
+**Status:** ✓ in v2-Bundle — **optional**, additiv, nicht-destruktiv. System-Install bleibt Default.
+**Aufwand:** klein (~5 Min, nur wenn Container gewuenscht).
+**Linear:** <https://linear.app/owlist/issue/BOO-81>
+**Auto-Schritt:** ja (`migrate_boo_81`, opt-in).
+
+**Wann ueberspringen:** Solo-Operator oder Team ohne Docker-Wunsch → System-Install (Anhang S) genuegt. Eintrag `✗ — Container nicht genutzt`.
+
+**Auto-Schritte (nur bei Container-Wunsch):**
+
+- `bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-81` — kopiert `.devcontainer/` (Dockerfile + devcontainer.json + README) ins Projekt (nur falls nicht vorhanden).
+
+**Operator-Schritte:**
+
+- [ ] VS Code "Reopen in Container" bzw. `devcontainer up --workspace-folder .`.
+- [ ] Im Container `bash scripts/verify-setup.sh` (Anhang T) → Toolchain-Checks gruen.
+- [ ] Tools im `Dockerfile` projektspezifisch ergaenzen (SonarScanner, Go, ...).
+
+**Verweise:** `bootstrap/references/devcontainer/`, HANDBUCH Anhang S §Container-Profil, `specs/BOO-81.md`.
+
+---
+
 ## Nicht-Skill-Issues (uebersprungen)
 
 Diese Issues betreffen Operator-Tooling, Meta-Arbeit oder Doppelungen und brauchen **keine** Migration in Bestands-Projekten. Sie erscheinen in `migration-status.md` mit Status ✗.

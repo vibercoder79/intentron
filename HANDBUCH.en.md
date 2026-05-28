@@ -3253,6 +3253,22 @@ The skill question is only one part. Operators with several projects on one VPS/
 
 **Rule of thumb:** system tools + global skill pool = once per machine, then it does not matter how many projects. **But git hooks and `environment.json` are per project** — re-set them for every new repo/clone (bootstrap resp. `generate-environment-json.sh` do this). To have hooks truly once, set `core.hooksPath` globally.
 
+### Container profile (optional, BOO-81)
+
+The **default** stays system install (above). For **team setups** where all operators need an **identical, reproducible toolchain** ("no works on my machine"), there is an optional container profile:
+
+- `bootstrap/references/devcontainer/Dockerfile` — lean Node+Python image with Semgrep, Ruff, ESLint, jq.
+- `bootstrap/references/devcontainer/devcontainer.json` — VS Code/CLI dev container; `postCreateCommand` runs `generate-environment-json.sh` so the skills detect the container tools.
+- Copy via a bootstrap option or `migrate-to-v2.sh --issue BOO-81` → lands as `.devcontainer/` in the project.
+
+| | System install (default) | Container profile (optional) |
+|---|---|---|
+| **For whom** | solo + most cases | teams needing version lockstep, CI |
+| **Pro** | lightweight, no Docker needed | identical toolchain for all, CI-reusable |
+| **Con** | tool versions may differ per machine | Docker dependency, image build time |
+
+**Decision:** the container is **opt-in**, not a new mandatory bootstrap step — the Code-Crash lightweight principle. Whoever uses it runs `bash scripts/verify-setup.sh` (Appendix T) inside the container to confirm the toolchain. Details: `bootstrap/references/devcontainer/README.md`.
+
 ### Related appendices
 
 - **Appendix P (Deployment scenarios):** defines the four environments the decision matrix above refers to. Scenario 3 (multi-user VPS) is the main use case for the system pool.

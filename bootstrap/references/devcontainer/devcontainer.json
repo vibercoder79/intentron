@@ -1,0 +1,20 @@
+{
+  "// Code-Crash optionales Container-Profil (BOO-81)": "Reproduzierbare Toolchain fuer Team-Setups. OPTIONAL — System-Install (HANDBUCH Anhang S) bleibt der Default. Details: bootstrap/references/devcontainer/README.md",
+  "name": "code-crash-toolchain",
+  "build": { "dockerfile": "Dockerfile" },
+
+  "// postCreateCommand": "Nach dem Build einmal das Environment-Manifest generieren, damit die Skills die Container-Tools erkennen.",
+  "postCreateCommand": "test -f .claude/generate-environment-json.sh && bash .claude/generate-environment-json.sh --force || true",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "charliermarsh.ruff",
+        "anthropic.claude-code"
+      ]
+    }
+  },
+
+  "remoteUser": "vscode"
+}

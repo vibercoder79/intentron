@@ -3383,6 +3383,39 @@ migrate_boo_80() {
 }
 
 # -----------------------------------------------------------------------------
+# BOO-81 — Optionales Container-Profil (.devcontainer/) in Projekt kopieren
+# -----------------------------------------------------------------------------
+
+migrate_boo_81() {
+    log_info "BOO-81: optionales Container-Profil — .devcontainer/ ins Projekt kopieren (System-Install bleibt Default)"
+    log_info "BOO-81: optional container profile — copy .devcontainer/ into the project (system install stays default)"
+
+    local script_dir framework_root src
+    script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    framework_root="$(cd "${script_dir}/../.." && pwd)"
+    src="${framework_root}/bootstrap/references/devcontainer"
+
+    if [[ ! -d "$src" ]]; then
+        log_warn "BOO-81: ${src} nicht gefunden — Repo-Stand pruefen."
+        return 1
+    fi
+
+    if [[ -d ".devcontainer" ]]; then
+        log_info "BOO-81: .devcontainer/ existiert bereits — keine Aenderung."
+    elif [[ "$DRY_RUN" == "true" ]]; then
+        log_info "[dry-run] ${src}/{Dockerfile,devcontainer.json,README.md} -> .devcontainer/"
+    else
+        mkdir -p .devcontainer
+        cp "$src/Dockerfile" "$src/devcontainer.json" "$src/README.md" .devcontainer/ \
+          && log_info "BOO-81: .devcontainer/ angelegt (Dockerfile + devcontainer.json + README.md)."
+    fi
+
+    log_info "BOO-81: OPTIONAL — nur fuer Team-Setups mit reproduzierbarer Toolchain. Solo = System-Install (Anhang S)."
+    log_info "BOO-81: Nutzung: VS Code 'Reopen in Container' bzw. 'devcontainer up'. Danach 'bash scripts/verify-setup.sh'."
+    log_info "BOO-81 done."
+}
+
+# -----------------------------------------------------------------------------
 # CLI / Argument Parsing
 # -----------------------------------------------------------------------------
 
@@ -3401,7 +3434,7 @@ ALL_ISSUES=(
     BOO-72
     BOO-74
     BOO-75 BOO-76 BOO-77
-    BOO-79 BOO-80
+    BOO-79 BOO-80 BOO-81
 )
 
 print_help() {
