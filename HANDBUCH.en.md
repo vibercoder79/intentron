@@ -3189,6 +3189,67 @@ Spec: BOO-72. Operator question Tobias 2026-05-27 after the Wave K release. Sket
 
 
 
+## Appendix S: Skill Installation Strategy — where do the skills belong? (BOO-76)
+
+One of the most frequent operator questions: **"Where do I actually install the skills?"** The old blanket answer was "per project" — but that creates update load (every project must be refreshed separately when the skill repo changes). This appendix consolidates the answer, scattered across bootstrap Phase 5, Appendix P (scenario 3) and Appendix R (skill-pool governance), into **one** place and gives a clear recommendation per deployment scenario — also for other AI tools, not just Claude Code.
+
+![Where do the skills belong? — three install levels (global / per-project / system pool) + a per-scenario decision matrix](docs/assets/skill-install-locations.png)
+
+### The three install levels
+
+| Level | Path | Property | When |
+|-------|------|----------|------|
+| **1 — Global per user** | `~/.claude/skills/` | Applies to ALL of the user's projects. **One** update takes effect everywhere. No version pinning. | Default — solo + most cases |
+| **2 — Per project** | `<project>/.claude/skills/` (committed) | Version-pinned, portable, travels with the repo, reproducible for the team. **But:** N projects = N updates, repo grows. | Audit pinning / external handover |
+| **3 — Global system pool** | `/opt/claude/skills/` (read-only) | One pool for all system users of a machine, maintained by the **maintenance owner**. **One** update for the whole machine. | Multi-user VPS |
+
+### The central trade-off (operator's core question)
+
+It is a balance between **update load** and **reproducibility**:
+
+- **Global (level 1/3):** one update, all projects/users benefit immediately. **Risk:** no pinning — a skill change can break a project that relied on the old behaviour.
+- **Per project (level 2):** more update work (each project separately), but every project is **reproducible + audit-proof** — the skill revision travels with the repo and is git-versioned.
+
+**Rule of thumb:** global as default (low friction). Per-project pinning **only** when (a) a project needs a frozen skill revision for audit/reproducibility, or (b) the project is handed to an external team / another tool that does not share the global pool.
+
+### Recommendation per deployment scenario (see Appendix P)
+
+| Scenario | Default location | Per-project pinning when |
+|----------|------------------|--------------------------|
+| **Solo-Mac** | `~/.claude/skills/` (global per user) | only for audit-bound projects |
+| **Solo-VPS** | `~/.claude/skills/` (global per user) | only for audit-bound projects |
+| **Multi-user VPS (e.g. 20 operators)** | `/opt/claude/skills/` (system pool, read-only, maintenance owner) | reproducible client projects |
+| **Team-with-coding-server** | `/opt/claude/skills/` **or** per-project committed | external handover / multi-tool setup |
+
+**The 20-person VPS case concretely:** do **not** install per project (20 users × N projects = update hell). Instead use **one** global system pool under `/opt/claude/skills/`, read-only for all users, maintained by **one** maintenance owner (see Appendix R skill-pool governance). One `git pull` in the pool and all 20 operators have the new revision immediately. Per-user `~/.claude/skills/` only for personal extra skills. Per-project install only when a specific client project needs a frozen, auditable skill revision.
+
+### Cross-tool — not just Claude Code
+
+The install levels apply analogously to other AI tools (see Appendix K Tool-Adapter):
+
+| Tool | Global | Per project |
+|------|--------|-------------|
+| **Claude Code** | `~/.claude/skills/` | `<project>/.claude/skills/` |
+| **Codex** | (tool-specific) | `<project>/.codex/skills/` |
+| **Others (Cursor, Copilot, ...)** | tool-specific | via Appendix K Tool-Adapter (e.g. `AGENTS.md` as a universal bridge) |
+
+**Multi-tool teams:** when a team mixes several AI tools, the **per-project committed approach is more portable** — each tool finds "its" skills in the repo (`.claude/skills/`, `.codex/skills/`) instead of depending on a tool-specific global pool. Bootstrap supports this via `RUNTIME_TARGET` (claude-code / codex / cross-tool) in Phase 5.
+
+### How bootstrap handles it
+
+Bootstrap Phase 5 installs into `.claude/skills/` and/or `.codex/skills/` (per project) depending on `RUNTIME_TARGET`. For the **global** pool (level 1/3), installation is the operator's job (`git clone` into `~/.claude/skills/` or `/opt/claude/skills/`) — bootstrap does not force a level, it documents the choice. The DPO/security-architect bundle skills (BOO-74) come from the same framework repo regardless of level.
+
+### Related appendices
+
+- **Appendix P (Deployment scenarios):** defines the four environments the decision matrix above refers to. Scenario 3 (multi-user VPS) is the main use case for the system pool.
+- **Appendix R (Multi-operator coordination):** the maintenance-owner role + skill-pool governance (global vs. per user, drift audit) is described there.
+- **Appendix K (Tool-Adapter):** how the framework is used with other AI tools — the basis for the cross-tool view.
+- **Bootstrap Phase 5:** the per-project installation (`RUNTIME_TARGET`-driven).
+
+Source: recurring operator question Tobias 2026-05-28. Consolidates bootstrap Phase 5 + Appendix P scenario 3 + Appendix R.
+
+---
+
 *This handbook is part of the Code-Crash Framework.*
 *GitHub: github.com/vibercoder79/code-crash-framework*
-*Last updated: 2026-05-27 (Appendix O switched to DPO as a framework bundle skill — BOO-74, Wave M; Appendix R Multi-Operator Coordination — BOO-72, Wave L)*
+*Last updated: 2026-05-28 (Appendix S Skill Installation Strategy added — BOO-76; Appendix R Layer 3 vault harvest — BOO-75; all Wave J-M appendices visualised)*

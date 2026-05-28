@@ -3247,6 +3247,43 @@ migrate_boo_74() {
 }
 
 # -----------------------------------------------------------------------------
+# BOO-75 — Vault-Harvest-Pattern (HANDBUCH Anhang R Layer 3) — Wave N
+# -----------------------------------------------------------------------------
+
+migrate_boo_75() {
+    log_info "BOO-75: Vault-Harvest-Pattern — HANDBUCH Anhang R Layer 3 (Repo-Docs + persoenlicher Vault)"
+    log_info "BOO-75: Vault-harvest pattern — HANDBUCH Appendix R Layer 3 (repo docs + personal vault)"
+
+    # Reines Doku-Issue: keine File-Operationen, nur Hinweis. Engine bleibt in Stefans Repo.
+    log_info "BOO-75: HANDBUCH Anhang R Layer 3 + Bootstrap Block B.3 Option [e] sind jetzt verfuegbar."
+    log_info "BOO-75: Operator-Schritte:"
+    log_info "  1. HANDBUCH Anhang R Layer 3 (Vault-Harvest-Pattern, 2-Fluss-Modell) lesen."
+    log_info "  2. Grundsatz: Obsidian = Solo-Werkzeug. Im Team lebt die Doku im GitHub-Repo unter docs/."
+    log_info "  3. Bei Team-mit-Obsidian-Nutzern: Bootstrap-Frage B.3 Option [e] waehlen (Repo-Docs + persoenlicher Vault-Harvest)."
+    log_info "  4. Config-Scaffold: bootstrap/references/vault-sync-pattern.md (Team-Vertrag + local.json-Schema)."
+    log_info "  5. Engine (Sync-Skript) liegt in StefanWeimarPRODOC/project-template (Phase 2 = Vendoring, separate Story)."
+    log_info "BOO-75 done. Doku-only, keine Repository-Aenderung noetig."
+}
+
+# -----------------------------------------------------------------------------
+# BOO-76 — Skill-Installations-Strategie (HANDBUCH Anhang S) — Wave N
+# -----------------------------------------------------------------------------
+
+migrate_boo_76() {
+    log_info "BOO-76: Skill-Installations-Strategie — HANDBUCH Anhang S (wo gehoeren Skills hin)"
+    log_info "BOO-76: Skill installation strategy — HANDBUCH Appendix S (where do skills belong)"
+
+    # Reines Doku-Issue: keine File-Operationen, nur Hinweis.
+    log_info "BOO-76: HANDBUCH Anhang S / Appendix S ist jetzt im Framework verfuegbar."
+    log_info "BOO-76: Operator-Schritte:"
+    log_info "  1. HANDBUCH Anhang S lesen — 3 Install-Ebenen (global pro User / pro Projekt / System-Pool) + Decision-Matrix."
+    log_info "  2. Install-Ebene pro Deployment-Szenario waehlen: Solo → ~/.claude/skills/; Multi-User-VPS → /opt/claude/skills/ (Wartungs-Owner); Team-Server → System-Pool oder pro-Projekt."
+    log_info "  3. Pro-Projekt-Pinning nur fuer audit-pflichtige oder extern uebergebene Projekte."
+    log_info "  4. Multi-Tool-Teams: pro-Projekt committed ist portabler (Cross-Tool via Anhang K)."
+    log_info "BOO-76 done. Doku-only, keine Repository-Aenderung noetig."
+}
+
+# -----------------------------------------------------------------------------
 # CLI / Argument Parsing
 # -----------------------------------------------------------------------------
 
@@ -3264,6 +3301,7 @@ ALL_ISSUES=(
     BOO-70 BOO-71
     BOO-72
     BOO-74
+    BOO-75 BOO-76
 )
 
 print_help() {

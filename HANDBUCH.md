@@ -3703,8 +3703,67 @@ Klare Abgrenzung zur Code-Crash-Philosophie "leichtgewichtig + pragmatisch":
 
 Spec: BOO-72. Operator-Frage Tobias 2026-05-27 nach Wave-K-Release. Sketch: [docs/assets/boo-72-multi-operator-3-layer.png](docs/assets/boo-72-multi-operator-3-layer.png).
 
+## Anhang S: Skill-Installations-Strategie — wo gehoeren die Skills hin? (BOO-76)
+
+Eine der haeufigsten Operator-Fragen: **"Wo installiere ich die Skills eigentlich?"** Frueher hiess die Antwort pauschal "auf Projektebene" — aber das erzeugt Update-Last (jedes Projekt einzeln nachziehen, wenn sich das Skill-Repo aendert). Dieser Anhang konsolidiert die ueber Bootstrap Phase 5, Anhang P (Szenario 3) und Anhang R (Skill-Pool-Governance) verstreute Antwort an **einer** Stelle und gibt eine klare Empfehlung pro Deployment-Szenario — auch fuer andere KI-Tools, nicht nur Claude Code.
+
+![Wo gehoeren die Skills hin? — drei Install-Ebenen (global / pro-Projekt / System-Pool) + Decision-Matrix pro Szenario](docs/assets/skill-install-locations.png)
+
+### Die drei Install-Ebenen
+
+| Ebene | Pfad | Eigenschaft | Wann |
+|-------|------|-------------|------|
+| **1 — Global pro User** | `~/.claude/skills/` | Gilt fuer ALLE Projekte des Users. **Ein** Update wirkt ueberall. Kein Versions-Pinning. | Default — Solo + die meisten Faelle |
+| **2 — Pro Projekt** | `<projekt>/.claude/skills/` (committed) | Versions-gepinnt, portabel, reist mit dem Repo, reproduzierbar fuer das Team. **Aber:** N Projekte = N Updates, Repo waechst. | Audit-Pinning / externe Uebergabe |
+| **3 — Globaler System-Pool** | `/opt/claude/skills/` (read-only) | Ein Pool fuer alle System-User einer Maschine, gepflegt vom **Wartungs-Owner**. **Ein** Update fuer die ganze Maschine. | Multi-User-VPS |
+
+### Der zentrale Tradeoff (Operator-Kernfrage)
+
+Es ist ein Abwaegen zwischen **Update-Last** und **Reproduzierbarkeit**:
+
+- **Global (Ebene 1/3):** Ein Update, alle Projekte/User profitieren sofort. **Risiko:** kein Pinning — eine Skill-Aenderung kann ein Projekt brechen, das auf altes Verhalten gebaut hat.
+- **Pro Projekt (Ebene 2):** Mehr Update-Arbeit (jedes Projekt einzeln), aber jedes Projekt ist **reproduzierbar + audit-fest** — der Skill-Stand reist mit dem Repo und ist git-versioniert.
+
+**Faustregel:** Global als Default (niedrige Reibung). Pro-Projekt-Pinning **nur** wenn (a) ein Projekt einen eingefrorenen Skill-Stand fuer Audit/Reproduzierbarkeit braucht, oder (b) das Projekt an ein externes Team / anderes Tool uebergeben wird, das den globalen Pool nicht teilt.
+
+### Empfehlung pro Deployment-Szenario (Bezug Anhang P)
+
+| Szenario | Default-Location | Pro-Projekt-Pinning wann |
+|----------|------------------|--------------------------|
+| **Solo-Mac** | `~/.claude/skills/` (global pro User) | nur fuer audit-pflichtige Projekte |
+| **Solo-VPS** | `~/.claude/skills/` (global pro User) | nur fuer audit-pflichtige Projekte |
+| **Multi-User-VPS (z.B. 20 Operatoren)** | `/opt/claude/skills/` (System-Pool, read-only, Wartungs-Owner) | reproduzierbare Kunden-Projekte |
+| **Team-mit-Coding-Server** | `/opt/claude/skills/` **oder** pro-Projekt committed | externe Uebergabe / Multi-Tool-Setup |
+
+**Der 20-Personen-VPS-Fall konkret:** **nicht** pro Projekt installieren (20 User × N Projekte = Update-Hoelle). Stattdessen **ein** globaler System-Pool unter `/opt/claude/skills/`, read-only fuer alle User, gepflegt von **einem** Wartungs-Owner (siehe Anhang R Skill-Pool-Governance). Ein `git pull` im Pool, alle 20 Operatoren haben sofort den neuen Stand. Pro-User-`~/.claude/skills/` nur fuer persoenliche Zusatz-Skills. Pro-Projekt-Install nur, wenn ein konkretes Kunden-Projekt einen eingefrorenen, auditierbaren Skill-Stand braucht.
+
+### Cross-Tool — nicht nur Claude Code
+
+Die Install-Ebenen gelten sinngemaess auch fuer andere KI-Tools (siehe Anhang K Tool-Adapter):
+
+| Tool | Global | Pro Projekt |
+|------|--------|-------------|
+| **Claude Code** | `~/.claude/skills/` | `<projekt>/.claude/skills/` |
+| **Codex** | (toolspezifisch) | `<projekt>/.codex/skills/` |
+| **Andere (Cursor, Copilot, ...)** | toolspezifisch | via Anhang K Tool-Adapter (z.B. `AGENTS.md` als universelle Bruecke) |
+
+**Multi-Tool-Teams:** Wenn ein Team mehrere KI-Tools mischt, ist der **pro-Projekt-committed-Ansatz portabler** — jedes Tool findet "seine" Skills im Repo (`.claude/skills/`, `.codex/skills/`), statt auf einen tool-spezifischen globalen Pool angewiesen zu sein. Der Bootstrap unterstuetzt das ueber `RUNTIME_TARGET` (claude-code / codex / cross-tool) in Phase 5.
+
+### Wie Bootstrap das handhabt
+
+Bootstrap Phase 5 installiert je nach `RUNTIME_TARGET` nach `.claude/skills/` und/oder `.codex/skills/` (pro Projekt). Fuer den **globalen** Pool (Ebene 1/3) ist die Installation Operator-Sache (`git clone` ins `~/.claude/skills/` bzw. `/opt/claude/skills/`) — Bootstrap erzwingt keine Ebene, sondern dokumentiert die Wahl. Die DPO/security-architect-Bundle-Skills (BOO-74) kommen aus demselben Framework-Repo, egal welche Ebene.
+
+### Verwandte Anhaenge
+
+- **Anhang P (Deployment-Szenarien):** definiert die vier Umgebungen, auf die sich die Decision-Matrix oben bezieht. Szenario 3 (Multi-User-VPS) ist der Haupt-Anwendungsfall fuer den System-Pool.
+- **Anhang R (Multi-Operator-Koordination):** die Wartungs-Owner-Rolle + Skill-Pool-Governance (global vs. pro User, Drift-Audit) ist dort beschrieben.
+- **Anhang K (Tool-Adapter):** wie das Framework mit anderen KI-Tools genutzt wird — Grundlage fuer die Cross-Tool-Sicht.
+- **Bootstrap Phase 5:** die pro-Projekt-Installation (`RUNTIME_TARGET`-gesteuert).
+
+Quelle: wiederkehrende Operator-Frage Tobias 2026-05-28. Konsolidiert Bootstrap Phase 5 + Anhang P Szenario 3 + Anhang R.
+
 ---
 
 *Dieses Handbuch ist Teil des Code-Crash Frameworks.*
 *GitHub: github.com/vibercoder79/code-crash-framework*
-*Letzte Aktualisierung: 2026-05-27 (Anhang O umgestellt auf DPO als Framework-Bundle-Skill — BOO-74, Wave M; Anhang R Multi-Operator-Koordination — BOO-72, Wave L)*
+*Letzte Aktualisierung: 2026-05-28 (Anhang S Skill-Installations-Strategie ergaenzt — BOO-76; Anhang R Layer-3 Vault-Harvest — BOO-75; alle Wave-J-M-Anhaenge visualisiert)*

@@ -1127,6 +1127,43 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 
 ---
 
+## §BOO-75 — Vault-Harvest-Pattern (HANDBUCH Anhang R Layer 3) — Wave N
+
+**Status:** ✓ in v2-Bundle — reines Doku-Issue + Bootstrap-Option, keine Repository-Aenderung in Bestands-Projekten.
+**Aufwand:** klein (~10 Min Lesen).
+**Linear:** <https://linear.app/owlist/issue/BOO-75>
+**Auto-Schritt:** ja (`migrate_boo_75`, Doku-only Hinweis-Block).
+
+**Operator-Schritte:**
+
+- [ ] HANDBUCH Anhang R Layer 3 lesen — Grundsatz "Obsidian = Solo, nicht Enterprise" + 2-Fluss-Modell (Git bidirektional / Vault-Harvest einseitig).
+- [ ] Bei Team mit Obsidian-Nutzern: Bootstrap-Frage B.3 Option `[e]` (Repo-Docs + persoenlicher Vault-Harvest). Config-Scaffold: `bootstrap/references/vault-sync-pattern.md`.
+- [ ] Im Team-Modus DocSync (Block D.2) = nein (sonst Overlap mit Vault-Harvest).
+
+**Phase 2 (separate Story, blockiert):** Sync-Engine ins Framework vendoren — Referenz `StefanWeimarPRODOC/project-template` aktuell nicht zugaenglich.
+
+**Verweise:** HANDBUCH Anhang R Layer 3, `bootstrap/SKILL.md` Block B.3 Option [e], `bootstrap/references/vault-sync-pattern.md`, `specs/BOO-75.md`.
+
+---
+
+## §BOO-76 — Skill-Installations-Strategie (HANDBUCH Anhang S) — Wave N
+
+**Status:** ✓ in v2-Bundle — reines Doku-Issue, keine Repository-Aenderung.
+**Aufwand:** klein (~10 Min Lesen + Install-Ebene pro Projekt/Team festlegen).
+**Linear:** <https://linear.app/owlist/issue/BOO-76>
+**Auto-Schritt:** ja (`migrate_boo_76`, Doku-only Hinweis-Block).
+
+**Operator-Schritte:**
+
+- [ ] HANDBUCH Anhang S lesen — 3 Install-Ebenen (global pro User `~/.claude/skills/` / pro Projekt / System-Pool `/opt/claude/skills/`) + Decision-Matrix.
+- [ ] Install-Ebene pro Deployment-Szenario festlegen: Solo → global pro User; Multi-User-VPS → System-Pool mit Wartungs-Owner; Team-Server → System-Pool oder pro-Projekt.
+- [ ] Pro-Projekt-Pinning nur fuer audit-pflichtige / extern uebergebene Projekte.
+- [ ] Multi-Tool-Teams: pro-Projekt committed (Cross-Tool via Anhang K).
+
+**Verweise:** HANDBUCH Anhang S, Anhang P (Szenario 3), Anhang R (Skill-Pool-Governance), Anhang K (Tool-Adapter), `specs/BOO-76.md`.
+
+---
+
 ## Nicht-Skill-Issues (uebersprungen)
 
 Diese Issues betreffen Operator-Tooling, Meta-Arbeit oder Doppelungen und brauchen **keine** Migration in Bestands-Projekten. Sie erscheinen in `migration-status.md` mit Status ✗.

@@ -1112,6 +1112,43 @@ Mirror of the master checklist in `code-crash-framework/bootstrap/references/mig
 
 ---
 
+## §BOO-75 — Vault-harvest pattern (HANDBUCH Appendix R Layer 3) — Wave N
+
+**Status:** ✓ in the v2 bundle — pure documentation issue + bootstrap option, no repository change in existing projects.
+**Effort:** small (~10 min reading).
+**Linear:** <https://linear.app/owlist/issue/BOO-75>
+**Auto step:** yes (`migrate_boo_75`, doc-only hint block).
+
+**Operator steps:**
+
+- [ ] Read HANDBUCH Appendix R Layer 3 — principle "Obsidian is a solo tool, not enterprise" + two-flow model (Git bidirectional / vault harvest one-way).
+- [ ] For a team with Obsidian users: bootstrap question B.3 option `[e]` (repo docs + personal vault harvest). Config scaffold: `bootstrap/references/vault-sync-pattern.en.md`.
+- [ ] In team mode set DocSync (Block D.2) = no (otherwise it overlaps with vault harvest).
+
+**Phase 2 (separate story, blocked):** vendor the sync engine into the framework — reference `StefanWeimarPRODOC/project-template` currently not accessible.
+
+**References:** HANDBUCH Appendix R Layer 3, `bootstrap/SKILL.md` Block B.3 option [e], `bootstrap/references/vault-sync-pattern.en.md`, `specs/BOO-75.md`.
+
+---
+
+## §BOO-76 — Skill installation strategy (HANDBUCH Appendix S) — Wave N
+
+**Status:** ✓ in the v2 bundle — pure documentation issue, no repository change.
+**Effort:** small (~10 min reading + decide install level per project/team).
+**Linear:** <https://linear.app/owlist/issue/BOO-76>
+**Auto step:** yes (`migrate_boo_76`, doc-only hint block).
+
+**Operator steps:**
+
+- [ ] Read HANDBUCH Appendix S — three install levels (global per user `~/.claude/skills/` / per project / system pool `/opt/claude/skills/`) + decision matrix.
+- [ ] Decide the install level per deployment scenario: solo → global per user; multi-user VPS → system pool with maintenance owner; team server → system pool or per project.
+- [ ] Per-project pinning only for audit-bound / externally handed-over projects.
+- [ ] Multi-tool teams: per-project committed (cross-tool via Appendix K).
+
+**References:** HANDBUCH Appendix S, Appendix P (scenario 3), Appendix R (skill-pool governance), Appendix K (Tool-Adapter), `specs/BOO-76.md`.
+
+---
+
 ## Non-skill Issues (Skipped)
 
 These issues touch operator tooling, meta work or duplicates and require **no** migration in existing projects. They appear in `migration-status.md` with status ✗.
