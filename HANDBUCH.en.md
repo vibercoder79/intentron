@@ -2197,6 +2197,92 @@ If your performance gate rarely fires and the 20% threshold is fine, skip BOO-46
 
 ---
 
+## Appendix J: Onboarding the framework under Codex — walkthrough (BOO-50)
+
+Appendix K is the **reference** (all tools, mappings, tool-agnostic components). This appendix is the **one continuous path**: from zero to a running Code-Crash project under OpenAI Codex. For operators using Codex as their primary or secondary runtime. It points to Appendix K, it does not duplicate it.
+
+> **Core principle:** Codex does **not** turn the framework into a fully autonomous developer agent. Codex is an adapter that reads the neutral story contract (`CONVENTIONS.md`) and translates it into its own way of working. The pipeline stays sequential and gate-based: backlog record → spec → controlled implementation → checks → review → result note.
+
+### Prerequisites
+
+- **Codex CLI** installed (`codex --version`), a ChatGPT subscription (Plus/Team) for the cloud sandbox.
+- **Framework repo cloned** as the skill source (`~/.claude/skills/` resp. `~/.codex/skills/`).
+- Optional but recommended: Claude Code once for the bootstrap run (strategic skill) — Codex takes over execution afterwards.
+
+### Step 1 — Bootstrap with the Codex runtime
+
+At bootstrap question **A.1c** (BOO-53/54) choose `RUNTIME_TARGET = codex` (or `cross-tool`). Result:
+
+- **`AGENTS.md`** — Codex entry point with repo rules, sandbox/scope hints, a pointer to `CONVENTIONS.md`.
+- **`CONVENTIONS.md`** — the hard adapter contract: `runtime_target`, `backlog_adapter`, `governance_mode`, `execution_isolation`, active gates.
+- **`.codex/` directory** for Codex-specific config (e.g. `.codex/personal-data-paths.json`).
+
+Without Claude Code: create `AGENTS.md` + `CONVENTIONS.md` manually from `bootstrap/references/file-templates.md` (PASS criterion: both exist, `runtime_target: codex` set).
+
+### Step 2 — Make skills available to Codex
+
+```bash
+ln -s ~/.claude/skills ~/.codex/skills   # or copy individual skills
+```
+
+Codex reads the SKILL.md frontmatter (`name` + `description`) automatically; the `metadata.hermes` block works as-is. There are **no slash commands** — invocation differs (step 4).
+
+### Step 3 — Understand `AGENTS.md` / `CONVENTIONS.md`
+
+Codex reads both files at session start (no MCP needed): `AGENTS.md` for the repo rules, `CONVENTIONS.md` for the binding contract. Everything that lives in `CLAUDE.md` under Claude Code, Codex finds in `AGENTS.md` — same methodology, different entry name.
+
+### Step 4 — First story run under Codex
+
+1. **Backlog record / spec** created (`specs/<ISSUE>.md`) — via `/ideation` in Claude Code or manually per `specs/TEMPLATE.md`.
+2. **Trigger Codex:** `@Codex` in the Linear issue body **OR** `codex run-task <prompt>` via CLI. Each task runs async in an isolated cloud sandbox; the result comes back as a **PR**.
+3. **Codex builds its own plan + task breakdown** — normal Codex behaviour. The story contract still governs write behaviour: `linear` = one lane, `sub-agents` = limited helpers, `agentic` = worktree-isolated lanes. Optional story hint `codex_execution_hint: single-agent | parallel-workers | worktree-required` (advisory only).
+4. **Hard gates stay binding** (from `CONVENTIONS.md`): `write_scopes`, `execution_isolation`, tests, lint, security gate, `review-ok`, possibly `privacy-ok`. The quality gates (ESLint/Ruff, Semgrep, coverage) run as **tool-agnostic GitHub Actions** — regardless of whether the PR comes from Codex or Claude.
+5. **Review gates stay human:** `review-ok` (and `privacy-ok`) is set by a person, not Codex.
+
+### Step 5 — Context bridge (Codex has no MCP)
+
+Codex has no direct Linear/Obsidian link. Context comes from files: `CONVENTIONS.md` (contract) + `specs/<ISSUE>.md` (story) + `AGENTS.md` (repo rules). Optionally an n8n workflow exports the Obsidian daily note + Linear issue body as the Codex `system_prompt`. GitHub serves as the trigger/return channel (PR).
+
+### Step 6 — Verification (under Codex too)
+
+`bash scripts/verify-setup.sh` (Appendix T) runs tool-agnostically (pure Bash) and checks `environment.json`, toolchain, **git hooks (per repo — re-set under Codex too)**, core artifacts. For the rollout proof: run the **5-step E2E trial protocol** from Appendix T analogously, with `codex run-task` instead of `/implement`.
+
+### Optional — recurring background task (daily bug scanner)
+
+To offload recurring background work to Codex (async off-load, saves Claude tokens), use `.codex/automations/<name>.toml` (cron + `memory.md`):
+
+```toml
+[automation]
+name = "Daily Bug-Scanner"
+cwd = "{{PROJECT_PATH}}"
+schedule = "0 8 * * *"
+
+[prompt]
+content = """
+Daily code reviewer for {{PROJECT_NAME}}: scan for critical bugs/security/edge cases,
+check whether a backlog ticket (label: autofix) exists, create one for new findings
+(title, affected files as absolute paths, impact, repro, suggested fix, format specs/TEMPLATE.md).
+Read {{ABSOLUTE_MEMORY_PATH}}/memory.md for prior findings. Report: X found, Y duplicates.
+"""
+```
+
+Setup notes: Linear-Codex integration (Settings → Integrations → Codex → Connect GitHub), GitHub auth, `$CODEX_HOME` bug workaround (absolute `memory.md` path in the `.toml`). **Privacy tier:** OpenAI standard (US, Commercial Terms) vs. **Azure OpenAI Switzerland North** (CH residency, no training) — see Appendix Q (sovereignty stack).
+
+### Limits — when to use Claude Code after all
+
+The **strategic skills** (`/intent`, `/ideation`, `/architecture-review`, `/sprint-review`) stay Claude-Code-recommended: 1M-token context, MCP integration, built-in sub-agents, `/context` token measurement. Codex is best for **execution-heavy / async** tasks. See Appendix K "Where you still benefit from Claude Code".
+
+### Related appendices
+
+- **Appendix K** — tool-adapter reference (mappings, tool-agnostic components, tool switch without re-bootstrap).
+- **Appendix T** — post-install verification + 5-step E2E protocol.
+- **Appendix Q** — privacy/sovereignty tier (US vs. CH residency for Codex).
+- **`CONVENTIONS.md`** — the full tool-neutral specification.
+
+Source: BOO-50 — originally conceived as a daily-bug-scanner automation (2026-05-12), re-scoped on 2026-05-28 to the Codex onboarding walkthrough (operator decision Tobias): the onboarding path was the real gap, the automation is now the optional example above.
+
+---
+
 ## Appendix K: Tool-Adapter — using this framework with other AI tools (BOO-49)
 
 The Code-Crash Framework was designed Claude-Code-first, but the **methodology is tool-agnostic**. About 70% of what the framework defines is pure convention (file layouts, frontmatter, bash hooks, GitHub Actions). The remaining 30% — slash-commands, skill invocation, MCP integrations — depends on the AI tool. This appendix shows how to operate the framework with the most common alternatives.
@@ -2238,7 +2324,7 @@ OpenAI Codex uses the **same SKILL.md format** as Claude Code. The methodology t
 - `specs/{ISSUE-ID}.md` provides per-story context; Codex reads it explicitly
 - Optional: an n8n workflow that exports Obsidian daily-note + Linear issue body as Codex `system_prompt`
 
-**See BOO-50** for the optional Codex-integration setup (Phase A: Daily Bug-Scanner).
+**See Appendix J** for the continuous Codex onboarding walkthrough (with the daily bug scanner as an optional example).
 
 ### Cursor (tertiary)
 
@@ -2273,7 +2359,7 @@ These never depend on the AI tool:
 
 The portability checklist in `CONVENTIONS.md` §6 lets you switch tools without losing the framework. Typical scenarios:
 
-- **Claude rate-limit hit → temporary Codex:** activate Codex (BOO-50), continue on the same `specs/`, `journal/`, hooks
+- **Claude rate-limit hit → temporary Codex:** activate Codex (Appendix J), continue on the same `specs/`, `journal/`, hooks
 - **Privacy-driven switch → local LLM:** all conventions and hooks unchanged; only the tool that calls them changes
 - **Team change → Cursor:** generate `.cursorrules` from skills, conventions stay
 - **Long-term:** the framework is the methodology, the tool is the executor
@@ -2293,7 +2379,7 @@ For the strategic skills (`/bootstrap`, `/intent`, `/ideation`, `/architecture-r
 
 - Appendix D — `metadata.hermes` block schema (BOO-31)
 - Appendix E — `journal/reports/` convention (BOO-32)
-- Appendix J (planned) — Codex-Integration setup (BOO-50)
+- Appendix J — Onboarding the framework under Codex (walkthrough, BOO-50)
 - `CONVENTIONS.md` at the bundle root — full tool-neutral specification
 
 ---
@@ -3397,4 +3483,4 @@ Source: operator question Tobias 2026-05-28 ("several projects — bootstrap per
 
 *This handbook is part of the Code-Crash Framework.*
 *GitHub: github.com/vibercoder79/code-crash-framework*
-*Last updated: 2026-05-28 (Appendix T extended with the 5-step E2E trial protocol — closes BOO-48; Appendix R vault harvest extended — `default_vault_subdir` + incremental `--since` sync, BOO-82; Appendix U Multi-project operation — BOO-80)*
+*Last updated: 2026-05-28 (Appendix J Codex onboarding walkthrough added — BOO-50; Appendix T extended with the 5-step E2E trial protocol — closes BOO-48; Appendix R vault harvest extended — `default_vault_subdir` + incremental `--since` sync, BOO-82)*
