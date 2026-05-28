@@ -87,6 +87,43 @@ So funktioniert der Harvest out-of-the-box mit leerem `path_mappings`, bleibt ab
 
 Bootstrap-Frage B.3, Option `[e] Repo-Docs + persoenlicher Vault-Harvest`. Bootstrap kopiert die Engine-Files ins Projekt (`scripts/vault-sync.py`, `scripts/install-vault-sync.sh`, `.claude/hooks/post-merge.sh`, `.vault-sync/tracked-paths.json`), traegt `.vault-sync/local.json` in `.gitignore` ein, setzt Block D DocSync = nein und ergaenzt den Onboarding-Schritt. Danach aktiviert jeder Mitarbeiter den Harvest optional mit `bash scripts/install-vault-sync.sh` (Default-Modus `dry-run`).
 
+## Vault-Harvest aktivieren — Schritt fuer Schritt
+
+Das macht jeder Mitarbeiter **einmal pro Projekt-Klon**, der seinen persoenlichen Vault befuellen will. Niemand muss mitmachen — ohne `local.json` passiert nichts (`exit 0`).
+
+**Voraussetzungen:**
+- Die Engine-Files liegen im Projekt (Bootstrap-Option `[e]` lief, oder in einem Bestands-Projekt: `bash <skill-repo>/bootstrap/scripts/migrate-to-v2.sh --issue BOO-77`).
+- Dein Obsidian-Vault existiert lokal (du kennst den absoluten Pfad).
+
+**1. Init ausfuehren** (im Projekt-Root):
+
+```bash
+bash scripts/install-vault-sync.sh
+```
+
+Das Skript fragt interaktiv drei Dinge:
+- **Absoluter Pfad zu deinem Obsidian-Vault** — z.B. `/Users/du/Obsidian/MeinVault`.
+- **Projekt-Slug** — Ordnername im Vault, z.B. `mein-projekt`; ersetzt `{project_slug}` im Team-Vertrag.
+- **Modus** — `dry-run` / `auto` / `ask` (Default `dry-run`).
+
+Danach legt es `.vault-sync/local.json` an (gitignored), traegt sie in `.gitignore` ein und verlinkt den `post-merge`-Hook. (`--force` ueberschreibt eine bestehende `local.json`.)
+
+**2. Trockenlauf pruefen** — was wuerde gespiegelt?
+
+```bash
+python3 scripts/vault-sync.py --dry-run
+```
+
+Zeigt pro Datei das geplante Vault-Ziel. Das Layout kommt aus `default_vault_subdir` des Team-Vertrags; abweichen nur, wenn du in deiner `local.json` ein `path_mappings`-Praefix setzt.
+
+**3. Auf echtes Spiegeln umstellen** — in `.vault-sync/local.json` `"mode": "auto"` setzen (oder beim Init `auto` waehlen). `auto` = still spiegeln, `ask` = pro Datei nachfragen.
+
+**4. Ausloesen** — `git pull` (der `post-merge`-Hook feuert automatisch). Manuell jederzeit: `python3 scripts/vault-sync.py`. Fuer grosse Repos nur Aenderungen seit einem Commit: `python3 scripts/vault-sync.py --since <sha>`.
+
+**5. Verifizieren** — im Vault liegen jetzt die gespiegelten Dateien (z.B. unter `02 Projekte/<slug>/...`) mit `vault_sync_*`-Frontmatter. Eigene Notizen NUR in `.notes.md`-Schwesterdateien ablegen — die fasst der Sync nie an.
+
+**Wieder abschalten:** `bash scripts/install-vault-sync.sh --uninstall` (entfernt Hook + `local.json`; der versionierte Team-Vertrag bleibt). Temporaer pausieren: `"enabled": false` in `local.json`.
+
 ## Phasen
 
 - **Phase 1 (BOO-75):** Dokumentation + Config-Scaffold + Bootstrap-Option als dokumentierte Wahl.

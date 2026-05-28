@@ -87,6 +87,43 @@ So the harvest works out of the box with an empty `path_mappings` but stays over
 
 Bootstrap question B.3, option `[e] Repo docs + personal vault harvest`. Bootstrap copies the engine files into the project (`scripts/vault-sync.py`, `scripts/install-vault-sync.sh`, `.claude/hooks/post-merge.sh`, `.vault-sync/tracked-paths.json`), adds `.vault-sync/local.json` to `.gitignore`, sets Block D DocSync = no, and adds the onboarding step. Each operator then optionally enables the harvest with `bash scripts/install-vault-sync.sh` (default mode `dry-run`).
 
+## Activating the vault harvest — step by step
+
+Each operator does this **once per project clone** if they want to populate their personal vault. No one has to take part — without a `local.json` nothing happens (`exit 0`).
+
+**Prerequisites:**
+- The engine files are in the project (bootstrap option `[e]` ran, or in an existing project: `bash <skill-repo>/bootstrap/scripts/migrate-to-v2.sh --issue BOO-77`).
+- Your Obsidian vault exists locally (you know the absolute path).
+
+**1. Run the init** (in the project root):
+
+```bash
+bash scripts/install-vault-sync.sh
+```
+
+The script asks three things interactively:
+- **Absolute path to your Obsidian vault** — e.g. `/Users/you/Obsidian/MyVault`.
+- **Project slug** — folder name in the vault, e.g. `my-project`; replaces `{project_slug}` in the team contract.
+- **Mode** — `dry-run` / `auto` / `ask` (default `dry-run`).
+
+It then creates `.vault-sync/local.json` (gitignored), adds it to `.gitignore`, and symlinks the `post-merge` hook. (`--force` overwrites an existing `local.json`.)
+
+**2. Check the dry run** — what would be mirrored?
+
+```bash
+python3 scripts/vault-sync.py --dry-run
+```
+
+Shows the planned vault target per file. The layout comes from the team contract's `default_vault_subdir`; only deviate by setting a `path_mappings` prefix in your `local.json`.
+
+**3. Switch to real mirroring** — set `"mode": "auto"` in `.vault-sync/local.json` (or choose `auto` during init). `auto` = mirror silently, `ask` = confirm per file.
+
+**4. Trigger** — `git pull` (the `post-merge` hook fires automatically). Manually any time: `python3 scripts/vault-sync.py`. For large repos, only changes since a commit: `python3 scripts/vault-sync.py --since <sha>`.
+
+**5. Verify** — the mirrored files now sit in the vault (e.g. under `02 Projekte/<slug>/...`) with `vault_sync_*` frontmatter. Put your own notes ONLY in `.notes.md` sidecar files — the sync never touches those.
+
+**Turn it off again:** `bash scripts/install-vault-sync.sh --uninstall` (removes the hook + `local.json`; the versioned team contract stays). Pause temporarily: `"enabled": false` in `local.json`.
+
 ## Phases
 
 - **Phase 1 (BOO-75):** documentation + config scaffold + the bootstrap option as a documented choice.
