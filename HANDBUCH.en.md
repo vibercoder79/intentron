@@ -25,6 +25,7 @@
 10. [Tailoring Governance to Your Project](#10-tailoring-governance-to-your-project)
 11. [Daily Usage — A Typical Workflow](#11-daily-usage--a-typical-workflow)
 12. [FAQ](#12-faq) — incl. Claude Agent SDK migration
+13. [Appendices — signpost](#13-appendices--signpost) — A through U at a glance
 
 ---
 
@@ -1737,6 +1738,36 @@ cd /tmp && rm -rf ki-skills
 
 ---
 
+## 13. Appendices — signpost
+
+The handbook has 21 appendices (A–U). They are a **reference and deep-dive layer** — you don't need to read them front to back. This table tells you **when which appendix is relevant**. A–M are the foundations/tooling layer, N–U the v0.2.0 themes (efficiency, privacy, deployment, scaling, verification).
+
+| Appendix | Topic | When relevant |
+|----------|-------|---------------|
+| **A** | Pre-bootstrap checklist | before you set up your first project |
+| **B** | Key files — cheat sheet | look up which file does what |
+| **C** | Glossary | clarify terms |
+| **D** | Hermes bridge (`metadata.hermes`) | wire skills to Hermes |
+| **E** | Reports convention (`journal/reports/`) | where run reports land |
+| **F** | Hermes compound-layer setup | integrate Hermes deeper |
+| **G** | Sprint-sizing mechanics (token window) | cut sprints by token budget |
+| **H** | Lighthouse CI (frontend performance) | frontend project with a perf gate |
+| **I** | Self-hosted runner setup | run your own CI runners |
+| **J** | Onboarding the framework under Codex | Codex / another AI as runtime |
+| **K** | Tool adapters (other AI tools) | Cursor / Aider / local LLMs / Codex reference |
+| **L** | 4P pipeline mapping (pitch phase) | pitch as a closed phase |
+| **M** | Schrader decoder | relation to the book *Code Crash* |
+| **N** | Token-efficiency policy | model routing + caching, cut cost |
+| **O** | Privacy by design (DPO) | personal data / GDPR |
+| **P** | Deployment scenarios | choose Solo-Mac / VPS / team server |
+| **Q** | Sovereignty stack | EU / regulated industry, EU alternatives |
+| **R** | Multi-operator coordination | 5–20+ developers in one repo + vault harvest |
+| **S** | Skill installation strategy | where skills / tools / hooks belong |
+| **T** | Post-install verification | "does my setup work?" + E2E trial |
+| **U** | Multi-project operation | several projects on one machine |
+
+---
+
 ## Appendix A: Pre-bootstrap checklist
 
 ```
@@ -2202,6 +2233,8 @@ If your performance gate rarely fires and the 20% threshold is fine, skip BOO-46
 Appendix K is the **reference** (all tools, mappings, tool-agnostic components). This appendix is the **one continuous path**: from zero to a running Code-Crash project under OpenAI Codex. For operators using Codex as their primary or secondary runtime. It points to Appendix K, it does not duplicate it.
 
 > **Core principle:** Codex does **not** turn the framework into a fully autonomous developer agent. Codex is an adapter that reads the neutral story contract (`CONVENTIONS.md`) and translates it into its own way of working. The pipeline stays sequential and gate-based: backlog record → spec → controlled implementation → checks → review → result note.
+
+![Codex onboarding flow — bootstrap (RUNTIME_TARGET=codex) creates AGENTS.md/CONVENTIONS.md/.codex, make skills available, story run via @Codex/codex run-task with binding gates, verification; context bridge over files instead of MCP](docs/assets/codex-onboarding-flow.png)
 
 ### Prerequisites
 

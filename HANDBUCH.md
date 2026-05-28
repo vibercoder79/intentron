@@ -25,6 +25,7 @@
 10. [Governance für dein Projekt anpassen](#10-governance-für-dein-projekt-anpassen)
 11. [Tägliche Nutzung — ein typischer Workflow](#11-tägliche-nutzung--ein-typischer-workflow)
 12. [Häufige Fragen](#12-häufige-fragen) — inkl. Claude Agent SDK Migration
+13. [Anhänge — Wegweiser](#13-anhänge--wegweiser) — A bis U im Überblick
 
 ---
 
@@ -2084,6 +2085,36 @@ und Provider-Postflight.
 
 ---
 
+## 13. Anhänge — Wegweiser
+
+Das Handbuch hat 21 Anhänge (A–U). Sie sind **Nachschlage- und Vertiefungs-Schicht** — du musst sie nicht von vorn bis hinten lesen. Diese Tabelle sagt dir, **wann welcher Anhang relevant ist**. Anhänge A–M sind die Grundlagen-/Tooling-Schicht, N–U die v0.2.0-Themen (Effizienz, Privacy, Deployment, Skalierung, Verifikation).
+
+| Anhang | Thema | Wann relevant |
+|--------|-------|---------------|
+| **A** | Checkliste vor dem ersten Bootstrap | bevor du das erste Projekt aufsetzt |
+| **B** | Wichtige Dateien — Spickzettel | nachschlagen, welche Datei was tut |
+| **C** | Glossar | Begriffe klären |
+| **D** | Hermes-Bridge (`metadata.hermes`) | Skills an Hermes anbinden |
+| **E** | Reports-Konvention (`journal/reports/`) | wo Lauf-Reports landen |
+| **F** | Hermes Compound-Layer Setup | Hermes tiefer integrieren |
+| **G** | Sprint-Sizing-Mechanik (Token-Window) | Sprints nach Token-Budget schneiden |
+| **H** | Lighthouse-CI (Frontend-Performance) | Frontend-Projekt mit Perf-Gate |
+| **I** | Self-Hosted-Runner-Setup | eigene CI-Runner betreiben |
+| **J** | Framework unter Codex einführen | Codex / andere KI als Runtime |
+| **K** | Tool-Adapter (andere KI-Tools) | Cursor / Aider / lokale LLMs / Codex-Referenz |
+| **L** | 4P-Pipeline-Mapping (Pitch-Phase) | Pitch als geschlossene Phase |
+| **M** | Schrader-Decoder | Bezug zum Buch *Code Crash* |
+| **N** | Token-Effizienz-Policy | Modell-Routing + Caching, Kosten senken |
+| **O** | Privacy by Design (DPO) | personenbezogene Daten / DSGVO |
+| **P** | Deployment-Szenarien | Solo-Mac / VPS / Team-Server wählen |
+| **Q** | Souveränitäts-Stack | EU / regulierte Branche, EU-Alternativen |
+| **R** | Multi-Operator-Koordination | 5–20+ Entwickler im selben Repo + Vault-Harvest |
+| **S** | Skill-Installations-Strategie | wo Skills / Tools / Hooks hingehören |
+| **T** | Post-Install-Verifikation | "funktioniert mein Setup?" + E2E-Probelauf |
+| **U** | Multi-Projekt-Betrieb | mehrere Projekte auf einer Maschine |
+
+---
+
 ## Anhang A: Checkliste vor dem ersten Bootstrap
 
 ```
@@ -2551,6 +2582,8 @@ Wenn dein Performance-Gate selten ausloest und der 20%-Threshold reicht — verz
 Anhang K ist die **Referenz** (alle Tools, Mappings, tool-agnostische Komponenten). Dieser Anhang ist der **eine durchgehende Pfad**: von null zu einem laufenden Code-Crash-Projekt unter OpenAI Codex. Fuer Operatoren, die Codex als primaere oder sekundaere Runtime nutzen. Er verweist auf Anhang K, dupliziert ihn nicht.
 
 > **Kernprinzip:** Codex macht aus dem Framework **keinen** vollautonomen Developer-Agent. Codex ist ein Adapter, der den neutralen Story-Vertrag (`CONVENTIONS.md`) liest und in seine Arbeitsweise uebersetzt. Die Pipeline bleibt sequenziell und gate-basiert: Backlog-Record → Spec → kontrollierte Umsetzung → Checks → Review → Ergebnisnotiz.
+
+![Codex-Onboarding-Flow — Bootstrap (RUNTIME_TARGET=codex) erzeugt AGENTS.md/CONVENTIONS.md/.codex, Skills bereitstellen, Story-Durchlauf via @Codex/codex run-task mit verbindlichen Gates, Verifikation; Kontext-Bruecke ueber Dateien statt MCP](docs/assets/codex-onboarding-flow.png)
 
 ### Voraussetzungen
 
