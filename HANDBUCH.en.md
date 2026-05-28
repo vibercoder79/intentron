@@ -3310,6 +3310,20 @@ Read-only, changes nothing. Prints `PASS` / `WARN` / `FAIL` per check plus a sum
 
 Checks 1-4, 6-7 are covered automatically by `verify-setup.sh`. **Check 5 (skill writes artifacts) stays a deliberate manual step** — a real `/implement` trial against a throwaway story shows the end-to-end proof a shell script cannot (this is the core of the earlier E2E smoke-test idea, BOO-48).
 
+### Optional full proof before rollout: the 5-step E2E trial protocol (BOO-48 pattern)
+
+`verify-setup.sh` proves the scaffold **stands**. Before a larger rollout (e.g. onto several VPS) you also want to prove the skills **interlock** — that an issue runs through the whole pipeline from idea to sprint review and all artifacts are created correctly along the way. This is **not a shell script and not a CI action**: `/bootstrap`, `/ideation`, `/implement`, `/sprint-review` are LLM-driven slash skills, not deterministic CLIs — they cannot be scripted. The full proof is therefore a **manual, Claude-guided trial** in a throwaway directory (`/tmp/bundle-smoketest-<date>/`), played through once before rollout:
+
+| Step | Action | PASS criterion |
+|------|--------|----------------|
+| 1 | `/bootstrap` with default answers in the empty directory | core artifacts present (`CONVENTIONS.md`, `ARCHITECTURE_DESIGN.md`, `.claude/environment.json`, `specs/`, `journal/`, git hooks). Then `bash scripts/verify-setup.sh` → all `PASS` |
+| 2 | `/ideation` for a throwaway story (e.g. "health-check endpoint") | `specs/<ISSUE>.md` created with all mandatory sections; sprint-box / intent gate fire as expected |
+| 3 | `/implement` for the same story | quality gate runs (ESLint/Semgrep/coverage), `journal/reports/local/<run>/` + `meta.json` are created, spec gets a session reference |
+| 4 | `/sprint-review` | reads `journal/reports/local/`, writes an L1 learning entry into `journal/learnings.md` |
+| 5 | **consistency check** | `doc-version-sync.sh` engages, `git commit` is correctly allowed/blocked by the spec gate, skill frontmatter consistent. Then delete the throwaway directory |
+
+**PASS = all 5 steps interlock, no missing artifact between skills.** On a FAIL it shows exactly at which skill boundary an artifact/path convention breaks. This run does not replace the routine verification (`verify-setup.sh` after each clone); it is the **one-off rollout proof** — run it before the VPS rollout (Appendix P / BOO-9) and after larger bundle changes.
+
 ### When to run?
 
 - **Right after bootstrap** (Phase 7.3b does this automatically).
@@ -3322,7 +3336,7 @@ Checks 1-4, 6-7 are covered automatically by `verify-setup.sh`. **Check 5 (skill
 - **Appendix A (Pre-bootstrap checklist):** the counterpart *before* bootstrap.
 - **`/integration-test` skill:** checks code *changes* after each implement — Appendix T checks the *setup* once.
 
-Source: operator question Tobias 2026-05-28 ("I need the proof"). Resolves the parked E2E smoke-test idea (BOO-48). Script: `bootstrap/references/verify-setup.sh`.
+Source: operator question Tobias 2026-05-28 ("I need the proof"). **Closes BOO-48 (E2E smoke test):** the setup side automated via `verify-setup.sh`, the functional run via the 5-step protocol above. The originally envisioned fully automated CI bash smoke test is deliberately dropped — LLM-driven slash skills cannot be scripted. Script: `bootstrap/references/verify-setup.sh`.
 
 ---
 
@@ -3383,4 +3397,4 @@ Source: operator question Tobias 2026-05-28 ("several projects — bootstrap per
 
 *This handbook is part of the Code-Crash Framework.*
 *GitHub: github.com/vibercoder79/code-crash-framework*
-*Last updated: 2026-05-28 (Appendix R vault harvest extended — `default_vault_subdir` + incremental `--since` sync, BOO-82; Appendix U Multi-project operation — BOO-80; Appendix T Post-install verification — BOO-79)*
+*Last updated: 2026-05-28 (Appendix T extended with the 5-step E2E trial protocol — closes BOO-48; Appendix R vault harvest extended — `default_vault_subdir` + incremental `--since` sync, BOO-82; Appendix U Multi-project operation — BOO-80)*

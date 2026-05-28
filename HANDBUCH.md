@@ -3822,6 +3822,20 @@ Read-only, keine Aenderung. Gibt pro Check `PASS` / `WARN` / `FAIL` + eine Summa
 
 Checks 1-4, 6-7 deckt `verify-setup.sh` automatisch ab. **Check 5 (Skill schreibt Artefakte) bleibt ein bewusster manueller Schritt** — ein echter `/implement`-Probelauf gegen eine Wegwerf-Story zeigt den End-to-End-Beweis, den ein Shell-Skript nicht liefern kann (das ist der Kern des frueheren E2E-Smoke-Test-Gedankens, BOO-48).
 
+### Optionaler Vollbeweis vor Rollout: das 5-Schritte-E2E-Probelauf-Protokoll (BOO-48-Pattern)
+
+`verify-setup.sh` beweist, dass das Geruest **steht**. Vor einem groesseren Rollout (z.B. auf mehrere VPS) willst du zusaetzlich beweisen, dass die Skills **ineinandergreifen** — dass ein Issue von der Idee bis zum Sprint-Review durch die ganze Pipeline laeuft und unterwegs alle Artefakte korrekt entstehen. Das ist **kein Shell-Skript und keine CI-Action**: `/bootstrap`, `/ideation`, `/implement`, `/sprint-review` sind LLM-getriebene Slash-Skills, keine deterministischen CLIs — sie lassen sich nicht skripten. Der Vollbeweis ist daher ein **manueller, Claude-gefuehrter Probelauf** in einem Wegwerf-Verzeichnis (`/tmp/bundle-smoketest-<datum>/`), einmal vor dem Rollout durchgespielt:
+
+| Schritt | Aktion | PASS-Kriterium |
+|---------|--------|----------------|
+| 1 | `/bootstrap` mit Default-Antworten im leeren Verzeichnis | Kern-Artefakte da (`CONVENTIONS.md`, `ARCHITECTURE_DESIGN.md`, `.claude/environment.json`, `specs/`, `journal/`, Git-Hooks). Danach `bash scripts/verify-setup.sh` → alles `PASS` |
+| 2 | `/ideation` fuer eine Wegwerf-Story (z.B. "Health-Check-Endpoint") | `specs/<ISSUE>.md` angelegt mit allen Pflicht-Sektionen; Sprint-Box-/Intent-Gate feuern erwartungsgemaess |
+| 3 | `/implement` fuer dieselbe Story | Quality-Gate laeuft (ESLint/Semgrep/Coverage), `journal/reports/local/<run>/` + `meta.json` entstehen, Spec bekommt Session-Referenz |
+| 4 | `/sprint-review` | Liest `journal/reports/local/`, schreibt L1-Learning-Eintrag in `journal/learnings.md` |
+| 5 | **Konsistenz-Check** | `doc-version-sync.sh` greift, `git commit` wird vom Spec-Gate korrekt zugelassen/blockiert, Skill-Frontmatter konsistent. Danach Wegwerf-Verzeichnis loeschen |
+
+**PASS = alle 5 Schritte greifen ineinander, kein fehlendes Artefakt zwischen den Skills.** Bei einem FAIL zeigt sich genau, an welcher Skill-Grenze eine Artefakt-/Pfad-Konvention bricht. Dieser Durchlauf ersetzt nicht die Routine-Verifikation (`verify-setup.sh` nach jedem Clone), sondern ist der **einmalige Rollout-Proof** — fuehre ihn vor dem VPS-Rollout (Anhang P / BOO-9) und nach groesseren Bundle-Aenderungen durch.
+
 ### Wann ausfuehren?
 
 - **Direkt nach Bootstrap** (Phase 7.3b macht das automatisch).
@@ -3834,7 +3848,7 @@ Checks 1-4, 6-7 deckt `verify-setup.sh` automatisch ab. **Check 5 (Skill schreib
 - **Anhang A (Pre-Bootstrap-Checkliste):** das Gegenstueck *vor* dem Bootstrap.
 - **`/integration-test`-Skill:** prueft Code-*Aenderungen* nach jedem Implement — Anhang T prueft das *Setup* einmalig.
 
-Quelle: Operator-Frage Tobias 2026-05-28 ("ich brauche den Proof"). Loest den geparkten E2E-Smoke-Test-Gedanken (BOO-48). Skript: `bootstrap/references/verify-setup.sh`.
+Quelle: Operator-Frage Tobias 2026-05-28 ("ich brauche den Proof"). **Schliesst BOO-48 (E2E-Smoke-Test) ab:** die Setup-Seite automatisiert via `verify-setup.sh`, der funktionale Durchlauf via 5-Schritte-Protokoll oben. Der urspruenglich angedachte vollautomatische CI-Bash-Smoke-Test ist bewusst verworfen — LLM-getriebene Slash-Skills lassen sich nicht skripten. Skript: `bootstrap/references/verify-setup.sh`.
 
 ## Anhang U: Multi-Projekt-Betrieb — Projekt 2..N + bestehendes Projekt onboarden (BOO-80)
 
@@ -3893,4 +3907,4 @@ Quelle: Operator-Frage Tobias 2026-05-28 ("mehrere Projekte — pro Projekt boot
 
 *Dieses Handbuch ist Teil des Code-Crash Frameworks.*
 *GitHub: github.com/vibercoder79/code-crash-framework*
-*Letzte Aktualisierung: 2026-05-28 (Anhang R Vault-Harvest erweitert — `default_vault_subdir` + inkrementeller `--since`-Sync, BOO-82; Anhang U Multi-Projekt-Betrieb — BOO-80; Anhang T Post-Install-Verifikation — BOO-79)*
+*Letzte Aktualisierung: 2026-05-28 (Anhang T um 5-Schritte-E2E-Probelauf-Protokoll erweitert — schliesst BOO-48; Anhang R Vault-Harvest erweitert — `default_vault_subdir` + inkrementeller `--since`-Sync, BOO-82; Anhang U Multi-Projekt-Betrieb — BOO-80)*
