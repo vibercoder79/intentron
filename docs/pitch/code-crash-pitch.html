@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Code-Crash Framework — Pitch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --beige:#f9f6f1; --soft-beige:#f1f0ee; --white:#ffffff;
+  --grey:#1d1d1b; --neutral:#666; --neutral-light:#aaa; --line:#e4ddd2;
+  --turq:#869ea6; --dark-blue:#596a71;
+  --orange:#d77f11; --orange-dark:#cf7115; --orange-light:#f3973f; --brown:#8a4e10; --yellow:#faf4bc;
+  --green:#2e7d32; --green-bg:#e8f5e9; --red:#c62828; --red-bg:#ffebee;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Poppins',system-ui,sans-serif;background:var(--grey);color:var(--grey);overflow:hidden}
+.deck{position:fixed;inset:0}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;
+  padding:6vh 8vw;background:var(--beige);animation:fade .35s ease}
+.slide.active{display:flex}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:clamp(2.2rem,5vw,4rem);font-weight:700;line-height:1.05;letter-spacing:-.02em}
+h2{font-size:clamp(1.6rem,3.4vw,2.6rem);font-weight:700;line-height:1.1;letter-spacing:-.01em;margin-bottom:.6em}
+h3{font-size:1.15rem;font-weight:600;color:var(--orange);text-transform:uppercase;letter-spacing:.08em;margin-bottom:1.2em}
+p,li{font-size:clamp(1rem,1.7vw,1.45rem);line-height:1.5;color:var(--dark-blue);font-weight:400}
+strong{color:var(--grey);font-weight:600}
+.grad{background:linear-gradient(135deg,var(--orange-dark),var(--orange-light));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.kicker{font-size:1rem;font-weight:600;color:var(--orange);text-transform:uppercase;letter-spacing:.12em;margin-bottom:1.4em}
+ul{list-style:none;display:flex;flex-direction:column;gap:.7em;margin-top:.4em}
+ul li{padding-left:1.6em;position:relative}
+ul li::before{content:"";position:absolute;left:0;top:.55em;width:.6em;height:.6em;border-radius:50%;
+  background:linear-gradient(135deg,var(--orange-dark),var(--orange-light))}
+.lead{font-size:clamp(1.2rem,2.2vw,1.8rem);color:var(--dark-blue);max-width:24ch;margin-top:.6em}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:5vw;align-items:center}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;margin-top:.6em}
+.card{background:var(--white);border:1px solid var(--line);border-radius:16px;padding:1.5rem 1.4rem;box-shadow:0 6px 24px rgba(0,0,0,.04)}
+.card .n{font-size:.85rem;font-weight:700;color:var(--orange);letter-spacing:.06em}
+.card h4{font-size:1.15rem;font-weight:600;margin:.3em 0 .4em}
+.card p{font-size:1rem;color:var(--neutral)}
+.sketch{max-width:100%;max-height:54vh;object-fit:contain;border-radius:12px;border:1px solid var(--line);background:var(--white);padding:10px}
+.center{align-items:center;text-align:center}
+.center ul{align-items:flex-start;text-align:left}
+table{border-collapse:collapse;width:100%;margin-top:.4em;font-size:clamp(.85rem,1.4vw,1.15rem)}
+th,td{text-align:left;padding:.7em .9em;border-bottom:1px solid var(--line);color:var(--dark-blue)}
+th{color:var(--grey);font-weight:600;border-bottom:2px solid var(--turq)}
+td.us{color:var(--brown);font-weight:600}
+.pill{display:inline-block;background:var(--soft-beige);border:1px solid var(--line);border-radius:999px;
+  padding:.35em .9em;font-size:.95rem;font-weight:500;color:var(--dark-blue);margin:.25em .35em 0 0}
+.pill.on{background:var(--yellow);border-color:var(--orange);color:var(--brown)}
+.flow{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;margin-top:.5em}
+.flow .step{background:var(--white);border:2px solid var(--orange);border-radius:12px;padding:.6em 1em;font-weight:600;color:var(--brown)}
+.flow .arr{color:var(--turq);font-weight:700;font-size:1.4rem}
+.big{font-size:clamp(2.6rem,7vw,5.5rem);font-weight:700;line-height:1}
+.note{font-size:.95rem;color:var(--neutral-light);margin-top:1.4em}
+footer{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;
+  padding:.7rem 2rem;font-size:.8rem;color:var(--neutral-light);font-weight:500;z-index:10}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--orange);display:inline-block;margin-right:.5em}
+.progress{position:fixed;top:0;left:0;height:4px;background:linear-gradient(90deg,var(--orange-dark),var(--orange-light));z-index:20;transition:width .3s}
+.tag{position:fixed;top:1.2rem;right:2rem;font-size:.78rem;font-weight:600;color:var(--turq);letter-spacing:.1em;text-transform:uppercase;z-index:10}
+@media print{
+  body{overflow:visible;background:#fff}
+  .slide{display:flex!important;position:relative;page-break-after:always;height:100vh;inset:auto}
+  .progress,footer,.tag,.hint{display:none}
+}
+.hint{position:fixed;bottom:.7rem;left:50%;transform:translateX(-50%);font-size:.75rem;color:var(--neutral-light);z-index:10}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="tag">OWLIST · Code-Crash</div>
+<div class="deck" id="deck">
+
+<!-- 1 TITEL -->
+<section class="slide active center">
+  <div class="kicker"><span class="dot"></span>Governance für die KI-Software-Ära</div>
+  <h1>Das <span class="grad">Code-Crash</span><br>Framework</h1>
+  <p class="lead" style="margin:1.2em auto 0">Vom Vibe-Coding zur Production-Readiness — ein Operating System für KI-gestützte Software-Entwicklung.</p>
+  <p class="note">30-Minuten-Überblick · OWLIST</p>
+</section>
+
+<!-- 2 PROBLEM -->
+<section class="slide">
+  <h3>Das Problem</h3>
+  <h2>KI schreibt Code in Minuten.<br>Drei Wochen später steht das Chaos.</h2>
+  <ul>
+    <li>Du weißt nicht mehr, <strong>warum</strong> eine Entscheidung so fiel — der Kontext ist weg.</li>
+    <li>Die KI kennt das Projekt nicht mehr; jede neue Funktion zerstört eine andere.</li>
+    <li>Keiner weiß, welche Version <strong>stabil</strong> ist. 50 Dateien, 3 halbfertige Features, kein Plan.</li>
+    <li>Ergebnis: <strong>Slopware</strong> — KI-Mittelmaß, das die Qualitätsschwelle leise nach unten zieht.</li>
+  </ul>
+  <p class="note">Vibe Coding ist schnell — aber ohne Governance nicht produktionsreif.</p>
+</section>
+
+<!-- 3 WARUM JETZT -->
+<section class="slide">
+  <h3>Warum gerade jetzt</h3>
+  <h2>Code-Schreiben ist nicht mehr der Flaschenhals.<br><span class="grad">Intent</span> ist es.</h2>
+  <div class="cols">
+    <ul>
+      <li><strong>Jevons-Paradox:</strong> wird Code billiger, entsteht <em>mehr</em> Code — nicht weniger.</li>
+      <li>Wenn alle bauen können, entscheidet der <strong>Spark</strong>, nicht die Syntax.</li>
+      <li>Ohne strikte Quality-Gates ertrinkt die Codebase in der eigenen Flut.</li>
+    </ul>
+    <div>
+      <p class="big grad">↑ Output</p>
+      <p style="margin-top:.3em"><strong>Input wird zur knappen Ressource.</strong> Was teurer wird: klarer Intent, technisches Urteil, Production-Readiness.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 4 WAS IST CODE-CRASH -->
+<section class="slide center">
+  <h3>Was ist Code-Crash</h3>
+  <h2>Das Operating System für Code-Crash-Engineering</h2>
+  <img class="sketch" src="../schrader-sketches/operating-system-overview.png" alt="Operating System Overview — Skills, 4P-Pipeline, Governance-Schicht">
+  <p class="note">13 Skills · 4P-Pipeline · Governance-Schicht — die Theorie der KI-Ära als ausführbare Praxis.</p>
+</section>
+
+<!-- 5 GAMECHANGER 1 INTENT -->
+<section class="slide">
+  <h3>Gamechanger 1</h3>
+  <h2>Intent is the new Code</h2>
+  <div class="cols">
+    <ul>
+      <li>Ein eigener <strong>/intent</strong>-Skill <em>vor</em> dem ersten Prompt — Anti-Pattern-Self-Check inklusive.</li>
+      <li>Template: <em>„[Nutzergruppe] erreicht [messbares Ergebnis] ohne [Reibung]. Erfolg = [Metrik]."</em></li>
+      <li>Der Intent <strong>propagiert durch alle Skills</strong>: Gate in der Ideation, Gewicht im Backlog, Messpunkt beim Implementieren.</li>
+    </ul>
+    <img class="sketch" src="../schrader-sketches/chapter-05-hero.png" alt="Intent als knappste Ressource">
+  </div>
+</section>
+
+<!-- 6 GAMECHANGER 2 4P -->
+<section class="slide center">
+  <h3>Gamechanger 2</h3>
+  <h2>Die 4P-Pipeline ersetzt den Genehmigungs-Marathon</h2>
+  <div class="flow" style="justify-content:center">
+    <span class="step">Perceive</span><span class="arr">→</span>
+    <span class="step">Prompt</span><span class="arr">→</span>
+    <span class="step">Produce</span><span class="arr">→</span>
+    <span class="step">Pitch</span>
+  </div>
+  <img class="sketch" src="../schrader-sketches/chapter-06-hero.png" alt="4P-Pipeline" style="margin-top:1.2rem">
+  <p class="note">Liefert in Wochen statt Quartalen. Jeder Skill gehört eindeutig zu einem P.</p>
+</section>
+
+<!-- 7 GAMECHANGER 3 GATES -->
+<section class="slide">
+  <h3>Gamechanger 3</h3>
+  <h2>Quality-Gates statt Menschen-Kontrolle</h2>
+  <div class="cols">
+    <ul>
+      <li><strong>3 Layer:</strong> IDE (live) → Pre-Commit-Hook → CI.</li>
+      <li>ESLint, Semgrep, Coverage, Performance-Baseline, SonarQube greifen ineinander.</li>
+      <li><strong>Autonomy-Paradox:</strong> autonome Teams brauchen <em>härtere</em>, automatisierte Guardrails — weil keine Zeit für manuelle Reviews bleibt.</li>
+      <li>Nichts wandert an den Gates vorbei in <code>main</code>.</li>
+    </ul>
+    <img class="sketch" src="../schrader-sketches/chapter-06-detail-2.png" alt="Quality Gates statt Menschen-Kontrolle">
+  </div>
+</section>
+
+<!-- 8 GAMECHANGER 4 SPRINT -->
+<section class="slide center">
+  <h3>Gamechanger 4</h3>
+  <h2>Sprint = <span class="grad">Token-Box</span>, nicht Zeit-Box</h2>
+  <p class="big grad">80%</p>
+  <p class="lead" style="margin:.4em auto 0">Ein Sprint ist 80% des Context-Windows des genutzten Modells — modellunabhängig.</p>
+  <p class="note">Velocity ist tot: kein Burndown, keine Story-Points-Statistik. Outcome wird über Intent-Erfüllung gemessen.</p>
+</section>
+
+<!-- 9 GAMECHANGER 5 TOOL-AGNOSTISCH -->
+<section class="slide">
+  <h3>Gamechanger 5</h3>
+  <h2>Tool-agnostisch &amp; nicht One-Size-Fits-All</h2>
+  <p><strong>Das Framework ist die Methodik, das Tool ist nur der Ausführer.</strong></p>
+  <div style="margin-top:.4em">
+    <span class="pill on">Claude Code</span><span class="pill">Codex</span><span class="pill">Cursor</span><span class="pill">Aider</span><span class="pill">lokale LLMs</span>
+  </div>
+  <p style="margin-top:1.4em"><strong>Governance-Modi nach Bedarf:</strong></p>
+  <div>
+    <span class="pill">lite — Solo-Prototyp</span><span class="pill on">standard — Default</span><span class="pill">heavy — reguliert</span>
+  </div>
+  <p class="note">70% des Frameworks sind reine Konventionen (Datei-Layouts, Hooks, CI) — tool-unabhängig. Nur 30% (Slash-Commands) hängen am Tool.</p>
+</section>
+
+<!-- 10 WAS WIR BESSER MACHEN -->
+<section class="slide">
+  <h3>Was wir besser machen</h3>
+  <h2>Kein Boilerplate. Kein Bürokratie-Framework.<br>Ein Governance-OS.</h2>
+  <table>
+    <tr><th>Ansatz</th><th>Was er gibt</th><th>Was fehlt</th></tr>
+    <tr><td>Starter-Kits / Boilerplate</td><td>Code-Struktur am Tag 1</td><td>keine Governance über die Zeit</td></tr>
+    <tr><td>KI-Coding-Tools (Copilot/Cursor)</td><td>Autocomplete, Geschwindigkeit</td><td>kein Intent→Production-Prozess</td></tr>
+    <tr><td>Schwergewicht (SAFe &amp; Co.)</td><td>Skaliert Prozess</td><td>skaliert Bürokratie statt Agilität</td></tr>
+    <tr><td class="us">Code-Crash Framework</td><td class="us">Intent → Gates → Production, leichtgewichtig</td><td class="us">—</td></tr>
+  </table>
+  <p class="note">Privacy &amp; Security by Design eingebaut · self-contained Bootstrap · skaliert von Solo bis 20+ Operatoren.</p>
+</section>
+
+<!-- 11 KEY-KOMPONENTEN -->
+<section class="slide">
+  <h3>Key-Komponenten</h3>
+  <h2>Skills, Artefakte, Gates — ineinandergreifend</h2>
+  <div class="cards">
+    <div class="card"><div class="n">SKILLS</div><h4>13 spezialisierte Skills</h4><p>/intent · /ideation · /backlog · /implement · /architecture-review · /sprint-review · /pitch + DPO &amp; security-architect.</p></div>
+    <div class="card"><div class="n">ARTEFAKTE</div><h4>Lebende SSoT</h4><p>CONVENTIONS.md (Vertrag), specs/ (pro Story), journal/ (Reports + Learning-Loop), environment.json.</p></div>
+    <div class="card"><div class="n">GATES</div><h4>Hooks &amp; CI</h4><p>spec-gate, doc-version-sync, sensitive-paths, personal-data-paths, post-merge — automatisch, nicht optional.</p></div>
+  </div>
+  <p class="note">Self-contained: <code>git clone</code> bringt alles mit — kein externer Skill-Pull nötig.</p>
+</section>
+
+<!-- 12 PRIVACY & SECURITY -->
+<section class="slide">
+  <h3>Vertrauen eingebaut</h3>
+  <h2>Privacy &amp; Security by Design — nicht nachgereicht</h2>
+  <div class="cols">
+    <ul>
+      <li><strong>security-architect</strong> + SECURITY.md + sensitive-paths-Gate.</li>
+      <li><strong>DPO-Skill</strong> (Data Protection Officer): DSGVO / BDSG / nDSG, 3 Modi (Assess / Review / Audit).</li>
+      <li><strong>Hard Gate:</strong> kein Commit an personenbezogenen Pfaden ohne <code>privacy-ok</code>.</li>
+      <li>Du musst kein Compliance-Experte sein — die Skills stellen die richtigen Fragen.</li>
+    </ul>
+    <img class="sketch" src="../assets/boo-69-privacy-pipeline.png" alt="Privacy-Pipeline">
+  </div>
+</section>
+
+<!-- 13 SKALIERT -->
+<section class="slide center">
+  <h3>Skaliert mit dir</h3>
+  <h2>Solo-Mac → VPS → Team mit 5–20+ Operatoren</h2>
+  <img class="sketch" src="../assets/boo-72-multi-operator-3-layer.png" alt="Multi-Operator 3-Layer-Modell">
+  <p class="note">Gleiche Methodik, vom ersten Solo-Projekt bis zur Coding-Factory. Deployment-Szenarien + Souveränitäts-Stack (EU) dokumentiert.</p>
+</section>
+
+<!-- 14 BEWEIS -->
+<section class="slide">
+  <h3>Der Beweis</h3>
+  <h2>„Funktioniert mein Setup wirklich?" — verifizierbar.</h2>
+  <ul>
+    <li><strong>verify-setup.sh</strong> — prüft programmatisch: Tools da, Hooks feuern, Artefakte existieren.</li>
+    <li><strong>5-Schritte-E2E-Probelauf</strong> — bootstrap → ideation → implement → sprint-review → Konsistenz.</li>
+    <li><strong>Anti-Pattern-Selbstdiagnose</strong> im Sprint-Review — fängt Slopware, bevor sie sich festsetzt.</li>
+    <li>Bilinguales HANDBUCH (DE + EN), 21 Anhänge als Nachschlage-Schicht.</li>
+  </ul>
+</section>
+
+<!-- 15 START -->
+<section class="slide center">
+  <h3>Wie du startest</h3>
+  <h2>Zwei Befehle bis zum ersten gebootstrappten Projekt</h2>
+  <div class="flow" style="justify-content:center;margin-top:1rem">
+    <span class="step">git clone</span><span class="arr">→</span>
+    <span class="step">/bootstrap</span><span class="arr">→</span>
+    <span class="step">erstes Projekt</span>
+  </div>
+  <p class="lead" style="margin:1.4em auto 0">Ein interaktives Interview richtet Runtime, Governance-Modus, Gates und Artefakte ein — in Minuten, nicht Tagen.</p>
+</section>
+
+<!-- 16 CTA -->
+<section class="slide center">
+  <div class="kicker"><span class="dot"></span>Der Call</div>
+  <h1>Schrader liefert die Theorie.<br><span class="grad">Code-Crash liefert die Praxis.</span></h1>
+  <p class="lead" style="margin:1.3em auto 0">Hör auf zu hoffen, dass dein KI-Code funktioniert. Stell sicher, dass er es tut — strukturiert, mit Gates, produktionsreif.</p>
+  <p class="note">github.com/vibercoder79/code-crash-framework · HANDBUCH.md / HANDBUCH.en.md</p>
+</section>
+
+<!-- 17 BACKUP -->
+<section class="slide">
+  <h3>Backup · Architektur-Tiefe</h3>
+  <h2>Die Pipeline im Detail</h2>
+  <table>
+    <tr><th>Phase</th><th>Skills</th><th>Output</th></tr>
+    <tr><td><strong>Perceive</strong></td><td>/intent</td><td>Intent-Dokument (technologie-agnostisch)</td></tr>
+    <tr><td><strong>Prompt</strong></td><td>/ideation · /backlog</td><td>specs/&lt;ISSUE&gt;.md, neutraler Backlog-Record</td></tr>
+    <tr><td><strong>Produce</strong></td><td>/implement · /architecture-review · /sprint-review</td><td>Code + Quality-Gates + journal/reports + Learning-Loop</td></tr>
+    <tr><td><strong>Pitch</strong></td><td>/pitch</td><td>Evidenz + Live-Demo-Struktur</td></tr>
+  </table>
+  <p class="note">Quer dazu: DPO, security-architect, /breakfix, /research, /integration-test, /status. Optional: Hermes Compound-Layer über mehrere Projekte.</p>
+</section>
+
+</div>
+
+<footer>
+  <span id="ftitle">Code-Crash Framework</span>
+  <span><span id="cur">1</span> / <span id="tot">17</span></span>
+</footer>
+<div class="hint">← → blättern · F Vollbild · P drucken/PDF</div>
+
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+let i=0; const tot=slides.length;
+document.getElementById('tot').textContent=tot;
+function show(n){
+  i=Math.max(0,Math.min(tot-1,n));
+  slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+  document.getElementById('cur').textContent=i+1;
+  document.getElementById('progress').style.width=((i+1)/tot*100)+'%';
+  const h2=slides[i].querySelector('h2,h1');
+  document.getElementById('ftitle').textContent=h2?h2.innerHTML.replace(/<br\s*\/?>/gi,' ').replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim():'Code-Crash';
+}
+document.addEventListener('keydown',e=>{
+  if(['ArrowRight','ArrowDown',' ','PageDown'].includes(e.key)){show(i+1);e.preventDefault();}
+  else if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)){show(i-1);e.preventDefault();}
+  else if(e.key==='Home')show(0); else if(e.key==='End')show(tot-1);
+  else if(e.key.toLowerCase()==='f'){if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();}
+  else if(e.key.toLowerCase()==='p')window.print();
+});
+document.getElementById('deck').addEventListener('click',e=>{if(!e.target.closest('a'))show(i+1)});
+show(0);
+</script>
+</body>
+</html>
