@@ -3284,6 +3284,54 @@ migrate_boo_76() {
 }
 
 # -----------------------------------------------------------------------------
+# BOO-77 — Framework-native Vault-Sync-Engine in Bestands-Projekt nachziehen
+# -----------------------------------------------------------------------------
+
+migrate_boo_77() {
+    log_info "BOO-77: framework-native Vault-Sync-Engine — Engine-Files in bestehendes Projekt kopieren"
+    log_info "BOO-77: framework-native vault-sync engine — copy engine files into an existing project"
+
+    # Quelle: bootstrap/references/vault-sync/ im Framework-Repo (dieses Skript liegt darin).
+    local script_dir framework_root src_dir
+    script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    framework_root="$(cd "${script_dir}/../.." && pwd)"
+    src_dir="${framework_root}/bootstrap/references/vault-sync"
+
+    if [[ ! -d "$src_dir" ]]; then
+        log_warn "BOO-77: Engine-Quelle ${src_dir} nicht gefunden — Repo-Stand pruefen."
+        return 1
+    fi
+
+    # Idempotent + nicht-destruktiv: nur kopieren wenn Ziel fehlt. Schreibt NICHT in den Vault.
+    _copy_if_absent() {
+        local src="$1" dst="$2"
+        if [[ -f "$dst" ]]; then
+            log_info "BOO-77: ${dst} existiert bereits — keine Aenderung."
+        elif [[ "$DRY_RUN" == "true" ]]; then
+            log_info "[dry-run] ${src} -> ${dst} kopieren"
+        else
+            mkdir -p "$(dirname "$dst")"
+            cp "$src" "$dst" && log_info "BOO-77: ${dst} angelegt."
+        fi
+    }
+
+    _copy_if_absent "${src_dir}/vault-sync.py"          "scripts/vault-sync.py"
+    _copy_if_absent "${src_dir}/install-vault-sync.sh"  "scripts/install-vault-sync.sh"
+    _copy_if_absent "${src_dir}/post-merge.sh"          ".claude/hooks/post-merge.sh"
+    _copy_if_absent "${src_dir}/tracked-paths.json"     ".vault-sync/tracked-paths.json"
+
+    # .gitignore-Eintrag fuer die persoenliche local.json sicherstellen
+    if [[ "$DRY_RUN" != "true" ]] && ! grep -qxF ".vault-sync/local.json" .gitignore 2>/dev/null; then
+        printf '\n# Persoenliche Vault-Harvest-Konfig (BOO-77) — nie committen\n.vault-sync/local.json\n' >> .gitignore
+        log_info "BOO-77: .vault-sync/local.json in .gitignore eingetragen."
+    fi
+
+    log_info "BOO-77: Operator-Schritt: 'bash scripts/install-vault-sync.sh' pro Mitarbeiter (Default-Modus dry-run)."
+    log_info "BOO-77: Sicherheit: einseitig Repo->Vault, Pfad-Containment, exit 0 ohne local.json. Im Team DocSync (D.2) = nein."
+    log_info "BOO-77 done."
+}
+
+# -----------------------------------------------------------------------------
 # CLI / Argument Parsing
 # -----------------------------------------------------------------------------
 
@@ -3301,7 +3349,7 @@ ALL_ISSUES=(
     BOO-70 BOO-71
     BOO-72
     BOO-74
-    BOO-75 BOO-76
+    BOO-75 BOO-76 BOO-77
 )
 
 print_help() {

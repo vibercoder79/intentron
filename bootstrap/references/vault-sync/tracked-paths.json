@@ -1,0 +1,8 @@
+{
+  "tracked_paths": [
+    { "glob": "docs/components/*.md", "type": "component" },
+    { "glob": "docs/decisions/*.md", "type": "decision" },
+    { "glob": "docs/architecture-guidelines.md", "type": "architecture" },
+    { "glob": "journal/sprint-*.md", "type": "sprint-retro" }
+  ]
+}

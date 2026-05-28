@@ -1,6 +1,6 @@
-# Vault-Harvest-Pattern — Config-Scaffold (BOO-75)
+# Vault-Harvest-Pattern — Config-Scaffold + framework-native Engine (BOO-75/77)
 
-Repo-Docs + persoenlicher Vault-Harvest fuer Multi-Person-Teams mit Obsidian-Nutzern. Dieses Dokument ist das **Config-Scaffold** im Framework — es beschreibt den Daten-Vertrag und die Mechanik. Die **Sync-Engine selbst** (`vault-sync.py`, `install-vault-sync.sh`, `post-merge.sh`) liegt in Stefans Referenz-Implementierung `StefanWeimarPRODOC/project-template` (`docs/vault-sync.md`) und wird in Phase 1 **nicht** ins Framework vendored.
+Repo-Docs + persoenlicher Vault-Harvest fuer Multi-Person-Teams mit Obsidian-Nutzern. Dieses Dokument beschreibt den Daten-Vertrag und die Mechanik. Die **Sync-Engine ist seit BOO-77 framework-nativ** — sie liegt unter `bootstrap/references/vault-sync/` (`vault-sync.py`, `install-vault-sync.sh`, `post-merge.sh`, `tracked-paths.json`) und wird von Bootstrap-Option `[e]` direkt ins Projekt kopiert. Kein externer Code, keine Dependencies (Python-Stdlib + Bash). Stefans `project-template` war der Pattern-Impuls, ist aber **nicht** die Quelle der Engine.
 
 > **Schwesterdatei (Englisch):** [`vault-sync-pattern.en.md`](./vault-sync-pattern.en.md)
 > **HANDBUCH-Hintergrund:** Anhang R Layer 3 (Vault-Harvest-Pattern, 2-Fluss-Modell).
@@ -51,11 +51,14 @@ Pro Mitarbeiter, **niemals committen** (gehoert in `.gitignore`). Schema:
 - `mode`: `auto` (still mirroren) | `dry-run` (nur anzeigen) | `ask` (pro Datei fragen).
 - `enabled: false` deaktiviert den Harvest fuer diesen Operator ohne Deinstallation.
 
-## Baustein 3 — Mechanik (in Stefans Referenz-Repo)
+## Baustein 3 — Mechanik (framework-native, BOO-77)
 
-- `scripts/install-vault-sync.sh` — interaktives Init pro Mitarbeiter (`--force` / `--uninstall`).
-- `scripts/vault-sync.py` — Sync-Engine (Python-Stdlib-only, Frontmatter-Merge, Pfad-Containment-Check, drei Modi).
-- `.claude/hooks/post-merge.sh` — 3-Zeilen-Wrapper, via Symlink in `.git/hooks/post-merge`, feuert nach jedem `git pull`.
+Die Engine liegt im Framework unter `bootstrap/references/vault-sync/` und wird von Bootstrap-Option `[e]` ins Projekt kopiert:
+
+- `scripts/install-vault-sync.sh` — interaktives Init pro Mitarbeiter (`--force` / `--uninstall`), legt `local.json` an, traegt `.gitignore`-Eintrag ein, symlinkt den Hook.
+- `scripts/vault-sync.py` — Sync-Engine (Python-Stdlib-only, Frontmatter-Merge mit `vault_sync_*`-Namespace, Pfad-Containment-Check, Modi `auto`/`dry-run`/`ask`, liest Commit-SHA direkt aus `.git/HEAD`).
+- `.claude/hooks/post-merge.sh` — Wrapper, via Symlink in `.git/hooks/post-merge`, feuert nach jedem `git pull`. `exit 0` wenn keine `local.json`.
+- `.vault-sync/tracked-paths.json` — versionierter Team-Vertrag (siehe Baustein 1).
 
 ## Kernregeln
 
@@ -67,13 +70,20 @@ Pro Mitarbeiter, **niemals committen** (gehoert in `.gitignore`). Schema:
 
 ## Aktivierung im Bootstrap
 
-Bootstrap-Frage B.3, Option `[e] Repo-Docs + persoenlicher Vault-Harvest`. In Phase 1 generiert Bootstrap **keinen** Engine-Code, sondern: Doku-SSoT auf `docs/project/`, Hinweis-Block auf Stefans Repo + dieses Scaffold, Block D DocSync = nein, Onboarding-Schritt fuer `.vault-sync/local.json`.
+Bootstrap-Frage B.3, Option `[e] Repo-Docs + persoenlicher Vault-Harvest`. Bootstrap kopiert die Engine-Files ins Projekt (`scripts/vault-sync.py`, `scripts/install-vault-sync.sh`, `.claude/hooks/post-merge.sh`, `.vault-sync/tracked-paths.json`), traegt `.vault-sync/local.json` in `.gitignore` ein, setzt Block D DocSync = nein und ergaenzt den Onboarding-Schritt. Danach aktiviert jeder Mitarbeiter den Harvest optional mit `bash scripts/install-vault-sync.sh` (Default-Modus `dry-run`).
 
 ## Phasen
 
-- **Phase 1 (BOO-75):** Dokumentation + dieses Scaffold. Engine bleibt in Stefans Repo.
-- **Phase 2 (Folge-Story, blockiert):** Engine ins Framework vendoren — sobald `StefanWeimarPRODOC/project-template` zugaenglich ist und die Scripts per `security-architect --mode SKILL-SCAN` geprueft sind. Dann Master/Mirror-Disziplin analog BOO-74.
+- **Phase 1 (BOO-75):** Dokumentation + Config-Scaffold + Bootstrap-Option als dokumentierte Wahl.
+- **Phase 2 (BOO-77, done):** **framework-native Engine** unter `bootstrap/references/vault-sync/` — Bootstrap-Option `[e]` richtet das Vault-Harvest vollstaendig ein. Kein externer Code noetig. Smoke-getestet (dry-run / real / Pfad-Containment / disabled / keine local.json).
+
+## Sicherheit
+
+- Einseitig: schreibt NUR in den Vault, nie ins Repo.
+- Pfad-Containment via `realpath`: jedes Ziel muss innerhalb `vault_path` liegen, sonst Abbruch (verhindert `../`-Ausbruch und Symlink-Traversal).
+- Keine Netzwerk-Calls, keine Secrets, Python-Stdlib-only.
+- `local.json` ist gitignored — der persoenliche Vault-Pfad leakt nie ins Repo.
 
 ## Quelle
 
-Operator-Feedback Stefan, 2026-05-27. Referenz-Implementierung: `StefanWeimarPRODOC/project-template`, `docs/vault-sync.md`.
+Pattern-Impuls: Operator-Feedback Stefan, 2026-05-27 (`StefanWeimarPRODOC/project-template`). Framework-native Engine: BOO-77, Operator-Entscheidung Tobias 2026-05-28 (Stefans Code nicht benoetigt).

@@ -1,7 +1,7 @@
 ---
 name: bootstrap
 recommended_model: sonnet  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
-version: 3.30.0
+version: 3.31.0
 description: Setzt ein neues Projekt mit Governance-Framework auf — interaktiver Block-Interview-Flow in 4 Schritten, Doku-Architektur mit Hub-Auto-Verlinkung, optionaler Learning-Loop L1/L2/L3. Verwenden wenn der Operator ein neues Projekt aufsetzen will oder "/bootstrap" sagt.
 tools: [Read, Write, Edit, Bash, Glob, Grep]
 metadata:
@@ -295,13 +295,19 @@ Warnung: {PROJECT_PATH} enthaelt bereits Dateien.
 
 **Merken:** `EXISTING_INFRA = {...}` und `DOCUMENTATION_SSOT = {type, path_or_url, project_path, fallback, status}` fuer weitere Phasen. Bei Wahl `[e]` ist `type = repo-docs-plus-vault-harvest`.
 
-> **Wahl [e] Repo-Docs + persoenlicher Vault-Harvest (BOO-75, Phase 1 = dokumentierte Wahl):**
-> Bootstrap generiert in Phase 1 **keinen** Sync-Engine-Code, sondern:
+> **Wahl [e] Repo-Docs + persoenlicher Vault-Harvest (BOO-75/77):**
+> Bootstrap richtet das Vault-Harvest mit der **framework-nativen Engine** (BOO-77) vollstaendig ein:
 > 1. legt die Doku-SSoT auf `docs/project/` (wie `[b]`),
-> 2. gibt einen Hinweis-Block aus: "Vault-Harvest-Referenz-Implementierung liegt in `StefanWeimarPRODOC/project-template` (`docs/vault-sync.md`). Config-Scaffold (Team-Vertrag + local.json-Schema): `bootstrap/references/vault-sync-pattern.md`.",
-> 3. setzt **Block D DocSync = nein** (Vault-Harvest und DocSync wuerden sich sonst ueberschneiden — DocSync ist solo/bidirektional, Harvest ist team/einseitig),
-> 4. ergaenzt in `DEVELOPER_ONBOARDING.md` einen Setup-Schritt "Vault-Harvest pro Mitarbeiter optional initialisieren (`.vault-sync/local.json`)".
-> Das tatsaechliche Vendoring der Sync-Engine ins Framework ist Phase 2 (Folge-Story, sobald die Engine geteilt + per `security-architect --mode SKILL-SCAN` geprueft ist). Details: HANDBUCH Anhang R Layer 3.
+> 2. kopiert die Engine-Files aus `references/vault-sync/` ins Projekt:
+>    - `scripts/vault-sync.py` (einseitige Sync-Engine Repo→Vault, Python-Stdlib),
+>    - `.claude/hooks/post-merge.sh` (Hook-Wrapper, feuert nach `git pull`),
+>    - `scripts/install-vault-sync.sh` (interaktives Init pro Mitarbeiter),
+>    - `.vault-sync/tracked-paths.json` (versionierter Team-Vertrag, 4 Defaults),
+> 3. traegt `.vault-sync/local.json` in `.gitignore` ein (persoenliche Konfig, nie committen),
+> 4. setzt **Block D DocSync = nein** (Vault-Harvest und DocSync wuerden sich sonst ueberschneiden — DocSync ist solo/bidirektional, Harvest ist team/einseitig),
+> 5. ergaenzt in `DEVELOPER_ONBOARDING.md` einen Setup-Schritt: "Vault-Harvest pro Mitarbeiter optional aktivieren: `bash scripts/install-vault-sync.sh` (legt `.vault-sync/local.json` an + symlinkt den Hook). Default-Modus `dry-run` — erst pruefen, dann auf `auto` stellen."
+>
+> **Sicherheit:** die Engine schreibt einseitig NUR in den Vault (nie ins Repo), prueft Pfad-Containment (kein Schreiben ausserhalb `vault_path`) und beendet sich still mit `exit 0`, wenn ein Mitarbeiter keine `local.json` hat (null Reibung). Details: HANDBUCH Anhang R Layer 3 + `references/vault-sync-pattern.md`.
 
 Phase-2-Checkpoint: Zusammenfassung ausgeben.
 

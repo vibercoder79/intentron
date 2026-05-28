@@ -3108,7 +3108,7 @@ Whoever works in a team but also keeps a personal knowledge vault across several
 - **The vault is never modified manually:** annotations go into `.notes.md` sidecar files that the sync never touches. Frontmatter namespace `vault_sync_*` (collision-free, filterable in Bases).
 - **Delineation from DocSync (Block D.2):** our DocSync is solo + bidirectional (vault ↔ repo). Vault harvest is team + one-way (repo → vault). In team mode therefore set **DocSync = no** — otherwise the two mechanisms overlap.
 
-**Activation:** bootstrap question B.3 offers the option *"Repo docs + personal vault harvest"* (see Bootstrap Block B.3). The reference implementation (sync engine, install script, hook wrapper, full spec `docs/vault-sync.md`) lives in `StefanWeimarPRODOC/project-template`. The config scaffold (team contract + local.json schema) is documented in the framework under `bootstrap/references/vault-sync-pattern.md`.
+**Activation:** bootstrap question B.3 offers the option *"Repo docs + personal vault harvest"* (see Bootstrap Block B.3). Since **BOO-77** the sync engine is **framework-native** — bootstrap copies `scripts/vault-sync.py`, `scripts/install-vault-sync.sh`, `.claude/hooks/post-merge.sh` and `.vault-sync/tracked-paths.json` directly into the project (Python stdlib + Bash, no dependencies, no external code). Each operator optionally enables the harvest with `bash scripts/install-vault-sync.sh` (default mode `dry-run`). **Security:** one-way (writes only into the vault), path-containment check (no writing outside `vault_path`), `exit 0` without `local.json`. Data contract + schema: `bootstrap/references/vault-sync-pattern.md`.
 
 ### Four-eyes convention for sensitive paths and personal-data paths
 

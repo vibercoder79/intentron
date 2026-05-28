@@ -1164,6 +1164,31 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 
 ---
 
+## §BOO-77 — Framework-native Vault-Sync-Engine — Wave O
+
+**Status:** ✓ in v2-Bundle — additive Engine-Files, nicht-destruktiv. Macht BOO-75 Phase 2 (Vendoring von Stefans Code) obsolet (framework-native statt vendored).
+**Aufwand:** klein (~5 Min Auto-Schritt + `install-vault-sync.sh` pro Mitarbeiter).
+**Linear:** <https://linear.app/owlist/issue/BOO-77>
+**Auto-Schritt:** ja (`migrate_boo_77`).
+
+**Auto-Schritte:**
+
+- `bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-77` — kopiert `scripts/vault-sync.py`, `scripts/install-vault-sync.sh`, `.claude/hooks/post-merge.sh`, `.vault-sync/tracked-paths.json` ins Projekt (nur falls nicht vorhanden) + `.gitignore`-Eintrag fuer `.vault-sync/local.json`.
+
+**Operator-Schritte (manuell, pro Mitarbeiter):**
+
+- [ ] `bash scripts/install-vault-sync.sh` — legt persoenliche `.vault-sync/local.json` an (Vault-Pfad, Slug, Modus) + symlinkt den post-merge-Hook. Default-Modus `dry-run`.
+- [ ] `python3 scripts/vault-sync.py --dry-run` testen, dann in `local.json` `mode` auf `auto` stellen.
+- [ ] Im Team-Modus DocSync (Block D.2) = nein.
+
+**Sicherheit:** einseitig (schreibt nur in den Vault), Pfad-Containment (`realpath`-Check gegen `vault_path`), `exit 0` ohne `local.json`, Python-Stdlib-only. Smoke-getestet (dry-run / real / Containment-Block / disabled / no-config / Sidecar-Schutz).
+
+**Rollback:** `bash scripts/install-vault-sync.sh --uninstall` (entfernt Hook + local.json). Engine-Files manuell loeschen.
+
+**Verweise:** `bootstrap/references/vault-sync/`, HANDBUCH Anhang R Layer 3, `bootstrap/references/vault-sync-pattern.md`, `specs/BOO-77.md`.
+
+---
+
 ## Nicht-Skill-Issues (uebersprungen)
 
 Diese Issues betreffen Operator-Tooling, Meta-Arbeit oder Doppelungen und brauchen **keine** Migration in Bestands-Projekten. Sie erscheinen in `migration-status.md` mit Status ✗.
