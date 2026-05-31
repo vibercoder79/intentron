@@ -222,6 +222,14 @@ See [references/governance-validation.en.md](references/governance-validation.en
 
 ### Step 5: Implementation (after approval)
 
+> **Secure-coding hint (shift-left at the prompt layer).** Write secure-by-default from the start — don't wait for the gates to correct it:
+> - **No hardcoded secrets** — API keys/tokens/passwords via env variables or a secret manager, never as a literal in code.
+> - **Parametrized queries** instead of string concatenation (prepared statements / query builder), never glue user input into SQL.
+> - **Do NOT disable TLS verification** (`verify=False`, `rejectUnauthorized: false`, `NODE_TLS_REJECT_UNAUTHORIZED=0` are off-limits).
+> - **No `eval`/`exec`** on foreign/user input; no shell with unchecked input (`shell=True`, `child_process.exec`).
+>
+> The Layer-0 Edit-Bodyguard (BOO-86) is the **deterministic backstop** for this — it catches these patterns if they slip through anyway. Deep checks stay in Layers 2/3 (Semgrep, CI). See HANDBUCH Appendix V.
+
 - Sub-tasks: before implementation → "In Progress", after completion → "Done"
 - Execute the plan fully
 - Mark all new functions, methods, and code paths with comment `// AI-generated: {STORY_ID}` (rollback identification, BOO-17). For Python: `# AI-generated: {STORY_ID}`.

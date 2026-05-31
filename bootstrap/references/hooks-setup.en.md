@@ -7,7 +7,7 @@ Important: in INTENTRON, "hook" first means a **coding/runtime hook** of the act
 
 | Layer | Purpose | Examples |
 |-------|---------|----------|
-| AI runtime hook | Blocks risky tool calls while work is happening | Claude Code `PreToolUse`, Codex `.codex/hooks.json` |
+| AI runtime hook | Blocks risky tool calls while work is happening | Claude Code `PreToolUse` → `pre-edit-bodyguard.sh` (`Edit|Write`), Codex `.codex/hooks.json` |
 | Local Git hook | Optional protection directly before commit/push | `.git/hooks/pre-commit`, `.git/hooks/commit-msg` |
 | CI gate | Independent proof on GitHub/GitLab/Azure | ESLint/Ruff, Semgrep, tests, coverage, Sonar |
 
@@ -154,6 +154,25 @@ exit 0
 
 ---
 
+## pre-edit-bodyguard.sh — Layer 0 (BOO-86)
+
+Layer-0 gate: a Claude Code **PreToolUse hook** with matcher `Edit|Write|MultiEdit` that catches unsafe patterns (secrets, `eval`, disabled TLS verification, SQL concatenation) **before** the AI writes them to disk. Sibling hook to `spec-gate.sh` — while spec-gate.sh fires on `Bash`/`git commit` (i.e. only at commit time), the bodyguard sits one stage earlier: directly at the write operation.
+
+**Pattern layering:**
+- Framework base under `.claude/hooks/bodyguard/patterns/*.yml` — `_universal.yml` (secrets, language-agnostic) + language-specific sets (`python.yml`, `javascript.yml`, `java.yml`, `c-cpp.yml`, selected by file extension).
+- Optional project overlay `.claude/bodyguard.local.yml` — loaded last, overrides/extends the base by `name`. Project-owned, survives framework updates.
+
+**Behavior:**
+- Default: **warning** (low false positive, no alarm fatigue) — `warn` patterns report to stderr but do not block.
+- `BODYGUARD_STRICT=1`: **hard block** — all `warn` patterns are escalated to `block`, exit 1 prevents the write.
+- `block` patterns (e.g. AWS key, private-key block) always block.
+
+Deliberately lightweight: a small, curated pattern set per edit — NOT a full Semgrep run (depth stays at layers 2/3). Pattern schema (flat YAML subset, read by a mini parser in the hook — no PyYAML): `name` · `pattern` (Python regex) · `language` · `source` (CWE/OWASP/gitleaks/Semgrep — mandatory, audit evidence) · `action` (`block|warn`).
+
+> **Script body + all pattern files:** see `bootstrap/references/file-templates.md` §`hooks/pre-edit-bodyguard.sh (BOO-86 — Layer-0 Edit-Bodyguard)` (canonical source).
+
+---
+
 ## doc-version-sync.sh
 
 Blocks `git commit` when `lib/config.js` is staged with an increased VERSION but documentation files (listed in DOC_FILES inside config.js) are still on the old version.
@@ -215,7 +234,7 @@ exit 0
 
 ## Portability
 
-Both hooks have **no external dependencies** — only Bash, grep, git, python3.
+All hooks have **no external dependencies** — only Bash, grep, git, python3. The bodyguard is dependency-free too: bash + python3 stdlib, **no PyYAML** — the pattern files are read by a mini parser inside the hook.
 
 Adapt for a new project:
 - Issue prefix is auto-extracted from the commit message in spec-gate.sh (pattern `[A-Z]+-\d+`) — no manual adjustment required
@@ -237,6 +256,12 @@ Adapt for a new project:
         "hooks": [
           { "type": "command", "command": "bash {PROJECT_PATH}/.claude/hooks/spec-gate.sh" },
           { "type": "command", "command": "bash {PROJECT_PATH}/.claude/hooks/doc-version-sync.sh" }
+        ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          { "type": "command", "command": "bash {PROJECT_PATH}/.claude/hooks/pre-edit-bodyguard.sh" }
         ]
       }
     ]

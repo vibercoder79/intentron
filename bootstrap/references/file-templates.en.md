@@ -1361,6 +1361,299 @@ fi
 
 ---
 
+## hooks/pre-edit-bodyguard.sh (BOO-86 — Layer-0 Edit-Bodyguard)
+
+**Layer-0 gate since BOO-86:** a Claude Code **PreToolUse hook** on `Edit|Write` that
+catches unsafe patterns (secrets, `eval`, disabled TLS verification, SQL concatenation)
+**before** the AI writes them to disk — a sibling hook to `spec-gate.sh` (which fires on
+`Bash`/`git commit`). Default is **warning** (low false-positive, no alarm fatigue);
+hard-block via `BODYGUARD_STRICT=1`. Deliberately lightweight: a small, curated pattern
+set — NOT a full Semgrep run per edit (depth stays at layer 2/3).
+
+**Scaffold (all dependency-free, only bash + python3 stdlib):**
+
+| File | Purpose |
+|-------|------|
+| `.claude/hooks/pre-edit-bodyguard.sh` | the hook (reads stdin JSON, matches patterns) |
+| `.claude/hooks/bodyguard/patterns/_universal.yml` | secrets, language-agnostic |
+| `.claude/hooks/bodyguard/patterns/{python,javascript,java,c-cpp}.yml` | language-specific |
+| `.claude/hooks/bodyguard/SOURCES.md` | origin/versions/maintenance convention |
+| `.claude/bodyguard.local.yml` | **optional** project overlay (overrides base by `name`) |
+
+Pattern schema (flat YAML subset, read by the mini-parser in the hook — no PyYAML needed):
+`name` · `pattern` (Python regex) · `sprache` · `quelle` (CWE/OWASP/gitleaks/Semgrep — mandatory, audit evidence) · `action` (`block|warn`).
+
+```bash
+#!/usr/bin/env bash
+# ─────────────────────────────────────────────────────────────────────────────
+#  PRE-EDIT-BODYGUARD — Layer-0 Governance Hook (BOO-86)
+#  Faengt unsichere Muster ab, BEVOR die KI sie schreibt.
+#
+#  Claude Code PreToolUse Hook (Bash) — Matcher: Edit|Write
+#  Input: JSON via stdin: {"tool_input": {"file_path": "...", "content"/"new_string": "..."}}
+#  Exit 1 → Tool-Call blockiert | Exit 0 → erlaubt (Default: Warnung)
+#  BODYGUARD_STRICT=1 → warn-Muster werden zu block (opt-in Hard-Block)
+# ─────────────────────────────────────────────────────────────────────────────
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PATTERN_DIR="${SCRIPT_DIR}/bodyguard/patterns"
+PROJECT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || echo ".")"
+OVERLAY="${PROJECT_ROOT}/.claude/bodyguard.local.yml"
+STRICT="${BODYGUARD_STRICT:-0}"
+
+INPUT="$(cat)"
+
+printf '%s' "$INPUT" | python3 -c "$(cat <<'PYEOF'
+import sys, json, re, os
+pattern_dir, overlay, strict = sys.argv[1], sys.argv[2], sys.argv[3] == "1"
+try:
+    data = json.loads(sys.stdin.read())
+except Exception:
+    sys.exit(0)  # nicht parsebar → nicht blockieren
+ti = data.get("tool_input", {}) or {}
+file_path = ti.get("file_path", "") or ""
+content = ti.get("content") or ti.get("new_string") or ""
+if not content and isinstance(ti.get("edits"), list):
+    content = "\n".join(e.get("new_string", "") for e in ti["edits"])
+if not content:
+    sys.exit(0)
+ext = os.path.splitext(file_path)[1].lower()
+lang_map = {".js":"javascript",".mjs":"javascript",".cjs":"javascript",".ts":"javascript",
+            ".tsx":"javascript",".jsx":"javascript",".py":"python",".java":"java",
+            ".c":"c-cpp",".h":"c-cpp",".cpp":"c-cpp",".cc":"c-cpp",".hpp":"c-cpp"}
+lang = lang_map.get(ext)
+def parse_patterns(path):
+    out, cur = [], None
+    if not os.path.isfile(path):
+        return out
+    for line in open(path, encoding="utf-8"):
+        s = line.rstrip("\n")
+        if not s.strip() or s.lstrip().startswith("#"):
+            continue
+        if s.lstrip().startswith("- "):
+            if cur: out.append(cur)
+            cur, s = {}, s.lstrip()[2:]
+        if ":" in s and cur is not None:
+            k, v = s.split(":", 1)
+            cur[k.strip()] = v.strip().strip("'\"")
+    if cur: out.append(cur)
+    return out
+files = [os.path.join(pattern_dir, "_universal.yml")]
+if lang: files.append(os.path.join(pattern_dir, lang + ".yml"))
+files.append(overlay)  # Overlay zuletzt → uebersteuert per name
+patterns, order = {}, []
+for f in files:
+    for p in parse_patterns(f):
+        n = p.get("name")
+        if not n or not p.get("pattern"): continue
+        if n not in patterns: order.append(n)
+        patterns[n] = p
+blocks, warns = [], []
+for n in order:
+    p = patterns[n]
+    try: rx = re.compile(p["pattern"])
+    except re.error: continue
+    if rx.search(content):
+        action = (p.get("action") or "warn").lower()
+        if strict and action == "warn": action = "block"
+        msg = "  [%s] %s — %s" % (n, p.get("quelle","?"), file_path or "?")
+        (blocks if action == "block" else warns).append(msg)
+if warns:
+    sys.stderr.write("[BODYGUARD] WARNUNG — unsichere Muster im neuen Code:\n" + "\n".join(warns) + "\n")
+if blocks:
+    sys.stderr.write("\n[BODYGUARD] BLOCKIERT — sicherheitskritische Muster:\n" + "\n".join(blocks) +
+                     "\n  Bitte entfernen/ersetzen: Secret in env/Secret-Manager, parametrisierte Query, sichere API/TLS.\n")
+    sys.exit(1)
+sys.exit(0)
+PYEOF
+)" "$PATTERN_DIR" "$OVERLAY" "$STRICT"
+```
+
+**`bodyguard/patterns/_universal.yml`** (secrets, language-agnostic):
+
+```yaml
+# Bodyguard Layer-0 — universelle Muster (sprachunabhaengig)
+# Schema: - name / pattern / sprache / quelle / action(block|warn)
+- name: aws-access-key-id
+  pattern: 'AKIA[0-9A-Z]{16}'
+  sprache: alle
+  quelle: 'gitleaks / CWE-798'
+  action: block
+- name: private-key-block
+  pattern: '-----BEGIN (RSA |EC |OPENSSH |DSA |PGP )?PRIVATE KEY-----'
+  sprache: alle
+  quelle: 'gitleaks / CWE-321'
+  action: block
+- name: slack-token
+  pattern: 'xox[baprs]-[0-9A-Za-z-]{10,}'
+  sprache: alle
+  quelle: 'gitleaks / CWE-798'
+  action: block
+- name: github-token
+  pattern: 'gh[pousr]_[0-9A-Za-z]{36,}'
+  sprache: alle
+  quelle: 'gitleaks / CWE-798'
+  action: block
+- name: generic-secret-assignment
+  pattern: '(?i)(api[_-]?key|secret|token|passwd|password)\s*[:=]\s*[\x27"][^\x27"]{8,}[\x27"]'
+  sprache: alle
+  quelle: 'gitleaks / CWE-798'
+  action: warn
+```
+
+**`bodyguard/patterns/python.yml`**:
+
+```yaml
+- name: python-subprocess-shell-true
+  pattern: 'subprocess\.(run|call|Popen|check_output)\([^)]*shell\s*=\s*True'
+  sprache: python
+  quelle: 'CWE-78 / Bandit B602'
+  action: block
+- name: python-requests-verify-false
+  pattern: 'verify\s*=\s*False'
+  sprache: python
+  quelle: 'CWE-295'
+  action: block
+- name: python-eval
+  pattern: '\beval\s*\('
+  sprache: python
+  quelle: 'CWE-95 / Bandit B307'
+  action: warn
+- name: python-yaml-load-unsafe
+  pattern: 'yaml\.load\s*\((?![^)]*SafeLoader)'
+  sprache: python
+  quelle: 'CWE-20 / Bandit B506'
+  action: warn
+- name: python-sql-fstring
+  pattern: '(?i)(execute|executemany)\s*\(\s*f[\x27"]'
+  sprache: python
+  quelle: 'CWE-89'
+  action: warn
+```
+
+**`bodyguard/patterns/javascript.yml`** (also applies to TypeScript):
+
+```yaml
+- name: js-tls-reject-unauthorized-false
+  pattern: 'rejectUnauthorized\s*:\s*false'
+  sprache: javascript
+  quelle: 'CWE-295'
+  action: block
+- name: js-node-tls-env-0
+  pattern: 'NODE_TLS_REJECT_UNAUTHORIZED\s*=\s*[\x27"]?0'
+  sprache: javascript
+  quelle: 'CWE-295'
+  action: block
+- name: js-eval
+  pattern: '\beval\s*\('
+  sprache: javascript
+  quelle: 'CWE-95 / eslint no-eval'
+  action: warn
+- name: js-child-process-exec
+  pattern: '(?i)child_process[\s\S]{0,20}\bexec\s*\('
+  sprache: javascript
+  quelle: 'CWE-78'
+  action: warn
+- name: js-sql-string-concat
+  pattern: '(?i)(query|execute)\s*\(\s*[`\x27"][^`\x27"]*\+'
+  sprache: javascript
+  quelle: 'CWE-89'
+  action: warn
+```
+
+**`bodyguard/patterns/java.yml`**:
+
+```yaml
+- name: java-runtime-exec
+  pattern: 'Runtime\.getRuntime\(\)\.exec\s*\('
+  sprache: java
+  quelle: 'CWE-78'
+  action: warn
+- name: java-deserialize
+  pattern: 'new\s+ObjectInputStream\s*\('
+  sprache: java
+  quelle: 'CWE-502'
+  action: warn
+- name: java-sql-concat
+  pattern: '(?i)(createStatement|executeQuery)\s*\([^)]*\+'
+  sprache: java
+  quelle: 'CWE-89'
+  action: warn
+```
+
+**`bodyguard/patterns/c-cpp.yml`**:
+
+```yaml
+- name: c-gets
+  pattern: '\bgets\s*\('
+  sprache: c-cpp
+  quelle: 'CWE-242'
+  action: block
+- name: c-strcpy
+  pattern: '\bstrcpy\s*\('
+  sprache: c-cpp
+  quelle: 'CWE-120'
+  action: warn
+- name: c-system
+  pattern: '\bsystem\s*\('
+  sprache: c-cpp
+  quelle: 'CWE-78'
+  action: warn
+- name: c-sprintf
+  pattern: '\bsprintf\s*\('
+  sprache: c-cpp
+  quelle: 'CWE-120'
+  action: warn
+```
+
+**`bodyguard/SOURCES.md`** (origin + maintenance convention):
+
+```markdown
+# Bodyguard-Muster — Quellen & Pflege (BOO-86)
+
+Die Muster sind **kuratiert aus anerkannten Katalogen**, nicht erfunden. Jedes Muster
+traegt im `quelle`-Feld seinen Beleg.
+
+| Quelle | Wofuer |
+|--------|--------|
+| CWE (Common Weakness Enumeration) | kanonische Schwachstellen-IDs pro Muster |
+| OWASP (Top 10, ASVS, Cheat Sheets) | Priorisierung/Begruendung |
+| gitleaks (open source) | Secret-Muster (`_universal.yml`) |
+| Semgrep Registry / Bandit / eslint-plugin-security | sprachspezifische Unsafe-Code-Muster |
+
+## Pflege-Konvention
+- **Kuratiert + klein halten** — wenige Muster mit hoher Trefferquote. Lieber 30
+  wasserdichte als 300 nervige (sonst Alarm-Muedigkeit → Hook wird abgeschaltet).
+- **Basis** kommt mit Framework-Versionen (dieses Template). **Projekt-Overlay**
+  `.claude/bodyguard.local.yml` ist kundeneigen und ueberlebt Updates.
+- Optionales `sync-bodyguard-patterns.sh` gleicht gegen Upstream ab und **schlaegt** Muster
+  **vor** — Mensch entscheidet, KEIN Auto-Merge (Supply-Chain-Schutz).
+- Default-Schweregrad ist `warn`; `block` nur fuer eindeutige, kontextunabhaengige Treffer
+  (Secrets, abgeschaltete TLS-Pruefung, `gets`).
+```
+
+**`.claude/bodyguard.local.yml`** (optional project overlay — overrides/extends the base):
+
+```yaml
+# Projekt-eigene Bodyguard-Muster — uebersteuert die Framework-Basis per `name`.
+# Ueberlebt Framework-Updates. Gleiches Schema wie patterns/*.yml.
+# Beispiel: internen Legacy-Endpoint verbieten
+# - name: no-legacy-internal-api
+#   pattern: 'https?://legacy-intern\.example\.local'
+#   sprache: alle
+#   quelle: 'projekt-policy'
+#   action: block
+```
+
+**Anti-patterns:**
+- NO full Semgrep/SAST run in the hook — that is layer 2/3. Layer 0 is a fast reflex.
+- NO regex comment/statement detection with heuristics — only direct pattern matches.
+- NO auto-merge of external patterns into the active hook.
+- NO hard-block as default — `warn` is the default, `BODYGUARD_STRICT=1` is opt-in.
+
+---
+
 ## .claude/environment.json (BOO-34 — skill environment awareness)
 
 **Single source of truth for environment, tooling and paths since BOO-34 (2026-05-06):** one manifest per project, every skill reads it in a step-0 lookup instead of re-running detection logic itself. Three environments (`mac` | `vps` | `ci`), one tool-availability matrix (eslint, semgrep, test framework, SonarQube), default paths for journal/reports/lessons/specs.

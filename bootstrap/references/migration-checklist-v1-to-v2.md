@@ -1252,6 +1252,49 @@ Spiegel der Master-Checkliste aus `intentron/bootstrap/references/migration-chec
 
 ---
 
+## §BOO-86 — Layer-0 Edit-Bodyguard (Security ab Erzeugung) — Wave V
+
+**Status:** ✓ in v2-Bundle — additiv, nicht-destruktiv. Default ist **Warnung** (low-false-positive); Hard-Block opt-in via `BODYGUARD_STRICT=1`.
+**Aufwand:** klein (~2 Min, automatisch).
+**Linear:** <https://linear.app/owlist/issue/BOO-86>
+**Auto-Schritt:** ja (`migrate_boo_86`, idempotent + additiv).
+
+**Was es tut:** Ein Claude-Code-PreToolUse-Hook auf `Edit|Write|MultiEdit`, der unsichere Muster (Secrets, `eval`, abgeschaltete TLS-Pruefung, SQL-Konkatenation) abfaengt, **bevor** die KI sie auf die Platte schreibt — Geschwister-Hook zu `spec-gate.sh` (das auf `Bash`/`git commit` feuert). Neuer **Layer 0** vor Layer 2 (CLI-Linter) und Layer 3 (CI). Dependency-frei (nur `bash` + `python3`-Stdlib). Pattern aus `agentic-security` nachgebaut — **kein Code uebernommen** (PolyForm-Lizenz), nur die Idee.
+
+**Auto-Vorbereitung:**
+
+- `bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-86` — legt an (nur falls nicht vorhanden):
+  - `.claude/hooks/pre-edit-bodyguard.sh` (`chmod +x`)
+  - `.claude/hooks/bodyguard/patterns/{_universal,python,javascript,java,c-cpp}.yml`
+  - `.claude/hooks/bodyguard/SOURCES.md`
+  - `.claude/bodyguard.local.yml` (optionales Projekt-Overlay, **Kunden-Eigentum — wird NIE ueberschrieben**)
+  - Registriert den `Edit|Write|MultiEdit`-Matcher in `.claude/settings.json` **und** `.claude/settings.local.json` (nur falls der Bodyguard-Eintrag fehlt; bestehende Bash-Matcher bleiben unangetastet).
+- **Idempotenz:** zweiter Lauf erzeugt keine Diffs — vorhandene Dateien und Registrierungen werden erkannt (`[SKIP]`).
+
+**Tests / Verifikation:**
+
+- [ ] `bash -n .claude/hooks/pre-edit-bodyguard.sh` → Exit 0 (Syntax sauber).
+- [ ] Smoke-Test BLOCK (`.py`): `printf '{"tool_input":{"file_path":"app.py","content":"AKIA0000000000000000"}}' | bash .claude/hooks/pre-edit-bodyguard.sh` → Exit 1, `[BODYGUARD] BLOCKIERT`.
+- [ ] Smoke-Test BLOCK (`.js`): Input mit `rejectUnauthorized: false` in `x.js` → Exit 1.
+- [ ] Smoke-Test PASS: sauberer Code ohne Treffer → Exit 0, keine Ausgabe.
+- [ ] `.claude/settings.json` + `.claude/settings.local.json` enthalten den `Edit|Write|MultiEdit`-Matcher mit `bash .claude/hooks/pre-edit-bodyguard.sh`.
+
+**Operator-Schritte:**
+
+- [ ] Optional `BODYGUARD_STRICT=1` setzen, wenn Hard-Block (statt Warnung) gewuenscht ist (hoeherer Compliance-Druck).
+- [ ] Projekt-eigene Muster in `.claude/bodyguard.local.yml` ergaenzen (uebersteuert Basis per `name`, ueberlebt Framework-Updates).
+
+**Rollback:**
+
+- Dateien loeschen: `.claude/hooks/pre-edit-bodyguard.sh`, `.claude/hooks/bodyguard/` (Verzeichnis), und — nur falls vom Projekt nicht gepflegt — `.claude/bodyguard.local.yml`.
+- Matcher entfernen: in `.claude/settings.json` **und** `.claude/settings.local.json` den `Edit|Write|MultiEdit`-Block mit `pre-edit-bodyguard.sh` aus `hooks.PreToolUse` streichen (bestehende Bash-Matcher behalten).
+
+**Skill-Quelle:** Pattern nachgebaut aus `agentic-security` ("pre-edit-bodyguard") — **kein Code uebernommen** (PolyForm-Lizenz). Muster kuratiert aus CWE / OWASP / gitleaks / Semgrep-Registry / Bandit / eslint-plugin-security (Beleg pro Muster im `quelle`-Feld).
+
+**Verweise:** `bootstrap/references/file-templates.md` §hooks/pre-edit-bodyguard.sh, `.claude/hooks/bodyguard/SOURCES.md`, `specs/BOO-86.md`.
+
+---
+
 ## Nicht-Skill-Issues (uebersprungen)
 
 Diese Issues betreffen Operator-Tooling, Meta-Arbeit oder Doppelungen und brauchen **keine** Migration in Bestands-Projekten. Sie erscheinen in `migration-status.md` mit Status ✗.

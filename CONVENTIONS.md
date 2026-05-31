@@ -227,11 +227,12 @@ Every `/implement` run writes a `## Session-Referenz` block into the spec file (
 
 ### Quality-Gate Architecture (3 layers)
 
+- **Layer 0 — Edit-Bodyguard (BOO-86):** A `PreToolUse` hook on `Edit|Write` that catches secrets and unsafe patterns *before* the AI writes them to disk. Lightweight, curated pattern set — **not** a full scan (depth stays in Layers 2/3). Default is **warning** (low false positive); hard block via `BODYGUARD_STRICT=1`. Tool-specific: a PreToolUse hook is a Claude-Code-style edit interceptor; on tools without an edit-hook the same intent moves to the prompt layer (see `implement` secure-coding hint) plus Layers 2/3. See HANDBUCH Appendix V and `file-templates.md §pre-edit-bodyguard`.
 - **Layer 1 — IDE:** Real-time feedback while typing (Error Lens, ESLint plugin, SonarQube for IDE)
 - **Layer 2 — CLI / Pre-Commit:** Hard block, locally (`npx eslint`, `semgrep`, dependency check, coverage gate)
 - **Layer 3 — CI / GitHub Actions:** Required status check, guards against `--no-verify` bypass
 
-Layers 2 and 3 are tool-agnostic. Layer 1 depends on the editor + AI tool (Claude Code uses IDE plugins; Codex doesn't have IDE integration).
+Layers 2 and 3 are tool-agnostic. Layers 0 and 1 depend on the editor + AI tool (Claude Code uses a PreToolUse edit hook + IDE plugins; Codex has neither and relies on the prompt-layer secure-coding default plus Layers 2/3).
 
 ### Learning Loop (L1 / L2 / L3)
 
@@ -669,11 +670,12 @@ Jeder `/implement`-Lauf schreibt einen `## Session-Referenz`-Block ins Spec-File
 
 ### Quality-Gate-Architektur (3 Layer)
 
+- **Layer 0 — Edit-Bodyguard (BOO-86):** Ein `PreToolUse`-Hook auf `Edit|Write`, der Secrets und Unsafe-Patterns abfaengt, *bevor* die KI sie auf die Platte schreibt. Leichtgewichtig, kuratierte Muster-Menge — **kein** voller Scan (Tiefe bleibt bei Layer 2/3). Default ist **Warnung** (low-false-positive); Hard-Block per `BODYGUARD_STRICT=1`. Tool-spezifisch: ein PreToolUse-Hook ist ein Edit-Interceptor im Claude-Code-Stil; bei Tools ohne Edit-Hook wandert dieselbe Absicht auf die Prompt-Ebene (siehe `implement` Secure-Coding-Hinweis) plus Layer 2/3. Siehe HANDBUCH Anhang V und `file-templates.md §pre-edit-bodyguard`.
 - **Layer 1 — IDE:** Echtzeit-Feedback waehrend des Tippens (Error Lens, ESLint-Plugin, SonarQube for IDE)
 - **Layer 2 — CLI / Pre-Commit:** Hard Block, lokal (`npx eslint`, `semgrep`, Dependency-Check, Coverage-Gate)
 - **Layer 3 — CI / GitHub Actions:** Required Status Check, schuetzt gegen `--no-verify`-Umgehung
 
-Layer 2 und 3 sind tool-agnostisch. Layer 1 haengt vom Editor + KI-Tool ab (Claude Code nutzt IDE-Plugins; Codex hat keine IDE-Integration).
+Layer 2 und 3 sind tool-agnostisch. Layer 0 und 1 haengen vom Editor + KI-Tool ab (Claude Code nutzt einen PreToolUse-Edit-Hook + IDE-Plugins; Codex hat beides nicht und faellt auf den Prompt-Ebenen-Secure-Coding-Default plus Layer 2/3 zurueck).
 
 ### Learning-Loop (L1 / L2 / L3)
 

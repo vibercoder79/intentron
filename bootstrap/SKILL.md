@@ -1,7 +1,7 @@
 ---
 name: bootstrap
 recommended_model: sonnet  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
-version: 3.32.0
+version: 3.33.0
 description: Setzt ein neues Projekt mit Governance-Framework auf — interaktiver Block-Interview-Flow in 4 Schritten, Doku-Architektur mit Hub-Auto-Verlinkung, optionaler Learning-Loop L1/L2/L3. Verwenden wenn der Operator ein neues Projekt aufsetzen will oder "/bootstrap" sagt.
 tools: [Read, Write, Edit, Bash, Glob, Grep]
 metadata:
@@ -749,6 +749,7 @@ Hooks:
 - `spec-gate.sh` — blockiert `git commit` mit `<PREFIX>XXX` wenn Spec-File fehlt
 - `doc-version-sync.sh` — blockiert wenn `lib/config.js` VERSION erhoeht aber DOC_FILES nicht synchron
 - Optional (bei Block C = ja, orphan-check = ja): `orphan-check.sh` — blockiert wenn neue `*.md` nicht im Hub §9 registriert
+- `pre-edit-bodyguard.sh` (BOO-86) — **Layer-0** PreToolUse-Hook auf `Edit|Write`: faengt Secrets/Unsafe-Patterns ab, BEVOR die KI sie schreibt (Default Warnung, `BODYGUARD_STRICT=1` = Hard-Block). Scaffold inkl. `bodyguard/patterns/*.yml` + `SOURCES.md`. Inhalt aus `references/file-templates.md` §`hooks/pre-edit-bodyguard.sh (BOO-86 — Layer-0 Edit-Bodyguard)`. Registriert in `settings.json` unter `matcher: Edit|Write|MultiEdit` (separater Matcher-Block, nicht im `Bash`-Block).
 - `pre-commit` (BOO-4) — Quality-Gate Layer 2: ESLint + Semgrep mit Manifest-Reader. Liest `.semgrep.yml` (BOO-3), extrahiert aktive Packs via `grep` + `sed`, baut `--config p/...`-Flags und ruft Semgrep CLI auf. Inhalt aus `references/file-templates.md` §`.git/hooks/pre-commit (BOO-4 — Quality-Gate Layer 2)`. Pendant-CI-Layer 3 (`semgrep.yml`-Workflow) wird in Phase 4.4c angelegt — beide Layer lesen dasselbe Manifest.
 - `dependency-check.sh` (BOO-12) — Slopsquatting-Schutz: drittes Gate im Pre-Commit-Hook nach ESLint und Semgrep. Eigenstaendiges Bash-Skript unter `.claude/hooks/dependency-check.sh`, das nur lauft wenn `package.json`/`requirements.txt`/`pyproject.toml`/`Cargo.toml` im Diff der gestagten Files ist. Drei Stufen: Existenz-Check (404 -> BLOCK, Halluzination?), Age-Check (Paket <30 Tage alt -> Warnung, Typosquatter-Risiko), CVE-Check (`npm audit` / `pip-audit`, High/Critical -> BLOCK). Mit BOO-12 bekommt der `.git/hooks/pre-commit`-Hook aus BOO-4 einen vierten Aufruf am Ende: `bash .claude/hooks/dependency-check.sh`. Inhalt aus `references/file-templates.md` §`hooks/dependency-check.sh (BOO-12 — Slopsquatting-Schutz)`. Schrader Code Crash Kap. 3-4: 19,7 % der KI-empfohlenen Pakete existieren nicht.
 - `coverage-check.sh` (BOO-15) — Diff-Coverage-Gate: misst Coverage nur auf NEU hinzugefuegten Zeilen (`git diff --cached -U0`) gegen `coverage/coverage-final.json` (c8) bzw. `coverage.json` (pytest-cov). Drei Schwellwerte: `>=80%` Pass, `60-80%` Warnung mit Operator-Freigabe, `<60%` BLOCK. Eigenstaendiges Bash-Skript unter `.claude/hooks/coverage-check.sh`. Wird **NICHT** im Pre-Commit-Hook aufgerufen — Tests dauern zu lange und wuerden das 10s-Budget des Hooks sprengen. Stattdessen ruft der `/implement`-Skill den Hook in Schritt 6a-quart auf, nachdem die Test-Suite mit Coverage-Output gelaufen ist. Inhalt aus `references/file-templates.md` §`hooks/coverage-check.sh (BOO-15 — Coverage-Gate >=80% fuer neuen Code)`. Schrader Code Crash Kap. 3 §Production Readiness — Gate 2: Testabdeckung >=80 % auf neuem Code, nicht Gesamt-Coverage.
@@ -758,13 +759,21 @@ Registrierung:
 // {PROJECT_PATH}/.claude/settings.json
 {
   "hooks": {
-    "PreToolUse": [{
-      "matcher": "Bash",
-      "hooks": [
-        { "type": "command", "command": "bash {PROJECT_PATH}/.claude/hooks/spec-gate.sh" },
-        { "type": "command", "command": "bash {PROJECT_PATH}/.claude/hooks/doc-version-sync.sh" }
-      ]
-    }]
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          { "type": "command", "command": "bash {PROJECT_PATH}/.claude/hooks/spec-gate.sh" },
+          { "type": "command", "command": "bash {PROJECT_PATH}/.claude/hooks/doc-version-sync.sh" }
+        ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          { "type": "command", "command": "bash {PROJECT_PATH}/.claude/hooks/pre-edit-bodyguard.sh" }
+        ]
+      }
+    ]
   }
 }
 ```

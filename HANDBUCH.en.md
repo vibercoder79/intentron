@@ -25,7 +25,7 @@
 10. [Tailoring Governance to Your Project](#10-tailoring-governance-to-your-project)
 11. [Daily Usage — A Typical Workflow](#11-daily-usage--a-typical-workflow)
 12. [FAQ](#12-faq) — incl. Claude Agent SDK migration
-13. [Appendices — signpost](#13-appendices--signpost) — A through U at a glance
+13. [Appendices — signpost](#13-appendices--signpost) — A through V at a glance
 
 ---
 
@@ -1958,7 +1958,7 @@ postflight.
 
 ## 13. Appendices — signpost
 
-The handbook has 21 appendices (A–U). They are a **reference and deep-dive layer** — you don't need to read them front to back. This table tells you **when which appendix is relevant**. A–M are the foundations/tooling layer, N–U the v0.2.0 themes (efficiency, privacy, deployment, scaling, verification).
+The handbook has 22 appendices (A–V). They are a **reference and deep-dive layer** — you don't need to read them front to back. This table tells you **when which appendix is relevant**. A–M are the foundations/tooling layer, N–V the v0.2.0 themes (efficiency, privacy, deployment, scaling, verification, edit bodyguard).
 
 | Appendix | Topic | When relevant |
 |----------|-------|---------------|
@@ -1983,6 +1983,7 @@ The handbook has 21 appendices (A–U). They are a **reference and deep-dive lay
 | **S** | Skill installation strategy | where skills / tools / hooks belong |
 | **T** | Post-install verification | "does my setup work?" + E2E trial |
 | **U** | Multi-project operation | several projects on one machine |
+| **V** | Layer 0 — Edit-Bodyguard | catch secrets/unsafe patterns before they are written |
 
 ---
 
@@ -3891,6 +3892,58 @@ What **must** happen per project, otherwise gates + skills do not engage:
 - **Bootstrap Block B + Phase 5:** infra detection + skill installation that enable the fast path.
 
 Source: operator question Tobias 2026-05-28 ("several projects — bootstrap per project or a base-already-there path?").
+
+---
+
+## Appendix V: Layer 0 — Edit-Bodyguard (BOO-86)
+
+### When and why
+
+The three-layer quality-gate architecture (Appendix §8d, BOO-2/4/15/16) catches unsafe code at three points: in the IDE (Layer 1), at pre-commit (Layer 2), and in CI (Layer 3). What they share: they all engage **after** the AI has written the code. The **Edit-Bodyguard** inserts a **Layer 0 BEFORE** that chain — it inspects the code block at the moment the AI wants to write it to disk, and can stop it **before** the write happens.
+
+Concretely, Layer 0 is a **`PreToolUse` hook on `Edit|Write`** (a sibling hook to `spec-gate.sh`, which fires on `Bash`/`git commit`). It reads the `tool_input` JSON, matches the planned content against a small, curated pattern set (secrets, `eval`, disabled TLS verification, SQL concatenation), and reports hits **before** the file is created. Unsafe material never even reaches the repo state — the fastest possible reflex.
+
+### Placement in the three-layer architecture
+
+| Layer | Engages when | Tool | Depth |
+|-------|--------------|------|-------|
+| **Layer 0 — Edit-Bodyguard** | **before** the write (PreToolUse) | `pre-edit-bodyguard.sh` | shallow, curated patterns — fast reflex |
+| Layer 1 — IDE | while typing | Error Lens, ESLint plugin | live, editor-dependent |
+| Layer 2 — CLI / pre-commit | before the commit | ESLint/Ruff, Semgrep | full, locally blocking |
+| Layer 3 — CI | before the merge | GitHub Actions | full, `--no-verify`-safe |
+
+**Important:** Layer 0 is **lightweight** and does not replace Layers 2/3. **NO full Semgrep/SAST run in the hook** — depth stays in Layer 2 (local Semgrep pass) and Layer 3 (CI). Layer 0 is the fast, context-independent reflex on unambiguous patterns; the thorough analysis happens further down the chain.
+
+### Pattern layering (base + overlay)
+
+The hook loads its patterns in three layers, each later one overriding the earlier by `name`:
+
+1. **`_universal.yml`** — language-independent secrets (AWS key, private-key block, Slack/GitHub token, generic secret assignment).
+2. **language-specific file** (`python.yml`, `javascript.yml`, `java.yml`, `c-cpp.yml`) — selected by file extension (e.g. `subprocess(..., shell=True)`, `verify=False`, `rejectUnauthorized: false`, `eval(`, SQL concatenation).
+3. **`.claude/bodyguard.local.yml`** — **optional** project overlay. Customer-owned, same schema, **overrides the base by `name`** and **survives framework updates** (e.g. ban an internal legacy endpoint).
+
+Pattern schema (flat YAML subset, read by the mini-parser in the hook — no PyYAML needed): `name` · `pattern` (regex) · `sprache` (language) · `quelle` (source: CWE/OWASP/gitleaks/Semgrep — mandatory as audit evidence) · `action` (`block|warn`).
+
+### Default warning, hard block via env
+
+The default is **warning** (`action: warn`) — deliberately low false positive to avoid **alert fatigue** (a hook that nags constantly gets switched off). Only unambiguous, context-independent hits (secrets, disabled TLS verification, `gets`) are `action: block`. If you want a hard gate, set **`BODYGUARD_STRICT=1`** — then `warn` patterns also become blocks (opt-in hard block).
+
+### Maintenance (keep it curated and small)
+
+The patterns are **curated from recognized catalogs, not invented** — each carries its evidence in the `quelle` field. **Principle: few patterns with a high hit rate** — better 30 watertight ones than 300 annoying ones. The **base** ships with framework versions, the **overlay** is project-owned. An optional `sync-bodyguard-patterns.sh` reconciles against upstream and **proposes** new patterns — the human decides, **NO auto-merge** (supply-chain protection).
+
+### Prompt-layer sibling
+
+Layer 0 is the deterministic backstop to the **secure-coding hint** in `/implement` Step 5 (shift-left at the prompt layer): the AI already writes secure-by-default (secrets in env/secret manager, parametrized queries, TLS verification on, no `eval`/`exec` on foreign input), and the bodyguard catches whatever slips through anyway.
+
+### Related appendices & sources
+
+- **Appendix §8d (three-layer quality gate):** Layers 1-3, in front of which Layer 0 inserts itself.
+- **`bootstrap/references/file-templates.md §pre-edit-bodyguard`:** canonical source — hook script, all pattern files, schema, and anti-patterns.
+- **`bodyguard/SOURCES.md`:** provenance (CWE/OWASP/gitleaks/Semgrep) + maintenance convention per pattern.
+- **`/implement` Step 5 (secure-coding hint):** the prompt-layer variant for which Layer 0 is the backstop.
+
+Source: BOO-86 (Layer-0 Edit-Bodyguard).
 
 ---
 

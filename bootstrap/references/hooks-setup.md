@@ -7,7 +7,7 @@ Wichtig: In INTENTRON meint "Hook" zuerst einen **Coding-/Runtime-Hook** des jew
 
 | Layer | Zweck | Beispiele |
 |-------|-------|-----------|
-| KI-Runtime-Hook | Blockiert riskante Tool-Aufrufe waehrend der Arbeit | Claude Code `PreToolUse`, Codex `.codex/hooks.json` |
+| KI-Runtime-Hook | Blockiert riskante Tool-Aufrufe waehrend der Arbeit | Claude Code `PreToolUse` → `pre-edit-bodyguard.sh` (`Edit|Write`), Codex `.codex/hooks.json` |
 | Lokaler Git-Hook | Optionaler Schutz direkt vor Commit/Push | `.git/hooks/pre-commit`, `.git/hooks/commit-msg` |
 | CI-Gate | Unabhaengiger Beweis auf GitHub/GitLab/Azure | ESLint/Ruff, Semgrep, Tests, Coverage, Sonar |
 
@@ -154,6 +154,25 @@ exit 0
 
 ---
 
+## pre-edit-bodyguard.sh — Layer 0 (BOO-86)
+
+Layer-0-Gate: Ein Claude-Code-**PreToolUse-Hook** mit Matcher `Edit|Write|MultiEdit`, der unsichere Muster (Secrets, `eval`, abgeschaltete TLS-Pruefung, SQL-Konkatenation) abfaengt, **bevor** die KI sie auf die Platte schreibt. Geschwister-Hook zu `spec-gate.sh` — waehrend spec-gate.sh auf `Bash`/`git commit` feuert (also erst beim Commit greift), sitzt der Bodyguard eine Stufe frueher: direkt am Schreibvorgang.
+
+**Muster-Schichtung:**
+- Framework-Basis unter `.claude/hooks/bodyguard/patterns/*.yml` — `_universal.yml` (Secrets, sprachunabhaengig) + sprachspezifische Sets (`python.yml`, `javascript.yml`, `java.yml`, `c-cpp.yml`, anhand der Datei-Endung gewaehlt).
+- Optionales Projekt-Overlay `.claude/bodyguard.local.yml` — wird zuletzt geladen und uebersteuert/ergaenzt die Basis per `name`. Kundeneigen, ueberlebt Framework-Updates.
+
+**Verhalten:**
+- Default: **Warnung** (low-false-positive, keine Alarm-Muedigkeit) — `warn`-Muster melden auf stderr, blockieren aber nicht.
+- `BODYGUARD_STRICT=1`: **Hard-Block** — alle `warn`-Muster werden zu `block` hochgestuft, Exit 1 verhindert den Schreibvorgang.
+- `block`-Muster (z.B. AWS-Key, Private-Key-Block) blockieren immer.
+
+Bewusst leichtgewichtig: eine kleine, kuratierte Muster-Menge pro Edit — KEIN voller Semgrep-Lauf (Tiefe bleibt bei Layer 2/3). Muster-Schema (flacher YAML-Subset, vom Mini-Parser im Hook gelesen — kein PyYAML): `name` · `pattern` (Python-Regex) · `sprache` · `quelle` (CWE/OWASP/gitleaks/Semgrep — Pflicht, Audit-Beleg) · `action` (`block|warn`).
+
+> **Skript-Inhalt + alle Muster-Dateien:** siehe `bootstrap/references/file-templates.md` §`hooks/pre-edit-bodyguard.sh (BOO-86 — Layer-0 Edit-Bodyguard)` (kanonische Quelle).
+
+---
+
 ## doc-version-sync.sh
 
 Blockiert `git commit` wenn `lib/config.js` mit erhöhter VERSION gestaged ist, aber Dokumentationsdateien (lt. DOC_FILES in config.js) noch auf alter Version stehen.
@@ -215,7 +234,7 @@ exit 0
 
 ## Portabilitaet
 
-Beide Hooks haben **keine externen Dependencies** — nur Bash, grep, git, python3.
+Alle Hooks haben **keine externen Dependencies** — nur Bash, grep, git, python3. Auch der Bodyguard ist dependency-frei: bash + python3-Stdlib, **kein PyYAML** — die Muster-Dateien werden von einem Mini-Parser im Hook gelesen.
 
 Anpassen fuer neues Projekt:
 - Issue-Prefix wird in spec-gate.sh automatisch aus der Commit-Message extrahiert (Pattern `[A-Z]+-\d+`) — keine manuelle Anpassung noetig
@@ -237,6 +256,12 @@ Anpassen fuer neues Projekt:
         "hooks": [
           { "type": "command", "command": "bash {PROJECT_PATH}/.claude/hooks/spec-gate.sh" },
           { "type": "command", "command": "bash {PROJECT_PATH}/.claude/hooks/doc-version-sync.sh" }
+        ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          { "type": "command", "command": "bash {PROJECT_PATH}/.claude/hooks/pre-edit-bodyguard.sh" }
         ]
       }
     ]

@@ -25,7 +25,7 @@
 10. [Governance für dein Projekt anpassen](#10-governance-für-dein-projekt-anpassen)
 11. [Tägliche Nutzung — ein typischer Workflow](#11-tägliche-nutzung--ein-typischer-workflow)
 12. [Häufige Fragen](#12-häufige-fragen) — inkl. Claude Agent SDK Migration
-13. [Anhänge — Wegweiser](#13-anhänge--wegweiser) — A bis U im Überblick
+13. [Anhänge — Wegweiser](#13-anhänge--wegweiser) — A bis V im Überblick
 
 ---
 
@@ -2087,7 +2087,7 @@ und Provider-Postflight.
 
 ## 13. Anhänge — Wegweiser
 
-Das Handbuch hat 21 Anhänge (A–U). Sie sind **Nachschlage- und Vertiefungs-Schicht** — du musst sie nicht von vorn bis hinten lesen. Diese Tabelle sagt dir, **wann welcher Anhang relevant ist**. Anhänge A–M sind die Grundlagen-/Tooling-Schicht, N–U die v0.2.0-Themen (Effizienz, Privacy, Deployment, Skalierung, Verifikation).
+Das Handbuch hat 22 Anhänge (A–V). Sie sind **Nachschlage- und Vertiefungs-Schicht** — du musst sie nicht von vorn bis hinten lesen. Diese Tabelle sagt dir, **wann welcher Anhang relevant ist**. Anhänge A–M sind die Grundlagen-/Tooling-Schicht, N–V die v0.2.0-Themen (Effizienz, Privacy, Deployment, Skalierung, Verifikation, Edit-Bodyguard).
 
 | Anhang | Thema | Wann relevant |
 |--------|-------|---------------|
@@ -2112,6 +2112,7 @@ Das Handbuch hat 21 Anhänge (A–U). Sie sind **Nachschlage- und Vertiefungs-Sc
 | **S** | Skill-Installations-Strategie | wo Skills / Tools / Hooks hingehören |
 | **T** | Post-Install-Verifikation | "funktioniert mein Setup?" + E2E-Probelauf |
 | **U** | Multi-Projekt-Betrieb | mehrere Projekte auf einer Maschine |
+| **V** | Layer 0 — Edit-Bodyguard | Secrets/Unsafe-Patterns vor dem Schreiben abfangen |
 
 ---
 
@@ -4021,6 +4022,58 @@ Was **muss** pro Projekt passieren, sonst greifen Gates + Skills nicht:
 - **Bootstrap Block B + Phase 5:** Infra-Erkennung + Skill-Installation, die den Schnellpfad ermoeglichen.
 
 Quelle: Operator-Frage Tobias 2026-05-28 ("mehrere Projekte — pro Projekt bootstrappen oder Basis-schon-da-Pfad?").
+
+---
+
+## Anhang V: Layer 0 — Edit-Bodyguard (BOO-86)
+
+### Wann und warum
+
+Die Drei-Layer-Quality-Gate-Architektur (Anhang §8d, BOO-2/4/15/16) faengt unsicheren Code an drei Stellen: in der IDE (Layer 1), beim Pre-Commit (Layer 2) und in der CI (Layer 3). Allen gemeinsam ist: sie greifen **nachdem** die KI den Code geschrieben hat. Der **Edit-Bodyguard** schiebt eine **Layer 0 VOR** diese Kette — er prueft den Code-Block in dem Moment, in dem die KI ihn auf die Platte schreiben will, und kann ihn **vor** dem Schreiben stoppen.
+
+Konkret ist Layer 0 ein **`PreToolUse`-Hook auf `Edit|Write`** (Geschwister-Hook zu `spec-gate.sh`, das auf `Bash`/`git commit` feuert). Er liest das `tool_input`-JSON, matched den geplanten Inhalt gegen eine kleine, kuratierte Muster-Menge (Secrets, `eval`, abgeschaltete TLS-Pruefung, SQL-Konkatenation) und meldet Treffer **bevor** die Datei entsteht. So bleibt unsicheres Material gar nicht erst im Repo-Zustand — der schnellste moegliche Reflex.
+
+### Einordnung in die Drei-Layer-Architektur
+
+| Layer | Greift wann | Werkzeug | Tiefe |
+|-------|-------------|----------|-------|
+| **Layer 0 — Edit-Bodyguard** | **vor** dem Schreiben (PreToolUse) | `pre-edit-bodyguard.sh` | flach, kuratierte Muster — schneller Reflex |
+| Layer 1 — IDE | waehrend des Tippens | Error Lens, ESLint-Plugin | live, editor-abhaengig |
+| Layer 2 — CLI / Pre-Commit | vor dem Commit | ESLint/Ruff, Semgrep | voll, lokal blockierend |
+| Layer 3 — CI | vor dem Merge | GitHub Actions | voll, `--no-verify`-sicher |
+
+**Wichtig:** Layer 0 ist **leichtgewichtig** und ersetzt nicht Layer 2/3. **KEIN voller Semgrep-/SAST-Lauf im Hook** — die Tiefe bleibt bei Layer 2 (lokaler Semgrep-Pass) und Layer 3 (CI). Layer 0 ist der schnelle, kontextunabhaengige Reflex auf eindeutige Muster; die gruendliche Analyse passiert weiter unten in der Kette.
+
+### Muster-Schichtung (Basis + Overlay)
+
+Der Hook laedt seine Muster in drei Lagen, jede spaetere uebersteuert die fruehere per `name`:
+
+1. **`_universal.yml`** — sprachunabhaengige Secrets (AWS-Key, Private-Key-Block, Slack-/GitHub-Token, generische Secret-Zuweisung).
+2. **sprachspezifische Datei** (`python.yml`, `javascript.yml`, `java.yml`, `c-cpp.yml`) — anhand der Datei-Endung gewaehlt (z.B. `subprocess(..., shell=True)`, `verify=False`, `rejectUnauthorized: false`, `eval(`, SQL-Konkatenation).
+3. **`.claude/bodyguard.local.yml`** — **optionales** Projekt-Overlay. Kundeneigen, gleiches Schema, **uebersteuert die Basis per `name`** und **ueberlebt Framework-Updates** (z.B. einen internen Legacy-Endpoint verbieten).
+
+Muster-Schema (flacher YAML-Subset, vom Mini-Parser im Hook gelesen — kein PyYAML noetig): `name` · `pattern` (Regex) · `sprache` · `quelle` (CWE/OWASP/gitleaks/Semgrep — Pflicht als Audit-Beleg) · `action` (`block|warn`).
+
+### Default Warnung, Hard-Block per Env
+
+Der Default ist **Warnung** (`action: warn`) — bewusst low-false-positive, um **Alarm-Muedigkeit** zu vermeiden (ein Hook, der staendig nervt, wird abgeschaltet). Nur eindeutige, kontextunabhaengige Treffer (Secrets, abgeschaltete TLS-Pruefung, `gets`) sind `action: block`. Wer ein hartes Gate will, setzt **`BODYGUARD_STRICT=1`** — dann werden auch `warn`-Muster zu Blocks (opt-in Hard-Block).
+
+### Pflege (kuratiert klein halten)
+
+Die Muster sind **aus anerkannten Katalogen kuratiert, nicht erfunden** — jedes traegt im `quelle`-Feld seinen Beleg. **Prinzip: wenige Muster mit hoher Trefferquote** — lieber 30 wasserdichte als 300 nervige. Die **Basis** kommt mit den Framework-Versionen, das **Overlay** ist projekteigen. Ein optionales `sync-bodyguard-patterns.sh` gleicht gegen Upstream ab und **schlaegt** neue Muster **vor** — der Mensch entscheidet, **KEIN Auto-Merge** (Supply-Chain-Schutz).
+
+### Prompt-Ebenen-Geschwister
+
+Layer 0 ist der deterministische Backstop zum **Secure-Coding-Hinweis** in `/implement` Schritt 5 (Shift-Left auf Prompt-Ebene): die KI schreibt bereits sicher-by-default (Secrets in env/Secret-Manager, parametrisierte Queries, TLS-Verifikation an, kein `eval`/`exec` auf Fremd-Input), und der Bodyguard faengt ab, was trotzdem durchrutscht.
+
+### Verwandte Anhaenge & Quellen
+
+- **Anhang §8d (Drei-Layer-Quality-Gate):** Layer 1-3, in die sich Layer 0 davorschiebt.
+- **`bootstrap/references/file-templates.md §pre-edit-bodyguard`:** kanonische Quelle — Hook-Script, alle Muster-Dateien, Schema und Anti-Patterns.
+- **`bodyguard/SOURCES.md`:** Herkunft (CWE/OWASP/gitleaks/Semgrep) + Pflege-Konvention pro Muster.
+- **`/implement` Schritt 5 (Secure-Coding-Hinweis):** die Prompt-Ebenen-Variante, fuer die Layer 0 der Backstop ist.
+
+Quelle: BOO-86 (Layer-0 Edit-Bodyguard).
 
 ---
 

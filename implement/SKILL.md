@@ -269,6 +269,14 @@ Siehe [references/governance-validation.md](references/governance-validation.md)
 
 ### Schritt 5: Implementation (nach Freigabe)
 
+> **Secure-Coding-Hinweis (Shift-Left auf Prompt-Ebene).** Schon beim Schreiben sicher-by-default arbeiten — nicht erst von den Gates korrigieren lassen:
+> - **Keine hardcoded Secrets** — API-Keys/Tokens/Passwoerter ueber Env-Variablen oder Secret-Manager, nie als Literal im Code.
+> - **Parametrisierte Queries** statt String-Konkatenation (Prepared Statements / Query-Builder), nie User-Input in SQL kleben.
+> - **TLS-Verifikation NICHT abschalten** (`verify=False`, `rejectUnauthorized: false`, `NODE_TLS_REJECT_UNAUTHORIZED=0` sind tabu).
+> - **Kein `eval`/`exec`** auf Fremd-/User-Input; keine Shell mit ungeprueftem Input (`shell=True`, `child_process.exec`).
+>
+> Der Layer-0-Edit-Bodyguard (BOO-86) ist der **deterministische Backstop** dazu — er faengt diese Muster ab, falls sie doch durchrutschen. Tiefe Pruefung bleibt Layer 2/3 (Semgrep, CI). Siehe HANDBUCH Anhang V.
+
 - Sub-Tasks: Vor Implementation → "In Progress", nach Abschluss → "Done"
 - Plan vollstaendig umsetzen
 - Alle neuen Funktionen, Methoden und Code-Pfade mit Kommentar `// AI-generated: {STORY_ID}` markieren (Rollback-Identifikation, BOO-17). Fuer Python: `# AI-generated: {STORY_ID}`.
