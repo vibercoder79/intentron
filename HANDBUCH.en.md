@@ -1958,7 +1958,7 @@ postflight.
 
 ## 13. Appendices — signpost
 
-The handbook has 22 appendices (A–V). They are a **reference and deep-dive layer** — you don't need to read them front to back. This table tells you **when which appendix is relevant**. A–M are the foundations/tooling layer, N–V the v0.2.0 themes (efficiency, privacy, deployment, scaling, verification, edit bodyguard).
+The handbook has 23 appendices (A–W). They are a **reference and deep-dive layer** — you don't need to read them front to back. This table tells you **when which appendix is relevant**. A–M are the foundations/tooling layer, N–W the v0.2.0 themes (efficiency, privacy, deployment, scaling, verification, edit bodyguard, contribute-back).
 
 | Appendix | Topic | When relevant |
 |----------|-------|---------------|
@@ -1984,6 +1984,7 @@ The handbook has 22 appendices (A–V). They are a **reference and deep-dive lay
 | **T** | Post-install verification | "does my setup work?" + E2E trial |
 | **U** | Multi-project operation | several projects on one machine |
 | **V** | Layer 0 — Edit-Bodyguard | catch secrets/unsafe patterns before they are written |
+| **W** | Contribute-back loop | hand a field fix to governance artifacts back to the source |
 
 ---
 
@@ -3968,6 +3969,56 @@ Layer 0 is the deterministic backstop to the **secure-coding hint** in `/impleme
 - **`/implement` Step 5 (secure-coding hint):** the prompt-layer variant for which Layer 0 is the backstop.
 
 Source: BOO-86 (Layer-0 Edit-Bodyguard).
+
+---
+
+## Appendix W: Contribute-back loop (BOO-90)
+
+### The problem
+
+At bootstrap the framework copies governance artifacts into the project — hooks, gates, conventions. In the field these copies get **touched**: an operator fixes a bug in a scaffolded hook, adapts a pattern file, sharpens a gate. This makes the copied artifacts drift away from their canonical source and — more seriously — a good **field fix has no systematic way back** today. It stays stuck in the one project; no other deployment benefits. The concrete trigger was the `coverage-check` fix from the `privacy-proxy` project (BOO-88): a manual backflow that worked well but was handwork. That should become systematic.
+
+### The two directions
+
+Drift between source and field copy is **bidirectional** — so there are two separate mechanisms:
+
+| Direction | Mechanism | Who drives it | BOO |
+|-----------|-----------|---------------|-----|
+| **Source → field** | Version marker on the artifact + replacing migration (e.g. `coverage-check v2`) | Framework update | BOO-88 |
+| **Field → source** | `contribute-fix.sh` generates a patch + issue proposal | Operator (submitted manually) | BOO-90 (this appendix) |
+
+Source→field is the distribution direction: a new framework release carries a version marker (e.g. `coverage-check v2`) and ships a **replacing migration** that retires the old field copy in a controlled way. Field→source is the feed-back direction and the subject of this appendix.
+
+### Using `contribute-fix.sh`
+
+The helper detects locally modified framework artifacts in a deployed project (initially the scaffolded hooks under `.claude/hooks/`, canonical in `bootstrap/references/hooks/` — BOO-89) and produces **two files per deviation**:
+
+```bash
+bash <framework>/bootstrap/scripts/contribute-fix.sh --project .
+```
+
+Output per deviation under `contribute-back/`:
+
+- **`<name>.patch`** — the diff of the field copy against the canonical source.
+- **`<name>.proposal.md`** — a ready-made issue proposal the operator can file against the framework repo.
+
+**NOTHING is pushed automatically.** No auto-PR, no auto-push. The helper only prepares the patch and the proposal — the **operator submits it themselves** and keeps control over what flows back into the source (supply-chain and review discipline).
+
+### Coupling to BOO-89 (single-source hooks)
+
+`contribute-fix.sh` can only cover what has a **canonical source**. BOO-89 consolidates the scaffolded hooks onto a single source under `bootstrap/references/hooks/` — exactly the source the helper compares against the field copy. **The more hooks become canonical, the more `contribute-fix.sh` covers automatically.** Coverage grows along with the single-source migration, without the helper itself having to change.
+
+### Limits & consequence
+
+Today `contribute-fix.sh` is limited to the **scaffolded hooks** — other artifact classes (pattern files, gate scripts, conventions) are not yet captured. Generalization to further canonical artifacts follows later, once their single source is in place (coupled to BOO-89).
+
+### Related appendices & sources
+
+- **`bootstrap/scripts/contribute-fix.sh`:** the helper itself (invocation, output layout).
+- **`bootstrap/references/hooks/`:** canonical source of the scaffolded hooks (BOO-89) — comparison basis.
+- **Appendix V (Edit-Bodyguard):** an example of a scaffolded, pattern-driven artifact whose overlay/source raises similar drift questions.
+
+Source: BOO-90 (contribute-back loop), BOO-89 (single-source hooks), BOO-88 (version marker + replacing migration, the reverse direction).
 
 ---
 
