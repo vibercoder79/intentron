@@ -1369,6 +1369,46 @@ Spiegel der Master-Checkliste aus `intentron/bootstrap/references/migration-chec
 
 ---
 
+## §BOO-91 — CONTEXT.md Ubiquitous Language: kanonisches + verbotenes Vokabular — Wave AA
+
+**Status:** ✓ in v2-Bundle — additiv, nicht-destruktiv. Seedet ein `CONTEXT.md`-Artefakt im Projekt-Root.
+**Aufwand:** klein (~1 Min, automatisch).
+**Linear:** <https://linear.app/owlist/issue/BOO-91>
+**Auto-Schritt:** ja (`migrate_boo_91`, idempotent + additiv).
+
+**Was es tut:** Verankert die **Ubiquitous Language** (Domain-Driven Design) im Projekt: eine Tabelle aus **kanonischem** Vokabular plus **Verbotsliste** von Synonymen, jeder Eintrag mit **Quelle**. Zweischichtig (analog Edit-Bodyguard BOO-86, dpo-Katalog BOO-87): die **vorgefuellte Framework-Basis** `bootstrap/references/context-base.md` (Compliance- + Governance-Vokabular) wird in das Projekt-`CONTEXT.md` geseedet, plus eine leere Sektion `## Projekt-Domaene (vom Operator fuellen)`. Die KI liest `CONTEXT.md` beim Schreiben und nutzt das kanonische Vokabular. **Default = Guidance, kein Hard-Gate** (die KI wird gefuehrt, nicht blockiert). Enforcement (dpo-Control / Bodyguard-`warn`) ist eine **spaetere, opt-in Ausbaustufe — out-of-scope** dieser Story.
+
+**Auto-Vorbereitung:**
+
+- `bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-91` — seedet `CONTEXT.md` im Projekt-Root **nur falls nicht vorhanden**:
+  - Basis-Vokabular aus `bootstrap/references/context-base.md` (Compliance: `Betroffener`, `Bearbeitung`, `Auftragsverarbeiter`, `Einwilligung`, `personenbezogene Daten`; Governance: `Story`, `Spec`, `Intent`, `Gate`, `Layer 0/2/3`, `BOO-<n>` — jeder mit Quelle)
+  - leere Sektion `## Projekt-Domaene (vom Operator fuellen)` fuer domaenenspezifische Begriffe
+- **Vorhandenes Overlay wird NIE ueberschrieben** — ein manuell ergaenztes `CONTEXT.md` bleibt unangetastet (Kunden-Eigentum, ueberlebt Framework-Updates).
+- **Idempotenz:** zweiter Lauf erkennt das vorhandene `CONTEXT.md` (`[SKIP]`), erzeugt keine Diffs; `--dry-run` loggt nur (`[DRY]`).
+
+**Tests / Verifikation:**
+
+- [ ] `CONTEXT.md` existiert im Projekt-Root: `test -f CONTEXT.md` → Exit 0.
+- [ ] Basis vorhanden: `grep -q 'Betroffener' CONTEXT.md && grep -q 'Story' CONTEXT.md` → Exit 0.
+- [ ] Domaenen-Sektion vorhanden: `grep -q 'Projekt-Domaene' CONTEXT.md` → Exit 0.
+- [ ] Idempotenz: zweiter `--issue BOO-91`-Lauf → nur `[SKIP]`, kein Diff.
+- [ ] Overlay unberuehrt: eine manuell in die Domaenen-Sektion ergaenzte Zeile bleibt nach einem zweiten Lauf unveraendert.
+
+**Operator-Schritte:**
+
+- [ ] Domaenenspezifisches Vokabular in die Sektion `## Projekt-Domaene` von `CONTEXT.md` eintragen (z.B. `Police` statt `Vertrag` im Versicherungs-Kontext) — Spalten `kanonisch | verboten | quelle`.
+- [ ] Pruefen, dass `CLAUDE.md`/`CONVENTIONS.md` auf `CONTEXT.md` verweisen, damit die KI es beim Schreiben liest (Default Guidance).
+
+**Rollback:**
+
+- `CONTEXT.md` im Projekt-Root loeschen (zuvor das eigene Domaenen-Overlay sichern — die Basis liegt in `bootstrap/references/context-base.md` und ist nicht betroffen).
+
+**Skill-Quelle:** `bootstrap/references/context-base.md` (+ `.en.md`) — die vorgefuellte Framework-Basis (Compliance- + Governance-Vokabular, jeder Eintrag mit Quelle, DSGVO-Artikel / nDSG / INTENTRON-Governance). Bezug zum Ubiquitous-Language-Pattern aus Matt Pococks `skills`-Repo — **kein Code uebernommen**, nur das Pattern nachgebaut. Enforcement (dpo-Control „Vokabular folgt CONTEXT.md", Layer-0-Bodyguard-`warn`) ist eine spaetere Ausbaustufe (BOO-87 / BOO-86), nicht Teil dieser Migration.
+
+**Verweise:** `docs/releases/wave-aa-context-ubiquitous-language.md`, `bootstrap/references/context-base.md` (+ `.en.md`), HANDBUCH Anhang X, `specs/BOO-91.md`.
+
+---
+
 ## Nicht-Skill-Issues (uebersprungen)
 
 Diese Issues betreffen Operator-Tooling, Meta-Arbeit oder Doppelungen und brauchen **keine** Migration in Bestands-Projekten. Sie erscheinen in `migration-status.md` mit Status ✗.

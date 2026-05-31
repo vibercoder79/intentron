@@ -1354,6 +1354,46 @@ Mirror of the master checklist in `intentron/bootstrap/references/migration-chec
 
 ---
 
+## §BOO-91 — CONTEXT.md ubiquitous language: canonical + forbidden vocabulary — Wave AA
+
+**Status:** ✓ in the v2 bundle — additive, non-destructive. Seeds a `CONTEXT.md` artifact in the project root.
+**Effort:** small (~1 min, automatic).
+**Linear:** <https://linear.app/owlist/issue/BOO-91>
+**Auto step:** yes (`migrate_boo_91`, idempotent + additive).
+
+**What it does:** anchors the **ubiquitous language** (Domain-Driven Design) in the project: a table of **canonical** vocabulary plus a **forbidden list** of synonyms, every entry with a **source**. Two layers (like the edit bodyguard BOO-86, the dpo catalog BOO-87): the **pre-filled framework base** `bootstrap/references/context-base.md` (compliance + governance vocabulary) is seeded into the project `CONTEXT.md`, plus an empty section `## Projekt-Domaene (vom Operator fuellen)` (project domain — to be filled by the operator). The AI reads `CONTEXT.md` while writing and uses the canonical vocabulary. **Default = guidance, not a hard gate** (the AI is guided, not blocked). Enforcement (dpo control / bodyguard `warn`) is a **later, opt-in expansion stage — out of scope** for this story.
+
+**Auto preparation:**
+
+- `bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-91` — seeds `CONTEXT.md` in the project root **only if absent**:
+  - base vocabulary from `bootstrap/references/context-base.md` (compliance: `Betroffener`, `Bearbeitung`, `Auftragsverarbeiter`, `Einwilligung`, `personenbezogene Daten`; governance: `Story`, `Spec`, `Intent`, `Gate`, `Layer 0/2/3`, `BOO-<n>` — each with a source)
+  - an empty section `## Projekt-Domaene (vom Operator fuellen)` for domain-specific terms
+- **An existing overlay is NEVER overwritten** — a manually extended `CONTEXT.md` stays untouched (customer-owned, survives framework updates).
+- **Idempotency:** a second run detects the existing `CONTEXT.md` (`[SKIP]`) and produces no diffs; `--dry-run` only logs (`[DRY]`).
+
+**Tests / verification:**
+
+- [ ] `CONTEXT.md` exists in the project root: `test -f CONTEXT.md` → exit 0.
+- [ ] Base present: `grep -q 'Betroffener' CONTEXT.md && grep -q 'Story' CONTEXT.md` → exit 0.
+- [ ] Domain section present: `grep -q 'Projekt-Domaene' CONTEXT.md` → exit 0.
+- [ ] Idempotency: a second `--issue BOO-91` run → only `[SKIP]`, no diff.
+- [ ] Overlay untouched: a line manually added to the domain section stays unchanged after a second run.
+
+**Operator steps:**
+
+- [ ] Add domain-specific vocabulary to the `## Projekt-Domaene` section of `CONTEXT.md` (e.g. `Police` instead of `Vertrag` in an insurance context) — columns `kanonisch | verboten | quelle`.
+- [ ] Verify that `CLAUDE.md`/`CONVENTIONS.md` point to `CONTEXT.md` so the AI reads it while writing (default guidance).
+
+**Rollback:**
+
+- Delete `CONTEXT.md` in the project root (back up your own domain overlay first — the base lives in `bootstrap/references/context-base.md` and is unaffected).
+
+**Skill source:** `bootstrap/references/context-base.md` (+ `.en.md`) — the pre-filled framework base (compliance + governance vocabulary, every entry with a source: GDPR article / nDSG / INTENTRON governance). Relates to the ubiquitous-language pattern from Matt Pocock's `skills` repo — **no code taken**, only the pattern rebuilt. Enforcement (dpo control "vocabulary follows CONTEXT.md", Layer-0 bodyguard `warn`) is a later expansion stage (BOO-87 / BOO-86), not part of this migration.
+
+**References:** `docs/releases/wave-aa-context-ubiquitous-language.md`, `bootstrap/references/context-base.md` (+ `.en.md`), HANDBUCH Appendix X, `specs/BOO-91.md`.
+
+---
+
 ## Non-skill Issues (Skipped)
 
 These issues touch operator tooling, meta work or duplicates and require **no** migration in existing projects. They appear in `migration-status.md` with status ✗.

@@ -25,7 +25,7 @@
 10. [Governance für dein Projekt anpassen](#10-governance-für-dein-projekt-anpassen)
 11. [Tägliche Nutzung — ein typischer Workflow](#11-tägliche-nutzung--ein-typischer-workflow)
 12. [Häufige Fragen](#12-häufige-fragen) — inkl. Claude Agent SDK Migration
-13. [Anhänge — Wegweiser](#13-anhänge--wegweiser) — A bis V im Überblick
+13. [Anhänge — Wegweiser](#13-anhänge--wegweiser) — A bis X im Überblick
 
 ---
 
@@ -2087,7 +2087,7 @@ und Provider-Postflight.
 
 ## 13. Anhänge — Wegweiser
 
-Das Handbuch hat 23 Anhänge (A–W). Sie sind **Nachschlage- und Vertiefungs-Schicht** — du musst sie nicht von vorn bis hinten lesen. Diese Tabelle sagt dir, **wann welcher Anhang relevant ist**. Anhänge A–M sind die Grundlagen-/Tooling-Schicht, N–W die v0.2.0-Themen (Effizienz, Privacy, Deployment, Skalierung, Verifikation, Edit-Bodyguard, Contribute-Back).
+Das Handbuch hat 24 Anhänge (A–X). Sie sind **Nachschlage- und Vertiefungs-Schicht** — du musst sie nicht von vorn bis hinten lesen. Diese Tabelle sagt dir, **wann welcher Anhang relevant ist**. Anhänge A–M sind die Grundlagen-/Tooling-Schicht, N–X die v0.2.0-Themen (Effizienz, Privacy, Deployment, Skalierung, Verifikation, Edit-Bodyguard, Contribute-Back, Ubiquitous Language).
 
 | Anhang | Thema | Wann relevant |
 |--------|-------|---------------|
@@ -2114,6 +2114,7 @@ Das Handbuch hat 23 Anhänge (A–W). Sie sind **Nachschlage- und Vertiefungs-Sc
 | **U** | Multi-Projekt-Betrieb | mehrere Projekte auf einer Maschine |
 | **V** | Layer 0 — Edit-Bodyguard | Secrets/Unsafe-Patterns vor dem Schreiben abfangen |
 | **W** | Contribute-Back-Schleife | Feld-Fix an Governance-Artefakten zurück an die Quelle reichen |
+| **X** | CONTEXT.md — Ubiquitous Language | kanonisches + verbotenes Vokabular festlegen, Compliance-Vokabular an Rechtsgrundlage binden |
 
 ---
 
@@ -4149,6 +4150,63 @@ Aktuell ist `contribute-fix.sh` auf die **gescaffoldeten Hooks** beschränkt —
 - **Anhang V (Edit-Bodyguard):** ein Beispiel für ein gescaffoldetes, pattern-getriebenes Artefakt, dessen Overlay/Quelle ähnliche Drift-Fragen aufwirft.
 
 Quelle: BOO-90 (Contribute-Back-Schleife), BOO-89 (Single-Source-Hooks), BOO-88 (Versions-Marker + ersetzende Migration, Gegenrichtung).
+
+---
+
+## Anhang X: CONTEXT.md — Ubiquitous Language (BOO-91)
+
+### Was Ubiquitous Language ist
+
+*Ubiquitous Language* ist ein Kernbegriff aus Domain-Driven Design (Eric Evans): **ein** Vokabular, das Fachleute, Doku und Code **gleichermaßen** benutzen — dieselbe Entität heißt überall gleich. Ohne festes Vokabular erfindet die KI Synonyme: mal `User`, mal `Customer`, mal `Betroffener` für dieselbe Sache. Das führt zu fragmentiertem Code, schlechter `grep`-Barkeit, Misalignment zwischen Doku und Implementierung und Token-Verschwendung (die KI rät bei jedem Lauf neu, welcher Begriff gemeint ist). `CONTEXT.md` verankert die Ubiquitous Language als Artefakt im Projekt.
+
+### Warum `kanonisch + verboten + quelle`
+
+Das Vokabular ist eine Tabelle mit drei Spalten:
+
+| Spalte | Zweck |
+|--------|-------|
+| **`kanonisch`** | der Begriff, den die KI benutzen soll (z.B. `Betroffener`) |
+| **`verboten`** | die Synonyme, die sie **nicht** benutzen soll (z.B. `User` / `Customer` im PII-Kontext) |
+| **`quelle`** | woher der Begriff stammt — DSGVO-Artikel, nDSG, INTENTRON-Governance (Audit-Beleg, kein „magisches" Vokabular) |
+
+Die `verboten`-Spalte ist der Hebel: Sie sagt der KI nicht nur, was sie nehmen soll, sondern auch, **was sie ersetzt**. Die `quelle`-Spalte macht jeden Begriff herkunftsbelegt — im Audit-Gespräch direkt nachvollziehbar.
+
+### Zweischichtig: Basis + Projekt-Overlay
+
+Wie der Edit-Bodyguard (Anhang V, BOO-86) und der dpo-Kontrollkatalog (Wave X, BOO-87) folgt `CONTEXT.md` dem **Basis-+-Overlay-Muster**:
+
+| Schicht | Datei | Eigentümer | Updates |
+|---------|-------|-----------|---------|
+| **Framework-Basis (vorgefüllt)** | `bootstrap/references/context-base.md` (+ `.en.md`) | Framework | reist mit den Framework-Versionen |
+| **Projekt-Overlay** | `CONTEXT.md` im Projekt-Root | Operator | **überlebt Framework-Updates — wird nie überschrieben** |
+
+Die **Basis** kommt vorgefüllt mit projektübergreifendem **Compliance-Vokabular** (`Betroffener`, `Bearbeitung`, `Auftragsverarbeiter`, `Einwilligung`, `personenbezogene Daten`) und **Governance-Vokabular** (`Story`, `Spec`, `Intent`, `Gate`, `Layer 0/2/3`, `BOO-<n>`). Der Bootstrap seedet sie in das Projekt-`CONTEXT.md` und ergänzt eine **leere Sektion** `## Projekt-Domaene (vom Operator fuellen)`. Dort trägt der Operator domänenspezifische Begriffe ein (z.B. `Police` statt `Vertrag` im Versicherungs-Kontext). Der Operator startet also nicht bei null, sondern erweitert nur die Domänen-Sektion. Knüpft an BOO-21 (Domain-Context) an — die Domänen-Sektion ist die Brücke.
+
+### Die KI liest es beim Schreiben (Default: Guidance)
+
+`CLAUDE.md`/`CONVENTIONS.md` verweisen auf `CONTEXT.md`, damit die KI es beim Schreiben liest und sich an das kanonische Vokabular hält. **Default ist Guidance, kein Hard-Gate** — die KI wird **geführt, nicht blockiert**. Ein erzwingender Block auf Vokabular-Ebene würde nur Reibung erzeugen (legitime Zitate, externe API-Felder) und Operatoren zum Abschalten treiben.
+
+### Vokabular an die Rechtsgrundlage gebunden
+
+Bei regulierter Zielgruppe ist Vokabular **rechtlich geladen**. `Betroffener` ist ein definierter Begriff (DSGVO Art. 4), das Schweizer **nDSG sagt `Bearbeitung` statt `Verarbeitung`** (DSGVO). Konsequente Begriffe binden Code und Doku an die Rechtsgrundlage — das ist auditor-relevant und über die `quelle`-Spalte direkt belegbar. Die Basis liefert dieses Compliance-Vokabular vorgefüllt; jeder Eintrag trägt seinen DSGVO-Artikel bzw. nDSG-Bezug.
+
+### Enforcement ist eine spätere Ausbaustufe
+
+Diese Story liefert die **Guidance-Schicht**, nicht die Enforcement-Schicht. Das Erzwingen ist bewusst **out-of-scope** und für später vorgesehen (opt-in):
+
+- **dpo-Control „Vokabular folgt CONTEXT.md"** — `grep`-absent der verbotenen Begriffe → `PASS`/`GAP` im AUDIT-Report (koppelt an den dpo-Kontrollkatalog, BOO-87 / Wave X).
+- **Layer-0-Bodyguard `warn`** auf verbotene Begriffe in PII-Pfaden (koppelt an Anhang V, BOO-86).
+
+Erst Nutzen der Guidance-Schicht beweisen, dann die Enforcement-Kopplung spezifizieren.
+
+### Verwandte Anhänge & Quellen
+
+- **`bootstrap/references/context-base.md` (+ `.en.md`):** die vorgefüllte Framework-Basis (Compliance- + Governance-Vokabular, jeder Eintrag mit Quelle).
+- **Anhang V (Edit-Bodyguard, BOO-86):** dasselbe Basis-+-Overlay-Muster; spätere `warn`-Enforcement-Kopplung.
+- **Anhang O (Privacy by Design) / Wave X (dpo-Kontrollkatalog, BOO-87):** spätere `grep`-absent-Enforcement-Kopplung als dpo-Control.
+- **Muster (kein Code):** Matt Pococks `skills`-Repo als Inspiration — nachgebaut, **kein übernommener Code** (Eigenbau passt zur INTENTRON-Architektur).
+
+Quelle: BOO-91 (CONTEXT.md Ubiquitous Language), BOO-21 (Domain-Context, Brücke), BOO-86/BOO-87 (spätere Enforcement-Kopplung).
 
 ---
 

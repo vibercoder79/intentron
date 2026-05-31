@@ -1,7 +1,7 @@
 ---
 name: bootstrap
 recommended_model: sonnet  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
-version: 3.34.0
+version: 3.35.0
 language: en
 description: Sets up a new project with a governance framework — interactive 4-block interview flow, docs architecture with automatic hub linking, optional learning loop L1/L2/L3. Use when the operator wants to set up a new project or says "/bootstrap".
 tools: [Read, Write, Edit, Bash, Glob, Grep]
@@ -461,6 +461,16 @@ Plus skeletons:
 - `SECURITY.md` — minimal skeleton (add-on sections: privacy/compliance if activated)
 
 > **CORE RULE in the runtime entry (`AGENTS.md`/`CLAUDE.md`):** every new file MUST be registered immediately in `ARCHITECTURE_DESIGN.md §9 References` AND `INDEX.md` — before `git commit`.
+
+### 4.3b Seed CONTEXT.md — Ubiquitous Language (BOO-91)
+
+Seed `CONTEXT.md` in the project root from `references/context-base.md` (DE) or `references/context-base.en.md` (EN, per the `documentation` language from A.3): pre-filled **canonical vocabulary** + **forbidden list** (compliance + governance, every term with its source) plus an empty section `## Project domain (operator to fill)` for project-specific terms. The AI reads `CONTEXT.md` while writing and uses the canonical terms consistently — **default guidance, no hard gate** (no block, only guidance).
+
+- Seed only when `CONTEXT.md` is missing — never overwrite an existing operator overlay (idempotent, analogous to `migrate_boo_91()`).
+- The generated `CLAUDE.md` (and `AGENTS.md`) **points to `CONTEXT.md`** as the binding vocabulary for all write actions.
+- Register `CONTEXT.md` in `ARCHITECTURE_DESIGN.md §9 References` + `INDEX.md`.
+
+> **Issue reference:** BOO-91. Enforcement (dpo control "vocabulary follows CONTEXT.md", Layer-0 bodyguard `warn` on forbidden terms) is deliberately a **later, opt-in expansion** — this stage ships only the guidance layer. Details: CONVENTIONS.md §Ubiquitous Language.
 
 ### 4.4 Linting configuration
 
