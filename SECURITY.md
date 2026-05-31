@@ -13,7 +13,7 @@ INTENTRON is a product of OWLIST GmbH, source-available under the PolyForm Perim
 If you find a security issue in INTENTRON (e.g. in a hook, a scaffolding script, or a
 governance gate), **please report it privately — do not open a public GitHub issue.**
 
-- **Email:** **security@owlist.ch**
+- **Email:** **info@owlist.ch**
 - Please include: affected file/skill, a description, reproduction steps, and the impact
   you expect. A minimal proof-of-concept helps.
 
@@ -45,7 +45,7 @@ Wenn du eine Sicherheitslücke in INTENTRON findest (z. B. in einem Hook, einem
 Scaffolding-Skript oder einem Governance-Gate), **melde sie bitte vertraulich — kein
 öffentliches GitHub-Issue.**
 
-- **E-Mail:** **security@owlist.ch**
+- **E-Mail:** **info@owlist.ch**
 - Bitte angeben: betroffene Datei/Skill, Beschreibung, Reproduktionsschritte und die
   erwartete Auswirkung. Ein minimaler Proof-of-Concept hilft.
 
