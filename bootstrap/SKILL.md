@@ -1,7 +1,7 @@
 ---
 name: bootstrap
 recommended_model: sonnet  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
-version: 3.34.0
+version: 3.35.0
 description: Setzt ein neues Projekt mit Governance-Framework auf — interaktiver Block-Interview-Flow in 4 Schritten, Doku-Architektur mit Hub-Auto-Verlinkung, optionaler Learning-Loop L1/L2/L3. Verwenden wenn der Operator ein neues Projekt aufsetzen will oder "/bootstrap" sagt.
 tools: [Read, Write, Edit, Bash, Glob, Grep]
 metadata:
@@ -461,6 +461,16 @@ Zusaetzlich Skelette:
 - `SECURITY.md` — Minimales Skelett (Add-on-Sektionen: Privacy/Compliance falls aktiviert)
 
 > **KERN-REGEL im Runtime-Einstieg (`AGENTS.md`/`CLAUDE.md`):** Jede neue Datei MUSS sofort in `ARCHITECTURE_DESIGN.md §9 Referenzen` UND `INDEX.md` eingetragen werden — vor dem git commit.
+
+### 4.3b CONTEXT.md seeden — Ubiquitous Language (BOO-91)
+
+`CONTEXT.md` im Projekt-Root aus `references/context-base.md` (DE) bzw. `references/context-base.en.md` (EN, je nach `documentation`-Sprache aus A.3) seeden: vorgefuelltes **kanonisches Vokabular** + **Verbotsliste** (Compliance + Governance, jeder Begriff mit Quelle) plus eine leere Sektion `## Projekt-Domaene (vom Operator fuellen)` fuer projektspezifische Begriffe. Die KI liest `CONTEXT.md` beim Schreiben und nutzt konsequent die kanonischen Begriffe — **Default Guidance, kein Hard-Gate** (kein Block, nur Fuehrung).
+
+- Nur seeden wenn `CONTEXT.md` fehlt — ein vorhandenes Operator-Overlay nie ueberschreiben (idempotent, analog `migrate_boo_91()`).
+- Die generierte `CLAUDE.md` (und `AGENTS.md`) **verweist auf `CONTEXT.md`** als verbindliches Vokabular fuer alle Schreib-Aktionen.
+- `CONTEXT.md` in `ARCHITECTURE_DESIGN.md §9 Referenzen` + `INDEX.md` eintragen.
+
+> **Issue-Referenz:** BOO-91. Enforcement (dpo-Control „Vokabular folgt CONTEXT.md", Layer-0-Bodyguard-`warn` auf verbotene Begriffe) ist bewusst eine **spaetere, opt-in Ausbaustufe** — diese Stufe liefert nur die Guidance-Schicht. Details: CONVENTIONS.md §Ubiquitous Language.
 
 ### 4.4 Linting-Konfiguration
 

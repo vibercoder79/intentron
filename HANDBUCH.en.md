@@ -25,7 +25,7 @@
 10. [Tailoring Governance to Your Project](#10-tailoring-governance-to-your-project)
 11. [Daily Usage — A Typical Workflow](#11-daily-usage--a-typical-workflow)
 12. [FAQ](#12-faq) — incl. Claude Agent SDK migration
-13. [Appendices — signpost](#13-appendices--signpost) — A through V at a glance
+13. [Appendices — signpost](#13-appendices--signpost) — A through X at a glance
 
 ---
 
@@ -1958,7 +1958,7 @@ postflight.
 
 ## 13. Appendices — signpost
 
-The handbook has 23 appendices (A–W). They are a **reference and deep-dive layer** — you don't need to read them front to back. This table tells you **when which appendix is relevant**. A–M are the foundations/tooling layer, N–W the v0.2.0 themes (efficiency, privacy, deployment, scaling, verification, edit bodyguard, contribute-back).
+The handbook has 24 appendices (A–X). They are a **reference and deep-dive layer** — you don't need to read them front to back. This table tells you **when which appendix is relevant**. A–M are the foundations/tooling layer, N–X the v0.2.0 themes (efficiency, privacy, deployment, scaling, verification, edit bodyguard, contribute-back, ubiquitous language).
 
 | Appendix | Topic | When relevant |
 |----------|-------|---------------|
@@ -1985,6 +1985,7 @@ The handbook has 23 appendices (A–W). They are a **reference and deep-dive lay
 | **U** | Multi-project operation | several projects on one machine |
 | **V** | Layer 0 — Edit-Bodyguard | catch secrets/unsafe patterns before they are written |
 | **W** | Contribute-back loop | hand a field fix to governance artifacts back to the source |
+| **X** | CONTEXT.md — ubiquitous language | set canonical + forbidden vocabulary, bind compliance terms to their legal basis |
 
 ---
 
@@ -4019,6 +4020,63 @@ Today `contribute-fix.sh` is limited to the **scaffolded hooks** — other artif
 - **Appendix V (Edit-Bodyguard):** an example of a scaffolded, pattern-driven artifact whose overlay/source raises similar drift questions.
 
 Source: BOO-90 (contribute-back loop), BOO-89 (single-source hooks), BOO-88 (version marker + replacing migration, the reverse direction).
+
+---
+
+## Appendix X: CONTEXT.md — ubiquitous language (BOO-91)
+
+### What ubiquitous language is
+
+*Ubiquitous language* is a core concept from Domain-Driven Design (Eric Evans): **one** vocabulary that domain experts, docs and code all share — the same entity is named the same everywhere. Without a fixed vocabulary the AI invents synonyms: sometimes `User`, sometimes `Customer`, sometimes `Betroffener` for the same thing. That leads to fragmented code, poor `grep`-ability, misalignment between docs and implementation, and token waste (the AI re-guesses which term is meant on every run). `CONTEXT.md` anchors the ubiquitous language as an artifact in the project.
+
+### Why `canonical + forbidden + source`
+
+The vocabulary is a table with three columns:
+
+| Column | Purpose |
+|--------|---------|
+| **`canonical`** | the term the AI should use (e.g. `Betroffener`) |
+| **`forbidden`** | the synonyms it should **not** use (e.g. `User` / `Customer` in a PII context) |
+| **`source`** | where the term comes from — GDPR article, nDSG, INTENTRON governance (audit trail, no "magic" vocabulary) |
+
+The `forbidden` column is the lever: it tells the AI not only what to use but also **what it replaces**. The `source` column makes every term provenance-backed — directly traceable in an audit conversation.
+
+### Two layers: base + project overlay
+
+Like the edit bodyguard (Appendix V, BOO-86) and the dpo control catalog (Wave X, BOO-87), `CONTEXT.md` follows the **base-plus-overlay pattern**:
+
+| Layer | File | Owner | Updates |
+|-------|------|-------|---------|
+| **Framework base (pre-filled)** | `bootstrap/references/context-base.md` (+ `.en.md`) | Framework | travels with the framework versions |
+| **Project overlay** | `CONTEXT.md` in the project root | Operator | **survives framework updates — never overwritten** |
+
+The **base** ships pre-filled with cross-project **compliance vocabulary** (`Betroffener`, `Bearbeitung`, `Auftragsverarbeiter`, `Einwilligung`, `personenbezogene Daten`) and **governance vocabulary** (`Story`, `Spec`, `Intent`, `Gate`, `Layer 0/2/3`, `BOO-<n>`). Bootstrap seeds it into the project's `CONTEXT.md` and adds an **empty section** `## Projekt-Domaene (vom Operator fuellen)` (project domain — to be filled by the operator). There the operator enters domain-specific terms (e.g. `Police` instead of `Vertrag` in an insurance context). So the operator does not start from zero — they only extend the domain section. This ties into BOO-21 (domain context) — the domain section is the bridge.
+
+### The AI reads it while writing (default: guidance)
+
+`CLAUDE.md`/`CONVENTIONS.md` point to `CONTEXT.md` so the AI reads it while writing and sticks to the canonical vocabulary. **The default is guidance, not a hard gate** — the AI is **guided, not blocked**. An enforcing block at the vocabulary level would only create friction (legitimate quotes, external API fields) and push operators to switch it off.
+
+### Vocabulary bound to the legal basis
+
+For a regulated audience, vocabulary is **legally loaded**. `Betroffener` is a defined term (GDPR Art. 4), and Switzerland's **nDSG uses `Bearbeitung` instead of `Verarbeitung`** (GDPR). Consistent terms bind code and docs to the legal basis — that is audit-relevant and directly provable via the `source` column. The base ships this compliance vocabulary pre-filled; every entry carries its GDPR article or nDSG reference.
+
+### Enforcement is a later expansion stage
+
+This story ships the **guidance layer**, not the enforcement layer. Enforcing it is deliberately **out of scope** and planned for later (opt-in):
+
+- **dpo control "vocabulary follows CONTEXT.md"** — `grep`-absent of the forbidden terms → `PASS`/`GAP` in the AUDIT report (couples to the dpo control catalog, BOO-87 / Wave X).
+- **Layer-0 bodyguard `warn`** on forbidden terms in PII paths (couples to Appendix V, BOO-86).
+
+First prove the value of the guidance layer, then specify the enforcement coupling.
+
+### Related appendices & sources
+
+- **`bootstrap/references/context-base.md` (+ `.en.md`):** the pre-filled framework base (compliance + governance vocabulary, every entry with a source).
+- **Appendix V (Edit-Bodyguard, BOO-86):** the same base-plus-overlay pattern; later `warn` enforcement coupling.
+- **Appendix O (Privacy by Design) / Wave X (dpo control catalog, BOO-87):** later `grep`-absent enforcement coupling as a dpo control.
+- **Pattern (no code):** Matt Pocock's `skills` repo as inspiration — rebuilt, **no code taken** (in-house build fits the INTENTRON architecture).
+
+Source: BOO-91 (CONTEXT.md ubiquitous language), BOO-21 (domain context, the bridge), BOO-86/BOO-87 (later enforcement coupling).
 
 ---
 

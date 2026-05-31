@@ -3799,6 +3799,33 @@ OVERLAY_README_EOF
     return 0
 }
 
+migrate_boo_91() {
+    # BOO-91 — CONTEXT.md Ubiquitous Language seeden (Guidance, kein Hard-Gate)
+    # https://linear.app/owlist/issue/BOO-91
+    log_info "BOO-91: CONTEXT.md (Ubiquitous Language) seeden"
+    local script_dir; script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    local base="$script_dir/../references/context-base.md"
+    local target="CONTEXT.md"
+    if [[ -f "$target" ]]; then
+        log_skip "$target existiert — Projekt-Overlay bleibt unberuehrt"
+    elif [[ ! -f "$base" ]]; then
+        log_skip "Basis fehlt ($base) — CONTEXT.md uebersprungen"
+    elif [[ "$DRY_RUN" == "true" ]]; then
+        log_dry "seed $target aus context-base.md + leere Domaenen-Sektion"
+    else
+        {
+            sed '/<!-- SEED-ENDE/d' "$base"
+            printf '## Projekt-Domaene (vom Operator fuellen)\n\n'
+            printf 'Projekteigene Begriffe hier ergaenzen (z.B. `Police` statt `Vertrag` im\n'
+            printf 'Versicherungs-Kontext). Diese Sektion ueberlebt Framework-Updates.\n\n'
+            printf '| kanonisch | verboten | quelle |\n| --- | --- | --- |\n|  |  |  |\n'
+        } > "$target"
+        log_info "created $target (Basis + Domaenen-Sektion)"
+    fi
+    log_manual "Operator: projekteigene Begriffe in CONTEXT.md unter 'Projekt-Domaene' ergaenzen."
+    return 0
+}
+
 # -----------------------------------------------------------------------------
 # CLI / Argument Parsing
 # -----------------------------------------------------------------------------
@@ -3821,6 +3848,7 @@ ALL_ISSUES=(
     BOO-79 BOO-80 BOO-81
     BOO-86
     BOO-87
+    BOO-91
 )
 
 print_help() {

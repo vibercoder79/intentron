@@ -225,6 +225,10 @@ Every `/implement` run writes a `## Session-Referenz` block into the spec file (
 
 `.claude/sensitive-paths.json` declares mandatory-review patterns (auth/**, payment/**, **/*credential*, etc.). Implementation step 5.5 blocks the run until the operator writes `review-ok: {name} - {comment}`. Tool-agnostic — the JSON config + step semantics work for any AI tool.
 
+### Ubiquitous Language — CONTEXT.md (BOO-91)
+
+`CONTEXT.md` in the project root declares the project's **Ubiquitous Language** (Domain-Driven Design): a table of **canonical vocabulary** plus a **forbidden list** of synonyms, every term carrying its **source**. The AI reads `CONTEXT.md` while writing and uses the canonical terms consistently instead of inventing synonyms (`User` vs. `Customer` vs. `Betroffener`). The file is **pre-filled** by bootstrap from `bootstrap/references/context-base.md` (compliance vocabulary bound to GDPR/nDSG, governance vocabulary bound to INTENTRON), each term carrying its source, plus an `## Project domain` section the operator fills with domain-specific terms. The project overlay survives framework updates (migration seeds it only when missing, never overwrites). **Default is guidance, not a hard gate** — the AI is steered, not blocked. Optional enforcement (a dpo control checking forbidden-term absence, a Layer-0 bodyguard `warn`) is a later opt-in expansion, out of scope here. Tool-agnostic — a plain markdown artifact any AI tool can read.
+
 ### Quality-Gate Architecture (3 layers)
 
 - **Layer 0 — Edit-Bodyguard (BOO-86):** A `PreToolUse` hook on `Edit|Write` that catches secrets and unsafe patterns *before* the AI writes them to disk. Lightweight, curated pattern set — **not** a full scan (depth stays in Layers 2/3). Default is **warning** (low false positive); hard block via `BODYGUARD_STRICT=1`. Tool-specific: a PreToolUse hook is a Claude-Code-style edit interceptor; on tools without an edit-hook the same intent moves to the prompt layer (see `implement` secure-coding hint) plus Layers 2/3. See HANDBUCH Appendix V and `file-templates.md §pre-edit-bodyguard`.
@@ -667,6 +671,10 @@ Jeder `/implement`-Lauf schreibt einen `## Session-Referenz`-Block ins Spec-File
 ### Sensitive-Paths-Gate (BOO-18)
 
 `.claude/sensitive-paths.json` deklariert Pflicht-Review-Muster (auth/**, payment/**, **/*credential*, etc.). Implement-Schritt 5.5 blockiert den Lauf, bis der Operator `review-ok: {name} - {comment}` schreibt. Tool-agnostisch — die JSON-Config + Schritt-Semantik funktionieren mit jedem KI-Tool.
+
+### Ubiquitous Language — CONTEXT.md (BOO-91)
+
+`CONTEXT.md` im Projekt-Root deklariert die **Ubiquitous Language** des Projekts (Domain-Driven Design): eine Tabelle aus **kanonischem Vokabular** plus **Verbotsliste** von Synonymen, jeder Begriff mit seiner **Quelle**. Die KI liest `CONTEXT.md` beim Schreiben und nutzt konsequent die kanonischen Begriffe, statt Synonyme zu erfinden (`User` vs. `Customer` vs. `Betroffener`). Die Datei wird vom Bootstrap aus `bootstrap/references/context-base.md` **vorgefuellt** (Compliance-Vokabular an DSGVO/nDSG gebunden, Governance-Vokabular an INTENTRON), jeder Begriff traegt seine Quelle, plus eine Sektion `## Projekt-Domaene`, die der Operator mit domaenenspezifischen Begriffen fuellt. Das Projekt-Overlay ueberlebt Framework-Updates (die Migration seedet nur, wenn die Datei fehlt, und ueberschreibt nie). **Default ist Guidance, kein Hard-Gate** — die KI wird gefuehrt, nicht blockiert. Optionales Enforcement (eine dpo-Control auf Abwesenheit verbotener Begriffe, ein Layer-0-Bodyguard-`warn`) ist eine spaetere, opt-in Ausbaustufe und hier out-of-scope. Tool-agnostisch — ein reines Markdown-Artefakt, das jedes KI-Tool lesen kann.
 
 ### Quality-Gate-Architektur (3 Layer)
 
