@@ -1440,6 +1440,7 @@ exit 0
 ```bash
 #!/usr/bin/env bash
 # hooks/coverage-check.sh — Diff-Coverage-Gate (BOO-15)
+# coverage-check v2 (BOO-88: Nenner zaehlt nur ausfuehrbare Statement-Zeilen)
 # DE: Misst Coverage nur auf NEU hinzugefuegten Zeilen (git diff --added)
 #     gegen coverage-final.json (c8) bzw. coverage.json (pytest-cov).
 #     Schrader Code Crash Kap. 3: Gesamt-Coverage auf Legacy-Repos ist unfair.
@@ -1547,6 +1548,48 @@ for k, v in files.items():
 PYEOF
 }
 
+# --- NEU (BOO-88): Statement-Zeilen (alle ausfuehrbaren Zeilen, unabhaengig vom Count) ---
+parse_statement_lines_c8() {
+    local file="$1"
+    python3 - "$COVERAGE_FILE" "$file" <<'PYEOF'
+import json, sys
+cov_file, target = sys.argv[1], sys.argv[2]
+try:
+    data = json.load(open(cov_file))
+except Exception:
+    sys.exit(0)
+target_abs = target.lstrip("./")
+for k, v in data.items():
+    if k.endswith(target_abs) or k.endswith(target):
+        for stmt_id, loc in v.get("statementMap", {}).items():
+            line = loc.get("start", {}).get("line")
+            if line:
+                print(line)
+        break
+PYEOF
+}
+
+parse_statement_lines_pytest() {
+    local file="$1"
+    python3 - "$COVERAGE_FILE" "$file" <<'PYEOF'
+import json, sys
+cov_file, target = sys.argv[1], sys.argv[2]
+try:
+    data = json.load(open(cov_file))
+except Exception:
+    sys.exit(0)
+files = data.get("files", {})
+target_norm = target.lstrip("./")
+for k, v in files.items():
+    if k.endswith(target_norm) or k.endswith(target):
+        for line in v.get("executed_lines", []):
+            print(line)
+        for line in v.get("missing_lines", []):
+            print(line)
+        break
+PYEOF
+}
+
 # --- Hauptlauf ---
 ADDED=$(extract_added_lines)
 
@@ -1560,6 +1603,7 @@ COVERED_ADDED=0
 
 # Per-File aggregieren
 declare -A FILES_SEEN
+declare -A STMT_SEEN
 while IFS= read -r entry; do
     [[ -z "$entry" ]] && continue
     file="${entry%:*}"
@@ -1573,13 +1617,21 @@ while IFS= read -r entry; do
         continue
     fi
 
-    # Per-File einmal Coverage-Daten holen (cache)
+    # Per-File einmal Coverage-Daten holen (gedeckte Zeilen + Statement-Zeilen)
     if [[ -z "${FILES_SEEN[$file]:-}" ]]; then
         if [[ "$COVERAGE_TOOL" == "c8" ]]; then
             FILES_SEEN[$file]="$(parse_covered_lines_c8 "$file" | tr '\n' ' ')"
+            STMT_SEEN[$file]="$(parse_statement_lines_c8 "$file" | tr '\n' ' ')"
         else
             FILES_SEEN[$file]="$(parse_covered_lines_pytest "$file" | tr '\n' ' ')"
+            STMT_SEEN[$file]="$(parse_statement_lines_pytest "$file" | tr '\n' ' ')"
         fi
+    fi
+
+    # NEU (BOO-88): Nenner-Guard — nur ausfuehrbare Statement-Zeilen zaehlen.
+    # Kommentare/Leerzeilen sind nie Statements → raus aus dem Nenner.
+    if ! echo " ${STMT_SEEN[$file]} " | grep -qw "$line"; then
+        continue
     fi
 
     TOTAL_ADDED=$(( TOTAL_ADDED + 1 ))

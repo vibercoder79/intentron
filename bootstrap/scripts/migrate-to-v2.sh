@@ -567,14 +567,24 @@ migrate_boo_15() {
     local hooks_dir=".claude/hooks"
     local hook_script="$hooks_dir/coverage-check.sh"
     ensure_dir "$hooks_dir"
-    if [[ -f "$hook_script" ]]; then
-        log_skip "$hook_script existiert"
-    elif [[ "$DRY_RUN" == "true" ]]; then
-        log_dry "write $hook_script (Diff-Coverage-Gate, COVERAGE_PASS=80, COVERAGE_WARN=60)"
+    # BOO-88: v2 ersetzt alte v1 (Nenner-Bug). Marker-basierte, idempotente Migration.
+    local needs_write=false replace_v1=false
+    if [[ ! -f "$hook_script" ]]; then
+        needs_write=true
+    elif ! grep -q 'coverage-check v2' "$hook_script" 2>/dev/null; then
+        needs_write=true; replace_v1=true
     else
+        log_skip "$hook_script bereits v2 (BOO-88)"
+    fi
+    if [[ "$needs_write" == "true" && "$DRY_RUN" == "true" ]]; then
+        [[ "$replace_v1" == "true" ]] && log_dry "backup $hook_script -> .bak (BOO-88 v1->v2)"
+        log_dry "write $hook_script (Diff-Coverage-Gate v2, COVERAGE_PASS=80, COVERAGE_WARN=60)"
+    elif [[ "$needs_write" == "true" ]]; then
+        [[ "$replace_v1" == "true" ]] && { cp "$hook_script" "$hook_script.bak"; log_info "BOO-88: alte v1 nach $hook_script.bak gesichert"; }
         cat > "$hook_script" <<'COVCHECK_EOF'
 #!/usr/bin/env bash
 # .claude/hooks/coverage-check.sh — Diff-Coverage-Gate (BOO-15)
+# coverage-check v2 (BOO-88: Nenner zaehlt nur ausfuehrbare Statement-Zeilen)
 # Inhalt aus bootstrap/references/file-templates.md §hooks/coverage-check.sh
 set -euo pipefail
 
@@ -666,6 +676,48 @@ for k, v in files.items():
 PYEOF
 }
 
+# NEU (BOO-88): Statement-Zeilen (alle ausfuehrbaren Zeilen, unabhaengig vom Count)
+parse_statement_lines_c8() {
+    local file="$1"
+    python3 - "$COVERAGE_FILE" "$file" <<'PYEOF'
+import json, sys
+cov_file, target = sys.argv[1], sys.argv[2]
+try:
+    data = json.load(open(cov_file))
+except Exception:
+    sys.exit(0)
+target_abs = target.lstrip("./")
+for k, v in data.items():
+    if k.endswith(target_abs) or k.endswith(target):
+        for stmt_id, loc in v.get("statementMap", {}).items():
+            line = loc.get("start", {}).get("line")
+            if line:
+                print(line)
+        break
+PYEOF
+}
+
+parse_statement_lines_pytest() {
+    local file="$1"
+    python3 - "$COVERAGE_FILE" "$file" <<'PYEOF'
+import json, sys
+cov_file, target = sys.argv[1], sys.argv[2]
+try:
+    data = json.load(open(cov_file))
+except Exception:
+    sys.exit(0)
+files = data.get("files", {})
+target_norm = target.lstrip("./")
+for k, v in files.items():
+    if k.endswith(target_norm) or k.endswith(target):
+        for line in v.get("executed_lines", []):
+            print(line)
+        for line in v.get("missing_lines", []):
+            print(line)
+        break
+PYEOF
+}
+
 ADDED=$(extract_added_lines)
 
 if [[ -z "$ADDED" ]]; then
@@ -676,6 +728,7 @@ fi
 TOTAL_ADDED=0
 COVERED_ADDED=0
 declare -A FILES_SEEN
+declare -A STMT_SEEN
 
 while IFS= read -r entry; do
     [[ -z "$entry" ]] && continue
@@ -692,9 +745,16 @@ while IFS= read -r entry; do
     if [[ -z "${FILES_SEEN[$file]:-}" ]]; then
         if [[ "$COVERAGE_TOOL" == "c8" ]]; then
             FILES_SEEN[$file]="$(parse_covered_lines_c8 "$file" | tr '\n' ' ')"
+            STMT_SEEN[$file]="$(parse_statement_lines_c8 "$file" | tr '\n' ' ')"
         else
             FILES_SEEN[$file]="$(parse_covered_lines_pytest "$file" | tr '\n' ' ')"
+            STMT_SEEN[$file]="$(parse_statement_lines_pytest "$file" | tr '\n' ' ')"
         fi
+    fi
+
+    # NEU (BOO-88): Nenner-Guard — nur ausfuehrbare Statement-Zeilen zaehlen.
+    if ! echo " ${STMT_SEEN[$file]} " | grep -qw "$line"; then
+        continue
     fi
 
     TOTAL_ADDED=$(( TOTAL_ADDED + 1 ))
@@ -725,7 +785,7 @@ else
 fi
 COVCHECK_EOF
         chmod +x "$hook_script"
-        log_info "created $hook_script (executable)"
+        log_info "created $hook_script (executable, v2)"
     fi
 
     log_manual "Operator (Node): 'npm install --save-dev c8' falls nicht installiert"

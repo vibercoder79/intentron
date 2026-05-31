@@ -1280,6 +1280,39 @@ Mirror of the master checklist in `intentron/bootstrap/references/migration-chec
 
 ---
 
+## §BOO-88 — Coverage hook denominator: executable statement lines only — Wave W
+
+**Status:** ✓ in the v2 bundle — pure bugfix, non-destructive. Thresholds and the `/implement` workflow are unchanged.
+**Effort:** small (~2 min, automatic).
+**Linear:** <https://linear.app/owlist/issue/BOO-88>
+**Auto step:** yes (shipped via the BOO-15 coverage installer, `migrate_boo_15`, idempotent).
+
+**What it does:** fixes a counting bug in the diff-coverage gate `coverage-check.sh` (BOO-15). The denominator used to count **all** added lines — including comments and blank lines — making the ratio too low and causing the gate to block falsely. Fix: the denominator now derives only from **executable statement lines** (c8 `statementMap`; pytest-cov `executed_lines ∪ missing_lines`), via new `parse_statement_lines_*` functions + a `continue` guard in the counting loop. **No regex** — dependency-free (only `bash` + `python3` stdlib). The script now carries the version marker `# coverage-check v2`.
+
+**IMPORTANT — existing installs must re-migrate:** the fix ships **through the BOO-15 coverage installer** (there is **no** separate `--issue BOO-88`). `migrate_boo_15` now replaces an old v1 (missing marker) instead of only creating the file when absent. Existing projects that already migrated BOO-15 **must** re-run the command — otherwise the bug persists.
+
+**Auto preparation:**
+
+- Run `bash <path>/migrate-to-v2.sh --issue BOO-15` — detects an old v1 `coverage-check.sh` (marker `# coverage-check v2` missing), backs it up as `.claude/hooks/coverage-check.sh.bak`, and writes the v2.
+- **Idempotency:** an existing v2 (marker detected) is skipped (`[SKIP]`) — a second run produces no diffs.
+
+**Tests / verification:**
+
+- [ ] `bash -n .claude/hooks/coverage-check.sh` → exit 0 (clean syntax).
+- [ ] Version marker present: `grep -q 'coverage-check v2' .claude/hooks/coverage-check.sh` → exit 0.
+- [ ] Conceptual: a diff with comments/blank lines **no longer** lowers the ratio — verified (8 code + 4 comment + 2 blank lines → 100%, previously 57%; 6/8 executable → 75%).
+- [ ] Pure bugfix — thresholds and workflow are unchanged; no further adjustments needed.
+
+**Rollback:**
+
+- Restore the `.bak`: `mv .claude/hooks/coverage-check.sh.bak .claude/hooks/coverage-check.sh` (restores the old v1).
+
+**Skill source:** `bootstrap/references/file-templates.md` §coverage-check.sh (v2, BOO-88) + heredoc in `bootstrap/scripts/migrate-to-v2.sh` (`migrate_boo_15`).
+
+**References:** `bootstrap/references/file-templates.md` §coverage-check.sh, `docs/releases/wave-w-coverage-denominator-fix.md`.
+
+---
+
 ## Non-skill Issues (Skipped)
 
 These issues touch operator tooling, meta work or duplicates and require **no** migration in existing projects. They appear in `migration-status.md` with status ✗.

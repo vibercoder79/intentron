@@ -1295,6 +1295,39 @@ Spiegel der Master-Checkliste aus `intentron/bootstrap/references/migration-chec
 
 ---
 
+## §BOO-88 — Coverage-Hook-Nenner: nur ausfuehrbare Statement-Zeilen — Wave W
+
+**Status:** ✓ in v2-Bundle — reiner Bugfix, nicht-destruktiv. Schwellwerte und `/implement`-Workflow unveraendert.
+**Aufwand:** klein (~2 Min, automatisch).
+**Linear:** <https://linear.app/owlist/issue/BOO-88>
+**Auto-Schritt:** ja (ausgeliefert ueber den BOO-15-Coverage-Installer, `migrate_boo_15`, idempotent).
+
+**Was es tut:** Behebt einen Zaehl-Bug im Diff-Coverage-Gate `coverage-check.sh` (BOO-15). Der Nenner zaehlte bisher **alle** hinzugefuegten Zeilen — inkl. Kommentaren und Leerzeilen — wodurch die Quote zu niedrig ausfiel und das Gate faelschlich blockte. Fix: der Nenner stammt jetzt nur noch aus **ausfuehrbaren Statement-Zeilen** (c8 `statementMap`; pytest-cov `executed_lines ∪ missing_lines`), via neue `parse_statement_lines_*`-Funktionen + `continue`-Guard in der Zaehlschleife. **Keine Regex** — dependency-frei (nur `bash` + `python3`-Stdlib). Das Skript traegt jetzt den Versions-Marker `# coverage-check v2`.
+
+**WICHTIG — Bestands-Installs muessen erneut migrieren:** Der Fix wird **ueber den BOO-15-Coverage-Installer** ausgeliefert (es gibt **kein** separates `--issue BOO-88`). `migrate_boo_15` ersetzt jetzt eine alte v1 (fehlender Marker), statt die Datei nur bei Abwesenheit anzulegen. Bestands-Projekte, die BOO-15 bereits migriert haben, **muessen** den Befehl erneut ausfuehren — sonst bleibt der Bug bestehen.
+
+**Auto-Vorbereitung:**
+
+- `bash <pfad>/migrate-to-v2.sh --issue BOO-15` ausfuehren — erkennt eine alte v1-`coverage-check.sh` (Marker `# coverage-check v2` fehlt), sichert sie als `.claude/hooks/coverage-check.sh.bak` und schreibt die v2.
+- **Idempotenz:** vorhandene v2 (Marker erkannt) wird uebersprungen (`[SKIP]`) — zweiter Lauf erzeugt keine Diffs.
+
+**Tests / Verifikation:**
+
+- [ ] `bash -n .claude/hooks/coverage-check.sh` → Exit 0 (Syntax sauber).
+- [ ] Versions-Marker vorhanden: `grep -q 'coverage-check v2' .claude/hooks/coverage-check.sh` → Exit 0.
+- [ ] Konzeptionell: ein Diff mit Kommentaren/Leerzeilen senkt die Quote **nicht mehr** — verifiziert (8 Code + 4 Kommentar + 2 Leerzeilen → 100 %, vorher 57 %; 6/8 ausfuehrbare → 75 %).
+- [ ] Reiner Bugfix — Schwellwerte und Workflow sind unveraendert; keine weiteren Anpassungen noetig.
+
+**Rollback:**
+
+- `.bak` zurueckspielen: `mv .claude/hooks/coverage-check.sh.bak .claude/hooks/coverage-check.sh` (stellt die alte v1 wieder her).
+
+**Skill-Quelle:** `bootstrap/references/file-templates.md` §coverage-check.sh (v2, BOO-88) + Heredoc in `bootstrap/scripts/migrate-to-v2.sh` (`migrate_boo_15`).
+
+**Verweise:** `bootstrap/references/file-templates.md` §coverage-check.sh, `docs/releases/wave-w-coverage-denominator-fix.md`.
+
+---
+
 ## Nicht-Skill-Issues (uebersprungen)
 
 Diese Issues betreffen Operator-Tooling, Meta-Arbeit oder Doppelungen und brauchen **keine** Migration in Bestands-Projekten. Sie erscheinen in `migration-status.md` mit Status ✗.
