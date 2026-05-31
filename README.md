@@ -7,6 +7,8 @@
 # INTENTRON — AI-Driven Development Governance
 ### by OWLIST
 
+> **License:** Source-available (PolyForm Perimeter 1.0.0) — usable and adaptable for your own projects, **no reselling**. ([details](#license))
+
 > A **battle-tested, tool-neutral governance framework** for AI-assisted development — reference implementation in Claude Code, runs equally with Codex, Cursor and other AI tools. An interview-driven orchestrator plus a coherent set of sub-skills set up a complete AI-driven development governance framework for any new project, covering the full delivery cycle.
 
 **Core idea:** AI writes your code. Governance makes sure you still understand why in six months.
@@ -234,6 +236,8 @@ This project is **source-available** under the [PolyForm Perimeter License 1.0.0
 
 # INTENTRON — Governance für KI-gestützte Entwicklung
 ### by OWLIST
+
+> **Lizenz:** Source-available (PolyForm Perimeter 1.0.0) — nutzbar und anpassbar für eigene Projekte, **kein Weiterverkauf**. ([Details](#lizenz))
 
 > Ein **battle-tested, tool-neutrales Governance-Framework** für KI-gestützte Entwicklung — Referenz-Implementierung in Claude Code, läuft genauso mit Codex, Cursor und anderen KI-Tools. Ein interview-geführter Orchestrator plus kohärente Sub-Skills setzen ein vollständiges KI-getriebenes Governance-Framework für jedes neue Projekt auf und decken den kompletten Delivery-Zyklus ab.
 
