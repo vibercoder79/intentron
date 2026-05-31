@@ -45,7 +45,34 @@ A methodical comparison against the two closest framework categories — spec-dr
 
 **A different category, not a competitor:** ECC and similar collections are *harness optimizers / tool pools* — breadth across many tools. INTENTRON is a *method with enforced discipline* — depth. Different axes: breadth does not replace gates.
 
-**Full framework comparison:** for a dimension-by-dimension table against the orchestration frameworks (CrewAI, AutoGen/AG2, BMAD, Cursor Rules) — including where each one is genuinely stronger and when to prefer it — see [bootstrap/README.md](bootstrap/README.md#detaillierter-framework-vergleich).
+### The full picture — vs. the orchestration frameworks
+
+A dimension-by-dimension comparison against the agent-orchestration tools (an honest read — what others do better is called out below):
+
+| Dimension | **INTENTRON** | CrewAI | AutoGen / AG2 | BMAD | Cursor Rules |
+|-----------|---------------|--------|---------------|------|--------------|
+| **Governance enforcement** | ✅ Machine-enforced (Git hooks) | ❌ none | ❌ none | ⚠️ manual | ❌ none |
+| **Traceability** | ✅ Idea → issue → spec → commit | ❌ | ❌ | ⚠️ partial | ❌ |
+| **Human-in-the-loop** | ✅ Enforced (spec sign-off) | ⚠️ optional | ⚠️ optional | ✅ explicit | ❌ |
+| **Self-healing** | ✅ Cron, 15 min, auto-corrects | ❌ | ❌ | ❌ | ❌ |
+| **Learning loop** | ✅ Outcome check + LEARNINGS.md | ❌ | ❌ | ❌ | ❌ |
+| **Model routing** | ✅ Opus/Sonnet/Haiku per task type | ⚠️ configurable | ✅ good | ❌ | ❌ |
+| **Multi-agent orchestration** | ✅ Agent teams + parallel subagents | ✅ strong | ✅ very strong | ⚠️ manual | ❌ |
+| **Deploy automation** | ⚠️ partial (Git push + manual) | ❌ | ❌ | ❌ | ❌ |
+| **Portability** | ✅ Zero dependencies, 1 folder | ⚠️ pip install | ⚠️ pip install | ⚠️ prompt files | ✅ |
+| **Project setup time** | ~30 min (guided) | hours | hours | ~1h | minutes |
+| **Target audience** | Solo dev to small team | Enterprise teams | Research / quality | Agile teams | Individual devs |
+
+**Where others are genuinely stronger** — and when to prefer them:
+
+| Framework | Real strength | When to prefer it |
+|-----------|---------------|-------------------|
+| **CrewAI** | Scalable role-based crews for enterprise — used by 60% of the Fortune 500. Best choice when coordinating >10 agents. | Large team, many parallel workflows, enterprise compliance requirements |
+| **AutoGen / AG2** | Debate pattern: two agents argue against each other toward the best solution. Highest output quality for complex analysis tasks. | Research, code review with the highest quality bar, offline batch processes |
+| **BMAD** | Structured agile workflow with clear roles (PM, Architect, Developer). Well documented, large community. | Teams already on Scrum/Agile that want an AI-native workflow |
+| **Cursor Rules** | Ready to use instantly, zero setup time, right in the editor. | Individual devs who want to start fast without governance overhead |
+
+*(Bootstrap's [README](bootstrap/README.md#framework-vergleich) adds the onboarding view: what makes INTENTRON unique and when to choose it.)*
 
 ![INTENTRON positioning — depth & enforcement vs. breadth](docs/intentron-positioning.en.png)
 
@@ -244,7 +271,34 @@ Ein methodischer Vergleich mit den zwei nächstliegenden Framework-Kategorien �
 
 **Eine andere Kategorie, kein Wettbewerber:** ECC und ähnliche Sammlungen sind *Harness-Optimierer / Werkzeug-Pools* (Breite über viele Tools). INTENTRON ist eine *Methode mit erzwungener Disziplin* (Tiefe). Verschiedene Achsen — Breite ersetzt keine Gates.
 
-**Vollständiger Framework-Vergleich:** Eine Dimension-für-Dimension-Tabelle gegen die Orchestrierungs-Frameworks (CrewAI, AutoGen/AG2, BMAD, Cursor Rules) — inklusive wo jedes davon echt stärker ist und wann du es bevorzugen solltest — steht in [bootstrap/README.md](bootstrap/README.md#detaillierter-framework-vergleich).
+### Das volle Bild — vs. die Orchestrierungs-Frameworks
+
+Ein Dimension-für-Dimension-Vergleich gegen die Agent-Orchestrierungs-Tools (ehrlich gelesen — was andere besser machen, steht direkt darunter):
+
+| Dimension | **INTENTRON** | CrewAI | AutoGen / AG2 | BMAD | Cursor Rules |
+|-----------|---------------|--------|---------------|------|--------------|
+| **Governance-Enforcement** | ✅ Maschinell erzwungen (Git Hooks) | ❌ Keine | ❌ Keine | ⚠️ Manuell | ❌ Keine |
+| **Traceability** | ✅ Idee → Issue → Spec → Commit | ❌ | ❌ | ⚠️ Partiell | ❌ |
+| **Human-in-the-Loop** | ✅ Erzwungen (Spec-Freigabe) | ⚠️ Optional | ⚠️ Optional | ✅ Explizit | ❌ |
+| **Self-Healing** | ✅ Cron, 15 Min, auto-korrigiert | ❌ | ❌ | ❌ | ❌ |
+| **Learning-Loop** | ✅ Outcome-Check + LEARNINGS.md | ❌ | ❌ | ❌ | ❌ |
+| **Modell-Routing** | ✅ Opus/Sonnet/Haiku je Task-Typ | ⚠️ Konfigurierbar | ✅ Gut | ❌ | ❌ |
+| **Multi-Agent Orchestrierung** | ✅ Agent-Teams + Parallel-Subagents | ✅ Stark | ✅ Sehr stark | ⚠️ Manuell | ❌ |
+| **Deploy-Automation** | ⚠️ Teilweise (Git Push + Manual) | ❌ | ❌ | ❌ | ❌ |
+| **Portabilität** | ✅ Zero Dependencies, 1 Ordner | ⚠️ pip install | ⚠️ pip install | ⚠️ Prompt-Files | ✅ |
+| **Projekt-Setup-Zeit** | ~30 Min (geführt) | Stunden | Stunden | ~1h | Minuten |
+| **Zielgruppe** | Solo-Dev bis kleines Team | Enterprise-Teams | Forschung / Quality | Agile Teams | Einzelentwickler |
+
+**Was andere Frameworks besser machen** — und wann du sie bevorzugen solltest:
+
+| Framework | Echte Stärke | Wann bevorzugen |
+|-----------|--------------|-----------------|
+| **CrewAI** | Skalierbare Role-based Crews für Enterprise — 60% der Fortune 500 nutzen es. Beste Wahl wenn >10 Agents koordiniert werden müssen. | Großes Team, viele parallele Workflows, Enterprise-Compliance-Anforderungen |
+| **AutoGen / AG2** | Debate-Pattern: 2 Agents argumentieren gegeneinander bis zur besten Lösung. Höchste Ausgabequalität für komplexe Analyse-Aufgaben. | Forschung, Code-Review mit höchsten Qualitätsanforderungen, offline Batch-Prozesse |
+| **BMAD** | Strukturierter Agile-Workflow mit klaren Rollen (PM, Architect, Developer). Gut dokumentiert, große Community. | Teams die Scrum/Agile bereits kennen und einen AI-nativen Workflow wollen |
+| **Cursor Rules** | Sofort einsatzbereit, keine Setup-Zeit, direkt im Editor. | Einzelentwickler die schnell starten wollen ohne Governance-Overhead |
+
+*(Die bootstrap-[README](bootstrap/README.md#framework-vergleich) ergänzt die Onboarding-Sicht: was INTENTRON einzigartig macht und wann du es wählen solltest.)*
 
 ![INTENTRON Positionierung — Tiefe & Erzwingung vs. Breite](docs/intentron-positioning.png)
 

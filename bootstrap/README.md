@@ -32,34 +32,13 @@ Die meisten AI-Development-Frameworks sind entweder zu viel Automation (Black Bo
 
 ---
 
-## Detaillierter Framework-Vergleich
+## Framework-Vergleich
 
-### INTENTRON vs. CrewAI vs. AutoGen vs. BMAD vs. Cursor Rules
+Die **vollständige Dimension-für-Dimension-Tabelle** — INTENTRON vs. Spec Kit, ECC, CrewAI, AutoGen/AG2, BMAD und Cursor Rules, plus „was andere Frameworks besser machen" — steht jetzt zentral in der Haupt-README:
 
-> Tausende AI-Development-Frameworks existieren. Hier ist eine ehrliche Einordnung — was andere besser machen, was dieses Framework einzigartig macht, und wann du welches wählen solltest.
+➡️ **[Wie sich INTENTRON unterscheidet](../README.md#wie-sich-intentron-unterscheidet)**
 
-| Dimension | **INTENTRON** | CrewAI | AutoGen / AG2 | BMAD | Cursor Rules |
-|-----------|------------------------|--------|---------------|------|--------------|
-| **Governance-Enforcement** | ✅ Maschinell erzwungen (Git Hooks) | ❌ Keine | ❌ Keine | ⚠️ Manuell | ❌ Keine |
-| **Traceability** | ✅ Idee → Issue → Spec → Commit | ❌ | ❌ | ⚠️ Partiell | ❌ |
-| **Human-in-the-Loop** | ✅ Erzwungen (Spec-Freigabe) | ⚠️ Optional | ⚠️ Optional | ✅ Explizit | ❌ |
-| **Self-Healing** | ✅ Cron, 15 Min, auto-korrigiert | ❌ | ❌ | ❌ | ❌ |
-| **Learning-Loop** | ✅ Outcome-Check + LEARNINGS.md | ❌ | ❌ | ❌ | ❌ |
-| **Modell-Routing** | ✅ Opus/Sonnet/Haiku je Task-Typ | ⚠️ Konfigurierbar | ✅ Gut | ❌ | ❌ |
-| **Multi-Agent Orchestrierung** | ✅ Agent-Teams + Parallel-Subagents | ✅ Stark | ✅ Sehr stark | ⚠️ Manuell | ❌ |
-| **Deploy-Automation** | ⚠️ Teilweise (Git Push + Manual) | ❌ | ❌ | ❌ | ❌ |
-| **Portabilität** | ✅ Zero Dependencies, 1 Ordner | ⚠️ pip install | ⚠️ pip install | ⚠️ Prompt-Files | ✅ |
-| **Projekt-Setup-Zeit** | ~30 Min (geführt) | Stunden | Stunden | ~1h | Minuten |
-| **Zielgruppe** | Solo-Dev bis kleines Team | Enterprise-Teams | Forschung / Quality | Agile Teams | Einzelentwickler |
-
-### Was andere Frameworks besser machen
-
-| Framework | Echte Stärke | Wann bevorzugen |
-|-----------|-------------|-----------------|
-| **CrewAI** | Skalierbare Role-based Crews für Enterprise — 60% der Fortune 500 nutzen es. Beste Wahl wenn >10 Agents koordiniert werden müssen. | Großes Team, viele parallele Workflows, Enterprise-Compliance-Anforderungen |
-| **AutoGen / AG2** | Debate-Pattern: 2 Agents argumentieren gegeneinander bis zur besten Lösung. Höchste Ausgabequalität für komplexe Analyse-Aufgaben. | Forschung, Code-Review mit höchsten Qualitätsanforderungen, offline Batch-Prozesse |
-| **BMAD** | Strukturierter Agile-Workflow mit klaren Rollen (PM, Architect, Developer). Gut dokumentiert, große Community. | Teams die Scrum/Agile bereits kennen und einen AI-nativen Workflow wollen |
-| **Cursor Rules** | Sofort einsatzbereit, keine Setup-Zeit, direkt im Editor. | Einzelentwickler die schnell starten wollen ohne Governance-Overhead |
+Diese Seite ergänzt nur die Onboarding-Sicht: was INTENTRON einzigartig macht und wann du es wählen solltest.
 
 ### Was INTENTRON einzigartig macht
 
