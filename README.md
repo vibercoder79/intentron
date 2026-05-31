@@ -7,7 +7,7 @@
 # INTENTRON — AI-Driven Development Governance
 ### by OWLIST
 
-> A **battle-tested skill collection** for Claude Code — sets up a complete AI-driven development governance framework for any new project, through an interview-driven orchestrator plus a coherent set of sub-skills covering the full delivery cycle.
+> A **battle-tested, tool-neutral governance framework** for AI-assisted development — reference implementation in Claude Code, runs equally with Codex, Cursor and other AI tools. An interview-driven orchestrator plus a coherent set of sub-skills set up a complete AI-driven development governance framework for any new project, covering the full delivery cycle.
 
 **Core idea:** AI writes your code. Governance makes sure you still understand why in six months.
 
@@ -32,18 +32,20 @@ Four things set us apart concretely:
 
 ## How INTENTRON differs
 
-A methodical comparison against the closest spec-driven framework:
+A methodical comparison against the two closest framework categories — spec-driven (Spec Kit) and harness optimizers (ECC, Everything Claude Code):
 
-| | INTENTRON | Spec Kit |
-|---|---|---|
-| Focus | Path from intent → production, with gates | Specification → code |
-| Hard gates (blocking) | ✅ Spec, Sensitive-Paths, Coverage, Slopsquatting | ❌ none |
-| Intent before spec | ✅ | ❌ |
-| Governance scales (Solo→Enterprise) | ✅ | ❌ |
-| Privacy/Security built in | ✅ (DPO + Security-Architect) | ❌ |
-| Tool-neutral (1 contract) | ✅ AGENTS.md + CONVENTIONS | partial |
+| | INTENTRON | Spec Kit (spec-driven) | ECC (harness optimizer) |
+|---|---|---|---|
+| Focus | Path from intent → production, with gates | Specification → code | Breadth across Claude Code tools |
+| Hard gates (blocking) | ✅ Spec, Sensitive-Paths, Coverage, Slopsquatting | ❌ none | ❌ none |
+| Intent before spec | ✅ | ❌ | ❌ |
+| Governance scales (Solo→Enterprise) | ✅ | ❌ | ❌ |
+| Privacy/Security built in | ✅ (DPO + Security-Architect) | ❌ | ❌ |
+| Tool-neutral (1 contract) | ✅ AGENTS.md + CONVENTIONS | partial | ❌ (Claude-Code-bound) |
 
-**A different category, not a competitor:** ECC (Everything Claude Code) and similar collections are *harness optimizers / tool pools* — breadth across many tools. INTENTRON is a *method with enforced discipline* — depth. Different axes: breadth does not replace gates.
+**A different category, not a competitor:** ECC and similar collections are *harness optimizers / tool pools* — breadth across many tools. INTENTRON is a *method with enforced discipline* — depth. Different axes: breadth does not replace gates.
+
+**Full framework comparison:** for a dimension-by-dimension table against the orchestration frameworks (CrewAI, AutoGen/AG2, BMAD, Cursor Rules) — including where each one is genuinely stronger and when to prefer it — see [bootstrap/README.md](bootstrap/README.md#detaillierter-framework-vergleich).
 
 ![INTENTRON positioning — depth & enforcement vs. breadth](docs/intentron-positioning.en.png)
 
@@ -53,7 +55,7 @@ A methodical comparison against the closest spec-driven framework:
 
 ## What Is This?
 
-`intentron/` is a container of Claude Code skills that form one coherent development workflow:
+`intentron/` is a tool-neutral container of skills — implemented for Claude Code as the reference runtime and portable to Codex, Cursor and other AI tools (see [CONVENTIONS.md](CONVENTIONS.md) + HANDBUCH Appendix K) — that form one coherent development workflow:
 
 - **The orchestrator** (`bootstrap/`) interviews you about a new project and scaffolds the full governance framework: runtime instructions, documentation SSoT, Developer Onboarding, backlog adapter, Git hooks, skill selection, optional learning-loop.
 - **Sub-skills** (`ideation/`, `implement/`, etc.) cover the downstream delivery workflow — from idea to sprint review.
@@ -180,7 +182,7 @@ No spec, no commit. That's the difference between a prompt and a governance fram
 
 ## Prerequisites
 
-- **Claude Code** (CLI or IDE extension)
+- **An AI coding tool** — Claude Code (CLI/IDE, reference implementation) or Codex, Cursor & co. (see HANDBUCH Appendix K)
 - **Backlog system** — Linear (recommended) / Microsoft 365 Planner / GitHub Issues / none
 - **GitHub** repository for your project
 - **Project documentation SSoT** — Obsidian Vault, repo `docs/project/`, external DMS, or temporary repo fallback
@@ -204,7 +206,7 @@ This project is **source-available** under the [PolyForm Perimeter License 1.0.0
 # INTENTRON — Governance für KI-gestützte Entwicklung
 ### by OWLIST
 
-> Eine **battle-tested Skill-Sammlung** für Claude Code — setzt ein vollständiges KI-getriebenes Governance-Framework für jedes neue Projekt auf, über einen interview-geführten Orchestrator plus kohärente Sub-Skills die den kompletten Delivery-Zyklus abdecken.
+> Ein **battle-tested, tool-neutrales Governance-Framework** für KI-gestützte Entwicklung — Referenz-Implementierung in Claude Code, läuft genauso mit Codex, Cursor und anderen KI-Tools. Ein interview-geführter Orchestrator plus kohärente Sub-Skills setzen ein vollständiges KI-getriebenes Governance-Framework für jedes neue Projekt auf und decken den kompletten Delivery-Zyklus ab.
 
 **Kernidee:** KI schreibt deinen Code. Governance stellt sicher, dass du in 6 Monaten noch weißt warum.
 
@@ -229,18 +231,20 @@ Vier Dinge unterscheiden uns konkret:
 
 ## Wie sich INTENTRON unterscheidet
 
-Ein methodischer Vergleich mit dem nächstliegenden Spec-Driven-Framework:
+Ein methodischer Vergleich mit den zwei nächstliegenden Framework-Kategorien — Spec-Driven (Spec Kit) und Harness-Optimierer (ECC, Everything Claude Code):
 
-| | INTENTRON | Spec Kit |
-|---|---|---|
-| Fokus | Weg von Intent → Produktion, mit Gates | Spezifikation → Code |
-| Hard Gates (blockierend) | ✅ Spec, Sensitive-Paths, Coverage, Slopsquatting | ❌ keine |
-| Intent vor Spec | ✅ | ❌ |
-| Governance skaliert (Solo→Konzern) | ✅ | ❌ |
-| Privacy/Security eingebaut | ✅ (DPO + Security-Architect) | ❌ |
-| Tool-neutral (1 Vertrag) | ✅ AGENTS.md + CONVENTIONS | teilweise |
+| | INTENTRON | Spec Kit (Spec-Driven) | ECC (Harness-Optimierer) |
+|---|---|---|---|
+| Fokus | Weg von Intent → Produktion, mit Gates | Spezifikation → Code | Breite über Claude-Code-Tools |
+| Hard Gates (blockierend) | ✅ Spec, Sensitive-Paths, Coverage, Slopsquatting | ❌ keine | ❌ keine |
+| Intent vor Spec | ✅ | ❌ | ❌ |
+| Governance skaliert (Solo→Konzern) | ✅ | ❌ | ❌ |
+| Privacy/Security eingebaut | ✅ (DPO + Security-Architect) | ❌ | ❌ |
+| Tool-neutral (1 Vertrag) | ✅ AGENTS.md + CONVENTIONS | teilweise | ❌ (Claude-Code-gebunden) |
 
-**Eine andere Kategorie, kein Wettbewerber:** ECC (Everything Claude Code) und ähnliche Sammlungen sind *Harness-Optimierer / Werkzeug-Pools* (Breite über viele Tools). INTENTRON ist eine *Methode mit erzwungener Disziplin* (Tiefe). Verschiedene Achsen — Breite ersetzt keine Gates.
+**Eine andere Kategorie, kein Wettbewerber:** ECC und ähnliche Sammlungen sind *Harness-Optimierer / Werkzeug-Pools* (Breite über viele Tools). INTENTRON ist eine *Methode mit erzwungener Disziplin* (Tiefe). Verschiedene Achsen — Breite ersetzt keine Gates.
+
+**Vollständiger Framework-Vergleich:** Eine Dimension-für-Dimension-Tabelle gegen die Orchestrierungs-Frameworks (CrewAI, AutoGen/AG2, BMAD, Cursor Rules) — inklusive wo jedes davon echt stärker ist und wann du es bevorzugen solltest — steht in [bootstrap/README.md](bootstrap/README.md#detaillierter-framework-vergleich).
 
 ![INTENTRON Positionierung — Tiefe & Erzwingung vs. Breite](docs/intentron-positioning.png)
 
@@ -250,7 +254,7 @@ Ein methodischer Vergleich mit dem nächstliegenden Spec-Driven-Framework:
 
 ## Was ist das hier?
 
-`intentron/` ist ein Container von Claude Code Skills, die zusammen einen kohärenten Entwicklungs-Workflow bilden:
+`intentron/` ist ein tool-neutraler Container von Skills — implementiert für Claude Code als Referenz-Runtime und portierbar auf Codex, Cursor und andere KI-Tools (siehe [CONVENTIONS.md](CONVENTIONS.md) + HANDBUCH Anhang K) — die zusammen einen kohärenten Entwicklungs-Workflow bilden:
 
 - **Der Orchestrator** (`bootstrap/`) führt das Interview zu einem neuen Projekt und legt das komplette Governance-Framework an: Runtime-Anweisungen, Dokumentations-SSoT, Developer Onboarding, Backlog-Adapter, Git-Hooks, Skill-Auswahl, optionaler Learning-Loop.
 - **Sub-Skills** (`ideation/`, `implement/`, etc.) decken den nachgelagerten Delivery-Workflow ab — von der Idee bis zum Sprint-Review.
@@ -377,7 +381,7 @@ Kein Spec, kein Commit. Das ist der Unterschied zwischen einem Prompt und einem 
 
 ## Voraussetzungen
 
-- **Claude Code** (CLI oder IDE-Extension)
+- **Ein KI-Coding-Tool** — Claude Code (CLI/IDE, Referenz-Implementierung) oder Codex, Cursor & Co. (siehe HANDBUCH Anhang K)
 - **Backlog-System** — Linear (empfohlen) / Microsoft 365 Planner / GitHub Issues / keines
 - **GitHub** Repository für dein Projekt
 - **Projekt-Dokumentations-SSoT** — Obsidian Vault, Repo `docs/project/`, externes DMS oder temporaerer Repo-Fallback
