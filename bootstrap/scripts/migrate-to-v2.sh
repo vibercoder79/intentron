@@ -564,228 +564,33 @@ migrate_boo_15() {
     # https://linear.app/owlist/issue/BOO-15
     log_info "BOO-15: coverage-check.sh anlegen (Diff-Coverage-Gate)"
 
+    local script_dir; script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    local canonical="$script_dir/../references/hooks/coverage-check.sh"
     local hooks_dir=".claude/hooks"
     local hook_script="$hooks_dir/coverage-check.sh"
     ensure_dir "$hooks_dir"
-    # BOO-88: v2 ersetzt alte v1 (Nenner-Bug). Marker-basierte, idempotente Migration.
-    local needs_write=false replace_v1=false
-    if [[ ! -f "$hook_script" ]]; then
-        needs_write=true
-    elif ! grep -q 'coverage-check v2' "$hook_script" 2>/dev/null; then
-        needs_write=true; replace_v1=true
+    # BOO-89: Single-Source — Skript wird aus references/hooks/coverage-check.sh kopiert
+    # (kein eingebetteter Heredoc mehr). BOO-88: v2 ersetzt alte v1, marker-basiert, idempotent.
+    if [[ ! -f "$canonical" ]]; then
+        log_skip "Kanonische Quelle fehlt ($canonical) — coverage-check.sh uebersprungen"
     else
-        log_skip "$hook_script bereits v2 (BOO-88)"
-    fi
-    if [[ "$needs_write" == "true" && "$DRY_RUN" == "true" ]]; then
-        [[ "$replace_v1" == "true" ]] && log_dry "backup $hook_script -> .bak (BOO-88 v1->v2)"
-        log_dry "write $hook_script (Diff-Coverage-Gate v2, COVERAGE_PASS=80, COVERAGE_WARN=60)"
-    elif [[ "$needs_write" == "true" ]]; then
-        [[ "$replace_v1" == "true" ]] && { cp "$hook_script" "$hook_script.bak"; log_info "BOO-88: alte v1 nach $hook_script.bak gesichert"; }
-        cat > "$hook_script" <<'COVCHECK_EOF'
-#!/usr/bin/env bash
-# .claude/hooks/coverage-check.sh — Diff-Coverage-Gate (BOO-15)
-# coverage-check v2 (BOO-88: Nenner zaehlt nur ausfuehrbare Statement-Zeilen)
-# Inhalt aus bootstrap/references/file-templates.md §hooks/coverage-check.sh
-set -euo pipefail
-
-COVERAGE_PASS="${COVERAGE_PASS:-80}"
-COVERAGE_WARN="${COVERAGE_WARN:-60}"
-
-COVERAGE_FILE=""
-COVERAGE_TOOL=""
-
-if [[ -f "coverage/coverage-final.json" ]]; then
-    COVERAGE_FILE="coverage/coverage-final.json"
-    COVERAGE_TOOL="c8"
-elif [[ -f "coverage.json" ]]; then
-    COVERAGE_FILE="coverage.json"
-    COVERAGE_TOOL="pytest-cov"
-elif [[ -f ".coverage" || -f "coverage/.coverage" ]]; then
-    echo "[COVERAGE] HINWEIS: pytest-cov-SQLite gefunden, aber kein JSON-Export. Lauf 'pytest --cov --cov-report=json' fuer Diff-Coverage."
-    exit 0
-else
-    echo "[COVERAGE] Keine Coverage-Daten gefunden — Gate uebersprungen."
-    echo "[COVERAGE] Hinweis: Test-Setup fehlt — ggf. /bootstrap nachziehen oder 'npx c8 npm test' / 'pytest --cov --cov-report=json' laufen lassen."
-    exit 0
-fi
-
-echo "[COVERAGE] Tool: $COVERAGE_TOOL, Datei: $COVERAGE_FILE, Schwellwerte: pass=$COVERAGE_PASS%, warn=$COVERAGE_WARN%"
-
-extract_added_lines() {
-    # POSIX-awk-kompatibel (BSD + gawk): kein match(... , arr) mit drittem
-    # Argument. Statt dessen split() auf @@-Zeile, "+"-Token-Suche, dann
-    # split bei Komma in [start, count].
-    git diff --cached -U0 --no-color 2>/dev/null \
-        | awk '
-            /^\+\+\+ b\// { file = substr($0, 7); next }
-            /^@@ / {
-                n = split($0, parts, " ")
-                for (i = 1; i <= n; i++) {
-                    if (parts[i] ~ /^\+[0-9]+/) {
-                        sub(/^\+/, "", parts[i])
-                        split(parts[i], nums, ",")
-                        start = nums[1] + 0
-                        count = (nums[2] == "") ? 1 : (nums[2] + 0)
-                        for (j = 0; j < count; j++) print file ":" (start + j)
-                        break
-                    }
-                }
-                next
-            }
-        '
-}
-
-parse_covered_lines_c8() {
-    local file="$1"
-    python3 - "$COVERAGE_FILE" "$file" <<'PYEOF'
-import json, sys
-cov_file, target = sys.argv[1], sys.argv[2]
-try:
-    data = json.load(open(cov_file))
-except Exception:
-    sys.exit(0)
-target_abs = target.lstrip("./")
-for k, v in data.items():
-    if k.endswith(target_abs) or k.endswith(target):
-        stmts = v.get("statementMap", {})
-        counts = v.get("s", {})
-        for stmt_id, loc in stmts.items():
-            line = loc.get("start", {}).get("line")
-            if line and counts.get(stmt_id, 0) > 0:
-                print(line)
-        break
-PYEOF
-}
-
-parse_covered_lines_pytest() {
-    local file="$1"
-    python3 - "$COVERAGE_FILE" "$file" <<'PYEOF'
-import json, sys
-cov_file, target = sys.argv[1], sys.argv[2]
-try:
-    data = json.load(open(cov_file))
-except Exception:
-    sys.exit(0)
-files = data.get("files", {})
-target_norm = target.lstrip("./")
-for k, v in files.items():
-    if k.endswith(target_norm) or k.endswith(target):
-        for line in v.get("executed_lines", []):
-            print(line)
-        break
-PYEOF
-}
-
-# NEU (BOO-88): Statement-Zeilen (alle ausfuehrbaren Zeilen, unabhaengig vom Count)
-parse_statement_lines_c8() {
-    local file="$1"
-    python3 - "$COVERAGE_FILE" "$file" <<'PYEOF'
-import json, sys
-cov_file, target = sys.argv[1], sys.argv[2]
-try:
-    data = json.load(open(cov_file))
-except Exception:
-    sys.exit(0)
-target_abs = target.lstrip("./")
-for k, v in data.items():
-    if k.endswith(target_abs) or k.endswith(target):
-        for stmt_id, loc in v.get("statementMap", {}).items():
-            line = loc.get("start", {}).get("line")
-            if line:
-                print(line)
-        break
-PYEOF
-}
-
-parse_statement_lines_pytest() {
-    local file="$1"
-    python3 - "$COVERAGE_FILE" "$file" <<'PYEOF'
-import json, sys
-cov_file, target = sys.argv[1], sys.argv[2]
-try:
-    data = json.load(open(cov_file))
-except Exception:
-    sys.exit(0)
-files = data.get("files", {})
-target_norm = target.lstrip("./")
-for k, v in files.items():
-    if k.endswith(target_norm) or k.endswith(target):
-        for line in v.get("executed_lines", []):
-            print(line)
-        for line in v.get("missing_lines", []):
-            print(line)
-        break
-PYEOF
-}
-
-ADDED=$(extract_added_lines)
-
-if [[ -z "$ADDED" ]]; then
-    echo "[COVERAGE] Keine neu hinzugefuegten Zeilen im Diff — Gate uebersprungen."
-    exit 0
-fi
-
-TOTAL_ADDED=0
-COVERED_ADDED=0
-declare -A FILES_SEEN
-declare -A STMT_SEEN
-
-while IFS= read -r entry; do
-    [[ -z "$entry" ]] && continue
-    file="${entry%:*}"
-    line="${entry##*:}"
-
-    if ! echo "$file" | grep -qE '\.(js|mjs|ts|tsx|jsx|py)$'; then
-        continue
-    fi
-    if echo "$file" | grep -qE '(^test|/test|_test\.|\.test\.|\.spec\.|tests/|__tests__|conftest\.py)'; then
-        continue
-    fi
-
-    if [[ -z "${FILES_SEEN[$file]:-}" ]]; then
-        if [[ "$COVERAGE_TOOL" == "c8" ]]; then
-            FILES_SEEN[$file]="$(parse_covered_lines_c8 "$file" | tr '\n' ' ')"
-            STMT_SEEN[$file]="$(parse_statement_lines_c8 "$file" | tr '\n' ' ')"
+        local needs_write=false replace_v1=false
+        if [[ ! -f "$hook_script" ]]; then
+            needs_write=true
+        elif ! grep -q 'coverage-check v2' "$hook_script" 2>/dev/null; then
+            needs_write=true; replace_v1=true
         else
-            FILES_SEEN[$file]="$(parse_covered_lines_pytest "$file" | tr '\n' ' ')"
-            STMT_SEEN[$file]="$(parse_statement_lines_pytest "$file" | tr '\n' ' ')"
+            log_skip "$hook_script bereits v2 (BOO-88)"
         fi
-    fi
-
-    # NEU (BOO-88): Nenner-Guard — nur ausfuehrbare Statement-Zeilen zaehlen.
-    if ! echo " ${STMT_SEEN[$file]} " | grep -qw "$line"; then
-        continue
-    fi
-
-    TOTAL_ADDED=$(( TOTAL_ADDED + 1 ))
-    if echo " ${FILES_SEEN[$file]} " | grep -qw "$line"; then
-        COVERED_ADDED=$(( COVERED_ADDED + 1 ))
-    fi
-done <<< "$ADDED"
-
-if (( TOTAL_ADDED == 0 )); then
-    echo "[COVERAGE] Keine bewertbaren neuen Zeilen (alles Tests/Configs) — Gate uebersprungen."
-    exit 0
-fi
-
-PCT=$(( (COVERED_ADDED * 100) / TOTAL_ADDED ))
-echo "[COVERAGE] Diff-Coverage: $COVERED_ADDED / $TOTAL_ADDED added lines = ${PCT}%"
-
-if (( PCT >= COVERAGE_PASS )); then
-    echo "[COVERAGE] Gate bestanden (>=${COVERAGE_PASS}%)"
-    exit 0
-elif (( PCT >= COVERAGE_WARN )); then
-    echo "[COVERAGE] WARNUNG: Diff-Coverage ${PCT}% liegt unter ${COVERAGE_PASS}% (Pass-Schwelle), aber ueber ${COVERAGE_WARN}% (Warn-Schwelle)."
-    echo "[COVERAGE] Operator-Freigabe moeglich mit Begruendung im Linear-Kommentar."
-    exit 0
-else
-    echo "[COVERAGE] Gate BLOCKIERT: Diff-Coverage ${PCT}% liegt unter ${COVERAGE_WARN}% (Warn-Schwelle)."
-    echo "[COVERAGE] Tests hinzufuegen oder Story splitten."
-    exit 1
-fi
-COVCHECK_EOF
-        chmod +x "$hook_script"
-        log_info "created $hook_script (executable, v2)"
+        if [[ "$needs_write" == "true" && "$DRY_RUN" == "true" ]]; then
+            [[ "$replace_v1" == "true" ]] && log_dry "backup $hook_script -> .bak (BOO-88 v1->v2)"
+            log_dry "copy $canonical -> $hook_script (Diff-Coverage-Gate v2)"
+        elif [[ "$needs_write" == "true" ]]; then
+            [[ "$replace_v1" == "true" ]] && { cp "$hook_script" "$hook_script.bak"; log_info "BOO-88: alte v1 nach $hook_script.bak gesichert"; }
+            cp "$canonical" "$hook_script"
+            chmod +x "$hook_script"
+            log_info "created $hook_script (executable, v2, aus references/hooks/)"
+        fi
     fi
 
     log_manual "Operator (Node): 'npm install --save-dev c8' falls nicht installiert"

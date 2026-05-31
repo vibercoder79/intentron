@@ -1,0 +1,23 @@
+name: hook-sources
+
+# BOO-89: Drift-Guard fuer gescaffoldete Hooks.
+# Stellt sicher, dass kanonische Hooks (bootstrap/references/hooks/*.sh) Single-Source
+# bleiben und ein frisch migrierter coverage-check byte-identisch zur Quelle ist.
+
+on:
+  push:
+    paths:
+      - 'bootstrap/references/hooks/**'
+      - 'bootstrap/references/file-templates*.md'
+      - 'bootstrap/scripts/migrate-to-v2.sh'
+      - 'bootstrap/scripts/check-hook-sources.sh'
+      - '.github/workflows/hook-sources.yml'
+  pull_request:
+
+jobs:
+  drift-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Drift-Guard (BOO-89)
+        run: bash bootstrap/scripts/check-hook-sources.sh

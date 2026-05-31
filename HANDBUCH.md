@@ -2087,7 +2087,7 @@ und Provider-Postflight.
 
 ## 13. Anhänge — Wegweiser
 
-Das Handbuch hat 22 Anhänge (A–V). Sie sind **Nachschlage- und Vertiefungs-Schicht** — du musst sie nicht von vorn bis hinten lesen. Diese Tabelle sagt dir, **wann welcher Anhang relevant ist**. Anhänge A–M sind die Grundlagen-/Tooling-Schicht, N–V die v0.2.0-Themen (Effizienz, Privacy, Deployment, Skalierung, Verifikation, Edit-Bodyguard).
+Das Handbuch hat 23 Anhänge (A–W). Sie sind **Nachschlage- und Vertiefungs-Schicht** — du musst sie nicht von vorn bis hinten lesen. Diese Tabelle sagt dir, **wann welcher Anhang relevant ist**. Anhänge A–M sind die Grundlagen-/Tooling-Schicht, N–W die v0.2.0-Themen (Effizienz, Privacy, Deployment, Skalierung, Verifikation, Edit-Bodyguard, Contribute-Back).
 
 | Anhang | Thema | Wann relevant |
 |--------|-------|---------------|
@@ -2113,6 +2113,7 @@ Das Handbuch hat 22 Anhänge (A–V). Sie sind **Nachschlage- und Vertiefungs-Sc
 | **T** | Post-Install-Verifikation | "funktioniert mein Setup?" + E2E-Probelauf |
 | **U** | Multi-Projekt-Betrieb | mehrere Projekte auf einer Maschine |
 | **V** | Layer 0 — Edit-Bodyguard | Secrets/Unsafe-Patterns vor dem Schreiben abfangen |
+| **W** | Contribute-Back-Schleife | Feld-Fix an Governance-Artefakten zurück an die Quelle reichen |
 
 ---
 
@@ -4098,6 +4099,56 @@ Layer 0 ist der deterministische Backstop zum **Secure-Coding-Hinweis** in `/imp
 - **`/implement` Schritt 5 (Secure-Coding-Hinweis):** die Prompt-Ebenen-Variante, fuer die Layer 0 der Backstop ist.
 
 Quelle: BOO-86 (Layer-0 Edit-Bodyguard).
+
+---
+
+## Anhang W: Contribute-Back-Schleife (BOO-90)
+
+### Das Problem
+
+Beim Bootstrap kopiert das Framework Governance-Artefakte ins Projekt — Hooks, Gates, Konventionen. Im Feld werden diese Kopien **angefasst**: ein Operator fixt einen Bug in einem gescaffoldeten Hook, passt eine Pattern-Datei an, schärft ein Gate. Damit driften die kopierten Artefakte von ihrer kanonischen Quelle weg, und — schwerwiegender — ein guter **Feld-Fix hat heute keinen systematischen Rückweg**. Er bleibt im einen Projekt hängen, alle anderen Deployments profitieren nicht. Der konkrete Auslöser war der `coverage-check`-Fix aus dem `privacy-proxy`-Projekt (BOO-88): ein manueller Rücklauf, der gut lief, aber Handarbeit war. Das soll systematisch werden.
+
+### Die zwei Richtungen
+
+Drift zwischen Quelle und Feld-Kopie ist **bidirektional** — entsprechend gibt es zwei getrennte Mechanismen:
+
+| Richtung | Mechanismus | Wer fährt | BOO |
+|----------|-------------|-----------|-----|
+| **Quelle → Feld** | Versions-Marker am Artefakt + ersetzende Migration (z.B. `coverage-check v2`) | Framework-Update | BOO-88 |
+| **Feld → Quelle** | `contribute-fix.sh` erzeugt Patch + Issue-Vorschlag | Operator (manuell eingereicht) | BOO-90 (dieser Anhang) |
+
+Quelle→Feld ist die Verteil-Richtung: ein neues Framework-Release trägt einen Versions-Marker (z.B. `coverage-check v2`) und bringt eine **ersetzende Migration** mit, die die alte Feld-Kopie kontrolliert ablöst. Feld→Quelle ist die Rückspeise-Richtung und Gegenstand dieses Anhangs.
+
+### `contribute-fix.sh` nutzen
+
+Der Helfer erkennt in einem deployten Projekt lokal geänderte Framework-Artefakte (zunächst die gescaffoldeten Hooks unter `.claude/hooks/`, kanonisch in `bootstrap/references/hooks/` — BOO-89) und erzeugt **pro Abweichung** zwei Dateien:
+
+```bash
+bash <framework>/bootstrap/scripts/contribute-fix.sh --project .
+```
+
+Output je Abweichung unter `contribute-back/`:
+
+- **`<name>.patch`** — der Diff der Feld-Kopie gegen die kanonische Quelle.
+- **`<name>.proposal.md`** — ein fertiger Issue-Vorschlag, den der Operator gegen das Framework-Repo einreichen kann.
+
+**Es wird NICHTS automatisch gepusht.** Kein Auto-PR, kein Auto-Push. Der Helfer bereitet nur Patch und Vorschlag vor — der **Operator reicht selbst ein** und behält die Kontrolle darüber, was zurück in die Quelle wandert (Supply-Chain- und Review-Disziplin).
+
+### Kopplung an BOO-89 (Single-Source-Hooks)
+
+`contribute-fix.sh` kann nur das abdecken, was eine **kanonische Quelle** hat. BOO-89 zieht die gescaffoldeten Hooks auf eine Single Source unter `bootstrap/references/hooks/` zusammen — genau diese Quelle vergleicht der Helfer gegen die Feld-Kopie. **Je mehr Hooks kanonisch werden, desto mehr deckt `contribute-fix.sh` automatisch ab.** Die Abdeckung wächst mit der Single-Source-Migration mit, ohne dass der Helfer selbst geändert werden muss.
+
+### Grenzen & Folge
+
+Aktuell ist `contribute-fix.sh` auf die **gescaffoldeten Hooks** beschränkt — andere Artefakt-Klassen (Pattern-Dateien, Gate-Skripte, Konventionen) sind noch nicht erfasst. Die Generalisierung auf weitere kanonische Artefakte folgt später, sobald deren Single Source steht (Kopplung an BOO-89).
+
+### Verwandte Anhänge & Quellen
+
+- **`bootstrap/scripts/contribute-fix.sh`:** der Helfer selbst (Aufruf, Output-Layout).
+- **`bootstrap/references/hooks/`:** kanonische Quelle der gescaffoldeten Hooks (BOO-89) — Vergleichsbasis.
+- **Anhang V (Edit-Bodyguard):** ein Beispiel für ein gescaffoldetes, pattern-getriebenes Artefakt, dessen Overlay/Quelle ähnliche Drift-Fragen aufwirft.
+
+Quelle: BOO-90 (Contribute-Back-Schleife), BOO-89 (Single-Source-Hooks), BOO-88 (Versions-Marker + ersetzende Migration, Gegenrichtung).
 
 ---
 
