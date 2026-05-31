@@ -1188,9 +1188,9 @@ Die Toolchain läuft in vier Umgebungen unterschiedlich. **Kernpunkt:** Keine Qu
 
 Praxisregel: Wenn du auf dem VPS via SSH arbeitest, erwartest du keine Inline-Hints im Editor — du läufst die CLIs explizit (`npx eslint .`, `semgrep --config auto .`, `npm test`). Die Gates schlagen in CI ohnehin zu, wenn du etwas durchrutschen lässt.
 
-![Drei-Layer-Quality-Gate — IDE / CLI / CI entlang der Coding-Zeitachse](docs/quality-gate-three-layers.png)
+![Vier-Layer-Quality-Gate — Edit-Bodyguard / IDE / CLI / CI entlang der Coding-Zeitachse](docs/quality-gate-four-layers.png)
 
-*Defense in Depth über drei Ebenen: IDE-Plugins für Echtzeit-Feedback beim Tippen, CLI-Tools als harte Pre-Commit-Sperre, GitHub Actions als Merge-Gate nach dem Push. Je früher ein Defekt erkannt wird, desto billiger der Fix. ([Excalidraw-Quelle](docs/quality-gate-three-layers.excalidraw))*
+*Defense in Depth über vier Ebenen: Layer 0 Edit-Bodyguard als PreToolUse-Reflex, der unsichere Muster abfängt, bevor die KI sie schreibt (BOO-86); IDE-Plugins für Echtzeit-Feedback beim Tippen; CLI-Tools als harte Pre-Commit-Sperre; GitHub Actions als Merge-Gate nach dem Push. Je früher ein Defekt erkannt wird, desto billiger der Fix. ([Excalidraw-Quelle](docs/quality-gate-four-layers.excalidraw))*
 
 > **Hinweis zur Skizzen-Beschriftung:** Die Excalidraw zeigt BOO-28 noch als "geplant". Seit v3.17.0 (2026-05-12) ist BOO-28 done — `migrate_boo_28()` legt `.github/workflows/eslint.yml` (Node-Stacks) bzw. `.github/workflows/ruff.yml` (Python-Stacks) mit Pflicht-SARIF-Output nach `.ci-reports/` an (Vorbereitung BOO-32 Hermes-Konsumtion). Das Neu-Rendern der PNG ist nicht Scope dieser Aufgabe.
 

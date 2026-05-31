@@ -1119,9 +1119,9 @@ The toolchain runs differently in four environments. **Key point:** no quality p
 
 Rule of thumb: when you work on the VPS via SSH, do not expect inline hints in the editor — you run the CLIs explicitly (`npx eslint .`, `semgrep --config auto .`, `npm test`). The gates fire in CI anyway when something slips through.
 
-![Three-layer quality gate — IDE / CLI / CI along the coding timeline](docs/quality-gate-three-layers.en.png)
+![Four-layer quality gate — Edit-Bodyguard / IDE / CLI / CI along the coding timeline](docs/quality-gate-four-layers.en.png)
 
-*Defense in depth across three layers: IDE plugins for real-time feedback while typing, CLI tools as a hard pre-commit block, GitHub Actions as the merge gate after push. The earlier a defect is caught, the cheaper the fix. ([Excalidraw source](docs/quality-gate-three-layers.en.excalidraw))*
+*Defense in depth across four layers: Layer 0 Edit-Bodyguard as a PreToolUse reflex that catches unsafe patterns before the AI writes them (BOO-86); IDE plugins for real-time feedback while typing; CLI tools as a hard pre-commit block; GitHub Actions as the merge gate after push. The earlier a defect is caught, the cheaper the fix. ([Excalidraw source](docs/quality-gate-four-layers.en.excalidraw))*
 
 > **Note on the sketch caption:** The Excalidraw still shows BOO-28 as "planned". As of v3.17.0 (2026-05-12) BOO-28 is done — `migrate_boo_28()` drops `.github/workflows/eslint.yml` (Node stacks) or `.github/workflows/ruff.yml` (Python stacks) with mandatory SARIF output to `.ci-reports/` (prepares BOO-32 Hermes consumption). The PNG re-render is out of scope for this task.
 
