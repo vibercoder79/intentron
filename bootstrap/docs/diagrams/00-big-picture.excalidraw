@@ -763,11 +763,11 @@
         ],
         [
           0,
-          50
+          98
         ],
         [
           -1280,
-          50
+          98
         ],
         [
           -1280,
@@ -784,7 +784,7 @@
       "id": "flabel",
       "type": "text",
       "x": 550,
-      "y": 360,
+      "y": 408,
       "width": 380,
       "height": 25,
       "angle": 0,
@@ -936,6 +936,68 @@
       "verticalAlign": "middle",
       "containerId": null,
       "originalText": "🔒 doc-version-sync.sh — kein Push ohne Versions-Sync",
+      "lineHeight": 1.25
+    },
+    {
+      "id": "hook0",
+      "type": "rectangle",
+      "x": 245,
+      "y": 345,
+      "width": 540,
+      "height": 35,
+      "angle": 0,
+      "strokeColor": "#7c3aed",
+      "backgroundColor": "#ede9fe",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 2,
+      "opacity": 100,
+      "groupIds": [],
+      "roundness": {
+        "type": 3
+      },
+      "seed": 905,
+      "version": 1,
+      "versionNonce": 905,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1704000000000,
+      "link": null,
+      "locked": false
+    },
+    {
+      "id": "hook0t",
+      "type": "text",
+      "x": 253,
+      "y": 353,
+      "width": 524,
+      "height": 19,
+      "angle": 0,
+      "strokeColor": "#7c3aed",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "roundness": null,
+      "seed": 906,
+      "version": 1,
+      "versionNonce": 906,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1704000000000,
+      "link": null,
+      "locked": false,
+      "text": "🔒 pre-edit-bodyguard.sh — Layer 0: Stopp vor unsicherem Schreiben",
+      "fontSize": 12,
+      "fontFamily": 3,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": null,
+      "originalText": "🔒 pre-edit-bodyguard.sh — Layer 0: Stopp vor unsicherem Schreiben",
       "lineHeight": 1.25
     }
   ],
