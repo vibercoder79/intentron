@@ -39,6 +39,13 @@ increment_counter(page="/products", date=today)
 # Kein Personenbezug, kein Datenschutzproblem
 ```
 
+> **Automatische Enforcement-Schicht (optional, BOO-93):** Die obige Regel „kein Roh-/Klartext-PII
+> in Logs" lässt sich automatisch durchsetzen mit dem optionalen `raw-pii-guard.py` — einem
+> statischen AST-Check, der verbotene Felder (`original_value`, `plaintext`, `raw_value` …) in
+> Log-/Audit-Senken meldet (Default = Warnung, `--strict` blockt). Einrichtung:
+> `bootstrap/references/hooks-setup.md` §„Optional: raw-pii-guard.py". Dieser Skill (`dpo`) liefert
+> die Review-Guidance, der Guard die automatische Prüfung.
+
 ## Consent-Management
 
 ### Cookie-Consent (TTDSG § 25)

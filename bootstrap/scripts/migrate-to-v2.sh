@@ -3826,6 +3826,69 @@ migrate_boo_91() {
     return 0
 }
 
+migrate_boo_92() {
+    # BOO-92 — orphan-check: Work-Item-Docs (specs/, backlog-records) vom Hub-Zwang ausnehmen
+    # https://linear.app/owlist/issue/BOO-92
+    log_info "BOO-92: orphan-check Work-Item-Ausnahme (specs/, backlog-records)"
+    local hook=".claude/hooks/orphan-check.sh"
+    if [[ ! -f "$hook" ]]; then
+        log_skip "$hook nicht installiert (optionaler Hub-Hook) — nichts zu patchen"
+    elif grep -q 'ORPHAN_EXCLUDE' "$hook"; then
+        log_skip "$hook bereits gepatcht (ORPHAN_EXCLUDE vorhanden)"
+    elif [[ "$DRY_RUN" == "true" ]]; then
+        log_dry "patch $hook: ORPHAN_EXCLUDE-Ausnahme in NEW_MDS einsetzen"
+    else
+        cp "$hook" "$hook.bak"
+        local result
+        result=$(python3 - "$hook" <<'PYEOF'
+import sys
+p = sys.argv[1]
+s = open(p).read()
+old = "NEW_MDS=$(git diff --cached --name-only --diff-filter=A | grep -E '\\.md$' || true)"
+repl = ("# Work-Item-Docs haben eigene Indizes — kein Hub-Eintrag noetig (BOO-92).\n"
+        "ORPHAN_EXCLUDE=\"${ORPHAN_EXCLUDE:-^(docs/project/backlog/record-.*\\.md|specs/[A-Z]+-[0-9]+\\.md)$}\"\n"
+        "NEW_MDS=$(git diff --cached --name-only --diff-filter=A \\\n"
+        "  | grep -E '\\.md$' \\\n"
+        "  | grep -vE \"$ORPHAN_EXCLUDE\" || true)")
+if old in s:
+    open(p, "w").write(s.replace(old, repl, 1))
+    print("patched")
+else:
+    print("pattern-not-found")
+PYEOF
+)
+        if [[ "$result" == "patched" ]]; then
+            log_info "patched $hook (Backup: $hook.bak)"
+        else
+            log_warn "$hook: NEW_MDS-Zeile nicht gefunden — manuell pruefen (Backup: $hook.bak)"
+        fi
+    fi
+    return 0
+}
+
+migrate_boo_93() {
+    # BOO-93 — optionaler Raw-PII-in-Logs-Guard (AST), opt-in, Default = Warnung
+    # https://linear.app/owlist/issue/BOO-93
+    log_info "BOO-93: raw-pii-guard (PII-in-Logs, optional) scaffolden"
+    local script_dir; script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    local src="$script_dir/../references/hooks/raw-pii-guard.py"
+    local dest=".claude/hooks/raw-pii-guard.py"
+    if [[ ! -f "$src" ]]; then
+        log_skip "Kanonische Quelle fehlt ($src) — raw-pii-guard uebersprungen"
+    elif [[ -f "$dest" ]] && cmp -s "$src" "$dest"; then
+        log_skip "$dest bereits aktuell (byte-identisch zur Quelle)"
+    elif [[ "$DRY_RUN" == "true" ]]; then
+        log_dry "copy $src -> $dest (optionaler PII-in-Logs-Guard)"
+    else
+        mkdir -p "$(dirname "$dest")"
+        cp "$src" "$dest"
+        chmod +x "$dest"
+        log_info "scaffolded $dest (optional, default = Warnung)"
+    fi
+    log_manual "Opt-in: raw-pii-guard in Pre-Commit/CI verdrahten (siehe hooks-setup.md). Default = Warnung; --strict fuer Hard-Block."
+    return 0
+}
+
 # -----------------------------------------------------------------------------
 # CLI / Argument Parsing
 # -----------------------------------------------------------------------------
@@ -3849,6 +3912,8 @@ ALL_ISSUES=(
     BOO-86
     BOO-87
     BOO-91
+    BOO-92
+    BOO-93
 )
 
 print_help() {
