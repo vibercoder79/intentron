@@ -105,6 +105,43 @@ Full setup guide: **[HANDBUCH.md](HANDBUCH.md)** (German, ~230 KB) + **[HANDBUCH
 
 ---
 
+## Quickstart
+
+Three ways to get INTENTRON into your AI coding tool. The framework repo is **public** and `bootstrap/` sits at the repo root — so the bootstrap skill is a single `git clone` away. The `/bootstrap` skill then sets up your project and pulls every other skill it needs.
+
+### A) Manual install, then `/bootstrap`
+
+```bash
+mkdir -p ~/.claude/skills
+cd /tmp
+git clone --filter=blob:none --sparse https://github.com/vibercoder79/intentron.git intentron
+cd intentron && git sparse-checkout set bootstrap
+cp -r bootstrap ~/.claude/skills/
+cd /tmp && rm -rf intentron
+ls ~/.claude/skills/bootstrap/   # should show SKILL.md + references/
+```
+
+Then open Claude Code in your project folder and run `/bootstrap`. (Restart the session once so the freshly copied skill is registered as a slash command.) Full step-by-step: **[HANDBUCH §4](HANDBUCH.md)**.
+
+### B) AI self-install (let the tool do it)
+
+Claude Code has shell access, so it can install itself. Paste this into a session opened in an empty project folder:
+
+> Clone the public repo https://github.com/vibercoder79/intentron, copy its `bootstrap/` folder into `~/.claude/skills/bootstrap/` (create the directory if needed), confirm `~/.claude/skills/bootstrap/SKILL.md` exists, then read that SKILL.md and follow it to bootstrap this project.
+
+(Having the AI read `SKILL.md` directly means you don't have to restart the session to register the `/bootstrap` command first.)
+
+### C) AI self-update for an old / brownfield install
+
+On a server or repo that still runs an ancient version of the framework, paste this:
+
+> This project may contain an old INTENTRON/bootstrap install. (1) Analyze the current state: `.claude/` (skills, hooks, `environment.json`), the installed bootstrap version, the skills present and the Git hooks. (2) Fetch the current framework from https://github.com/vibercoder79/intentron and report the gap (missing or outdated skills, hooks, migrations). (3) Update: refresh `~/.claude/skills/bootstrap` from the repo, run `bash <repo>/bootstrap/scripts/migrate-to-v2.sh` for the applicable BOO migrations (idempotent), and verify with `bash <repo>/bootstrap/references/verify-setup.sh`. Report what changed.
+
+> [!note]
+> Same outcome, different entry point: **A** is the explicit/auditable path, **B** is the fastest cold start, **C** lifts an existing install to the current version. The migrations and `verify-setup.sh` are idempotent — safe to re-run.
+
+---
+
 ## Why the method comes from "Code Crash" (and how to read this)
 
 The thinking behind INTENTRON comes from **Matthias Schrader's book "Code Crash"**. Schrader's thesis, in one line: AI now writes the code, so the scarce resource is no longer typing speed — it is **intent, governance and the ability to still understand a system months later**. INTENTRON is our attempt to turn that thesis into a working *operating system* for AI-assisted development: skills, gates and artifacts that keep the "why" alive while the AI handles the "how".
@@ -334,6 +371,43 @@ Komplettes Setup-Handbuch: **[HANDBUCH.md](HANDBUCH.md)** (Deutsch, ~230 KB) + *
 **Tool-neutrale Spezifikation:** [CONVENTIONS.md](CONVENTIONS.md) — beschreibt die Framework-Konventionen ohne Bindung an ein bestimmtes KI-Tool. Lies das zuerst, wenn du das Framework mit Codex, Cursor oder einem anderen Tool aufnimmst (siehe HANDBUCH Anhang K).
 
 **Uebergabe standardmaessig mitgedacht:** Jeder Bootstrap waehlt jetzt eine Projekt-Dokumentations-SSoT: Obsidian Vault, Repo `docs/project/`, externes DMS oder expliziter Repo-Fallback. Zusaetzlich wird ein `Developer Onboarding` erzeugt oder verlinkt, damit ein fremdes Team oder ein anderes Coding-Tool das Projekt ohne alte Chat-Historie uebernehmen kann.
+
+---
+
+## Schnellstart
+
+Drei Wege, INTENTRON in dein KI-Coding-Tool zu bekommen. Das Framework-Repo ist **public** und `bootstrap/` liegt im Repo-Root — der Bootstrap-Skill ist also ein einziges `git clone` entfernt. Der `/bootstrap`-Skill richtet danach dein Projekt ein und holt alle weiteren Skills, die er braucht.
+
+### A) Manuell installieren, dann `/bootstrap`
+
+```bash
+mkdir -p ~/.claude/skills
+cd /tmp
+git clone --filter=blob:none --sparse https://github.com/vibercoder79/intentron.git intentron
+cd intentron && git sparse-checkout set bootstrap
+cp -r bootstrap ~/.claude/skills/
+cd /tmp && rm -rf intentron
+ls ~/.claude/skills/bootstrap/   # sollte SKILL.md + references/ zeigen
+```
+
+Dann Claude Code im Projektordner starten und `/bootstrap` ausführen. (Session einmal neu starten, damit der frisch kopierte Skill als Slash-Command erkannt wird.) Schritt für Schritt: **[HANDBUCH §4](HANDBUCH.md)**.
+
+### B) AI-Self-Install (die KI macht es selbst)
+
+Claude Code hat Shell-Zugriff und kann sich selbst installieren. Diesen Prompt in eine Session in einem leeren Projektordner einfügen:
+
+> Klone das public Repo https://github.com/vibercoder79/intentron, kopiere dessen `bootstrap/`-Ordner nach `~/.claude/skills/bootstrap/` (Verzeichnis ggf. anlegen), prüfe dass `~/.claude/skills/bootstrap/SKILL.md` existiert, lies dann diese SKILL.md und folge ihr, um dieses Projekt zu bootstrappen.
+
+(Wenn die KI `SKILL.md` direkt liest, musst du die Session nicht erst neu starten, damit der `/bootstrap`-Command registriert wird.)
+
+### C) AI-Self-Update für eine alte / Brownfield-Installation
+
+Auf einem Server oder Repo, das noch eine uralte Framework-Version fährt, diesen Prompt einfügen:
+
+> Dieses Projekt enthält evtl. eine alte INTENTRON/bootstrap-Installation. (1) Analysiere den Ist-Zustand: `.claude/` (Skills, Hooks, `environment.json`), die installierte Bootstrap-Version, vorhandene Skills und Git-Hooks. (2) Hole das aktuelle Framework von https://github.com/vibercoder79/intentron und melde den Gap (fehlende oder veraltete Skills, Hooks, Migrationen). (3) Update: aktualisiere `~/.claude/skills/bootstrap` aus dem Repo, führe `bash <repo>/bootstrap/scripts/migrate-to-v2.sh` für die zutreffenden BOO-Migrationen aus (idempotent) und verifiziere mit `bash <repo>/bootstrap/references/verify-setup.sh`. Melde, was sich geändert hat.
+
+> [!note]
+> Gleiches Ergebnis, anderer Einstieg: **A** ist der explizite/auditierbare Weg, **B** der schnellste Kaltstart, **C** hebt eine bestehende Installation auf den aktuellen Stand. Migrationen und `verify-setup.sh` sind idempotent — gefahrlos wiederholbar.
 
 ---
 

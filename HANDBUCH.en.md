@@ -216,13 +216,14 @@ This is the **only manual step** — after this, Claude does everything automati
 
 ```bash
 # Pull bootstrap skill from the GitHub repository (macOS/Linux — user home)
+# The framework repo is public; the bootstrap folder sits at the repo root.
 mkdir -p ~/.claude/skills
 cd /tmp
-git clone --filter=blob:none --sparse git@github.com:vibercoder79/claudecodeskills.git ki-skills
-cd ki-skills
-git sparse-checkout set intentron/bootstrap
-cp -r intentron/bootstrap ~/.claude/skills/
-cd /tmp && rm -rf ki-skills
+git clone --filter=blob:none --sparse https://github.com/vibercoder79/intentron.git intentron
+cd intentron
+git sparse-checkout set bootstrap
+cp -r bootstrap ~/.claude/skills/
+cd /tmp && rm -rf intentron
 
 # Verify the skill is there
 ls ~/.claude/skills/bootstrap/
@@ -1924,11 +1925,11 @@ Migration guide: https://platform.claude.com/docs/en/agent-sdk/migration-guide
 ```bash
 # Update only bootstrap (same as first time)
 cd /tmp
-git clone --filter=blob:none --sparse git@github.com:vibercoder79/claudecodeskills.git ki-skills
-cd ki-skills
-git sparse-checkout set intentron/bootstrap
-cp -r intentron/bootstrap /root/.claude/skills/
-cd /tmp && rm -rf ki-skills
+git clone --filter=blob:none --sparse https://github.com/vibercoder79/intentron.git intentron
+cd intentron
+git sparse-checkout set bootstrap
+cp -r bootstrap ~/.claude/skills/
+cd /tmp && rm -rf intentron
 
 # In Claude Code: bootstrap can update existing skills
 /bootstrap --update
