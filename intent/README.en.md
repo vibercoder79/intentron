@@ -2,7 +2,7 @@
 
 > 5-step workflow that turns an initiative from "we want to build something" into a measurable, technology-agnostic intent statement — with a two-stage self-check against 8 anti-patterns. End of "solution fetish without problem owner".
 
-**Version:** 1.1.0 · **Command:** `/intent`
+**Version:** 1.3.0 · **Command:** `/intent`
 
 ---
 
@@ -177,10 +177,14 @@ intentron/intent/
 ├── README.md                         ← German README
 ├── README.en.md                      ← This file (EN)
 └── references/
-    ├── intent-anti-patterns.md       ← 3 sections: template, 8 anti-patterns, gold standard (DE)
-    ├── intent-anti-patterns.en.md    ← English mirror
-    ├── intent-template.md            ← Copy template for intents/INTENT-XX.md (DE)
-    ├── intent-template.en.md         ← English copy template
-    ├── intent-examples.md            ← Schrader examples plus project example (DE)
-    └── intent-validation-template.md ← Template for intents/INTENT-XX.validation.md (DE+EN)
+    ├── intent-anti-patterns.md          ← 3 sections: template, 8 anti-patterns, gold standard (DE)
+    ├── intent-anti-patterns.en.md       ← English mirror
+    ├── intent-template.md               ← Copy template for intents/INTENT-XX.md (DE)
+    ├── intent-template.en.md            ← English copy template
+    ├── intent-draft-template.md         ← Copy template for intents/INTENT-DRAFT-XX.md (perceive output, DE)
+    ├── intent-draft-template.en.md      ← English copy template
+    ├── intent-examples.md               ← Schrader examples plus project example (DE)
+    ├── intent-examples.en.md            ← English mirror
+    ├── intent-validation-template.md    ← Template for intents/INTENT-XX.validation.md (DE)
+    └── intent-validation-template.en.md ← English mirror
 ```

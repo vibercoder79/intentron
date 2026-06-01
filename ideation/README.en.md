@@ -2,9 +2,9 @@
 
 # Ideation — From Raw Idea to Well-Written Linear Story
 
-> 6-step workflow that turns a raw idea into a production-ready Linear issue — with research, architecture design document (ADD), dependency mapping, and a sprint-fit check. No more "what did we actually agree on?" three weeks later.
+> Workflow that turns a raw idea into a production-ready Linear issue — with research, architecture design document (ADD), dependency mapping, sprint-fit check, intent gate, privacy pre-flight, and token heuristic. No more "what did we actually agree on?" three weeks later.
 
-**Version:** 1.3.0 · **Command:** `/ideation`
+**Version:** 2.7.0 · **Command:** `/ideation`
 
 ---
 
@@ -12,22 +12,58 @@
 
 Most teams write issues like chat messages: a headline, a paragraph, maybe acceptance criteria if you're lucky. Three weeks later, nobody remembers what "it" actually meant.
 
-This skill runs a rigorous 6-step process: it researches (when needed), reads the full architecture (all ADRs, not just the first few), checks the DB schema chain, creates an Architecture Design Document (ADD) for real features, flags when a decision needs a machine-enforced guard, drafts the story with sprint-fit scoring, and only then — after operator approval — creates the Linear issue.
+This skill runs a rigorous 9-step process: it loads the environment, runs soft pre-flights (architecture-doc freshness, learnings loop, intent gate, privacy), researches (when needed), reads the full architecture (all ADRs, not just the first few), checks the DB schema chain and domain context, creates an Architecture Design Document (ADD) for real features, flags when a decision needs a machine-enforced guard, drafts the story with sprint-fit scoring and a token heuristic (SP + execution mode), and only then — after operator approval — creates the Linear issue.
 
 The output is a story that a teammate can pick up in six months and still understand the full context.
 
 ---
 
-## The 6 Steps
+## The 9 Steps
 
 | # | Step | What it enforces |
 |---|------|------------------|
+| 0 | **Load environment** | Read `.claude/environment.json` + `CONVENTIONS.md` (`governance_mode`, `execution_isolation`, paths, tool availability). Missing file: defaults + warning. |
+| 0a | **Architecture-doc freshness (soft)** | Warns if `ARCHITECTURE_DESIGN.md` is older than the threshold (`architecture_doc_freshness_days`, default 30). No hard gate — operator can proceed (override documented in the story). |
+| 0.5 | **Learnings context** | Only if `.learning-loop` is active (L1/L2/L3): mirror recent lessons-learned or sprint retros against the idea, warn on anti-pattern match. |
+| 0.6 | **Intent gate** | Only if `intents/` exists: match the story idea against the active intent, assign a label (`on-intent` / `neutral` / `off-intent`). `off-intent` → story not created (override via "override intent" possible). |
+| 0e | **Privacy pre-flight (BOO-69)** | Only if `PRIVACY.md` is active: `personal_data: true/false` in frontmatter; on `true` a DPO ASSESS hint + `privacy` label. |
 | 1 | **Research (when needed)** | External facts get verified via `/research` before they become ACs. No "I think the API supports this." |
-| 2 | **Context load (parallel)** | Backlog, `ARCHITECTURE_DESIGN.md` (full), `SYSTEM_ARCHITECTURE.md`, schema check, similar-issue check |
+| 2 | **Context load (parallel)** | Backlog, `ARCHITECTURE_DESIGN.md` (full, §1–§8 + all ADRs), `SYSTEM_ARCHITECTURE.md`, DB schema-chain check, domain context (`docs/domain/`), similar-issue check |
 | 3 | **Architecture Design Document** | Features get an ADD: components, data flow, infra impact, 8-dimension eval, ADRs, risks |
-| 4 | **Story draft** | Combines ADD + story template (feature or fix/refactor) |
+| 4 | **Story draft** | Combines ADD + story template (feature or fix/refactor); actively choose `Change-Type`, even for non-code stories |
 | 5 | **Alignment + sprint-fit** | Dependencies (bidirectional), priority in context, SP estimate, WIP check, carry-over risk |
+| 5b | **Token heuristic + SP + execution mode (BOO-39)** | Estimate token consumption, derive SP class + mode (`linear` / `sub-agents` / `agentic`), check execution isolation against `CONVENTIONS.md`, fill frontmatter. SP=8 → split the story. |
 | 6 | **Finalize (after OK)** | Linear issue created + affected issues updated |
+
+---
+
+## Intent Gate (Step 0.6)
+
+When the project has `intents/` artifacts from `/intent`, ideation matches every idea against the active intent and assigns a label, recorded in the story body under `## Intent-Check`:
+
+| Label | Criterion | Consequence |
+|-------|-----------|-------------|
+| **on-intent** | Story contributes directly to an intent metric | Story is created |
+| **neutral** | Story is indirectly needed (infrastructure, tech debt, enabler) | Story is created WITH mandatory justification in the body |
+| **off-intent** | Story does not contribute or contradicts the intent | Story is NOT created — reasoning + adjustment suggestion; operator can force "override intent" |
+
+Binary on/off would be too harsh — infrastructure (auth refactor, DB migration) is never directly on-intent but must remain possible (→ `neutral` with justification).
+
+---
+
+## Token Heuristic + Execution Mode (Step 5b, BOO-39)
+
+Before the Linear push, the skill estimates token consumption and derives story points and the execution mode from it. Signals: number of affected files, diff size, test/doc effort, cross-skill touches, reference-reading effort. Optionally calibrated via `journal/learnings.db` (L3, if at least 5 similar stories exist).
+
+| Token estimate | Share of 80% budget | SP class | Execution mode |
+|---|---|---|---|
+| < 8k | ~5% | 1 | linear |
+| 8–24k | ~10–15% | 2 | linear / sub-agents |
+| 24–48k | ~20–30% | 3 | sub-agents |
+| 48–96k | ~40–60% | 5 | agentic |
+| > 96k | over 60% | 8 | **split the story** |
+
+The operator confirms or corrects the estimate (hybrid question). Execution isolation is checked against `CONVENTIONS.md` (`linear` → `worktree_strategy: none`, `sub-agents` → `write-scope`/`git-worktree`, `agentic` → `git-worktree` + worktree plan). Frontmatter with `estimate`, `token_estimate`, `execution_mode`, `worktree_strategy`, `write_scopes`, and `estimation_basis` is written into the story spec; the Linear issue gets `estimate` plus a hint block.
 
 ---
 
@@ -91,6 +127,7 @@ High carry-over risk → splitting suggestion attached.
 - **`specs/ISSUE-XX.md` placeholder** — sketched for implement to complete
 - **Dependency updates** — bidirectional in affected issues
 - **Guard Story** — whenever a new ADR needs machine enforcement
+- **Story frontmatter** — `estimate`, `token_estimate`, `execution_mode`, `worktree_strategy`, `write_scopes`, `estimation_basis` (step 5b) plus `personal_data` (privacy pre-flight)
 
 ---
 
@@ -106,16 +143,20 @@ cp -r ideation ~/.claude/skills/ideation
 
 ```
 ideation/
-├── SKILL.md                                      ← Skill definition
+├── SKILL.md                                      ← Skill definition (DE)
+├── SKILL.en.md                                   ← Skill definition (EN)
+├── README.md                                     ← German README
+├── README.en.md                                  ← This file (EN)
 └── references/
-    ├── architecture-design-document.md           ← ADD template
-    ├── architecture-dimensions.md                ← 8 dimensions deep dive
-    ├── story-template-feature.md                 ← Feature/agent template
-    ├── story-template-fix.md                     ← Fix/refactor template
-    └── perplexity-api.md                         ← Deep-research integration
+    ├── architecture-design-document.md           ← ADD template (DE)
+    ├── architecture-design-document.en.md        ← English mirror
+    ├── architecture-dimensions.md                ← 8 dimensions deep dive (DE)
+    ├── architecture-dimensions.en.md             ← English mirror
+    ├── story-template-feature.md                 ← Feature/agent template (DE)
+    ├── story-template-feature.en.md              ← English mirror
+    ├── story-template-fix.md                     ← Fix/refactor template (DE)
+    ├── story-template-fix.en.md                  ← English mirror
+    ├── token-heuristik.md                        ← Token-window heuristic (step 5b, DE)
+    └── token-heuristik.en.md                     ← English mirror
 ```
-
----
-
----
 

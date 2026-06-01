@@ -4,7 +4,7 @@
 
 > Laedt das gesamte Backlog, mappt Abhaengigkeiten, respektiert DB-Schema-Ketten und schlaegt konkrete Reihenfolge vor. Schluss mit "welche Story als naechstes?" per Bauchgefuehl.
 
-**Version:** 1.2.0 · **Befehl:** `/backlog`
+**Version:** 1.5.0 · **Befehl:** `/backlog`
 
 ---
 
@@ -24,6 +24,9 @@ Der Skill laedt das ganze Bild — Systemkontext aus `CLAUDE.md` + `ARCHITECTURE
 ## Wie er funktioniert
 
 ```
+Environment laden  (.claude/environment.json — Pfade + tools_available, Fallback auf Defaults)
+        │
+        ▼
 Systemkontext laden  (CLAUDE.md + ARCHITECTURE_DESIGN.md + SYSTEM_ARCHITECTURE.md)
         │
         ▼
@@ -36,11 +39,13 @@ Offenes Backlog laden (alle Stati)
 Abhaengigkeits-Graph · Schema-Chain-Check · Cycle Detection
         │
         ▼
-Sortieren:  In Progress > Blocker > Prio > Dep-Tiefe > Alter
+Sortieren:  In Progress > Blocker > Intent-Label > Prio > Dep-Tiefe > Alter
         │
         ▼
 Output:  Geordnete Liste · Konflikte · Backlog-Hygiene-Vorschlaege
 ```
+
+Die `.claude/environment.json` liefert Pfade (`paths.specs`, `paths.architecture_design`, `paths.reports_local`, ...) und ein `tools_available`-Gating: ist ein Tool nicht aktiv, ueberspringt der Skill den Aufruf mit Hinweis im Output. Fehlt die Datei, faellt der Skill auf Standard-Pfade zurueck und vermerkt das.
 
 ---
 
@@ -58,6 +63,18 @@ Beispiel-Output:
 Schema-Chain: STORY-A (v17 → v18) muss vor STORY-B (v18 → v19) kommen.
 Konflikt:     STORY-C und STORY-D zielen beide auf v18 — eine muss neu.
 ```
+
+---
+
+## Intent-Label-Priorisierung
+
+Beim Sortieren respektiert der Skill das Intent-Label aus der `## Intent-Check`-Sektion im Story-Body (gesetzt von `/ideation`):
+
+- `on-intent` kommt **vor** `neutral` bei gleichem Status und gleicher Priority
+- `off-intent`-Stories landen am Ende — mit Warnung: "Story X ist off-intent — gehoert ins Backlog, nicht in den Sprint"
+- Fehlt das Label, wird die Story als `neutral` behandelt
+
+Bei der Ausgabe wird der Grund erklaert: "Story X priorisiert vor Y weil on-intent bei gleichen Points."
 
 ---
 

@@ -2,7 +2,7 @@
 
 > 5-Schritte-Workflow der eine Initiative von "wir wollen was bauen" zu einem messbaren, technologie-agnostischen Intent-Statement bringt — mit zweistufigem Self-Check gegen 8 Anti-Pattern. Schluss mit Loesungs-Fetisch ohne Probleminhaber.
 
-**Version:** 1.1.0 · **Befehl:** `/intent`
+**Version:** 1.3.0 · **Befehl:** `/intent`
 
 ---
 
@@ -177,10 +177,14 @@ intentron/intent/
 ├── README.md                         ← Diese Datei (DE)
 ├── README.en.md                      ← Englisches README
 └── references/
-    ├── intent-anti-patterns.md       ← 3 Sektionen: Template, 8 Anti-Pattern, Goldstandard (DE)
-    ├── intent-anti-patterns.en.md    ← Englische Spiegelung
-    ├── intent-template.md            ← Kopiervorlage fuer intents/INTENT-XX.md (DE)
-    ├── intent-template.en.md         ← Englische Kopiervorlage
-    ├── intent-examples.md            ← Schrader-Beispiele plus Projekt-Beispiel (DE)
-    └── intent-validation-template.md ← Template fuer intents/INTENT-XX.validation.md (DE+EN)
+    ├── intent-anti-patterns.md          ← 3 Sektionen: Template, 8 Anti-Pattern, Goldstandard (DE)
+    ├── intent-anti-patterns.en.md       ← Englische Spiegelung
+    ├── intent-template.md               ← Kopiervorlage fuer intents/INTENT-XX.md (DE)
+    ├── intent-template.en.md            ← Englische Kopiervorlage
+    ├── intent-draft-template.md         ← Kopiervorlage fuer intents/INTENT-DRAFT-XX.md (Perceive-Output, DE)
+    ├── intent-draft-template.en.md      ← Englische Kopiervorlage
+    ├── intent-examples.md               ← Schrader-Beispiele plus Projekt-Beispiel (DE)
+    ├── intent-examples.en.md            ← Englische Spiegelung
+    ├── intent-validation-template.md    ← Template fuer intents/INTENT-XX.validation.md (DE)
+    └── intent-validation-template.en.md ← Englische Spiegelung
 ```
