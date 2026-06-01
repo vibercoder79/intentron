@@ -1188,6 +1188,8 @@ Die Toolchain läuft in vier Umgebungen unterschiedlich. **Kernpunkt:** Keine Qu
 
 Praxisregel: Wenn du auf dem VPS via SSH arbeitest, erwartest du keine Inline-Hints im Editor — du läufst die CLIs explizit (`npx eslint .`, `semgrep --config auto .`, `npm test`). Die Gates schlagen in CI ohnehin zu, wenn du etwas durchrutschen lässt.
 
+> **Den ganzen VPS-Lebenszyklus** (einmal pro VPS → pro Projekt → Team) am Stück: → siehe Anhang Y (VPS/Cloud-Team-Runbook).
+
 ![Vier-Layer-Quality-Gate — Edit-Bodyguard / IDE / CLI / CI entlang der Coding-Zeitachse](docs/quality-gate-four-layers.png)
 
 *Defense in Depth über vier Ebenen: Layer 0 Edit-Bodyguard als PreToolUse-Reflex, der unsichere Muster abfängt, bevor die KI sie schreibt (BOO-86); IDE-Plugins für Echtzeit-Feedback beim Tippen; CLI-Tools als harte Pre-Commit-Sperre; GitHub Actions als Merge-Gate nach dem Push. Je früher ein Defekt erkannt wird, desto billiger der Fix. ([Excalidraw-Quelle](docs/quality-gate-four-layers.excalidraw))*
@@ -2088,7 +2090,7 @@ und Provider-Postflight.
 
 ## 13. Anhänge — Wegweiser
 
-Das Handbuch hat 24 Anhänge (A–X). Sie sind **Nachschlage- und Vertiefungs-Schicht** — du musst sie nicht von vorn bis hinten lesen. Diese Tabelle sagt dir, **wann welcher Anhang relevant ist**. Anhänge A–M sind die Grundlagen-/Tooling-Schicht, N–X die v0.2.0-Themen (Effizienz, Privacy, Deployment, Skalierung, Verifikation, Edit-Bodyguard, Contribute-Back, Ubiquitous Language).
+Das Handbuch hat 25 Anhänge (A–Y). Sie sind **Nachschlage- und Vertiefungs-Schicht** — du musst sie nicht von vorn bis hinten lesen. Diese Tabelle sagt dir, **wann welcher Anhang relevant ist**. Anhänge A–M sind die Grundlagen-/Tooling-Schicht, N–Y die v0.2.0-Themen (Effizienz, Privacy, Deployment, Skalierung, Verifikation, Edit-Bodyguard, Contribute-Back, Ubiquitous Language, VPS/Cloud-Team-Runbook).
 
 | Anhang | Thema | Wann relevant |
 |--------|-------|---------------|
@@ -2116,6 +2118,7 @@ Das Handbuch hat 24 Anhänge (A–X). Sie sind **Nachschlage- und Vertiefungs-Sc
 | **V** | Layer 0 — Edit-Bodyguard | Secrets/Unsafe-Patterns vor dem Schreiben abfangen |
 | **W** | Contribute-Back-Schleife | Feld-Fix an Governance-Artefakten zurück an die Quelle reichen |
 | **X** | CONTEXT.md — Ubiquitous Language | kanonisches + verbotenes Vokabular festlegen, Compliance-Vokabular an Rechtsgrundlage binden |
+| **Y** | VPS/Cloud-Team-Runbook | INTENTRON auf einer geteilten Developer-VPS, Multi-Projekt, Team |
 
 ---
 
@@ -3293,6 +3296,8 @@ Dieser Anhang beschreibt vier gelebte Setup-Patterns fuer das INTENTRON, vom Sol
 
 ![Deployment-Szenarien — die vier Setup-Topologien von Solo-Mac bis Coding-Factory](docs/assets/boo-70-deployment-scenarios.png)
 
+> Für eine durchgehende Setup-Anleitung der VPS-Szenarien (2/3/4) als Lebenszyklus: → siehe Anhang Y (VPS/Cloud-Team-Runbook).
+
 ### Decision-Matrix
 
 | Operator-Profil | Empfohlenes Szenario | Hauptgrund |
@@ -4046,6 +4051,7 @@ Was **muss** pro Projekt passieren, sonst greifen Gates + Skills nicht:
 - **Anhang S (Skill-Installations-Strategie):** das "Was einmal vs. pro Projekt" im Detail — Fundament fuer diesen Anhang.
 - **Anhang T (Post-Install-Verifikation):** der Proof pro Projekt (`verify-setup.sh`).
 - **Anhang P (Deployment-Szenarien):** auf welcher Topologie die Projekte liegen (Solo-Mac / VPS / Multi-User-VPS).
+- **Anhang Y (VPS/Cloud-Team-Runbook):** der vollständige VPS-Team-Lebenszyklus (einmal pro VPS → pro Projekt → Team), in den dieser Multi-Projekt-Schritt eingebettet ist.
 - **Bootstrap Block B + Phase 5:** Infra-Erkennung + Skill-Installation, die den Schnellpfad ermoeglichen.
 
 Quelle: Operator-Frage Tobias 2026-05-28 ("mehrere Projekte — pro Projekt bootstrappen oder Basis-schon-da-Pfad?").
@@ -4208,6 +4214,255 @@ Erst Nutzen der Guidance-Schicht beweisen, dann die Enforcement-Kopplung spezifi
 - **Muster (kein Code):** Matt Pococks `skills`-Repo als Inspiration — nachgebaut, **kein übernommener Code** (Eigenbau passt zur INTENTRON-Architektur).
 
 Quelle: BOO-91 (CONTEXT.md Ubiquitous Language), BOO-21 (Domain-Context, Brücke), BOO-86/BOO-87 (spätere Enforcement-Kopplung).
+
+---
+
+## Anhang Y: VPS/Cloud-Team-Runbook (BOO-94)
+
+Dieser Anhang bündelt §8d (Coding-Umgebungen) und die Anhänge P/Q/R/S/T/U/V zu einem durchgehenden VPS-Team-Lebenszyklus: **einmal pro VPS → pro Projekt → Multi-Projekt/Team**. Er ist die **kanonische** Version des früheren standalone Runbooks `docs/runbooks/vps-team-setup.md` — eine Schritt-für-Schritt-Anleitung, um INTENTRON auf einer geteilten Entwickler-VPS aufzusetzen, mehrere Operatoren und Projekte zu betreiben und ein neues Projekt in Minuten governance-ready zu machen.
+
+![VPS/Cloud-Team-Runbook — Lebenszyklus VPS → Projekt → Team](docs/assets/vps-team-runbook.png)
+
+*Der rote Faden: Vieles ist **einmal pro VPS** zu tun (Tools, Claude Code, Skill-Pool), der Rest ist **pro Projekt-Repo** — vor allem die Git-Hooks, weil `.git/` nicht geklont wird. Diese Trennung trägt das ganze Runbook. ([Excalidraw-Quelle](docs/assets/vps-team-runbook.excalidraw))*
+
+### Y.1 Deployment-Szenario & Voraussetzungen
+
+**Welches Szenario? (Anhang P)** — Dieser Anhang deckt die VPS-/Team-Szenarien 2/3/4 ab und nennt Solo-VPS-Abweichungen, wo relevant.
+
+| Szenario | Wer | Skill-Pool | Wann |
+|---|---|---|---|
+| **2 — Solo-VPS** | 1 Operator, 24/7-Background/Mobile | `~/.claude/skills/` | Einzelperson, mehrere Projekte |
+| **3 — Multi-User-Factory** | 5+ Operatoren, je eigener System-User | `/opt/claude/skills/` (read-only) | Größeres Dev-Team auf einer VPS |
+| **4 — Team-mit-Coding-Server** | 2–5 Operatoren, Mac-Frontend + VPS-Backend | System-Pool oder pro-Projekt | Team via VS Code Remote-SSH |
+
+**VPS-Sizing:** Daumenwert (Anhang P, Szenario 3) ≥ **8 GB RAM + 4 vCPU** für ~5 parallele Operatoren, linear hochskalieren. Distribution **Debian/Ubuntu** (apt-basiert; das Container-Profil basiert auf `debian`). EU-Standort wählen, falls Souveränität ein Thema ist (Anhang Q).
+
+**Software-Voraussetzungen:**
+
+| Pflicht (§3) | Faktisch zusätzlich gebraucht |
+|---|---|
+| Node.js **v18+** + npm | `gh` (GitHub CLI, für Branch-Protection/CI) |
+| Git | `jq` (environment.json/Healthchecks — optional, Skills lesen notfalls per grep/sed) |
+| Claude Code CLI | `bash 4+` (Linux-VPS erfüllen das; nur macOS-Standard 3.2 nicht — auf dem VPS kein Thema) |
+| | `python3` (Stdlib genügt — dpo-Audit, vault-sync, raw-pii-guard sind dependency-frei) |
+
+`gh`/`git`/`jq` stehen nicht in der §3-Pflichtliste, werden aber für Branch-Protection, Self-Hosted-Runner-Healthchecks und environment.json-Queries real gebraucht — dieser Anhang führt sie als Prereq.
+
+### Y.2 Einmal pro VPS (Maschinen-Setup)
+
+Diese Schritte macht der **VPS-Owner einmal**; sie gelten für alle Operatoren und alle Projekte.
+
+**VPS härten:**
+
+```bash
+# SSH-Key-Login einrichten, dann Passwort-Login deaktivieren
+sudo sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
+sudo systemctl reload ssh
+# Bei Multi-User: restriktive umask global
+echo 'umask 077' | sudo tee -a /etc/profile
+```
+
+**Toolchain installieren** — es gibt **kein** zentrales Install-Script; die Sequenz ist aus dem Container-Profil-Dockerfile (`bootstrap/references/devcontainer/Dockerfile`) für einen frischen Debian/Ubuntu-VPS abgeleitet (Alternative: Container-Weg, siehe Y.6):
+
+```bash
+# Basis
+sudo apt-get update && sudo apt-get install -y git jq curl ca-certificates python3 python3-pip python3-venv pipx tmux
+
+# Node.js LTS (z.B. via nodesource oder nvm) — Beispiel nvm:
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+. ~/.nvm/nvm.sh && nvm install --lts
+
+# System-Linter/SAST einmal global (isoliert via pipx / npm -g)
+pipx install semgrep
+pipx install ruff
+npm install -g eslint
+npm install -g @anthropic-ai/claude-code     # Claude Code CLI
+# Optional: gh (GitHub CLI), SonarScanner — projekt-/teamabhängig
+```
+
+Genutzte Tools: **Semgrep, Ruff, ESLint** (System-Ebene), **SonarScanner** (optional, server-side SonarQube Cloud), **pytest/Vitest + Coverage** und **autocannon/pytest-benchmark** (Perf) als Projekt-Dev-Deps. Hart verifiziert (`verify-setup.sh`) werden später nur `eslint` + `semgrep`.
+
+**Operatoren anlegen (nur Szenario 3, Multi-User):**
+
+```bash
+sudo useradd -m -s /bin/bash alice
+sudo mkdir -p /home/alice/.ssh && echo "<alice-pubkey>" | sudo tee /home/alice/.ssh/authorized_keys
+sudo chmod 700 /home/alice/.ssh && sudo chmod 600 /home/alice/.ssh/authorized_keys && sudo chown -R alice:alice /home/alice/.ssh
+```
+
+Secrets liegen **pro Operator** in `~/.claude/.env` (Mode 600), strikt getrennt. Niemals geteilte Keys.
+
+**Skill-Pool einrichten (Anhang S):**
+
+| Szenario | Skill-Pool | Begründung |
+|---|---|---|
+| Solo-VPS | `~/.claude/skills/` | ein User |
+| **Multi-User (5+)** | **`/opt/claude/skills/` (read-only, ein Wartungs-Owner)** | „20 User × N Projekte = Update-Hölle" — **nicht** pro Projekt installieren |
+
+```bash
+# Multi-User-Pool (als Wartungs-Owner)
+sudo mkdir -p /opt/claude/skills
+sudo git clone --depth 1 https://github.com/vibercoder79/intentron /opt/claude/skills/_intentron-bundle
+# Update später zentral: ein `git pull` im Pool → alle Operatoren aktuell.
+cp -r /opt/claude/skills/_intentron-bundle/bootstrap ~/.claude/skills/bootstrap   # der /bootstrap-Skill muss im Skill-Verzeichnis liegen
+```
+
+> **Bundle vs. Companion:** Im Repo `vibercoder79/intentron` liegen die Framework-Skills + die vendored Bundle-Skills `dpo` und `security-architect` (ein `git clone` ist self-contained). Companion-Skills (`research`, `skill-creator`, …) liegen separat in `claudecodeskills` und werden nur bei Bedarf ergänzt.
+
+**Globale Claude-Code-Config:**
+
+- `~/.claude/CLAUDE.md` — globale Registry/Projekt-Tabelle (Bootstrap Phase 7.3 trägt pro Projekt eine Zeile ein).
+- `~/.claude/settings.json` — Session-Logging u.a. (per Default aktiv).
+- `~/.claude/.env` — Secrets **pro Operator** (Mode 600).
+
+**(Optional) `core.hooksPath` global** — statt Git-Hooks pro Repo zu setzen, kann der Owner **einmal** einen geteilten Hooks-Ordner verdrahten:
+
+```bash
+git config --global core.hooksPath /opt/claude/githooks   # dann liegen die Hooks zentral
+```
+
+Das ist die **Ausnahme**, nicht die Default-Konvention (Default: Hooks pro Repo, siehe Y.3). Bei `core.hooksPath` muss der Owner den Ordner pflegen.
+
+### Y.3 Pro Projekt (jedes Repo)
+
+Diese Schritte macht **jeder Operator pro Projekt-Repo**. Kernpunkt: **`.git/` wird nicht geklont → Git-Hooks und `environment.json` müssen pro Repo neu gesetzt werden.**
+
+**Bootstrap starten (neues Projekt)** — Claude Code im Projektordner starten, `/bootstrap` eingeben. Der Orchestrator führt durch vier Blöcke:
+
+- **Block A — Projekt-Kern** (~10 Fragen): Stack, Backlog-Prefix + **Backlog-Adapter** (`linear`/`github`/`jira`/`planner`/`none`), Architektur-Dimensionen + Add-ons (Privacy/Cost/Signal/Compliance), **Governance-Intensität** (`lite`/`standard`/`heavy`), Execution-Isolation, **Deployment-Szenario**.
+- **Block B — Bestehende Infrastruktur**: Projekt-Verzeichnis, GitHub-Repo, **Doku-SSoT**, Backlog-Adapter, API-Keys, Developer-Übergabe (bei vorhandenen Dateien: Merge-Modus).
+- **Block C — Doku-Architektur**: 3-Schichten-Doku mit `ARCHITECTURE_DESIGN.md` als Hub.
+- **Block D — Optional-Komponenten**: Self-Healing-Agent, DocSync zum Vault, Learning-Loop u.a.
+
+Setup-Phasen: **0** (Briefing) → **4** (Grundstruktur + Gates) → **5** (Skills) → **7** (Finalisierung inkl. `verify-setup.sh`).
+
+**Git-Hooks installieren (PRO REPO — der wichtigste Schritt):** `.git/hooks/` wird **nicht** mit geklont; jedes frische `git clone` hat noch keine Hooks. Bootstrap legt sie pro Projekt an; bei bestehendem Klon neu setzen. Vier-Layer-Quality-Gate-Hooks:
+
+| Hook | Layer | Pflicht? | Funktion |
+|---|---|---|---|
+| `spec-gate.sh` | — | **Pflicht** (alle Modi) | Kein Commit `ISSUE-XX` ohne `specs/ISSUE-XX.md` (HARD GATE) |
+| `doc-version-sync.sh` | — | **Pflicht** | Kein Push bei VERSION-Drift zwischen DOC_FILES (HARD GATE) |
+| `pre-edit-bodyguard.sh` | **Layer 0** | Pflicht, Default = **Warnung** | Secrets/`eval`/TLS-aus/SQL-Konkatenation **vor** dem Schreiben; Hard-Block via `BODYGUARD_STRICT=1` |
+| `orphan-check.sh` | — | Optional (Hub-Auto-Verlinkung) | Neue `*.md` müssen im Hub §9 registriert sein (seit BOO-92: specs/ + backlog-records ausgenommen) |
+| `coverage-check.sh` | Layer 2 | Optional (`heavy`) | Coverage-Gate ≥80% neuer Code (von `/implement` aufgerufen, nicht im Pre-Commit) |
+| `raw-pii-guard.py` | — | Optional (Privacy-Add-on) | AST-Check: PII-Feld in Log-Senke |
+
+Hooks werden über `.claude/settings.json` (PreToolUse) registriert; sie sind dependency-frei (bash/grep/git/python3).
+
+**environment.json generieren:**
+
+```bash
+bash .claude/generate-environment-json.sh        # erkennt die einmal-installierten Tools für DIESES Projekt
+```
+
+Setzt `environment` auf `mac`/`vps`/`ci`. Auf der VPS = `vps`: keine IDE-Plugins, `sonarqube_ide_plugin=false`, Reports nach `journal/reports/local/`.
+
+**Doku-SSoT festlegen** (Block B.3 — siehe Entscheidung in Y.6).
+
+**Verifizieren:**
+
+```bash
+bash scripts/verify-setup.sh            # Report, Exit 1 bei FAIL
+bash scripts/verify-setup.sh --strict   # WARN = FAIL (für CI)
+```
+
+Prüft: environment.json, Toolchain (`command -v` pro Tool), **Git-Hooks (pro Repo!)**, Kern-Artefakte (`CONVENTIONS.md`, `ARCHITECTURE_DESIGN.md`, `specs/`, `journal/`), Privacy-Artefakte (falls aktiv), Backlog-Adapter. Ziel: **0 FAIL**.
+
+**Pro-Projekt-Minimal-Checkliste (Anhang U):**
+
+- [ ] `CLAUDE.md` (Projekt-Vertrag) vorhanden
+- [ ] **Git-Hooks installiert** (`.git/hooks/pre-commit` — pro Repo!) — alternativ `core.hooksPath` global
+- [ ] `.claude/environment.json` generiert
+- [ ] Doku-SSoT festgelegt
+- [ ] `bash scripts/verify-setup.sh` zeigt **0 FAIL**
+
+### Y.4 Projekt 2..N & bestehendes Projekt onboarden (Anhang U)
+
+Die Basis (Tools, Skill-Pool, Claude-Config) steht schon → nur der **Pro-Projekt-Teil** (Y.3) ist nötig.
+
+**Schnellpfad — neues Projekt Nr. 2..N:** `/bootstrap` erkennt vorhandene Infra (Block B) und **überspringt** die Skill-Installation. Dann: Projekt-Verzeichnis + GitHub-Repo, `CLAUDE.md` aus Template, **Git-Hooks installieren** (pro Repo!), `bash .claude/generate-environment-json.sh`, Doku-SSoT wählen, `bash scripts/verify-setup.sh` → Proof. In Minuten governance-ready, ohne Tools/Skills neu zu installieren.
+
+**Merge-Modus — bestehendes (Brownfield-)Projekt onboarden:** `/bootstrap` im **Merge-Modus** — Block B erkennt vorhandene Dateien → **„nur fehlende Governance-Dateien ergänzen"** (bestehenden Code nicht anfassen). Governance-Bausteine nachziehen:
+
+```bash
+bash bootstrap/scripts/migrate-to-v2.sh --list           # was ist verfügbar
+bash bootstrap/scripts/migrate-to-v2.sh --dry-run --all   # Vorschau
+bash bootstrap/scripts/migrate-to-v2.sh --all             # alle Auto-Schritte (idempotent)
+# oder gezielt, z.B. die neuen Bausteine:
+bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-86    # Layer-0-Bodyguard
+bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-87    # dpo-Kontrollkatalog
+bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-91    # CONTEXT.md
+bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-93    # raw-pii-guard (opt-in)
+```
+
+`migrate-to-v2.sh` ist **idempotent** — mehrfaches Ausführen ist sicher; `--dry-run` zeigt nur, was passieren würde. Abschluss: `bash scripts/verify-setup.sh` schließt die Lücken-Liste.
+
+### Y.5 Team (Anhang R)
+
+Der **Code-Layer skaliert nativ** — Git/Branches/PRs/Branch-Protection/Spec-Gate sind ohne Framework-Ergänzung team-tauglich; nur die **Konflikt-Frequenz** steigt. Was ein größeres Team zusätzlich braucht:
+
+- **CODEOWNERS** (`.github/CODEOWNERS`): **Pflicht ab 10 Operatoren, empfohlen ab 5.** Mappt Datei-Pattern → Sub-Team; GitHub erzwingt ≥1 Reviewer aus dem zuständigen Team. **CODEOWNERS ersetzt nicht das Spec-Gate — beide laufen parallel.** Beispiel:
+  ```
+  /SECURITY.md            @owlist/sec-leads
+  /PRIVACY.md             @owlist/legal-leads
+  /ARCHITECTURE_DESIGN.md @owlist/arch-leads
+  /CONVENTIONS.md         @owlist/arch-leads
+  ```
+- **Erweiterte Branch-Protection:** Required-Reviewer aus CODEOWNERS, Required-Status-Checks (Spec-Gate, Lint-Gate, Coverage-Gate, ggf. Security-Scan/DPO-Audit), „Dismiss stale reviews", „Require linear history". Setup: `bootstrap/scripts/setup-branch-protection.sh` (braucht `gh` + `repo`-Scope).
+- **Vier-Augen-Konvention:** `review-ok`/`privacy-ok` darf Solo selbst setzen; im Team ist Self-Approval ein Audit-Risiko. Das Framework **erzwingt das nicht** — Operator-Disziplin.
+- **Skill-Pool-Governance:** **ein** System-Pool `/opt/claude/skills/`, read-only, ein Wartungs-Owner, `git pull` = alle aktuell. Nicht pro Projekt installieren.
+- **Squad-Modell:** 3–5 Operatoren/Modul + Lead-Architekt + Sec-Lead + Legal-Lead.
+
+### Y.6 Entscheidungen (mit Empfehlung)
+
+**Docker/devcontainer vs. Direkt-Install:**
+
+| | Direkt-Install (Y.2) | Container-Profil (BOO-81) |
+|---|---|---|
+| Wann | Default; Solo-VPS; volle Kontrolle | Team mit **identischen Linter-Versionen**; Tool-Isolation; CI-Image-Wiederverwendung |
+| Aufwand | manuell, einmal pro VPS | `.devcontainer/` ins Projekt: Bootstrap-Option oder `migrate-to-v2.sh --issue BOO-81` |
+| Status | Default | **Optional, nicht Pflicht** |
+
+> **Empfehlung:** Für eine Team-VPS, bei der **alle dieselben Tool-Versionen** brauchen, lohnt das Container-Profil (Versions-Gleichschritt + als CI-Base wiederverwendbar). Für eine kleine VPS oder maximale Kontrolle reicht der Direkt-Install. Die `Dockerfile` unter `bootstrap/references/devcontainer/` ist die Referenz für beide Wege.
+
+**Doku & Backlog: Git-lokal vs. GitHub:**
+
+- **Lebende Doku gehört bei Teams ins GitHub-Repo (`docs/project/`)** — „Obsidian ist ein Solo-Werkzeug, kein Enterprise-Werkzeug" (Anhang R). Repo-Docs ist die einzige SSoT-Option, die über alle Teamgrößen (Solo→20+) trägt: gleiche Git-Mechanik wie Code (PR-Review, Branch-Protection, CODEOWNERS für Doku). Solo → Obsidian Vault ok · 2–5 → Obsidian Sync **oder** Repo-Docs · **5+ → Repo-Docs**. Optional: **Vault-Harvest-Pattern** (einseitiger `git post-merge`-Hook Repo → persönlicher Vault, nie zurück).
+- **Backlog-Adapter:** Das Framework spricht vom neutralen **Backlog-Record** (ID, Intent, AC, DoD, `execution_mode`, …), nicht zwingend Linear. Regel: *„kein Linear" ist kein Framework-Bruch; „kein Backlog-Record" ist einer.*
+
+> **Empfehlung Team-VPS:** Doku-SSoT = **`docs/project/` im GitHub-Repo**; Backlog = Linear oder GitHub Issues (geteilt). Git-lokal (ohne Remote) nur für reine Experimentier-Repos.
+
+**Souveränität (Anhang Q):** Bei FINMA/BaFin/NIS-2/nDSG-Mandat: EU-VPS-Standort wählen, ggf. self-hosted GitLab/Forgejo statt GitHub, EU-LLM-Endpoint (Mistral/Bedrock-Frankfurt/Ollama) über den optionalen `llm_proxy_url`-Hook in `.claude/environment.json`. Das Framework **liest** den Hook nur — Anonymisierung/Routing ist Operator-Infrastruktur.
+
+> **Empfehlung:** Sobald ein regulatorisches Mandat im Spiel ist, EU-Standort + EU-LLM-Endpoint von Anfang an einplanen — nachträgliches Umziehen ist teurer als die initiale Standort-Wahl.
+
+### Y.7 Vier-Layer-Quality-Gate auf der headless VPS
+
+Auf einer SSH-VPS fällt **nur Layer 1 (IDE-Inline-Hints) weg** — alle anderen greifen:
+
+| Layer | Werkzeug | Auf headless VPS? |
+|---|---|---|
+| **Layer 0 — Edit-Bodyguard** | `pre-edit-bodyguard.sh` (PreToolUse) | **Ja** (KI-Runtime-Hook, IDE-unabhängig) |
+| Layer 1 — IDE | Error Lens, ESLint-/Sonar-IDE-Plugin | **Nein** (kein Editor-UI über SSH) |
+| **Layer 2 — CLI/Pre-Commit** | `npx eslint .`, `semgrep --config auto .`, `npm test`, coverage-check | **Ja** (CLIs explizit laufen) |
+| **Layer 3 — CI** | GitHub Actions (eslint/ruff/semgrep/perf/sonar) | **Ja** (server-side) |
+
+> **Praxisregel:** Auf dem VPS erwartest du kein Inline-Feedback im Editor — du läufst die CLIs explizit. Die Gates sind dieselben wie am Mac; nur die Tooling-Liste unterscheidet sich. **Keine Qualitäts-Einbuße beim VPS-Coding.** (Vertiefung: §8d.)
+
+### Y.8 Schnellreferenz: einmal pro VPS vs. pro Projekt
+
+| EINMAL pro VPS | PRO PROJEKT (jedes Repo) |
+|---|---|
+| Tools: Semgrep, Ruff, ESLint, (SonarScanner) via apt/pipx/npm -g | Projekt-Dev-Deps: ESLint/Prettier in `package.json`, pytest, c8/pytest-cov via `npm/pip install` |
+| Claude Code CLI installieren | `CLAUDE.md` / `CONVENTIONS.md` / `ARCHITECTURE_DESIGN.md` aus Template |
+| Skill-Pool: `~/.claude/skills/` (Solo) bzw. `/opt/claude/skills/` (Multi-User) | **Git-Hooks: `.git/hooks/*` — pro Repo!** (oder `core.hooksPath` global) |
+| `~/.claude/CLAUDE.md`, `settings.json`, `.env` (pro Operator) | `.claude/environment.json` via `generate-environment-json.sh` |
+| Operatoren-User + SSH-Härtung (Szenario 3) | Doku-SSoT-Wahl, `specs/`, `journal/`, Backlog-Adapter |
+| (optional) Container-Profil für Versions-Gleichschritt | `bash scripts/verify-setup.sh` → 0 FAIL |
+
+> **Bekannte Lücken / zu entscheiden:** Kein zentrales Install-Script (die Sequenz in Y.2 ist aus dem Container-Dockerfile abgeleitet); `generate-environment-json.sh` wird vom `/bootstrap`-Skill zur Laufzeit erzeugt (kein statisches Template); `gh`/`git`/`jq`/bash-Version stehen nicht in der §3-Pflichtliste (dieser Anhang führt sie als Prereq); VPS-Sizing nur als Daumenwert (8 GB/4 vCPU für 5 Operatoren), nach Last skalieren; `core.hooksPath` ist eine Operator-Empfehlung, kein Bootstrap-Schritt.
+
+Quelle: BOO-94 (Promotion des standalone Runbooks `docs/runbooks/vps-team-setup.md`). Bündelt §8d + Anhänge P/Q/R/S/T/U/V. Bei Framework-Updates diesen Anhang gegen die Anhänge abgleichen.
 
 ---
 
