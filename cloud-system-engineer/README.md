@@ -4,7 +4,7 @@
 
 > Behandelt Cloud-Infrastruktur als Teammate: Health-Checks auf VPS und Containern, Firewall-Audit, DNS-Management, Infra-Kosten-Abschaetzung. Drei Modi — standalone Check, Architektur-Konsultation (als Teammate), oder Aenderungen ausfuehren mit Operator-Freigabe.
 
-**Version:** 1.0.0 · **Befehl:** `/cloud-system-engineer`
+**Version:** 1.1.0 · **Befehl:** `/cloud-system-engineer`
 
 ---
 

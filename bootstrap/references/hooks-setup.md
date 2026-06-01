@@ -232,6 +232,14 @@ exit 0
 
 ---
 
+## coverage-check.sh — Diff-Coverage-Gate (BOO-15, v2 BOO-88)
+
+Misst die Test-Coverage **nur auf neu hinzugefuegten Zeilen** (`git diff --added`) gegen `coverage-final.json` (c8) bzw. `coverage.json` (pytest-cov) — Gesamt-Coverage auf Legacy-Repos waere unfair (Schrader Kap. 3). v2 (BOO-88) zaehlt im Nenner **nur ausfuehrbare Statement-Zeilen** (keine Kommentare/Leerzeilen), damit die Quote nicht faelschlich zu niedrig wird.
+
+- **Nicht als Pre-Commit-Hook verdrahtet** (Tests dauern zu lange) — der Guard laeuft im `/implement`-Coverage-Gate (Schritt 6a) und optional in CI.
+- Schwelle env-ueberschreibbar (`COVERAGE_MIN`, Default siehe Skript-Kopf).
+- Kanonische Quelle: `bootstrap/references/hooks/coverage-check.sh`; Single-Source + Drift-Guard via `check-hook-sources.sh` (BOO-89).
+
 ## Portabilitaet
 
 Alle Hooks haben **keine externen Dependencies** — nur Bash, grep, git, python3. Auch der Bodyguard ist dependency-frei: bash + python3-Stdlib, **kein PyYAML** — die Muster-Dateien werden von einem Mini-Parser im Hook gelesen.

@@ -4,7 +4,7 @@
 
 > Build Grafana Cloud dashboards, write PromQL queries and wire alert rules — directly from your Claude Code session via the official Grafana MCP server. No JSON export/import gymnastics.
 
-**Version:** 1.0.0 · **Command:** `/grafana`
+**Version:** 1.1.0 · **Command:** `/grafana`
 
 ---
 

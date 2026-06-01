@@ -4,7 +4,7 @@
 
 > Ein Befehl (`/visualize <miro-board-url>`) liest alle deine Architekturdokumente und erstellt **6 Diagramme** direkt in Miro — automatisch platziert, farbcodiert, mit Deep-Links.
 
-**Version:** 2.1.0 · **Befehl:** `/visualize`
+**Version:** 2.3.0 · **Befehl:** `/visualize`
 
 ---
 

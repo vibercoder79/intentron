@@ -66,7 +66,7 @@ Without documentation and structure, every new session starts from zero.
 A **complete operating system for AI-assisted software development**:
 
 ```
-GitHub Repository (vibercoder79/claudecodeskills)
+GitHub Repository (vibercoder79/intentron)
 ├── bootstrap/           ← Sets everything up automatically
 ├── ideation/            ← From idea to story
 ├── implement/           ← From story to code
@@ -271,7 +271,7 @@ Claude walks you through four short interview blocks (A–D), then builds everyt
 | **Block B** — Existing infrastructure | Interview (6 questions) | GitHub repo? Project documentation SSoT? Backlog tool? `.env`? runtime file? Developer handover? — integrates into what's already there |
 | **Block C** — Doc architecture | Proposal + review | Project Hub, Developer Onboarding, Governance, Target Architecture, Backlog reference + 3-layer proposal |
 | **Phase 4** — Base structure | Automatic (~2 min) | Files, Git init, linting, governance hooks, component skeletons |
-| **Phase 5** — Install skills | Automatic | Skills pulled via `git clone` from `claudecodeskills` (no symlinks) |
+| **Phase 5** — Install skills | Automatic | Skills pulled via `git clone` from `intentron` (no symlinks) |
 | **Block D** — Optional components | Targeted questions at the end | Self-Healing / DocSync / Automation-Daemon / Learning-Loop / SonarQube / Research / Visualize / Monitoring |
 | **Phase 7** — Finalization | Automatic | selected documentation SSoT, optional SecondBrain integration, global registry entry, final commit |
 
@@ -370,7 +370,7 @@ Claude creates files, initializes Git, sets up linting, installs governance hook
 
 ### Phase 5: Install skills (automatic)
 
-Skills are pulled from the `vibercoder79/claudecodeskills` repository via `git clone` into `.claude/skills/` — **no symlinks, no runtime dependency on the source repo**. The skill copies are local and portable.
+Skills are pulled from the `vibercoder79/intentron` framework repository via `git clone` into `.claude/skills/` — **no symlinks, no runtime dependency on the source repo**. The skill copies are local and portable. (Companion skills such as `research`/`skill-creator` live separately in `claudecodeskills` and are added only on demand.)
 
 Important distinction: VS Code plugins are workstation infrastructure; skills are project infrastructure. You install ESLint, SonarQube for IDE, Error Lens, Python/Ruff, etc. once in VS Code. Bootstrap checks and documents their availability per project, but does not reinstall those plugins for every project. Skills are different: every bootstrapped project gets its own local `.claude/skills/` copy (and, for Codex adapters, optionally `.codex/skills/`). That copy is the project-pinned runtime state. If you bootstrap a second project, the selected skills are copied into that second project as well; this is intentional, not duplicate global installation.
 
@@ -1962,7 +1962,7 @@ postflight.
 
 ## 13. Appendices — signpost
 
-The handbook has 25 appendices (A–Y). They are a **reference and deep-dive layer** — you don't need to read them front to back. This table tells you **when which appendix is relevant**. A–M are the foundations/tooling layer, N–Y the v0.2.0 themes (efficiency, privacy, deployment, scaling, verification, edit bodyguard, contribute-back, ubiquitous language, VPS/cloud team runbook).
+The handbook has 25 appendices (A–Y). They are a **reference and deep-dive layer** — you don't need to read them front to back. This table tells you **when which appendix is relevant**. A–M are the foundations/tooling layer, N–Y the themes from v0.2.0 onward (waves J–AG, through v0.6.x): efficiency, privacy, deployment, scaling, verification, edit bodyguard, contribute-back, ubiquitous language, VPS/cloud team runbook.
 
 | Appendix | Topic | When relevant |
 |----------|-------|---------------|

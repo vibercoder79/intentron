@@ -4,7 +4,7 @@
 
 > Baue Grafana-Cloud-Dashboards, schreibe PromQL-Queries und verdrahte Alert Rules — direkt aus Claude Code via offiziellem Grafana MCP Server. Kein JSON-Export/Import-Zirkus.
 
-**Version:** 1.0.0 · **Befehl:** `/grafana`
+**Version:** 1.1.0 · **Befehl:** `/grafana`
 
 ---
 

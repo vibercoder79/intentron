@@ -4,7 +4,7 @@
 
 > Treats cloud infrastructure as a teammate: runs health checks on VPS and containers, audits firewall rules, manages DNS, estimates infra cost. Three modes — standalone check, architecture consultation (as teammate), or executing changes with operator approval.
 
-**Version:** 1.0.0 · **Command:** `/cloud-system-engineer`
+**Version:** 1.1.0 · **Command:** `/cloud-system-engineer`
 
 ---
 
