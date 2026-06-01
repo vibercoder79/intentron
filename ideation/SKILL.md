@@ -136,6 +136,20 @@ Binaeres on/off waere zu hart — Infrastruktur (Auth-Refactor, DB-Migration) is
 
 > **Issue-Referenz:** BOO-69. Skill-Aufruf: DPO ASSESS-Modus liest die Story und schreibt DPIA. Pipeline-Stelle: ideation Schritt 0e (Pre-Flight, weich — kein HARD GATE). Hard-Gate fuer Code-Aenderungen: `/implement` Schritt 5.5b (Personal-Data-Paths-Gate).
 
+### Schritt 0e-bis: EU-AI-Act-Pre-Flight (BOO-101/106, nur wenn EU-AI-Act-Add-on aktiv)
+
+> **Aktivierung:** Nur wenn `AI_SYSTEM.md` im Projekt-Root existiert (EU-AI-Act-Add-on im Bootstrap aktiviert, Phase 4.4n-bis). Sonst ueberspringen.
+
+**Zweck:** Story-Frontmatter um `ai_act_relevant: true|false` erweitern — beruehrt die Story das KI-System (Modell, dessen Ein-/Ausgaben, Datenverarbeitung, Transparenz/Logging/Human-Oversight)?
+
+1. Story gegen `AI_SYSTEM.md` abgleichen: aendert/erweitert sie KI-Funktionalitaet oder die Verarbeitung von (Kunden-)Daten durch die KI?
+2. **Bei `ai_act_relevant: true`:** Hinweis-Block in den Story-Body — "Diese Story beruehrt das KI-System (EU AI Act). Pruefe/aktualisiere `AI_SYSTEM.md` (Risikoklasse, Transparenz, Human Oversight, Logging) vor Spec-Finalisierung. Urteils-Punkte fuehrt der periodische dpo-AUDIT als REVIEW-NEEDED." Backlog-Label `ai-act` (falls Adapter aktiv).
+3. **Bei `ai_act_relevant: false`:** Skip mit Log-Eintrag.
+
+**Output:** Story-Spec mit `ai_act_relevant:` + ggf. AI-System-Hinweis + Label.
+
+> **Weich, kein HARD GATE** — bewusst: der AI Act ist Governance/Dokumentation, kein per-Zeile-Code-Check. Verbindlicher Doku-Audit: `/sprint-review` 7c (Katalog `eu-ai-act.yml` prueft `AI_SYSTEM.md`). Code-Aenderungs-Hinweis: `/implement` Schritt 5.5c. Gesamtbild: `docs/compliance/compliance-mechanik.md`. KEINE Rechtsberatung.
+
 ### Schritt 1: Research (wenn noetig)
 
 Pruefen ob externe Recherche noetig ist (neue APIs, unbekannte Technologien, Best Practices).

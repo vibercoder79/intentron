@@ -405,6 +405,18 @@ Ohne explizite Bestaetigung wird der Commit nicht durchgefuehrt.
 
 > **Issue-Referenz:** BOO-69. Pattern-Datei: `.claude/personal-data-paths.json` (bei Bootstrap mit Privacy-Add-on automatisch angelegt). DPO-Skill als Standalone unter `~/.claude/skills/dpo/`. HANDBUCH-Hintergrund: Anhang O Privacy by Design.
 
+### Schritt 5.5c: EU-AI-Act-Hinweis (BOO-101/106, weich — kein STOPP)
+
+> **Aktivierung:** Nur wenn `AI_SYSTEM.md` im Projekt-Root existiert (EU-AI-Act-Add-on aktiv). Sonst ueberspringen.
+
+**Zweck:** Sicherstellen, dass KI-System-relevante Code-Aenderungen ihre Doku aktuell halten — der AI Act verlangt aktuelle System-Dokumentation, keinen zeilenweisen Code-Check.
+
+1. Wenn die Story `ai_act_relevant: true` traegt **oder** die geaenderten Dateien KI-System-Code beruehren (Modell-Aufruf, Inferenz, KI-Ein-/Ausgaben, Logging der KI-Entscheidungen): pruefen, ob `AI_SYSTEM.md` noch stimmt (Risikoklasse, Transparenz, Human Oversight, Logging, GPAI).
+2. Bei Abweichung: `AI_SYSTEM.md` aktualisieren **oder** einen Punkt in den `## AI-System`-Block der Spec aufnehmen, der im periodischen dpo-AUDIT als REVIEW-NEEDED auftaucht.
+3. **Kein harter Stopp** (anders als 5.5/5.5b) — Hinweis + Doku-Pflege; Schritt 5.7 wird nicht blockiert.
+
+> **Issue-Referenz:** BOO-101/105/106. Verbindliche Pruefung: `/sprint-review` 7c (Katalog `eu-ai-act.yml`). Gesamtbild der Mechanik: `docs/compliance/compliance-mechanik.md`. KEINE Rechtsberatung — Urteils-Punkte = REVIEW-NEEDED.
+
 ### Schritt 5.7: Change-Type-Verzweigung (BOO-68)
 
 Vor dem Eintritt in die Quality Gates wird der `Change-Type` aus dem Spec-Frontmatter

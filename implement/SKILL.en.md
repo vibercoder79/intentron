@@ -358,6 +358,18 @@ Without explicit confirmation, the commit will not proceed.
 
 > **Issue reference:** BOO-69. Pattern file: `.claude/personal-data-paths.json` (automatically created by Bootstrap with Privacy add-on). DPO skill as standalone under `~/.claude/skills/dpo/`. HANDBUCH background: Appendix O Privacy by Design.
 
+### Step 5.5c: EU AI Act reminder (BOO-101/106, soft — no STOP)
+
+> **Activation:** Only if `AI_SYSTEM.md` exists in the project root (EU AI Act add-on active). Otherwise skip.
+
+**Purpose:** Ensure AI-system-relevant code changes keep their documentation current — the AI Act requires up-to-date system documentation, not a per-line code check.
+
+1. If the story carries `ai_act_relevant: true` **or** the changed files touch AI-system code (model call, inference, AI inputs/outputs, logging of AI decisions): check whether `AI_SYSTEM.md` is still accurate (risk class, transparency, human oversight, logging, GPAI).
+2. On a discrepancy: update `AI_SYSTEM.md` **or** add an item to the spec's `## AI System` block that surfaces as REVIEW-NEEDED in the periodic dpo AUDIT.
+3. **No hard stop** (unlike 5.5/5.5b) — reminder + doc upkeep; Step 5.7 is not blocked.
+
+> **Issue reference:** BOO-101/105/106. Binding check: `/sprint-review` 7c (catalogue `eu-ai-act.yml`). Full mechanism picture: `docs/compliance/compliance-mechanik.md`. No legal advice — judgment items = REVIEW-NEEDED.
+
 ### Step 5.7: Change-type branching (BOO-68)
 
 Before entering the quality gates, read `change_type` from the spec frontmatter (section 8
