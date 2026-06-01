@@ -133,9 +133,15 @@ Claude Code has shell access, so it can install itself. Paste this into a sessio
 
 ### C) AI self-update for an old / brownfield install
 
-On a server or repo that still runs an ancient version of the framework, paste this:
+For an existing repo that still runs an older INTENTRON version, the safe upgrade follows **[`bootstrap/references/framework-upgrade.md`](bootstrap/references/framework-upgrade.md)** (see also **[HANDBUCH](HANDBUCH.md)** §"Upgrade path for existing projects") — it never overwrites local decisions blindly, in three stages:
 
-> This project may contain an old INTENTRON/bootstrap install. (1) Analyze the current state: `.claude/` (skills, hooks, `environment.json`), the installed bootstrap version, the skills present and the Git hooks. (2) Fetch the current framework from https://github.com/vibercoder79/intentron and report the gap (missing or outdated skills, hooks, migrations). (3) Update: refresh `~/.claude/skills/bootstrap` from the repo, run `bash <repo>/bootstrap/scripts/migrate-to-v2.sh` for the applicable BOO migrations (idempotent), and verify with `bash <repo>/bootstrap/references/verify-setup.sh`. Report what changed.
+1. **`inspect`** — read the current project state, diff it against the new version, show risks and manual TODOs. Writes nothing.
+2. **`apply-safe`** — apply only additive/idempotent changes (new templates, missing sections); existing content stays.
+3. **`apply-with-confirmation`** — anything that changes existing rules, hooks, CI or skill versions is confirmed per change. `.env`/secrets are never touched.
+
+One-shot prompt — paste into Claude Code opened in the old repo:
+
+> This repo may run an older INTENTRON version. Upgrade it safely following `bootstrap/references/framework-upgrade.md` (modes inspect → apply-safe → apply-with-confirmation). (1) **inspect**: read the current project contract (`CONVENTIONS.md`, `CLAUDE.md`/`AGENTS.md`, `.claude/environment.json`, hooks, specs), fetch the current framework from https://github.com/vibercoder79/intentron, read `docs/releases/` for what changed, and show me a diff + risks + manual TODOs without writing anything. (2) **apply-safe**: apply only additive/idempotent changes and run the relevant `bootstrap/scripts/migrate-to-v2.sh --issue BOO-NN` migrations. (3) **apply-with-confirmation**: for anything that changes existing rules, hooks, CI or skill versions, ask me per change. Never touch `.env`/secrets. Finally run `bootstrap/references/verify-setup.sh` and write an upgrade report to `journal/reports/framework-upgrade/YYYY-MM-DD.md`.
 
 > [!note]
 > Same outcome, different entry point: **A** is the explicit/auditable path, **B** is the fastest cold start, **C** lifts an existing install to the current version. The migrations and `verify-setup.sh` are idempotent — safe to re-run.
@@ -402,9 +408,15 @@ Claude Code hat Shell-Zugriff und kann sich selbst installieren. Diesen Prompt i
 
 ### C) AI-Self-Update für eine alte / Brownfield-Installation
 
-Auf einem Server oder Repo, das noch eine uralte Framework-Version fährt, diesen Prompt einfügen:
+Für ein bestehendes Repo mit älterer INTENTRON-Version folgt das sichere Upgrade **[`bootstrap/references/framework-upgrade.md`](bootstrap/references/framework-upgrade.md)** (siehe auch **[HANDBUCH](HANDBUCH.md)** §„Upgrade-Pfad für bestehende Projekte") — es überschreibt lokale Entscheidungen nie blind, in drei Stufen:
 
-> Dieses Projekt enthält evtl. eine alte INTENTRON/bootstrap-Installation. (1) Analysiere den Ist-Zustand: `.claude/` (Skills, Hooks, `environment.json`), die installierte Bootstrap-Version, vorhandene Skills und Git-Hooks. (2) Hole das aktuelle Framework von https://github.com/vibercoder79/intentron und melde den Gap (fehlende oder veraltete Skills, Hooks, Migrationen). (3) Update: aktualisiere `~/.claude/skills/bootstrap` aus dem Repo, führe `bash <repo>/bootstrap/scripts/migrate-to-v2.sh` für die zutreffenden BOO-Migrationen aus (idempotent) und verifiziere mit `bash <repo>/bootstrap/references/verify-setup.sh`. Melde, was sich geändert hat.
+1. **`inspect`** — Ist-Zustand lesen, Diff zur neuen Version, Risiken und manuelle TODOs zeigen. Schreibt nichts.
+2. **`apply-safe`** — nur additive/idempotente Änderungen (neue Templates, fehlende Sektionen); Bestehendes bleibt.
+3. **`apply-with-confirmation`** — alles, was bestehende Regeln, Hooks, CI oder Skill-Versionen ändert, wird einzeln bestätigt. `.env`/Secrets werden nie angefasst.
+
+Einmal-Prompt — in Claude Code einfügen, geöffnet im alten Repo:
+
+> Dieses Repo fährt evtl. eine ältere INTENTRON-Version. Aktualisiere es sicher nach `bootstrap/references/framework-upgrade.md` (Modi inspect → apply-safe → apply-with-confirmation). (1) **inspect**: lies den Projektvertrag (`CONVENTIONS.md`, `CLAUDE.md`/`AGENTS.md`, `.claude/environment.json`, Hooks, Specs), hole das aktuelle Framework von https://github.com/vibercoder79/intentron, lies `docs/releases/` für die Änderungen, und zeig mir Diff + Risiken + manuelle TODOs, ohne etwas zu schreiben. (2) **apply-safe**: wende nur additive/idempotente Änderungen an und führe die zutreffenden `bootstrap/scripts/migrate-to-v2.sh --issue BOO-NN` Migrationen aus. (3) **apply-with-confirmation**: alles, was bestehende Regeln, Hooks, CI oder Skill-Versionen ändert, einzeln mit mir bestätigen. `.env`/Secrets nie anfassen. Zum Schluss `bootstrap/references/verify-setup.sh` ausführen und einen Upgrade-Report nach `journal/reports/framework-upgrade/YYYY-MM-DD.md` schreiben.
 
 > [!note]
 > Gleiches Ergebnis, anderer Einstieg: **A** ist der explizite/auditierbare Weg, **B** der schnellste Kaltstart, **C** hebt eine bestehende Installation auf den aktuellen Stand. Migrationen und `verify-setup.sh` sind idempotent — gefahrlos wiederholbar.
