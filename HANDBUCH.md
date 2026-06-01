@@ -25,7 +25,7 @@
 10. [Governance für dein Projekt anpassen](#10-governance-für-dein-projekt-anpassen)
 11. [Tägliche Nutzung — ein typischer Workflow](#11-tägliche-nutzung--ein-typischer-workflow)
 12. [Häufige Fragen](#12-häufige-fragen) — inkl. Claude Agent SDK Migration
-13. [Anhänge — Wegweiser](#13-anhänge--wegweiser) — A bis X im Überblick
+13. [Anhänge — Wegweiser](#13-anhänge--wegweiser) — A bis Y im Überblick
 
 ---
 
@@ -4469,4 +4469,4 @@ Quelle: BOO-94 (Promotion des standalone Runbooks `docs/runbooks/vps-team-setup.
 
 *Dieses Handbuch ist Teil des INTENTRONs.*
 *GitHub: github.com/vibercoder79/intentron*
-*Letzte Aktualisierung: 2026-05-28 (Anhang J Codex-Onboarding-Walkthrough ergaenzt — BOO-50; Anhang T um 5-Schritte-E2E-Probelauf-Protokoll erweitert — schliesst BOO-48; Anhang R Vault-Harvest erweitert — `default_vault_subdir` + inkrementeller `--since`-Sync, BOO-82)*
+*Letzte Aktualisierung: 2026-06-01 (v0.3.0–v0.6.2: Security-/Governance-Welle, Onboarding-Fix + Doku-Sync — BOO-86 bis BOO-97; u.a. Layer-0-Edit-Bodyguard, dpo-Kontrollkatalog, CONTEXT.md Ubiquitous Language, raw-pii-guard, Anhang Y VPS/Cloud-Team-Runbook, Quickstart mit Self-Install/Self-Update-Prompts)*

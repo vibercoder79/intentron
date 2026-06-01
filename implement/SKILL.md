@@ -211,8 +211,7 @@ Geh zurueck zu /ideation und ergaenze den fehlenden Bestandteil bevor du /implem
 
 ### Schritt 3b: Governance-Validation (PFLICHT)
 
-Vor der Plan-Erstellung die Governance-Artefakte aus dem Issue validieren.
-Siehe [references/governance-validation.md](references/governance-validation.md)
+Vor der Plan-Erstellung die Governance-Artefakte aus dem Issue validieren (Pruefschritte siehe unten).
 
 1. **8-Dimensionen pruefen:** Ist die Tabelle im Issue vorhanden? Stimmt die Einschaetzung?
    Fehlt eine Dimension die durch die geplante Aenderung betroffen ist?

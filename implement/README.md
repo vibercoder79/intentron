@@ -130,7 +130,6 @@ implement/
 └── references/
     ├── architecture-checklist.md               ← Relevant-Dimensionen-Checkliste
     ├── change-checklist.md                     ← Pro-Aenderung-Validation
-    ├── governance-validation.md                ← Governance-Artefakt-Check
     ├── non-code-flow.md                        ← Schritt 5.7: Non-Code-Verzweigung (BOO-68)
     └── validation-checklist.md                 ← Post-Implement-Subschritte
 ```

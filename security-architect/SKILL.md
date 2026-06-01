@@ -27,7 +27,7 @@ description: |
 
 ---
 
-## 3 Modi
+## 4 Modi
 
 ### Modus-Auswahl (automatisch)
 
