@@ -777,6 +777,7 @@ Maschinell erzwungene Regeln und Referenzlisten.
 |----------|-------|-------------|
 | `.claude/hooks/spec-gate.sh` | Blockiert `git commit ISSUE-XX` ohne `specs/ISSUE-XX.md` | **HARD GATE** (PreToolUse Hook) |
 | `.claude/hooks/doc-version-sync.sh` | Blockiert `git push` bei VERSION-Drift zwischen DOC_FILES | **HARD GATE** (PreToolUse Hook) |
+| `.claude/hooks/pre-edit-bodyguard.sh` | Faengt unsichere Muster (Secrets, `eval`, TLS aus, SQL-Konkatenation) bei `Edit/Write` ab — Layer 0, BOO-86 | Warnung (Hard-Block opt-in via `BODYGUARD_STRICT=1`), PreToolUse Hook |
 | `.claude/hooks/guard.sh` | Blockiert Zugriff auf `.env` und Schluessel-Dateien | Soft Guard |
 | `.claude/hooks/format.sh` | Auto-Format bei Edit/Write (Biome/Black) | Passiv |
 | `.claude/settings.json` | Hook-Registration + Permissions | Config |
@@ -1187,9 +1188,9 @@ Die Toolchain läuft in vier Umgebungen unterschiedlich. **Kernpunkt:** Keine Qu
 
 Praxisregel: Wenn du auf dem VPS via SSH arbeitest, erwartest du keine Inline-Hints im Editor — du läufst die CLIs explizit (`npx eslint .`, `semgrep --config auto .`, `npm test`). Die Gates schlagen in CI ohnehin zu, wenn du etwas durchrutschen lässt.
 
-![Drei-Layer-Quality-Gate — IDE / CLI / CI entlang der Coding-Zeitachse](docs/quality-gate-three-layers.png)
+![Vier-Layer-Quality-Gate — Edit-Bodyguard / IDE / CLI / CI entlang der Coding-Zeitachse](docs/quality-gate-four-layers.png)
 
-*Defense in Depth über drei Ebenen: IDE-Plugins für Echtzeit-Feedback beim Tippen, CLI-Tools als harte Pre-Commit-Sperre, GitHub Actions als Merge-Gate nach dem Push. Je früher ein Defekt erkannt wird, desto billiger der Fix. ([Excalidraw-Quelle](docs/quality-gate-three-layers.excalidraw))*
+*Defense in Depth über vier Ebenen: Layer 0 Edit-Bodyguard als PreToolUse-Reflex, der unsichere Muster abfängt, bevor die KI sie schreibt (BOO-86); IDE-Plugins für Echtzeit-Feedback beim Tippen; CLI-Tools als harte Pre-Commit-Sperre; GitHub Actions als Merge-Gate nach dem Push. Je früher ein Defekt erkannt wird, desto billiger der Fix. ([Excalidraw-Quelle](docs/quality-gate-four-layers.excalidraw))*
 
 > **Hinweis zur Skizzen-Beschriftung:** Die Excalidraw zeigt BOO-28 noch als "geplant". Seit v3.17.0 (2026-05-12) ist BOO-28 done — `migrate_boo_28()` legt `.github/workflows/eslint.yml` (Node-Stacks) bzw. `.github/workflows/ruff.yml` (Python-Stacks) mit Pflicht-SARIF-Output nach `.ci-reports/` an (Vorbereitung BOO-32 Hermes-Konsumtion). Das Neu-Rendern der PNG ist nicht Scope dieser Aufgabe.
 
@@ -2739,8 +2740,8 @@ Diese haengen nie vom KI-Tool ab:
 
 | Komponente | Pfad | Funktion |
 |---|---|---|
-| bash-Hooks | `hooks/*.sh` | spec-gate, doc-version-sync, audit-trace, branch-protection, dep-check |
-| GitHub Actions | `.github/workflows/*.yml` | ESLint/Ruff, Semgrep, Coverage, Perf, Sonar, Lighthouse |
+| bash-Hooks | `hooks/*.sh`, `bootstrap/scripts/*.sh` | pre-edit-bodyguard (Layer 0, BOO-86), spec-gate, doc-version-sync, audit-trace, branch-protection, dep-check, check-hook-sources (Drift-Guard, BOO-89) |
+| GitHub Actions | `.github/workflows/*.yml` | ESLint/Ruff, Semgrep, Coverage, Perf, Sonar, Lighthouse, hook-sources (Drift-Guard, BOO-89) |
 | `journal/`-Baum | `journal/reports/{ci,local}/`, `journal/learnings.*` | Reports + Learning-Loop |
 | Markdown-Artefakte | `CLAUDE.md`, `ARCHITECTURE_DESIGN.md`, `GOVERNANCE.md`, `SECURITY.md`, `specs/TEMPLATE.md` | Projekt-Kontext |
 | Konfigurations-Files | `.claude/environment.json`, `.claude/sensitive-paths.json`, `sonar-project.properties`, `lighthouserc.json` | Thresholds + Tool-Registry |
@@ -2946,7 +2947,7 @@ Das Bundle ist mein Operating System fuer Intentron-Engineering. Schrader beschr
 
 *Fastly-Studie (Juli 2025): Senior-Entwickler nutzen KI-Code 2,5-mal so oft wie Juniors und profitieren staerker. Anfaenger brauchen Reibung, um Urteilsvermoegen zu entwickeln — sonst entsteht die naechste Generation, die KI dirigiert, ohne ihre Werke zu verstehen.*
 
-**Wir loesen das so:** Drei-Layer-Quality-Gate-Architektur macht aus Vibe Coding produktionsreifes Agentic Engineering — Layer 1 in der IDE, Layer 2 als Pre-Commit-Hook, Layer 3 in der CI. ESLint, Semgrep, Coverage-Gate, Performance-Baseline und SonarQube greifen ineinander, damit nichts an den Gates vorbei in main wandert. Details: HANDBUCH §6 + §8d, BOO-2 (ESLint), BOO-4 (Semgrep), BOO-15 (Coverage), BOO-16 (Performance), BOO-5 (SonarQube), BOO-24 (KI-Architektur-Prinzipien).
+**Wir loesen das so:** Vier-Layer-Quality-Gate-Architektur macht aus Vibe Coding produktionsreifes Agentic Engineering — Layer 0 als Edit-Bodyguard, der unsichere Muster abfaengt, **bevor** die KI sie schreibt (BOO-86, kuratierte Muster, Default = Warnung; siehe Anhang V), Layer 1 in der IDE, Layer 2 als Pre-Commit-Hook, Layer 3 in der CI. ESLint, Semgrep, Coverage-Gate, Performance-Baseline und SonarQube greifen ineinander, damit nichts an den Gates vorbei in main wandert. Details: HANDBUCH §6 + §8d + Anhang V, BOO-2 (ESLint), BOO-4 (Semgrep), BOO-15 (Coverage), BOO-16 (Performance), BOO-5 (SonarQube), BOO-24 (KI-Architektur-Prinzipien), BOO-86 (Edit-Bodyguard).
 
 ### Kapitel 4 — Intent is the new Code (Kernkapitel)
 
@@ -4055,11 +4056,11 @@ Quelle: Operator-Frage Tobias 2026-05-28 ("mehrere Projekte — pro Projekt boot
 
 ### Wann und warum
 
-Die Drei-Layer-Quality-Gate-Architektur (Anhang §8d, BOO-2/4/15/16) faengt unsicheren Code an drei Stellen: in der IDE (Layer 1), beim Pre-Commit (Layer 2) und in der CI (Layer 3). Allen gemeinsam ist: sie greifen **nachdem** die KI den Code geschrieben hat. Der **Edit-Bodyguard** schiebt eine **Layer 0 VOR** diese Kette — er prueft den Code-Block in dem Moment, in dem die KI ihn auf die Platte schreiben will, und kann ihn **vor** dem Schreiben stoppen.
+Das Quality-Gate (Anhang §8d, BOO-2/4/15/16) faengt unsicheren Code an drei Stellen: in der IDE (Layer 1), beim Pre-Commit (Layer 2) und in der CI (Layer 3). Allen gemeinsam ist: sie greifen **nachdem** die KI den Code geschrieben hat. Der **Edit-Bodyguard** schiebt eine **Layer 0 VOR** diese Kette — er prueft den Code-Block in dem Moment, in dem die KI ihn auf die Platte schreiben will, und kann ihn **vor** dem Schreiben stoppen. Mit ihm wird aus der Drei-Layer- eine **Vier-Layer-Quality-Gate-Architektur**.
 
 Konkret ist Layer 0 ein **`PreToolUse`-Hook auf `Edit|Write`** (Geschwister-Hook zu `spec-gate.sh`, das auf `Bash`/`git commit` feuert). Er liest das `tool_input`-JSON, matched den geplanten Inhalt gegen eine kleine, kuratierte Muster-Menge (Secrets, `eval`, abgeschaltete TLS-Pruefung, SQL-Konkatenation) und meldet Treffer **bevor** die Datei entsteht. So bleibt unsicheres Material gar nicht erst im Repo-Zustand — der schnellste moegliche Reflex.
 
-### Einordnung in die Drei-Layer-Architektur
+### Einordnung in die Vier-Layer-Architektur
 
 | Layer | Greift wann | Werkzeug | Tiefe |
 |-------|-------------|----------|-------|
@@ -4094,7 +4095,7 @@ Layer 0 ist der deterministische Backstop zum **Secure-Coding-Hinweis** in `/imp
 
 ### Verwandte Anhaenge & Quellen
 
-- **Anhang §8d (Drei-Layer-Quality-Gate):** Layer 1-3, in die sich Layer 0 davorschiebt.
+- **Anhang §8d (Vier-Layer-Quality-Gate):** Layer 1-3, in die sich Layer 0 davorschiebt.
 - **`bootstrap/references/file-templates.md §pre-edit-bodyguard`:** kanonische Quelle — Hook-Script, alle Muster-Dateien, Schema und Anti-Patterns.
 - **`bodyguard/SOURCES.md`:** Herkunft (CWE/OWASP/gitleaks/Semgrep) + Pflege-Konvention pro Muster.
 - **`/implement` Schritt 5 (Secure-Coding-Hinweis):** die Prompt-Ebenen-Variante, fuer die Layer 0 der Backstop ist.
@@ -4173,7 +4174,7 @@ Die `verboten`-Spalte ist der Hebel: Sie sagt der KI nicht nur, was sie nehmen s
 
 ### Zweischichtig: Basis + Projekt-Overlay
 
-Wie der Edit-Bodyguard (Anhang V, BOO-86) und der dpo-Kontrollkatalog (Wave X, BOO-87) folgt `CONTEXT.md` dem **Basis-+-Overlay-Muster**:
+Wie der Edit-Bodyguard (Anhang V, BOO-86) und der dpo-Kontrollkatalog (Release-Welle „Wave X", BOO-87 — nicht zu verwechseln mit *diesem* Anhang X, der CONTEXT.md/BOO-91 ist) folgt `CONTEXT.md` dem **Basis-+-Overlay-Muster**:
 
 | Schicht | Datei | Eigentümer | Updates |
 |---------|-------|-----------|---------|

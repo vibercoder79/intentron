@@ -708,6 +708,7 @@ Machine-enforced rules and reference lists.
 |----------|---------|-------------|
 | `.claude/hooks/spec-gate.sh` | Blocks `git commit ISSUE-XX` without `specs/ISSUE-XX.md` | **HARD GATE** (PreToolUse hook) |
 | `.claude/hooks/doc-version-sync.sh` | Blocks `git push` on VERSION drift between DOC_FILES | **HARD GATE** (PreToolUse hook) |
+| `.claude/hooks/pre-edit-bodyguard.sh` | Catches unsafe patterns (secrets, `eval`, TLS off, SQL concatenation) on `Edit/Write` — Layer 0, BOO-86 | Warning (hard-block opt-in via `BODYGUARD_STRICT=1`), PreToolUse hook |
 | `.claude/hooks/guard.sh` | Blocks access to `.env` and key files | Soft guard |
 | `.claude/hooks/format.sh` | Auto-formats on Edit/Write (Biome/Black) | Passive |
 | `.claude/settings.json` | Hook registration + permissions | Config |
@@ -1118,9 +1119,9 @@ The toolchain runs differently in four environments. **Key point:** no quality p
 
 Rule of thumb: when you work on the VPS via SSH, do not expect inline hints in the editor — you run the CLIs explicitly (`npx eslint .`, `semgrep --config auto .`, `npm test`). The gates fire in CI anyway when something slips through.
 
-![Three-layer quality gate — IDE / CLI / CI along the coding timeline](docs/quality-gate-three-layers.en.png)
+![Four-layer quality gate — Edit-Bodyguard / IDE / CLI / CI along the coding timeline](docs/quality-gate-four-layers.en.png)
 
-*Defense in depth across three layers: IDE plugins for real-time feedback while typing, CLI tools as a hard pre-commit block, GitHub Actions as the merge gate after push. The earlier a defect is caught, the cheaper the fix. ([Excalidraw source](docs/quality-gate-three-layers.en.excalidraw))*
+*Defense in depth across four layers: Layer 0 Edit-Bodyguard as a PreToolUse reflex that catches unsafe patterns before the AI writes them (BOO-86); IDE plugins for real-time feedback while typing; CLI tools as a hard pre-commit block; GitHub Actions as the merge gate after push. The earlier a defect is caught, the cheaper the fix. ([Excalidraw source](docs/quality-gate-four-layers.en.excalidraw))*
 
 > **Note on the sketch caption:** The Excalidraw still shows BOO-28 as "planned". As of v3.17.0 (2026-05-12) BOO-28 is done — `migrate_boo_28()` drops `.github/workflows/eslint.yml` (Node stacks) or `.github/workflows/ruff.yml` (Python stacks) with mandatory SARIF output to `.ci-reports/` (prepares BOO-32 Hermes consumption). The PNG re-render is out of scope for this task.
 
@@ -2602,8 +2603,8 @@ These never depend on the AI tool:
 
 | Component | Location | Function |
 |---|---|---|
-| bash hooks | `hooks/*.sh` | spec-gate, doc-version-sync, audit-trace, branch-protection, dep-check |
-| GitHub Actions | `.github/workflows/*.yml` | ESLint/Ruff, Semgrep, Coverage, Perf, Sonar, Lighthouse |
+| bash hooks | `hooks/*.sh`, `bootstrap/scripts/*.sh` | pre-edit-bodyguard (Layer 0, BOO-86), spec-gate, doc-version-sync, audit-trace, branch-protection, dep-check, check-hook-sources (drift guard, BOO-89) |
+| GitHub Actions | `.github/workflows/*.yml` | ESLint/Ruff, Semgrep, Coverage, Perf, Sonar, Lighthouse, hook-sources (drift guard, BOO-89) |
 | `journal/` tree | `journal/reports/{ci,local}/`, `journal/learnings.*` | Reports + learning-loop |
 | Markdown artifacts | `CLAUDE.md`, `ARCHITECTURE_DESIGN.md`, `GOVERNANCE.md`, `SECURITY.md`, `specs/TEMPLATE.md` | Project context |
 | Configuration files | `.claude/environment.json`, `.claude/sensitive-paths.json`, `sonar-project.properties`, `lighthouserc.json` | Thresholds + tool registry |
@@ -2809,7 +2810,7 @@ The bundle is Tobias' operating system for Intentron engineering. Schrader descr
 
 *Fastly study (July 2025): senior developers use AI code 2.5x as often as juniors and benefit more. Beginners need friction to develop judgment — otherwise the next generation conducts AI without understanding its work.*
 
-**How we solve it:** A three-layer quality-gate architecture turns vibe coding into production-ready agentic engineering — layer 1 in the IDE, layer 2 as a pre-commit hook, layer 3 in CI. ESLint, Semgrep, coverage gate, performance baseline, and SonarQube interlock so nothing slips past the gates into main. See HANDBUCH §6 and §8d, plus BOO-2 (ESLint), BOO-4 (Semgrep), BOO-15 (coverage), BOO-16 (performance), BOO-5 (SonarQube), BOO-24 (AI architecture principles).
+**How we solve it:** A four-layer quality-gate architecture turns vibe coding into production-ready agentic engineering — layer 0 as the Edit-Bodyguard that catches unsafe patterns **before** the AI writes them (BOO-86, curated patterns, default = warning; see Appendix V), layer 1 in the IDE, layer 2 as a pre-commit hook, layer 3 in CI. ESLint, Semgrep, coverage gate, performance baseline, and SonarQube interlock so nothing slips past the gates into main. See HANDBUCH §6 and §8d and Appendix V, plus BOO-2 (ESLint), BOO-4 (Semgrep), BOO-15 (coverage), BOO-16 (performance), BOO-5 (SonarQube), BOO-24 (AI architecture principles), BOO-86 (Edit-Bodyguard).
 
 ### Chapter 4 — Intent is the New Code (core chapter)
 
@@ -3925,11 +3926,11 @@ Source: operator question Tobias 2026-05-28 ("several projects — bootstrap per
 
 ### When and why
 
-The three-layer quality-gate architecture (Appendix §8d, BOO-2/4/15/16) catches unsafe code at three points: in the IDE (Layer 1), at pre-commit (Layer 2), and in CI (Layer 3). What they share: they all engage **after** the AI has written the code. The **Edit-Bodyguard** inserts a **Layer 0 BEFORE** that chain — it inspects the code block at the moment the AI wants to write it to disk, and can stop it **before** the write happens.
+The quality gate (Appendix §8d, BOO-2/4/15/16) catches unsafe code at three points: in the IDE (Layer 1), at pre-commit (Layer 2), and in CI (Layer 3). What they share: they all engage **after** the AI has written the code. The **Edit-Bodyguard** inserts a **Layer 0 BEFORE** that chain — it inspects the code block at the moment the AI wants to write it to disk, and can stop it **before** the write happens. With it, the three-layer becomes a **four-layer quality-gate architecture**.
 
 Concretely, Layer 0 is a **`PreToolUse` hook on `Edit|Write`** (a sibling hook to `spec-gate.sh`, which fires on `Bash`/`git commit`). It reads the `tool_input` JSON, matches the planned content against a small, curated pattern set (secrets, `eval`, disabled TLS verification, SQL concatenation), and reports hits **before** the file is created. Unsafe material never even reaches the repo state — the fastest possible reflex.
 
-### Placement in the three-layer architecture
+### Placement in the four-layer architecture
 
 | Layer | Engages when | Tool | Depth |
 |-------|--------------|------|-------|
@@ -3964,7 +3965,7 @@ Layer 0 is the deterministic backstop to the **secure-coding hint** in `/impleme
 
 ### Related appendices & sources
 
-- **Appendix §8d (three-layer quality gate):** Layers 1-3, in front of which Layer 0 inserts itself.
+- **Appendix §8d (four-layer quality gate):** Layers 1-3, in front of which Layer 0 inserts itself.
 - **`bootstrap/references/file-templates.md §pre-edit-bodyguard`:** canonical source — hook script, all pattern files, schema, and anti-patterns.
 - **`bodyguard/SOURCES.md`:** provenance (CWE/OWASP/gitleaks/Semgrep) + maintenance convention per pattern.
 - **`/implement` Step 5 (secure-coding hint):** the prompt-layer variant for which Layer 0 is the backstop.
@@ -4043,7 +4044,7 @@ The `forbidden` column is the lever: it tells the AI not only what to use but al
 
 ### Two layers: base + project overlay
 
-Like the edit bodyguard (Appendix V, BOO-86) and the dpo control catalog (Wave X, BOO-87), `CONTEXT.md` follows the **base-plus-overlay pattern**:
+Like the edit bodyguard (Appendix V, BOO-86) and the dpo control catalog (release wave "Wave X", BOO-87 — not to be confused with *this* Appendix X, which is CONTEXT.md/BOO-91), `CONTEXT.md` follows the **base-plus-overlay pattern**:
 
 | Layer | File | Owner | Updates |
 |-------|------|-------|---------|
