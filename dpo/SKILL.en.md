@@ -194,7 +194,7 @@ state = same result — reproducible and Git-traceable.
 1. **Work through the catalogues (deterministic runner)**
 
    The runner reads the framework catalogues `dpo/controls/*.yml` (`gdpr`, `ndsg`,
-   optionally `nist-ai-600`/`eu-ai-act`) plus an optional **project overlay** under
+   optionally `nist-ai-600`) plus an optional **project overlay** under
    `.claude/dpo/controls/` (`.yml` + `.json`) and executes each control check mechanically:
 
    ```bash
@@ -278,7 +278,7 @@ AUDIT mode is fed by flat, versioned YAML catalogues. Each control is a mapping 
 | `gdpr.yml` | GDPR controls (Art. 5/6/13/17/28/30/32) |
 | `ndsg.yml` | Swiss nDSG controls (Art. 8/12/16/19/22/24/25) — CH differentiator |
 | `nist-ai-600.yml` | optional, for AI processing |
-| `eu-ai-act.yml` | EU AI Act (Reg. (EU) 2024/1689) — risk class, transparency, human oversight, logging, GPAI; opt-in for AI-bearing solutions (BOO-101), checks `AI_SYSTEM.md` |
+| `optional/eu-ai-act.yml` | EU AI Act (Reg. (EU) 2024/1689) — risk class, transparency, human oversight, logging, GPAI. **Not auto-loaded** (lives under `controls/optional/`): copied into the project overlay by the EU AI Act add-on (BOO-105) and only loaded then; checks `AI_SYSTEM.md` |
 
 **Project overlay (BYO framework):** A project can place its own catalogues under
 `.claude/dpo/controls/` (`.yml` + `.json`, same schema). The runner automatically merges them
