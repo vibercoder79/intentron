@@ -1,8 +1,10 @@
-# dpo/controls/eu-ai-act.yml — EU-AI-Act-Kontrollkatalog (BOO-101)
-# Deterministischer Kontrollkatalog, vom dpo-AUDIT-Modus abgearbeitet (Runner mergt
-# controls/*.yml automatisch). Kuratiert aus der KI-Verordnung (VO (EU) 2024/1689) —
-# KEINE Rechtsberatung, der Operator entscheidet. Relevant nur, wenn die Solution einen
-# KI-Anteil enthaelt, der (Kunden-)Daten verarbeitet (opt-in ueber EU-AI-Act-Add-on).
+# dpo/controls/optional/eu-ai-act.yml — EU-AI-Act-Kontrollkatalog (BOO-101/105)
+# Deterministischer Kontrollkatalog fuer den dpo-AUDIT-Modus. Liegt bewusst unter
+# controls/optional/ und wird vom Runner NICHT automatisch geladen: erst wenn das
+# EU-AI-Act-Add-on (Bootstrap-Phase 4.4n-bis, BOO-105) ihn ins Projekt-Overlay
+# .claude/dpo/controls/ kopiert, greift er — und dann nur fuer dieses Projekt.
+# Kuratiert aus der KI-Verordnung (VO (EU) 2024/1689) — KEINE Rechtsberatung,
+# der Operator entscheidet. Relevant nur bei KI-Anteil, der (Kunden-)Daten verarbeitet.
 #
 # Gleiches flaches Schema wie gdpr.yml/ndsg.yml:
 #   id | titel | evidenz | check_typ (file-exists|file-contains|grep-absent|review)

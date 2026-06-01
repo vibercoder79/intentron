@@ -171,7 +171,7 @@ Jedes aktivierte Add-on ergaenzt die Architektur-Dimensionen in `ARCHITECTURE_DE
 
 > **Privacy-Add-on (BOO-69/74):** Bei `[x] Privacy / DSGVO` installiert Bootstrap zusaetzlich den `dpo`-Skill **aus dem Framework-Bundle** (`$SKILL_SRC/dpo/`, analog `security-architect`), rendert `PRIVACY.md` aus `references/privacy-template.md`, legt `personal-data-paths.json`-Template an und setzt Backlog-Label `privacy`. Die operative Setup-Phase ist 4.4n (Privacy-Setup, analog 4.4i Sensitive-Paths). DPO laeuft mit drei Modi (ASSESS in `/ideation` Schritt 0e, REVIEW in `/implement` Schritt 5.5b, AUDIT in `/sprint-review` Schritt 7c). Details: HANDBUCH Anhang O.
 
-> **EU-AI-Act-Add-on (BOO-101):** Bei `[x] EU AI Act` aktiviert Bootstrap den EU-AI-Act-Kontrollkatalog des `dpo`-Skills (`dpo/controls/eu-ai-act.yml`, vom AUDIT-Runner automatisch mitgeladen) und rendert `AI_SYSTEM.md` aus `dpo/references/ai-system-template.md` (Risikoklasse, Transparenz, Human Oversight, Logging, GPAI). Setzt das Privacy-Add-on voraus (KI mit Kundendaten = auch Datenschutz). **Strikt opt-in** — ohne dieses Add-on aendert sich nichts. KEINE Rechtsberatung; der dpo-AUDIT meldet Urteils-Punkte als REVIEW-NEEDED.
+> **EU-AI-Act-Add-on (BOO-101/105):** Bei `[x] EU AI Act` kopiert Bootstrap den Katalog `dpo/controls/optional/eu-ai-act.yml` ins Projekt-Overlay `.claude/dpo/controls/` und rendert `AI_SYSTEM.md` aus `dpo/references/ai-system-template.md`. Operative Phase: **4.4n-bis**. Setzt das Privacy-Add-on voraus. **Strikt opt-in** — der Katalog liegt unter `controls/optional/` und wird vom dpo-Runner NUR geladen, wenn er ins Projekt kopiert wurde (kein Rauschen in Nicht-KI-Projekten). KEINE Rechtsberatung; Urteils-Punkte = REVIEW-NEEDED.
 
 **Merken:** `ADDONS = [...aktivierte]`
 
@@ -1029,6 +1029,30 @@ Bei `B.2 == nein/c` (kein GitHub gewuenscht): Phase 4.4k komplett skippen — Br
 > **Wichtig:** `PRIVACY.md` wird NICHT in `.gitignore` eingetragen — Audit-Trail-Pflicht. Datenschutz-Dokumentation gehoert ins Git. **`dpia/*.md`** ist ggf. sensibler — Operator entscheidet, ob die DPIA-Dateien committed oder in einem separaten privaten Repo gehalten werden.
 
 > **Issue-Referenz:** BOO-69. Quelle: `references/privacy-template.md` + `references/file-templates.md` §`personal-data-paths.json`. Migration fuer Bestands-Projekte: `references/migration-checklist-v1-to-v2.md` §BOO-69. HANDBUCH-Hintergrund: Anhang O Privacy by Design.
+
+### 4.4n-bis EU-AI-Act-Setup (BOO-101/105, nur wenn EU-AI-Act-Add-on aktiv)
+
+**Zweck:** Bei aktivem EU-AI-Act-Add-on (A.4 `[x] EU AI Act`) wird der EU-AI-Act-Kontrollkatalog **konditional** aktiviert und der KI-System-Steckbrief gerendert. Strikt opt-in: ohne dieses Add-on passiert nichts, und der Katalog laeuft NICHT im dpo-Audit anderer Projekte.
+
+**Vorbedingung:** `ADDONS` enthaelt `"EU AI Act"` **und** `"Privacy / DSGVO"` (KI mit Kundendaten = auch Datenschutz; Privacy-Phase 4.4n zuerst). Sonst ueberspringen.
+
+**Schritte:**
+
+1. **Katalog ins Projekt-Overlay kopieren:** `$SKILL_SRC/dpo/controls/optional/eu-ai-act.yml` → `.claude/dpo/controls/eu-ai-act.yml`. **Erst dadurch** laedt der `dpo-audit.py`-Runner den Katalog (Overlay-Glob ist rekursiv) — und zwar nur fuer dieses Projekt. (Im Framework liegt er bewusst unter `controls/optional/`, das der Runner NICHT automatisch laedt.)
+2. **`AI_SYSTEM.md` rendern** aus `$SKILL_SRC/dpo/references/ai-system-template.md` ins Projekt-Root. Abschnitte: Zweck, Risikoklasse, betroffene Daten, Transparenz, Human Oversight, Logging, GPAI, offene Punkte. Operator fuellt nach — **KEINE Rechtsberatung**.
+3. **`ARCHITECTURE_DESIGN.md`** um Verweis ergaenzen: "EU-AI-Act-Anforderungen: siehe `AI_SYSTEM.md`; Compliance-Status via dpo-AUDIT."
+4. **Backlog-Label `ai-act`** anlegen (optional, fuer Folge-Stories aus REVIEW-NEEDED).
+
+**Checkpoint Operator:**
+
+- [ ] `.claude/dpo/controls/eu-ai-act.yml` im Projekt vorhanden (Overlay)
+- [ ] `AI_SYSTEM.md` im Projekt-Root gerendert
+- [ ] `ARCHITECTURE_DESIGN.md` verweist auf `AI_SYSTEM.md`
+- [ ] (optional) Backlog-Label `ai-act`
+
+> **Designentscheid (BOO-105):** Der Katalog liegt unter `dpo/controls/optional/` (nicht `dpo/controls/`), damit der Runner ihn NICHT framework-weit automatisch laedt. So laeuft die EU-AI-Act-Pruefung garantiert **nur** in Projekten, die das Add-on gewaehlt haben — kein Rauschen (AI_SYSTEM.md-GAP) in Nicht-KI-Projekten. Der dpo-AUDIT meldet Urteils-Punkte (verbotene Praktiken, Hochrisiko-Einstufung, GPAI) als REVIEW-NEEDED; die Entscheidung liegt bei Operator/Legal.
+
+> **Issue-Referenz:** BOO-101 (Katalog + Template), BOO-105 (konditionales Opt-in + Phase 4.4n-bis). Quelle: `$SKILL_SRC/dpo/controls/optional/eu-ai-act.yml` + `$SKILL_SRC/dpo/references/ai-system-template.md`.
 
 > **Designentscheid-Hinweis:** Privacy ist optional, aber wenn aktiv: voll operationalisiert. Spiegelt das Security-Pattern (security-architect + SECURITY.md + sensitive-paths). Operator muss kein DPO-Wissen mitbringen — der Skill stellt die richtigen Pruef-Fragen. Rechtsempfehlungen aussprechen ist nicht Skill-Aufgabe, Pruef-Fragen sind.
 

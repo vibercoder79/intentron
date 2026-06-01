@@ -172,7 +172,7 @@ Each activated add-on extends the architecture dimensions in `ARCHITECTURE_DESIG
 
 > **Privacy add-on (BOO-69):** On `[x] Privacy / GDPR`, bootstrap additionally installs the `dpo` skill as standalone (analogous to `security-architect`), renders `PRIVACY.md` from `references/privacy-template.en.md`, creates `personal-data-paths.json` template, and sets backlog label `privacy`. The operational setup phase is 4.4n (Privacy Setup, analogous to 4.4i Sensitive Paths). DPO runs with three modes (ASSESS in `/ideation` Step 0e, REVIEW in `/implement` Step 5.5b, AUDIT in `/sprint-review` Step 7c). Details: HANDBUCH Appendix O.
 
-> **EU AI Act add-on (BOO-101):** On `[x] EU AI Act`, bootstrap activates the dpo skill's EU AI Act control catalogue (`dpo/controls/eu-ai-act.yml`, auto-loaded by the AUDIT runner) and renders `AI_SYSTEM.md` from `dpo/references/ai-system-template.md` (risk class, transparency, human oversight, logging, GPAI). Requires the Privacy add-on (AI with customer data = data protection too). **Strictly opt-in** — without this add-on nothing changes. No legal advice; the dpo AUDIT reports judgment items as REVIEW-NEEDED.
+> **EU AI Act add-on (BOO-101/105):** On `[x] EU AI Act`, bootstrap copies the catalogue `dpo/controls/optional/eu-ai-act.yml` into the project overlay `.claude/dpo/controls/` and renders `AI_SYSTEM.md` from `dpo/references/ai-system-template.md`. Operational phase: **4.4n-bis**. Requires the Privacy add-on. **Strictly opt-in** — the catalogue lives under `controls/optional/` and is loaded by the dpo runner ONLY once copied into the project (no noise in non-AI projects). No legal advice; judgment items = REVIEW-NEEDED.
 
 **Remember:** `ADDONS = [...activated]`
 
