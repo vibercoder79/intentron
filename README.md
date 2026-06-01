@@ -32,6 +32,8 @@ Four things set us apart concretely:
 
 **Common denominator:** Others optimize "the AI writes code." We optimize "a team — human plus *any* AI — gets intent to production, with guardrails it didn't have to build itself." The guardrails are invisible until they catch something — and when they catch, they explain why.
 
+**Faster *and* compliant — vs. plain vibe engineering.** Vibe engineering ships fast, but nobody guarantees the security, privacy and governance rules were followed — that surfaces *later*, in a security review or a data-protection audit, when a CISO/CIO finds non-compliant software months in. INTENTRON puts the rules up front in a machine-executable contract and catches violations *at commit time* (`sensitive-paths` → `review-ok`, `personal-data` → `privacy-ok`, Layer-0 bodyguard) — not in the audit; spec-linkage + `audit-trace.sh` hand the evidence to the auditor proactively (see `docs/runbooks/audit-perspective.md`). The team keeps its speed — inside the guardrails. For regulated work the `heavy` mode dials compliance evidence, mandatory review and branch protection up automatically.
+
 ---
 
 ## How INTENTRON differs
@@ -98,6 +100,8 @@ Full setup guide: **[HANDBUCH.md](HANDBUCH.md)** (German, ~230 KB) + **[HANDBUCH
 **What's new (v0.2.0):** see **[docs/releases/v0.2.0-overview.md](docs/releases/v0.2.0-overview.md)** — privacy-by-design, deployment scenarios, sovereignty stack, multi-operator coordination, dpo + security-architect as bundle skills, vault-harvest engine, post-install verification, multi-project operation, optional container profile.
 
 **What's new (v0.3.0–v0.5.0):** see **[docs/releases/v0.3.0-overview.md](docs/releases/v0.3.0-overview.md)**, **[v0.4.0-overview.md](docs/releases/v0.4.0-overview.md)** and **[v0.5.0-overview.md](docs/releases/v0.5.0-overview.md)** — Layer-0 Edit-Bodyguard (BOO-86, pre-edit-bodyguard.sh, four-layer Quality-Gate), dpo control catalogue (BOO-87, GDPR/nDSG controls as Git-tracked YAML, deterministic runner, PASS/GAP/REVIEW-NEEDED report), coverage-check v2 (BOO-88, statement-lines denominator), coverage-check single-source + Drift-Guard (BOO-89), Contribute-Back loop (BOO-90, contribute-fix.sh), CONTEXT.md Ubiquitous Language (BOO-91).
+
+**What's new (v0.7.0):** see **[v0.7.0-overview.md](docs/releases/v0.7.0-overview.md)** — enterprise readiness: value-prop frame ("fast AND compliant"), modular **EU AI Act** catalogue (`dpo/controls/eu-ai-act.yml` + `AI_SYSTEM.md`, opt-in), customer **integration-discovery** questionnaire, and an **audit/CISO runbook** (`docs/runbooks/audit-perspective.md`).
 
 **What's new (v0.6.0–v0.6.1):** see **[v0.6.0-overview.md](docs/releases/v0.6.0-overview.md)** and **[v0.6.1-overview.md](docs/releases/v0.6.1-overview.md)** — orphan-check work-item exception (BOO-92), raw-pii-guard AST hook against raw/plaintext PII in log sinks (BOO-93), HANDBUCH appendix Y / VPS team runbook (BOO-94), raw-pii-guard ruff-clean + framework hook lint gate (BOO-95), onboarding fix + quickstart with AI self-install/self-update prompts (BOO-96).
 
@@ -310,6 +314,8 @@ Vier Dinge unterscheiden uns konkret:
 
 **Gemeinsamer Nenner:** Andere optimieren „die KI schreibt Code". Wir optimieren „ein Team — Mensch plus *beliebige* KI — bringt Intent nach Produktion, mit Leitplanken, die es nicht selbst bauen musste." Die Leitplanken sind unsichtbar, bis sie etwas fangen — und wenn sie fangen, erklären sie warum.
 
+**Schneller *und* compliant — gegenüber reinem Vibe Engineering.** Vibe Engineering liefert schnell Code, aber niemand garantiert, dass Security-, Datenschutz- und Governance-Regeln eingehalten wurden — das fällt *nachgelagert* auf: im Security-Review oder Datenschutz-Audit, wenn ein CISO/CIO Monate später non-compliant Software findet. INTENTRON legt die Regeln vorab in einen maschinen-ausführbaren Vertrag und fängt Verstöße *im Commit* (`sensitive-paths` → `review-ok`, `personal-data` → `privacy-ok`, Layer-0-Bodyguard) — nicht erst im Audit; Spec-Linkage + `audit-trace.sh` liefern dem Auditor den Nachweis proaktiv (siehe `docs/runbooks/audit-perspective.md`). Das Team behält sein Tempo — innerhalb der Leitplanken. Bei regulierter Arbeit zieht der `heavy`-Modus Compliance-Evidenz, Mandatory Review und Branch-Protection automatisch hoch.
+
 ---
 
 ## Wie sich INTENTRON unterscheidet
@@ -376,6 +382,8 @@ Komplettes Setup-Handbuch: **[HANDBUCH.md](HANDBUCH.md)** (Deutsch, ~230 KB) + *
 **Was ist neu (v0.2.0):** siehe **[docs/releases/v0.2.0-overview.md](docs/releases/v0.2.0-overview.md)** — Privacy-by-Design, Deployment-Szenarien, Souveraenitaets-Stack, Multi-Operator-Koordination, dpo + security-architect als Bundle-Skills, Vault-Harvest-Engine, Post-Install-Verifikation, Multi-Projekt-Betrieb, optionales Container-Profil.
 
 **Was ist neu (v0.3.0–v0.5.0):** siehe **[docs/releases/v0.3.0-overview.md](docs/releases/v0.3.0-overview.md)**, **[v0.4.0-overview.md](docs/releases/v0.4.0-overview.md)** und **[v0.5.0-overview.md](docs/releases/v0.5.0-overview.md)** — Layer-0-Edit-Bodyguard (BOO-86, pre-edit-bodyguard.sh, vier-schichtige Quality-Gate-Architektur), dpo-Kontrollkatalog (BOO-87, DSGVO/nDSG-Controls als Git-versionierte YAML, deterministischer Runner, Report mit PASS/GAP/REVIEW-NEEDED), coverage-check v2 (BOO-88, Nenner = nur Statement-Zeilen), coverage-check Single-Source + Drift-Guard (BOO-89), Contribute-Back-Schleife (BOO-90, contribute-fix.sh), CONTEXT.md Ubiquitous Language (BOO-91).
+
+**Was ist neu (v0.7.0):** siehe **[v0.7.0-overview.md](docs/releases/v0.7.0-overview.md)** — Enterprise-Readiness: Value-Prop-Frame („schneller UND compliant"), modularer **EU-AI-Act**-Katalog (`dpo/controls/eu-ai-act.yml` + `AI_SYSTEM.md`, opt-in), Kunden-**Integration-Discovery**-Fragebogen und ein **Audit-/CISO-Runbook** (`docs/runbooks/audit-perspective.md`).
 
 **Was ist neu (v0.6.0–v0.6.1):** siehe **[v0.6.0-overview.md](docs/releases/v0.6.0-overview.md)** und **[v0.6.1-overview.md](docs/releases/v0.6.1-overview.md)** — orphan-check Work-Item-Ausnahme (BOO-92), raw-pii-guard AST-Hook gegen Roh-/Klartext-PII in Log-Senken (BOO-93), HANDBUCH-Anhang Y / VPS-Team-Runbook (BOO-94), raw-pii-guard ruff-clean + Framework-Hook-Lint-Gate (BOO-95), Onboarding-Fix + Quickstart mit AI-Self-Install/Self-Update-Prompts (BOO-96).
 

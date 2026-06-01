@@ -165,11 +165,14 @@ Bootstrap creates a neutral **Backlog Record** as the contract shape. External t
    [ ] Cost Efficiency — for LLM-heavy / SaaS-subscription projects
    [ ] Signal Quality — for ML / analytics / signal systems
    [ ] Compliance — for regulated industries (health, finance, legal)
+   [ ] EU AI Act — for solutions with an AI component that process (customer) data (AI-Act documentation duties)
 ```
 
 Each activated add-on extends the architecture dimensions in `ARCHITECTURE_DESIGN.md` + the corresponding section in `SECURITY.md` / `GOVERNANCE.md`.
 
 > **Privacy add-on (BOO-69):** On `[x] Privacy / GDPR`, bootstrap additionally installs the `dpo` skill as standalone (analogous to `security-architect`), renders `PRIVACY.md` from `references/privacy-template.en.md`, creates `personal-data-paths.json` template, and sets backlog label `privacy`. The operational setup phase is 4.4n (Privacy Setup, analogous to 4.4i Sensitive Paths). DPO runs with three modes (ASSESS in `/ideation` Step 0e, REVIEW in `/implement` Step 5.5b, AUDIT in `/sprint-review` Step 7c). Details: HANDBUCH Appendix O.
+
+> **EU AI Act add-on (BOO-101):** On `[x] EU AI Act`, bootstrap activates the dpo skill's EU AI Act control catalogue (`dpo/controls/eu-ai-act.yml`, auto-loaded by the AUDIT runner) and renders `AI_SYSTEM.md` from `dpo/references/ai-system-template.md` (risk class, transparency, human oversight, logging, GPAI). Requires the Privacy add-on (AI with customer data = data protection too). **Strictly opt-in** — without this add-on nothing changes. No legal advice; the dpo AUDIT reports judgment items as REVIEW-NEEDED.
 
 **Remember:** `ADDONS = [...activated]`
 

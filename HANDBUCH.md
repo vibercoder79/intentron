@@ -50,6 +50,12 @@ Das ist **nicht** das Problem von KI. Das ist das Problem von **fehlendem System
 Vibe Coding ist mächtig — aber nur wenn die KI versteht **was du gebaut hast** und **warum**.
 Ohne Dokumentation und Struktur gibt jede neue Session bei null an.
 
+### Das zweite Problem: der nachgelagerte Compliance-Befund
+
+Es gibt ein zweites, teureres Problem — und das trifft nicht den Solo-Entwickler, sondern Teams in regulierten Organisationen. Ohne Leitplanken merkt niemand *während* der Entwicklung, ob Security-, Datenschutz- und Governance-Regeln eingehalten wurden. Der Befund kommt **nachgelagert**: im Security-Review, im Datenschutz-Audit, beim CISO — oft Monate später, wenn die Software längst läuft. Dann heißt es „ihr habt euch nicht an die Regeln gehalten", und es wird teuer nachgebessert.
+
+INTENTRON dreht das um: Die Spielregeln liegen **vorab** im maschinen-ausführbaren Vertrag (`CONVENTIONS.md`/`AGENTS.md`), und Verstöße werden **früh** gefangen — im Commit (`sensitive-paths` → `review-ok`, `personal-data` → `privacy-ok`, Layer-0-Edit-Bodyguard), nicht erst im Audit. Spec-Linkage + `audit-trace.sh` liefern dem CISO/Auditor den Nachweis proaktiv. Das Team verliert keine Geschwindigkeit — es arbeitet *innerhalb* der Leitplanken. Bei regulierter Arbeit zieht der `heavy`-Modus Compliance-Evidenz, Mandatory Review und Branch-Protection automatisch hoch. Audit-Perspektive im Detail: `docs/runbooks/audit-perspective.md`.
+
 **Mit Governance** passiert folgendes:
 - Du sagst in einer neuen Session: `/status` — Claude sieht sofort alles
 - Du sagst: `/implement ISSUE-42` — Claude weiß genau was zu tun ist
