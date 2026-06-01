@@ -137,6 +137,20 @@ Binary on/off would be too harsh — infrastructure (auth refactor, DB migration
 
 > **Issue reference:** BOO-69. Skill invocation: DPO ASSESS mode reads the story and writes the DPIA. Pipeline position: ideation Step 0e (Pre-Flight, soft — no HARD GATE). Hard gate for code changes: `/implement` Step 5.5b (Personal-Data-Paths-Gate).
 
+### Step 0e-bis: EU AI Act pre-flight (BOO-101/106, only if the EU AI Act add-on is active)
+
+> **Activation:** Only if `AI_SYSTEM.md` exists in the project root (EU AI Act add-on enabled at bootstrap, phase 4.4n-bis). Otherwise skip.
+
+**Purpose:** Extend the story frontmatter with `ai_act_relevant: true|false` — does the story touch the AI system (the model, its inputs/outputs, data handling, transparency/logging/human oversight)?
+
+1. Compare the story against `AI_SYSTEM.md`: does it change/extend AI functionality or the AI's processing of (customer) data?
+2. **If `ai_act_relevant: true`:** add a note to the story body — "This story touches the AI system (EU AI Act). Check/update `AI_SYSTEM.md` (risk class, transparency, human oversight, logging) before finalizing the spec. Judgment items are tracked as REVIEW-NEEDED by the periodic dpo AUDIT." Backlog label `ai-act` (if adapter active).
+3. **If `ai_act_relevant: false`:** skip with a log entry.
+
+**Output:** story spec with `ai_act_relevant:` + optional AI-system note + label.
+
+> **Soft, no HARD GATE** — deliberately: the AI Act is governance/documentation, not a per-line code check. Binding documentation audit: `/sprint-review` 7c (catalogue `eu-ai-act.yml` checks `AI_SYSTEM.md`). Code-change reminder: `/implement` Step 5.5c. Full picture: `docs/compliance/compliance-mechanik.md`. No legal advice.
+
 ### Step 1: Research (if needed)
 
 Check whether external research is needed (new APIs, unfamiliar technologies, best practices).

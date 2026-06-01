@@ -3066,6 +3066,8 @@ Caching is optionally enabled via a Claude-Code hook. If the hook is not set up:
 
 ![Privacy pipeline — DPO + security-architect, three modes (ASSESS / REVIEW / AUDIT) along the skill chain](docs/assets/boo-69-privacy-pipeline.png)
 
+> **Compliance mechanism overview:** How gates (per-code hard stop in `/implement`) and catalogues (periodic doc audit in `/sprint-review`) interact across the lifecycle — for privacy/GDPR **and** EU AI Act, incl. automatic-vs-REVIEW-NEEDED — is explained in `docs/compliance/compliance-mechanik.md` (CISO/operator view).
+
 ### When do I need the Privacy mode?
 
 Activate the Privacy add-on in `/bootstrap` (Phase A.4) when one of these triggers applies:

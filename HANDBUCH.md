@@ -3203,6 +3203,8 @@ Cache ist optional aktivierbar via Claude-Code-Hook. Wenn der Hook nicht eingeri
 
 ![Privacy-Pipeline — DPO + security-architect, drei Modi (ASSESS / REVIEW / AUDIT) entlang der Skill-Kette](docs/assets/boo-69-privacy-pipeline.png)
 
+> **Compliance-Mechanik im Ueberblick:** Wie Gates (per-Code-Hartstopp im `/implement`) und Kataloge (periodischer Doku-Audit im `/sprint-review`) ueber den Lebenszyklus zusammenspielen — fuer Privacy/DSGVO **und** EU AI Act, inkl. automatisch-vs-REVIEW-NEEDED — erklaert `docs/compliance/compliance-mechanik.md` (CISO-/Operator-Sicht).
+
 ### Wann brauche ich den Privacy-Modus?
 
 Aktiviere das Privacy-Add-on im `/bootstrap` (Phase A.4), wenn einer dieser Trigger zutrifft:
