@@ -50,6 +50,12 @@ That's **not** an AI problem. That's a **missing-system** problem.
 Vibe coding is powerful — but only if the AI understands **what you built** and **why**.
 Without documentation and structure, every new session starts from zero.
 
+### The second problem: the after-the-fact compliance finding
+
+There is a second, more expensive problem — and it hits not the solo developer but teams in regulated organizations. Without guardrails, nobody notices *during* development whether security, privacy and governance rules were followed. The finding arrives **after the fact**: in a security review, a data-protection audit, at the CISO — often months later, when the software is long live. Then it's "you didn't follow the rules", and the rework is expensive.
+
+INTENTRON flips this: the rules live **up front** in a machine-executable contract (`CONVENTIONS.md`/`AGENTS.md`), and violations are caught **early** — at commit time (`sensitive-paths` → `review-ok`, `personal-data` → `privacy-ok`, Layer-0 edit bodyguard), not in the audit. Spec-linkage + `audit-trace.sh` hand the CISO/auditor the evidence proactively. The team loses no speed — it works *inside* the guardrails. For regulated work the `heavy` mode dials compliance evidence, mandatory review and branch protection up automatically. Audit perspective in detail: `docs/runbooks/audit-perspective.md`.
+
 **With governance** here's what happens:
 
 - New session? Type `/status` — Claude sees everything instantly

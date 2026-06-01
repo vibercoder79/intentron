@@ -192,7 +192,7 @@ Projektstand = gleiches Ergebnis, reproduzierbar und Git-belegbar.
 1. **Kataloge abarbeiten (deterministischer Runner)**
 
    Der Runner liest die Framework-Kataloge `dpo/controls/*.yml` (`gdpr`, `ndsg`,
-   optional `nist-ai-600`) plus ein optionales **Projekt-Overlay** unter
+   optional `nist-ai-600`/`eu-ai-act`) plus ein optionales **Projekt-Overlay** unter
    `.claude/dpo/controls/` (`.yml` + `.json`) und fuehrt jeden Control-Check mechanisch aus:
 
    ```bash
@@ -277,6 +277,7 @@ Mapping mit festem Schema:
 | `gdpr.yml` | DSGVO-Kontrollen (Art. 5/6/13/17/28/30/32) |
 | `ndsg.yml` | Schweizer nDSG-Kontrollen (Art. 8/12/16/19/22/24/25) — CH-Alleinstellung |
 | `nist-ai-600.yml` | optional, fuer KI-Verarbeitungen |
+| `eu-ai-act.yml` | EU AI Act (VO (EU) 2024/1689) — Risikoklasse, Transparenz, Human Oversight, Logging, GPAI; opt-in bei KI-Anteil (BOO-101), prueft `AI_SYSTEM.md` |
 
 **Projekt-Overlay (BYO-Framework):** Ein Projekt kann eigene Kataloge unter
 `.claude/dpo/controls/` ablegen (`.yml` + `.json`, gleiches Schema). Der Runner mergt sie

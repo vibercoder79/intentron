@@ -102,5 +102,5 @@ echo "── Retention-Policy ────────────────�
 echo "  Empfehlung: Session-Logs 90 Tage aufbewahren, dann manuell"
 echo "  archivieren oder löschen. Details: docs/domain/adrs/ (ADR anlegen)."
 echo ""
-echo "  Weitere Infos in GOVERNANCE.md §Audit-Trail."
+echo "  Weitere Infos: docs/runbooks/audit-perspective.md + CONVENTIONS.md §Audit-Trail."
 echo "════════════════════════════════════════════════════════════"

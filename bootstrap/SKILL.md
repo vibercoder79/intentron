@@ -164,11 +164,14 @@ Der Bootstrap erzeugt einen neutralen **Backlog-Record** als Vertragsform. Exter
    [ ] Cost Efficiency — bei LLM-lastigen / SaaS-Subscription-Projekten
    [ ] Signal Quality — bei ML / Analytics / Signal-Systemen
    [ ] Compliance — fuer regulierte Branchen (Gesundheit, Finanz, Legal)
+   [ ] EU AI Act — fuer Solutions mit KI-Anteil, die (Kunden-)Daten verarbeiten (KI-VO-Doku-Pflichten)
 ```
 
 Jedes aktivierte Add-on ergaenzt die Architektur-Dimensionen in `ARCHITECTURE_DESIGN.md` + entsprechende Sektion in `SECURITY.md` / `GOVERNANCE.md`.
 
 > **Privacy-Add-on (BOO-69/74):** Bei `[x] Privacy / DSGVO` installiert Bootstrap zusaetzlich den `dpo`-Skill **aus dem Framework-Bundle** (`$SKILL_SRC/dpo/`, analog `security-architect`), rendert `PRIVACY.md` aus `references/privacy-template.md`, legt `personal-data-paths.json`-Template an und setzt Backlog-Label `privacy`. Die operative Setup-Phase ist 4.4n (Privacy-Setup, analog 4.4i Sensitive-Paths). DPO laeuft mit drei Modi (ASSESS in `/ideation` Schritt 0e, REVIEW in `/implement` Schritt 5.5b, AUDIT in `/sprint-review` Schritt 7c). Details: HANDBUCH Anhang O.
+
+> **EU-AI-Act-Add-on (BOO-101):** Bei `[x] EU AI Act` aktiviert Bootstrap den EU-AI-Act-Kontrollkatalog des `dpo`-Skills (`dpo/controls/eu-ai-act.yml`, vom AUDIT-Runner automatisch mitgeladen) und rendert `AI_SYSTEM.md` aus `dpo/references/ai-system-template.md` (Risikoklasse, Transparenz, Human Oversight, Logging, GPAI). Setzt das Privacy-Add-on voraus (KI mit Kundendaten = auch Datenschutz). **Strikt opt-in** — ohne dieses Add-on aendert sich nichts. KEINE Rechtsberatung; der dpo-AUDIT meldet Urteils-Punkte als REVIEW-NEEDED.
 
 **Merken:** `ADDONS = [...aktivierte]`
 
