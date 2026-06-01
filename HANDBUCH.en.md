@@ -3068,6 +3068,10 @@ Caching is optionally enabled via a Claude-Code hook. If the hook is not set up:
 
 > **Compliance mechanism overview:** How gates (per-code hard stop in `/implement`) and catalogues (periodic doc audit in `/sprint-review`) interact across the lifecycle — for privacy/GDPR **and** EU AI Act, incl. automatic-vs-REVIEW-NEEDED — is explained in `docs/compliance/compliance-mechanik.md` (CISO/operator view).
 
+![Compliance mechanism — lifecycle (/ideation → /implement → /sprint-review) × gates/catalogues × privacy/EU AI Act](docs/assets/compliance-mechanik.en.png)
+
+*Gates (per commit, hard stop) vs. catalogues (periodic audit); automatic vs. REVIEW-NEEDED. Details: `docs/compliance/compliance-mechanik.md`. ([Excalidraw source](docs/assets/compliance-mechanik.en.excalidraw))*
+
 ### When do I need the Privacy mode?
 
 Activate the Privacy add-on in `/bootstrap` (Phase A.4) when one of these triggers applies:

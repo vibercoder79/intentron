@@ -1,5 +1,9 @@
 # Compliance Mechanics — End-to-End
 
+![Compliance mechanism — lifecycle (/ideation → /implement → /sprint-review) × gates/catalogues × privacy/EU AI Act](../assets/compliance-mechanik.en.png)
+
+*Gates (per commit, hard stop) vs. catalogues (periodic audit); automatic vs. REVIEW-NEEDED (human decision). ([Excalidraw source](../assets/compliance-mechanik.en.excalidraw))*
+
 > **Purpose.** This document shows a CISO/CIO/operator in **one** view *how* compliance takes effect
 > in the framework — across the full lifecycle of a change, from idea to periodic audit. It invents
 > nothing: it bundles the existing mechanisms (gates, hooks, control catalogues) into one auditable

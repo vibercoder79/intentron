@@ -3205,6 +3205,10 @@ Cache ist optional aktivierbar via Claude-Code-Hook. Wenn der Hook nicht eingeri
 
 > **Compliance-Mechanik im Ueberblick:** Wie Gates (per-Code-Hartstopp im `/implement`) und Kataloge (periodischer Doku-Audit im `/sprint-review`) ueber den Lebenszyklus zusammenspielen — fuer Privacy/DSGVO **und** EU AI Act, inkl. automatisch-vs-REVIEW-NEEDED — erklaert `docs/compliance/compliance-mechanik.md` (CISO-/Operator-Sicht).
 
+![Compliance-Mechanik — Lebenszyklus (/ideation → /implement → /sprint-review) × Gates/Kataloge × Privacy/EU AI Act](docs/assets/compliance-mechanik.png)
+
+*Gates (per Commit, harter Stopp) vs. Kataloge (periodischer Audit); automatisch vs. REVIEW-NEEDED. Details: `docs/compliance/compliance-mechanik.md`. ([Excalidraw-Quelle](docs/assets/compliance-mechanik.excalidraw))*
+
 ### Wann brauche ich den Privacy-Modus?
 
 Aktiviere das Privacy-Add-on im `/bootstrap` (Phase A.4), wenn einer dieser Trigger zutrifft:

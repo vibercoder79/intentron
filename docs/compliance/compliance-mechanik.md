@@ -1,5 +1,9 @@
 # Compliance-Mechanik — End-to-End
 
+![Compliance-Mechanik — Lebenszyklus (/ideation → /implement → /sprint-review) × Gates/Kataloge × Privacy/EU AI Act](../assets/compliance-mechanik.png)
+
+*Gates (per Commit, harter Stopp) vs. Kataloge (periodischer Audit); automatisch vs. REVIEW-NEEDED (menschliche Entscheidung). ([Excalidraw-Quelle](../assets/compliance-mechanik.excalidraw))*
+
 > **Zweck.** Dieses Dokument zeigt einem CISO/CIO/Operator in **einem** Blick, *wie* Compliance im
 > Framework greift — über den gesamten Lebenszyklus einer Änderung, von der Idee bis zum periodischen
 > Audit. Es erfindet nichts dazu: Es bündelt die bereits vorhandenen Mechanismen (Gates, Hooks,
