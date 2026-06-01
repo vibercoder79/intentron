@@ -79,3 +79,14 @@ Spec geschrieben in Session 2026-06-01 (Folge aus dem VPS-Team-Runbook PR #16). 
 ## Rollout
 
 Additiv, reine Doku/Diagramm. Kein Verhaltens-Change, keine Migration nötig. Nach Merge ist Anhang Y die kanonische Quelle; das standalone Runbook bleibt als Pointer bestehen (oder wird beim Implement entfernt). Bestands-Projekte sind nicht betroffen.
+
+## Result-Summary
+
+Umgesetzt 2026-06-01 (Modus `sub-agents`: DE-Writer, EN-Writer, Diagramm + Lead-Synthese):
+
+- **Anhang Y „VPS/Cloud-Team-Runbook (BOO-94)"** in `HANDBUCH.md` (DE) und `HANDBUCH.en.md` (EN), paritätisch, mit Unterabschnitten Y.1–Y.8 (Szenario/Voraussetzungen, einmal-pro-VPS, pro-Projekt, Projekt 2..N/Brownfield, Team, Entscheidungen, Vier-Layer-headless, Schnellreferenz). In der Anhang-Übersicht (Tabelle + Intro) und im TOC verlinkt.
+- **Diagramm** `docs/assets/vps-team-runbook.excalidraw` + `.en.excalidraw` + beide `.png` (6960×3680, Style aus `quality-gate-four-layers`), in beide Anhänge eingebettet. Visuell validiert (3 Render-Runden); „Git-Hooks pro Repo" doppelt hervorgehoben.
+- **Anhang-Index A–X → A–Y** in HANDBUCH-Übersicht (DE+EN), README (DE+EN), CONVENTIONS (DE+EN).
+- **Standalone-Runbook** `docs/runbooks/vps-team-setup.md` auf einen Pointer auf Anhang Y reduziert (kein Doppel-Inhalt → kein Drift; Datei behalten, um PR-#16-Historie/Links nicht zu brechen — Decision 1).
+- **Querverweise** §8d / Anhang P / Anhang U → Anhang Y (DE+EN). Release-Note: v0.6.0-overview Wave AD.
+- Verifiziert: keine veralteten „A–X"-Treffer mehr; DE/EN-Parität; `git diff --check` clean.

@@ -436,7 +436,7 @@ If yes → operator can switch AI coding tools (Claude Code → Codex → Cursor
 
 ## Related documents
 
-- `HANDBUCH.md` — full user guide including §1-12 + Appendix A-X
+- `HANDBUCH.md` — full user guide including §1-12 + Appendix A-Y
 - `HANDBUCH.md` Appendix K — Tool-Adapter (how to use this framework with Codex, Cursor, Aider, local LLMs)
 - `HANDBUCH.md` Appendix L — 4P pipeline mapping (Pitch as the closing phase)
 - `HANDBUCH.md` Appendix M — Schrader Decoder (chapter-by-chapter mapping into the bundle)
@@ -883,7 +883,7 @@ Wenn ja → Operator kann KI-Coding-Tools wechseln (Claude Code → Codex → Cu
 
 ## Verwandte Dokumente
 
-- `HANDBUCH.md` — vollstaendiges Handbuch inkl. §1-12 + Anhang A-X
+- `HANDBUCH.md` — vollstaendiges Handbuch inkl. §1-12 + Anhang A-Y
 - `HANDBUCH.md` Anhang K — Tool-Adapter (wie man das Framework mit Codex, Cursor, Aider, lokalen LLMs nutzt)
 - `HANDBUCH.md` Anhang L — 4P-Pipeline-Mapping (Pitch als geschlossene Phase)
 - `HANDBUCH.md` Anhang M — Schrader-Decoder (Kapitel-fuer-Kapitel-Mapping ins Bundle)
