@@ -4374,4 +4374,4 @@ Source: BOO-94 (promotion of `docs/runbooks/vps-team-setup.md` to the canonical 
 
 *This handbook is part of the INTENTRON.*
 *GitHub: github.com/vibercoder79/intentron*
-*Last updated: 2026-05-28 (Appendix J Codex onboarding walkthrough added — BOO-50; Appendix T extended with the 5-step E2E trial protocol — closes BOO-48; Appendix R vault harvest extended — `default_vault_subdir` + incremental `--since` sync, BOO-82)*
+*Last updated: 2026-06-01 (v0.3.0–v0.6.2: security/governance wave, onboarding fix + docs sync — BOO-86 through BOO-97; incl. Layer-0 edit bodyguard, dpo control catalogue, CONTEXT.md ubiquitous language, raw-pii-guard, Appendix Y VPS/cloud team runbook, quickstart with self-install/self-update prompts)*

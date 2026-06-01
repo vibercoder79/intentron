@@ -99,6 +99,8 @@ Full setup guide: **[HANDBUCH.md](HANDBUCH.md)** (German, ~230 KB) + **[HANDBUCH
 
 **What's new (v0.3.0–v0.5.0):** see **[docs/releases/v0.3.0-overview.md](docs/releases/v0.3.0-overview.md)**, **[v0.4.0-overview.md](docs/releases/v0.4.0-overview.md)** and **[v0.5.0-overview.md](docs/releases/v0.5.0-overview.md)** — Layer-0 Edit-Bodyguard (BOO-86, pre-edit-bodyguard.sh, four-layer Quality-Gate), dpo control catalogue (BOO-87, GDPR/nDSG controls as Git-tracked YAML, deterministic runner, PASS/GAP/REVIEW-NEEDED report), coverage-check v2 (BOO-88, statement-lines denominator), coverage-check single-source + Drift-Guard (BOO-89), Contribute-Back loop (BOO-90, contribute-fix.sh), CONTEXT.md Ubiquitous Language (BOO-91).
 
+**What's new (v0.6.0–v0.6.1):** see **[v0.6.0-overview.md](docs/releases/v0.6.0-overview.md)** and **[v0.6.1-overview.md](docs/releases/v0.6.1-overview.md)** — orphan-check work-item exception (BOO-92), raw-pii-guard AST hook against raw/plaintext PII in log sinks (BOO-93), HANDBUCH appendix Y / VPS team runbook (BOO-94), raw-pii-guard ruff-clean + framework hook lint gate (BOO-95), onboarding fix + quickstart with AI self-install/self-update prompts (BOO-96).
+
 **Tool-neutral specification:** [CONVENTIONS.md](CONVENTIONS.md) — describes the framework conventions without binding to a specific AI tool. Read this first when adopting the framework with Codex, Cursor, or any other tool (see HANDBUCH Appendix K).
 
 **Project handover by design:** every bootstrap now chooses a project documentation SSoT: Obsidian Vault, repo `docs/project/`, external DMS, or an explicit repo fallback. It also creates or links a `Developer Onboarding` artifact so an unfamiliar team or another coding tool can take over the project without relying on old chat history.
@@ -189,6 +191,7 @@ The framework is the skeleton. **You tailor the muscles** — the appendices tel
 | Skill | Command | What it does |
 |-------|---------|-------------|
 | **[bootstrap](bootstrap/)** | `/bootstrap` | **Start here.** Interview-driven project setup — CLAUDE.md, Linear, Git hooks, skill selection. |
+| **[intent](intent/)** | `/intent` | Captures the *why* before the spec — Perceive questions + 8-pattern anti-pattern self-check. Runs before `/ideation`. |
 | **[ideation](ideation/)** | `/ideation` | Idea → 4-perspective research → Linear issue with acceptance criteria. |
 | **[backlog](backlog/)** | `/backlog` | Sprint planning — which story now, which later, and why. Dependency-aware. |
 | **[implement](implement/)** | `/implement` | 8-step protocol: Agent pattern → Spec → Code → Governance validation → Commit. |
@@ -374,6 +377,8 @@ Komplettes Setup-Handbuch: **[HANDBUCH.md](HANDBUCH.md)** (Deutsch, ~230 KB) + *
 
 **Was ist neu (v0.3.0–v0.5.0):** siehe **[docs/releases/v0.3.0-overview.md](docs/releases/v0.3.0-overview.md)**, **[v0.4.0-overview.md](docs/releases/v0.4.0-overview.md)** und **[v0.5.0-overview.md](docs/releases/v0.5.0-overview.md)** — Layer-0-Edit-Bodyguard (BOO-86, pre-edit-bodyguard.sh, vier-schichtige Quality-Gate-Architektur), dpo-Kontrollkatalog (BOO-87, DSGVO/nDSG-Controls als Git-versionierte YAML, deterministischer Runner, Report mit PASS/GAP/REVIEW-NEEDED), coverage-check v2 (BOO-88, Nenner = nur Statement-Zeilen), coverage-check Single-Source + Drift-Guard (BOO-89), Contribute-Back-Schleife (BOO-90, contribute-fix.sh), CONTEXT.md Ubiquitous Language (BOO-91).
 
+**Was ist neu (v0.6.0–v0.6.1):** siehe **[v0.6.0-overview.md](docs/releases/v0.6.0-overview.md)** und **[v0.6.1-overview.md](docs/releases/v0.6.1-overview.md)** — orphan-check Work-Item-Ausnahme (BOO-92), raw-pii-guard AST-Hook gegen Roh-/Klartext-PII in Log-Senken (BOO-93), HANDBUCH-Anhang Y / VPS-Team-Runbook (BOO-94), raw-pii-guard ruff-clean + Framework-Hook-Lint-Gate (BOO-95), Onboarding-Fix + Quickstart mit AI-Self-Install/Self-Update-Prompts (BOO-96).
+
 **Tool-neutrale Spezifikation:** [CONVENTIONS.md](CONVENTIONS.md) — beschreibt die Framework-Konventionen ohne Bindung an ein bestimmtes KI-Tool. Lies das zuerst, wenn du das Framework mit Codex, Cursor oder einem anderen Tool aufnimmst (siehe HANDBUCH Anhang K).
 
 **Uebergabe standardmaessig mitgedacht:** Jeder Bootstrap waehlt jetzt eine Projekt-Dokumentations-SSoT: Obsidian Vault, Repo `docs/project/`, externes DMS oder expliziter Repo-Fallback. Zusaetzlich wird ein `Developer Onboarding` erzeugt oder verlinkt, damit ein fremdes Team oder ein anderes Coding-Tool das Projekt ohne alte Chat-Historie uebernehmen kann.
@@ -464,6 +469,7 @@ Das Framework ist das Skelett. **Die Muskeln schneiderst du** — die Anhaenge z
 | Skill | Befehl | Was er tut |
 |-------|--------|------------|
 | **[bootstrap](bootstrap/)** | `/bootstrap` | **Einstieg:** Interview-geführtes Projekt-Setup — CLAUDE.md, Linear, Git-Hooks, Skill-Auswahl. |
+| **[intent](intent/)** | `/intent` | Hält das *Warum* vor der Spec fest — Perceive-Fragen + 8-Pattern-Anti-Pattern-Self-Check. Läuft vor `/ideation`. |
 | **[ideation](ideation/)** | `/ideation` | Idee → 4-Perspektiven-Research → Linear Issue mit ACs. |
 | **[backlog](backlog/)** | `/backlog` | Sprint Planning — welche Story jetzt, welche nach hinten, warum. Abhängigkeiten-aware. |
 | **[implement](implement/)** | `/implement` | 8-Schritte-Protokoll: Agent-Pattern → Spec → Code → Governance-Validation → Commit. |

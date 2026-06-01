@@ -1,10 +1,10 @@
 <a name="deutsch"></a>
 
-# Architecture Review — 8 Dimensionen gegen eine Story oder das Gesamtsystem
+# Architecture Review — Architektur-Dimensionen gegen eine Story oder das Gesamtsystem
 
-> Prueft jede Story — oder das gesamte System — gegen 8 Architektur-Dimensionen. Findet Risiken, Tech Debt und Skalierungs-Probleme **bevor** sie im Produktivsystem landen.
+> Prueft jede Story — oder das gesamte System — gegen die aktiven Architektur-Dimensionen (8 Standard + aktive Add-ons). Findet Risiken, Tech Debt und Skalierungs-Probleme **bevor** sie im Produktivsystem landen.
 
-**Version:** 1.3.0 · **Befehl:** `/architecture-review`
+**Version:** 1.12.0 · **Befehl:** `/architecture-review`
 
 ---
 
@@ -12,7 +12,7 @@
 
 Die meisten Teams machen Architektur-Review erst wenn etwas kaputt geht. Dieser Skill macht Review zu einem Routine-Checkpoint — fuer einzelne Stories (Story-Review) oder das Gesamtsystem (System-Review).
 
-Der Skill zwingt Claude, `ARCHITECTURE_DESIGN.md` komplett zu lesen (§1–§8 plus alle ADRs) bevor irgendeine Bewertung erfolgt. Kein Ueberfliegen, kein "ich habe genug gelesen". Diese Regel allein verhindert die meisten Fehleinschaetzungen.
+Der Skill zwingt Claude, `ARCHITECTURE_DESIGN.md` komplett zu lesen (§1–§6 plus optionale Add-on-Sektionen §7+ und alle ADRs) bevor irgendeine Bewertung erfolgt. Kein Ueberfliegen, kein "ich habe genug gelesen". Diese Regel allein verhindert die meisten Fehleinschaetzungen.
 
 **Zwei Modi:**
 
@@ -23,7 +23,9 @@ Der Skill zwingt Claude, `ARCHITECTURE_DESIGN.md` komplett zu lesen (§1–§8 p
 
 ---
 
-## Die 8 Architektur-Dimensionen
+## Die Architektur-Dimensionen
+
+**8 Standard-Dimensionen** (immer aktiv):
 
 | # | Dimension | Was geprueft wird |
 |---|-----------|-------------------|
@@ -33,10 +35,35 @@ Der Skill zwingt Claude, `ARCHITECTURE_DESIGN.md` komplett zu lesen (§1–§8 p
 | 4 | **Performance** | Latenz-Budgets, Hot Paths, Bottlenecks |
 | 5 | **Observability** | Metrik-Coverage, Logs, Traces, Alert Rules |
 | 6 | **Maintainability** | Kopplung, Klarheit, toter Code, Duplikate |
-| 7 | **Cost Efficiency** | Cloud-Ausgaben, redundanter Compute, Leerlauf |
-| 8 | **Signal Quality** | Fuer ML/AI-Systeme: Rauschen vs. Signal, Drift |
+| 7 | **Testability** | Testbarkeit, Coverage, Contract-Tests |
+| 8 | **Scalability** | Lastverhalten, horizontale Skalierung, Engpaesse |
 
-Dimensionen 7 und 8 werden beim Bootstrap domain-spezifisch angepasst — ersetz sie durch das, was dein Projekt wirklich interessiert.
+**KI-Tauglichkeit** (Standard-Dimension, BOO-7) — siehe eigener Abschnitt unten.
+
+**Add-ons** (nur wenn beim Bootstrap aktiviert): Privacy / DSGVO, Cost Efficiency, Signal Quality, Compliance.
+
+Add-ons werden beim Bootstrap domain-spezifisch aktiviert — die aktive Dimensionsliste steht in `ARCHITECTURE_DESIGN.md §5`. Es werden nie alle Dimensionen pauschal geprueft, sondern die fuer die jeweilige Story relevanten.
+
+---
+
+## KI-Tauglichkeit (Standard, BOO-7)
+
+Eigene Standard-Dimension aus Schrader *Code Crash* Kap. 4. KI-Tauglichkeit ist Grundvoraussetzung fuer KI-gestuetzte Entwicklung und wird bei **jeder** Story geprueft. `/bootstrap` verankert sie proaktiv, `/architecture-review` validiert sie reaktiv.
+
+**8 Checks (4 Prinzipien + 4 Anti-Patterns):**
+
+| Check | Was geprueft wird |
+|-------|-------------------|
+| **P1 — Kleine, unabhaengige Module** | Module <500 LOC, ein Zweck, kein zirkulaerer Import |
+| **P2 — Explizite Interfaces** | Typisierte Grenzen, ADRs vollstaendig, keine Magic Strings |
+| **P3 — Testbarkeit als Grundvoraussetzung** | Coverage >=80% auf neuem Code (BOO-15), Contract-Tests vorhanden |
+| **P4 — Von Anfang an observable** | JSON-Logging, `/metrics`-Endpoint aktuell, Alert-Rules definiert |
+| **AP1 — Gewachsener Monolith** | Kein Monolith-Wachstum, kein Shared-State-Anti-Pattern |
+| **AP2 — Implizites Wissen** | Kein `console.log` in Prod, ADRs vollstaendig |
+| **AP3 — Keine echten Modulgrenzen** | Kein direkter DB-Zugriff aus falschem Modul, keine zirkulaeren Imports |
+| **AP4 — Tests als Nachgedanke** | Tests im selben PR, Coverage-Gate gruen |
+
+Detail-Fragen pro Check: `references/dimensions-detail.md §9.1–§9.8`. Single Source of Truth fuer Prinzipien und Anti-Patterns: `intentron/references/ki-architektur-prinzipien.md`.
 
 ---
 
@@ -46,13 +73,16 @@ Dimensionen 7 und 8 werden beim Bootstrap domain-spezifisch angepasst — ersetz
 Story / System im Review
         │
         ▼
-ARCHITECTURE_DESIGN.md §1–§8 + alle ADRs lesen (Pflicht-Checkliste)
+ARCHITECTURE_DESIGN.md §1–§6 (+§7+ Add-ons) + alle ADRs lesen (Pflicht-Checkliste)
         │
         ▼
 Aenderung auf betroffene Komponenten mappen
         │
         ▼
-Relevante Dimensionen bewerten (nicht immer alle 8)
+Relevante Dimensionen bewerten (Standard + aktive Add-ons, nicht immer alle)
+        │
+        ▼
+Optional: Feature-Flag-Hygiene + SonarQube-Cloud-Findings ergaenzen
         │
         ▼
 Output:  Status · Befund · Empfehlung  (pro Dimension)
@@ -103,6 +133,33 @@ System-Review zusaetzlich:
 
 ---
 
+## Feature-Flag-Hygiene (BOO-17)
+
+Der Skill sucht nach veralteten AI-Code-Feature-Flags. Er grept nach `// AI-generated:` (bzw. `# AI-generated:` fuer Python) in `src/` und `lib/` und prueft pro gefundenem `STORY_ID`-Kommentar:
+
+1. Ist der Feature-Flag `flag.{STORY_ID}` noch aktiv (in `config/flags.json` oder Env)?
+2. Wie lange laeuft der Flag bereits (via `git log`)?
+3. Wenn >72h stabil in Produktion: Flag entfernen + `// AI-generated:`-Kommentare loeschen als Tech-Debt-Issue anlegen.
+
+**Alarm-Schwelle:** Flag aelter als 7 Tage ohne Entfernung → Tech-Debt-Issue mit Prioritaet High.
+
+---
+
+## SonarQube-Cloud-Lese-Block (BOO-6)
+
+**Read-only.** Falls SonarQube Cloud konfiguriert ist, ruft der Skill die SonarQube-REST-API ab und ergaenzt den Review um Findings — er schreibt **nichts** zurueck. Source of Truth fuer Security-Metriken bleibt SonarQube Cloud.
+
+**Voraussetzungs-Check** (alle drei muessen erfuellt sein):
+1. `sonar-project.properties` im Projekt-Root (gesetzt durch `/bootstrap` Block D.5, BOO-5)
+2. `SONAR_TOKEN` in `.env` oder als Environment-Variable
+3. `tools_available.sonarqube_cloud` in `.claude/environment.json` ist `true`
+
+Fehlt eine Voraussetzung, laeuft der Review ohne SonarQube-Block weiter (kein harter Fehler, nur Hinweis).
+
+**Was abgerufen wird:** Security Hotspots (unresolved, pro Komponente) sowie Technical-Debt-Ratio, Reliability-, Security- und Maintainability-Rating. Die Ergebnisse landen als zusaetzliche Spalte "SonarQube" in der Review-Tabelle. Bei `Hotspots > 5`, `sqale_debt_ratio > 5.0` oder `reliability_rating != "A"` wird ein Empfehlungs-Block mit Link zu den SonarQube-Findings ergaenzt.
+
+---
+
 ## Installation
 
 ```bash
@@ -126,6 +183,10 @@ architecture-review/
 ---
 
 ## Changelog
+
+### v1.12.0
+
+README auf den aktuellen SKILL-Stand gebracht. Dimensionsmodell korrigiert: 8 Standard-Dimensionen (Reliability, Data Integrity, Security, Performance, Observability, Maintainability, Testability, Scalability) + KI-Tauglichkeit als Standard-Dimension + Add-ons (Privacy/DSGVO, Cost Efficiency, Signal Quality, Compliance). Neue Abschnitte dokumentiert: **KI-Tauglichkeit** (8 Checks — 4 Prinzipien + 4 Anti-Patterns, BOO-7), **Feature-Flag-Hygiene** (BOO-17) und **SonarQube-Cloud-Lese-Block** (BOO-6). Lese-Pflicht auf §1–§6 plus optionale Add-on-Sektionen §7+ korrigiert.
 
 ### v1.3.0 (BOO-14)
 

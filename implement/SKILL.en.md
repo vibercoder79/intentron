@@ -164,8 +164,7 @@ Sub-agent briefings must include: role, task, allowed paths, forbidden paths and
 
 ### Step 3b: Governance validation (mandatory)
 
-Validate the governance artifacts of the issue before drafting the plan.
-See [references/governance-validation.en.md](references/governance-validation.en.md)
+Validate the governance artifacts of the issue before drafting the plan (check steps below).
 
 1. **8-dimensions check:** is the table in the issue present? Is the assessment sound?
    Is a dimension missing that the planned change affects?

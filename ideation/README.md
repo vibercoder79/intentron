@@ -112,5 +112,5 @@ ideation/
     ├── architecture-dimensions.md                ← 8 Dimensionen Deep Dive
     ├── story-template-feature.md                 ← Feature/Agent-Template
     ├── story-template-fix.md                     ← Fix/Refactor-Template
-    └── perplexity-api.md                         ← Deep-Research-Integration
+    └── token-heuristik.md                        ← Token-Window-Heuristik (Schritt 5b)
 ```
