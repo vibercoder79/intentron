@@ -306,7 +306,15 @@ if [ ! -f "$HUB" ]; then
   exit 0
 fi
 
-NEW_MDS=$(git diff --cached --name-only --diff-filter=A | grep -E '\.md$' || true)
+# New .md files in staging.
+# Work-item docs have their own indexes (backlog README / links.spec in the record) and need
+# no hub entry — otherwise the hook forces an artificial §9 entry for every story/record.
+# Default exempts specs/<PREFIX>-<NUM>.md and docs/project/backlog/record-*.md;
+# override via ORPHAN_EXCLUDE (env) for project-specific conventions.
+ORPHAN_EXCLUDE="${ORPHAN_EXCLUDE:-^(docs/project/backlog/record-.*\.md|specs/[A-Z]+-[0-9]+\.md)$}"
+NEW_MDS=$(git diff --cached --name-only --diff-filter=A \
+  | grep -E '\.md$' \
+  | grep -vE "$ORPHAN_EXCLUDE" || true)
 
 if [ -z "$NEW_MDS" ]; then
   exit 0
@@ -332,3 +340,68 @@ fi
 
 exit 0
 ```
+
+## Optional: raw-pii-guard.py (PII-in-logs guard, BOO-93)
+
+An **optional** static AST check that flags source code passing a PII-bearing field into a
+log/audit sink (`log.*()`, `logger.*()`, `audit.*()`, `logging.*()`) — as a forbidden keyword
+argument, attribute read, or variable name (`original_value`, `plaintext`, `raw_value` …).
+Cleartext PII in logs is a real data leak (GDPR Art. 5/32); the Layer-0 bodyguard (BOO-86)
+covers secrets/eval/TLS/SQL, **not** log sinks.
+
+Properties: **AST not regex** (ignores comments/strings, few false positives),
+**dependency-free** (python3 stdlib only), **default = warning** (hard block only via `--strict`
+or `STRICT=1` — consistent with BOO-86 against alarm fatigue). For projects without PII, just
+leave it inactive.
+
+**Enable** (opt-in): The canonical source lives at
+`bootstrap/references/hooks/raw-pii-guard.py` (single source). Scaffold via migration:
+
+```bash
+bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-93   # copies to .claude/hooks/raw-pii-guard.py
+```
+
+**Local (pre-commit):** run on staged `*.py` (with no arguments the guard detects staged files
+itself):
+
+```bash
+python3 .claude/hooks/raw-pii-guard.py --strict   # a hit blocks the commit
+```
+
+**Project overlay** (optional) `.claude/raw-pii-guard.local` — one entry per line, `#` comments;
+prefix `sink:` for additional sinks, otherwise an additional forbidden field:
+
+```
+# project-specific forbidden fields
+iban_plain
+card_pan
+sink:audit_trail
+```
+
+**CI (optional)** — `.github/workflows/raw-pii-guard.yml` (opt-in, blocks the PR on a hit):
+
+```yaml
+name: raw-pii-guard
+on:
+  pull_request:
+    paths: ['**/*.py']
+  push:
+    branches: [main]
+    paths: ['**/*.py']
+jobs:
+  raw-pii-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.x' }
+      - name: PII-in-logs guard
+        run: |
+          files=$(git ls-files '*.py')
+          [ -z "$files" ] && exit 0
+          python3 .claude/hooks/raw-pii-guard.py --strict $files
+```
+
+Self-test: `python3 .claude/hooks/raw-pii-guard.py --self-test`. Cross-reference: the dpo skill
+(`dpo/references/privacy-patterns.md`) holds the PII-in-logs review guidance — this guard is the
+optional automatic enforcement layer for it.
