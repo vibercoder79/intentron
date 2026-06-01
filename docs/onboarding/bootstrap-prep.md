@@ -1,48 +1,107 @@
-# Bootstrap-Vorbereitung — die Fragen, die im `/bootstrap`-Interview kommen
+# Vorab-Fragebogen: bevor wir euer Projekt aufsetzen
 
-> **Zweck.** Das Framework-Setup laeuft als gefuehrtes `/bootstrap`-Interview (~10 Min, 4 Bloecke A–D). Dieser Bogen listet die Fragen **vorab** — gib ihn der Kunden-IT mit dem Satz: *„Naechste Woche stelle ich dir im Bootstrapping-Prozess diese Fragen. Bitte sorg dafuer, dass ihr sie beantworten koennt."* So laeuft die Session zuegig und ohne Rueckholschleifen.
+> **Worum geht's?** Wir richten für euer Vorhaben eine moderne, KI-gestützte Entwicklungs-Umgebung ein (intern „INTENTRON"-Framework). Bevor wir loslegen, führen wir ein kurzes Setup-Gespräch (~15 Min). Damit das schnell und zielgerichtet läuft, schicken wir euch vorab diese Fragen.
 >
-> Spiegelt 1:1 die echten Interview-Fragen (`bootstrap/SKILL.md` Block A–D). Den tieferen kundenindividuellen Integrations-/CI-Teil deckt der separate Bogen `docs/onboarding/integration-discovery.md` ab. Technische Voraussetzungen am Ende.
+> **Was ihr tun müsst:** nichts installieren, nichts vorbereiten — nur diese Fragen lesen und, wo möglich, Antworten parat haben. Es geht allein darum, dass wir verstehen **was ihr bauen wollt** und **in welcher Umgebung**. Je klarer die Antworten, desto besser passt das Setup von Anfang an.
+>
+> **Unsicher bei einer Frage?** Völlig okay — markiert sie mit „weiß ich noch nicht / klären wir gemeinsam". Niemand muss alles wissen: manche Fragen beantwortet eure IT, andere die Fachseite oder das Management.
 
-## Block A — Projekt-Kern (10 Fragen, ~4 Min)
+## Teil 1 — Was wollt ihr bauen?
 
-1. **Stack.** Backend / Frontend / Full-Stack? Welche Sprache(n) und Framework(s)? — *Wer weiss das: Lead/Architekt.*
-2. **Frontend-Performance (nur bei Frontend/Full-Stack).** Soll ein Lighthouse-CI-Performance-Budget gesetzt werden? — *Frontend-Lead.*
-3. **Ziel-Runtime / KI-Tool.** Welches KI-Coding-Tool ist die Runtime: Claude Code, Codex, Cursor, Cross-Tool? — *Engineering-Lead.*
-4. **Projekt-Identitaet.** Projektname? Ein-Satz-Beschreibung (was macht das System)? Start-Version (Default 0.1.0)?
-5. **Backlog-Basics.** Issue-Prefix (z.B. `MA-`)? Primaere Doku-Sprache (de/en)?
-6. **Backlog-Adapter.** Wo leben die Tickets: Linear / GitHub Issues / Jira / Azure DevOps Boards / Microsoft Planner / keines (Markdown-only)? — *PM/PO.*
-7. **Add-ons.** Welche zusaetzlichen Dimensionen sind relevant: Privacy/DSGVO · Cost Efficiency · Signal Quality · Compliance (regulierte Branche) · **EU AI Act** (KI-Anteil mit Kundendaten)? — *DSGVO-/Compliance-Verantwortlicher.*
-8. **Governance-Intensitaet.** lite / standard / heavy? (heavy = mehr Gates, Mandatory Review, Branch-Protection — fuer regulierte/kritische Systeme.) — *CTO/Lead.*
-9. **Execution-Isolation.** Sollen parallele KI-Agenten in isolierten Git-Worktrees laufen? — *Engineering-Lead.*
-10. **Deployment-Szenario.** Solo-Mac / Solo-VPS / Multi-User-VPS / Team-mit-Coding-Server? (Wo entwickelt das Team mit dem Framework.) — *IT/Infra.*
+**1. Worum geht es in dem Projekt?**
+Beschreibt in 2–3 Sätzen, was die Software können soll und für wen.
+- *Warum wir das fragen:* Wir müssen den Zweck verstehen, um sinnvolle Qualitäts- und Sicherheitsregeln zu setzen.
+- *Beispielantwort:* „Ein internes Web-Portal, über das unser Außendienst Aufträge erfasst und den Status sieht."
 
-## Block B — Bestehende Infrastruktur (6 Fragen, ~4 Min)
+**2. Welche Technologie ist geplant?**
+Wisst ihr schon, womit gebaut wird? Programmiersprache (z. B. Java, .NET, Node.js, Python) — und gibt es eine Web-Oberfläche (z. B. React/Angular)? Falls noch offen, ist auch das eine gültige Antwort.
+- *Warum:* Davon hängt ab, welche Test- und Prüf-Werkzeuge wir einbauen.
+- *Beispielantwort:* „Backend in Java (Spring Boot), Web-Frontend in Angular." — oder: „Noch offen, bitte beraten."
 
-1. **Projekt-Verzeichnis.** Existiert es (absoluter Pfad) oder neu anlegen (wo)?
-2. **GitHub-Repo.** Vorhanden (URL)? Spaeter anlegen? Kein GitHub gewuenscht?
-3. **Projekt-Dokumentations-SSoT.** Wo lebt die Projekt-Doku: Obsidian-Vault (Pfad) · Repo `docs/project/` · externes DMS (Notion/Confluence/SharePoint + URL) · noch unklar (Repo-Fallback) · Repo-Docs + persoenlicher Vault-Harvest (Team mit Obsidian)? — *zentrale Team-Entscheidung.*
-4. **Backlog-System.** Konkretes Tool + Zugang: Linear (Team-Slug) / GitHub Issues (Repo) / Jira (Projekt-Key) / Azure DevOps (Projekt) / Planner (Plan) / keines.
-5. **API-Keys.** Liegen Projekt-Keys schon in einer `.env`, oder reicht `.env.example` (Keys spaeter)? — *DevOps.*
-6. **Developer-Uebergabe.** `Developer Onboarding`-Artefakt neu erzeugen + pflegen, oder nur auf bestehende Doku verlinken?
+**3. Hat die Software eine Web-Oberfläche, bei der Geschwindigkeit wichtig ist?**
+Z. B. ein Kundenportal, das schnell laden muss.
+- *Warum:* Dann bauen wir eine automatische Performance-Messung ein, die bei jeder Änderung Ladezeit und Bedienbarkeit prüft.
+- *Beispielantwort:* „Ja, öffentliches Kundenportal — Ladezeit ist geschäftskritisch." / „Nein, nur ein internes Tool."
 
-**Zusatz (Provider-Postflight):** Gibt es bereits eine **Monitoring-/Logging-Plattform** (zentral nutzen / neu vorbereiten / offen)? Soll der **Research-Skill** angebunden werden (Provider: Perplexity/OpenRouter/keiner)? **Visualisierung** via Miro (MCP vorhanden?) oder Fallback Excalidraw/Mermaid?
+**4. Arbeitet euer Team mit einem KI-Programmier-Assistenten?**
+Z. B. Claude, GitHub Copilot/Codex, Cursor — oder noch keiner?
+- *Warum:* Das Framework richtet sich auf das KI-Tool aus, das eure Entwickler tatsächlich nutzen.
+- *Beispielantwort:* „Wir nutzen Claude; einzelne Entwickler zusätzlich Cursor."
 
-> **Hinweis Merge-Modus:** Enthaelt das Verzeichnis/Repo schon Dateien, fragt Bootstrap vor dem Ueberschreiben (Backup / nur fehlende Governance-Dateien ergaenzen / Abbruch).
+**5. Projekt-Eckdaten.**
+Wie soll das Projekt heißen? Ein Satz dazu, was es tut. Gibt es schon eine Start-Versionsnummer (sonst nehmen wir 0.1.0)?
+- *Beispielantwort:* „Projekt ‚AußendienstPortal', Auftragserfassung für den Außendienst, Start 0.1.0."
 
-## Block C — Doku-Architektur (Vorschlag + Review)
+**6. Womit plant ihr Aufgaben und Tickets?**
+Jira, Azure DevOps, GitHub Issues, Linear — oder noch gar nichts?
+- *Warum:* Wir verbinden das Framework mit eurem bestehenden Tool, damit Aufgaben dort sichtbar bleiben, wo ihr eh arbeitet.
+- *Beispielantwort:* „Jira, Projekt-Kürzel AP." / „Noch nichts — bitte Vorschlag."
 
-Bootstrap **schlaegt** auf Basis von Stack (A.1) und bestehender Infra (Block B) eine 3-Schichten-Doku-Architektur **vor**. Vorbereiten: *Wer auf Kundenseite entscheidet ueber die Doku-Struktur/-Ablage (gibt es Vorgaben, ein bestehendes Wiki/DMS, Namens-/Ablagekonventionen)?*
+**7. Gibt es besondere Anforderungen an Datenschutz, Regulierung oder KI?**
+Trifft etwas davon zu? (Mehrfaches möglich.)
+- Die Software verarbeitet **personenbezogene / Kundendaten** → Thema **Datenschutz (DSGVO)**
+- Die Software enthält einen **KI-Bestandteil, der (Kunden-)Daten verarbeitet** → Thema **EU AI Act** (KI-Verordnung mit Dokumentationspflichten)
+- Ihr seid in einer **regulierten Branche** (Finanzen, Gesundheit, Versicherung, Recht)
+- Hohe **Kostenrelevanz** (viele KI-/Cloud-/SaaS-Kosten)
+- *Warum:* Je nach Antwort schalten wir automatisch passende Schutz- und Nachweis-Mechanismen dazu (z. B. Datenschutz-Prüfungen, KI-Dokumentation). Trifft nichts zu, bleibt es schlank.
+- *Beispielantwort:* „Ja — verarbeitet Kundendaten, Finanzbranche, KI-Komponente zur Betrugserkennung."
 
-## Block D — Optional-Komponenten (Ja/Nein am Ende)
+**8. Wie streng müssen die Regeln sein?**
+Wie kritisch oder reguliert ist das Projekt?
+- **locker** — internes Hilfstool, wenig Risiko
+- **normal** — produktive Software, übliche Sorgfalt
+- **streng** — regulierte/kritische Software mit Audit-Pflicht und Vier-Augen-Prinzip
+- *Warum:* Das bestimmt, wie viele automatische Kontrollen und Freigabe-Schritte eingebaut werden. Mehr Strenge = mehr Nachweise (aber auch etwas mehr Aufwand) — wir wählen es passend zu eurem Risiko.
+- *Beispielantwort:* „Streng — unterliegt der Finanzaufsicht."
 
-Gezielte Ja/Nein-Entscheidungen: **Self-Healing**, **DocSync**, **Daemon/Automation**, **Learning-Loop**. Vorbereiten: *Wuenscht ihr diese optionalen Automatismen — und gibt es betriebliche Einwaende (z.B. Automatisierung, die in eure Umgebung schreibt)?*
+**9. Arbeiten mehrere Personen gleichzeitig am selben Code?**
+- *Warum:* Bei paralleler Arbeit richten wir getrennte Arbeitsbereiche ein, damit sich Änderungen nicht gegenseitig überschreiben.
+- *Beispielantwort:* „Ja, 4 Entwickler parallel." / „Nein, im Moment eine Person."
 
-## Technische Voraussetzungen (vor der Session bereit)
+**10. Wo wird entwickelt?**
+Wo arbeitet das Team konkret mit der Umgebung?
+- jeder **lokal auf seinem eigenen Rechner/Laptop**
+- auf einem **gemeinsamen Entwicklungs-Server** (z. B. ein Linux-Server in der Cloud)
+- ein **größeres Team auf einem zentralen Server**
+- *Warum:* Davon hängt ab, ob wir die Umgebung einmal zentral oder pro Rechner einrichten.
+- *Beispielantwort:* „Gemeinsamer Linux-Server, 5 Entwickler greifen darauf zu."
 
-- **Node.js v18+**, **Git**, ein KI-Coding-Tool (Claude Code als Referenz-Implementierung)
-- Accounts/Zugaenge: KI-Tool (z.B. Anthropic), GitHub (falls genutzt), Backlog-Tool (falls genutzt)
-- Absoluter Pfad fuers Projektverzeichnis; ggf. Repo-URL; ggf. Vault-/DMS-Pfad
-- Details: HANDBUCH Anhang A (Checkliste) + §4 (Installation Schritt fuer Schritt)
+## Teil 2 — Was ist schon vorhanden?
 
-> **Tieferer Integrations-Teil:** Wenn die gebaute Solution in eure Live-/Bestandsumgebung integriert werden soll (Hosting, eure CI/CD, Schnittstellen, Netz, Secrets, Compliance, Go-Live), nutzt zusaetzlich `docs/onboarding/integration-discovery.md`.
+**11. Gibt es das Projekt schon, oder fangen wir neu an?**
+Falls es existiert: wo liegt es (Server/Pfad)? Falls neu: wo soll es liegen?
+
+**12. Habt ihr ein Code-Repository?**
+Z. B. GitHub, GitLab, Azure Repos — mit Adresse (URL)? Oder soll eines angelegt werden? Oder gar keins?
+- *Warum:* Dort lebt der Code samt Versions-Historie und den automatischen Prüfungen.
+
+**13. Wo soll die Projekt-Dokumentation leben?**
+Habt ihr ein Wiki / Confluence / SharePoint / Notion — oder soll die Doku direkt beim Code liegen?
+- *Warum:* Damit Entscheidungen und Wissen auffindbar bleiben, auch noch in Monaten.
+- *Beispielantwort:* „Confluence-Bereich ‚AP'." / „Beim Code reicht uns."
+
+**14. Womit verwaltet ihr Tickets — konkret inkl. Zugang?**
+(Anschluss an Frage 6.) Welches Tool genau, und das Projekt-/Team-Kürzel, damit wir es anbinden können.
+
+**15. Gibt es schon Zugangsschlüssel / Zugangsdaten, die die Software braucht?**
+Z. B. API-Schlüssel zu anderen Systemen.
+- *Warum:* Wir behandeln Zugangsdaten sicher und legen sie nie offen im Code ab.
+- *Beispielantwort:* „Ja, liegen bereits gesammelt vor." / „Noch keine."
+
+**16. Sollen wir eine Einarbeitungs-Doku für neue Teammitglieder anlegen?**
+- *Warum:* Damit neue Entwickler — oder ein anderes Tool — das Projekt schnell übernehmen können, ohne euch löchern zu müssen.
+
+**Zusatz — habt ihr das schon?**
+- **Monitoring/Überwachung** (z. B. Grafana, ein Logging-System): vorhanden und nutzen, neu aufbauen, oder noch offen?
+- Braucht ihr im Setup **Recherche- oder Diagramm-Funktionen** (optional)?
+
+## Teil 3 — klären wir gemeinsam im Gespräch
+
+- **Doku-Struktur:** Wer bei euch entscheidet über Ablage und Struktur der Dokumentation (gibt es Vorgaben, ein bestehendes Wiki, Namens-Konventionen)?
+- **Optionale Automatismen:** Möchtet ihr Zusatzfunktionen wie automatische Selbst-Checks, Doku-Synchronisierung oder eine Lernschleife? Gibt es betriebliche Einwände gegen Automatismen, die in eure Umgebung schreiben? — das entscheiden wir gemeinsam.
+
+## Falls die Software später in eure Live-Umgebung integriert wird
+
+Wenn das fertige Ergebnis in eure bestehenden Systeme eingebunden werden soll (Hosting, eure Deploy-Abläufe, Schnittstellen zu anderen Systemen, Netzwerk, Zugangsdaten, Freigabe-Prozesse), gibt es dafür einen ergänzenden Bogen (`integration-discovery.md`) — den schicken wir separat, sobald es so weit ist.
+
+> **Nur für die, die die Umgebung technisch aufsetzen** (eure IT): aktuelle Node.js-Version, Git und ein KI-Coding-Tool sollten verfügbar sein, plus Zugänge zu KI-Tool / Repository / Ticket-Tool. Die genauen Schritte liefern wir mit.
