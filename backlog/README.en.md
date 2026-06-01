@@ -4,7 +4,7 @@
 
 > Loads the whole backlog, maps dependencies, honors DB schema chains, and proposes a concrete priority order. No more "which story next?" by gut feeling.
 
-**Version:** 1.2.0 · **Command:** `/backlog`
+**Version:** 1.5.0 · **Command:** `/backlog`
 
 ---
 
@@ -24,6 +24,9 @@ This skill loads the whole picture — system context from `CLAUDE.md` + `ARCHIT
 ## How It Works
 
 ```
+Load environment  (.claude/environment.json — paths + tools_available, fall back to defaults)
+        │
+        ▼
 Load system context  (CLAUDE.md + ARCHITECTURE_DESIGN.md + SYSTEM_ARCHITECTURE.md)
         │
         ▼
@@ -36,11 +39,13 @@ Load open backlog (all statuses)
 Dependency graph · Schema chain check · Cycle detection
         │
         ▼
-Sort:  In Progress > Blockers > Priority > Dep-Depth > Age
+Sort:  In Progress > Blockers > Intent label > Priority > Dep-Depth > Age
         │
         ▼
 Output:  Ordered list · Conflicts · Backlog hygiene suggestions
 ```
+
+The `.claude/environment.json` provides paths (`paths.specs`, `paths.architecture_design`, `paths.reports_local`, ...) and a `tools_available` gate: if a tool is not active, the skill skips the call and notes it in the output. If the file is missing, the skill falls back to default paths and records that.
 
 ---
 
@@ -58,6 +63,18 @@ Example output:
 Schema Chain: STORY-A (v17 → v18) must ship before STORY-B (v18 → v19).
 Conflict:     STORY-C and STORY-D both target v18 — one must be rewritten.
 ```
+
+---
+
+## Intent-Label Prioritization
+
+When sorting, the skill honors the intent label from the `## Intent-Check` section in the story body (set by `/ideation`):
+
+- `on-intent` comes **before** `neutral` at the same status and same priority
+- `off-intent` stories drop to the end — with a warning: "Story X is off-intent — belongs in the backlog, not the sprint"
+- If the label is missing, the story is treated as `neutral`
+
+The output explains the reason: "Story X prioritized over Y because on-intent at equal points."
 
 ---
 

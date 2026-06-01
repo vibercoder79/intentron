@@ -4,7 +4,7 @@
 
 > Closes Schrader's 4P pipeline (Perceive / Prompt / Produce / Pitch). The skill collects metrics, architecture diff, and intent fulfillment as a Markdown briefing for stakeholder meetings. No slides, no outcome text, no demo video — the stage stays human.
 
-**Version:** 1.0.0 · **Command:** `/pitch`
+**Version:** 1.1.0 · **Command:** `/pitch`
 
 ---
 

@@ -1,0 +1,29 @@
+name: docs-drift
+
+# Repo-INTERNES Doku-Drift-Gate fuer das intentron-Repo.
+# KEIN Framework-Feature: wird nicht gebootstrappt, steht in keinem HANDBUCH-Anhang.
+# Huetet die Doku-Hygiene dieses Repos (tote references-Links, SKILL<->README-Version,
+# DE/EN-Paritaet, Skills-Tabellen-Vollstaendigkeit) — analog zu hook-sources / ruff-hooks.
+
+on:
+  push:
+    paths:
+      - '**/SKILL.md'
+      - '**/SKILL.en.md'
+      - '**/README.md'
+      - '**/README.en.md'
+      - 'docs/releases/**'
+      - '.github/scripts/docs_drift_check.py'
+      - '.github/workflows/docs-drift.yml'
+  pull_request:
+
+jobs:
+  docs-drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Doku-Drift-Check (repo-intern)
+        run: python3 .github/scripts/docs_drift_check.py
