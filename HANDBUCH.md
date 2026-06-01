@@ -65,7 +65,7 @@ Ohne Dokumentation und Struktur gibt jede neue Session bei null an.
 Ein **vollständiges Betriebssystem für KI-gestützte Softwareentwicklung**:
 
 ```
-GitHub Repository (vibercoder79/claudecodeskills)
+GitHub Repository (vibercoder79/intentron)
 ├── bootstrap/        ← Richtet alles automatisch ein
 ├── ideation/         ← Von der Idee zur Story
 ├── implement/        ← Von der Story zum Code
@@ -274,7 +274,7 @@ Claude führt dich jetzt durch vier kurze Interview-Blöcke (A–D) und baut dan
 | **Block B** — Bestehende Infrastruktur | Interview (6 Fragen) | GitHub-Repo? Projekt-Dokumentations-SSoT? Backlog-Tool? `.env`? Runtime-Datei? Developer-Uebergabe? — integriert in das was schon da ist |
 | **Block C** — Doku-Architektur | Vorschlag + Review | Project Hub, Developer Onboarding, Governance, Zielarchitektur, Backlog-Verweis + 3-Schichten-Vorschlag |
 | **Phase 4** — Grundstruktur | Automatisch (~2 min) | Dateien, Git init, Linting, Governance-Hooks, Component-Skelette |
-| **Phase 5** — Skills installieren | Automatisch | Skills via `git clone` aus `claudecodeskills` (keine Symlinks) |
+| **Phase 5** — Skills installieren | Automatisch | Skills via `git clone` aus `intentron` (keine Symlinks) |
 | **Block D** — Optional-Komponenten | 4× Ja/Nein am Ende | Self-Healing / DocSync / Automation-Daemon / Learning-Loop (L1/L2/L3) |
 | **Phase 7** — Finalisierung | Automatisch | gewaehlte Dokumentations-SSoT, optionale SecondBrain-Integration, globaler Registry-Eintrag, finaler Commit |
 
@@ -375,7 +375,7 @@ Claude legt Dateien an, initialisiert Git, richtet Linting ein, installiert Gove
 
 ### Phase 5: Skills installieren (automatisch)
 
-Skills werden via `git clone` aus dem Repository `vibercoder79/claudecodeskills` nach `.claude/skills/` geholt — **keine Symlinks, keine Runtime-Abhängigkeit zum Quell-Repo**. Die Skill-Kopien sind lokal und portabel.
+Skills werden via `git clone` aus dem Framework-Repository `vibercoder79/intentron` nach `.claude/skills/` geholt — **keine Symlinks, keine Runtime-Abhängigkeit zum Quell-Repo**. Die Skill-Kopien sind lokal und portabel. (Companion-Skills wie `research`/`skill-creator` liegen separat in `claudecodeskills` und werden nur bei Bedarf ergänzt.)
 
 Wichtige Trennung: VS-Code-Plugins sind Workstation-Infrastruktur; Skills sind Projekt-Infrastruktur. ESLint, SonarQube for IDE, Error Lens, Python/Ruff usw. installierst du einmal in VS Code. Bootstrap prueft und dokumentiert pro Projekt nur, ob diese Plugins verfuegbar sind; er installiert sie nicht fuer jedes Projekt neu. Skills sind anders: Jedes gebootstrappte Projekt bekommt eine eigene lokale `.claude/skills/`-Kopie (und bei Codex-Adaptern optional `.codex/skills/`). Diese Kopie ist der gepinnte Runtime-Stand des Projekts. Wenn du ein zweites Projekt bootstrappst, werden die ausgewaehlten Skills auch in dieses zweite Projekt kopiert. Das ist Absicht, keine doppelte globale Installation.
 
@@ -2091,7 +2091,7 @@ und Provider-Postflight.
 
 ## 13. Anhänge — Wegweiser
 
-Das Handbuch hat 25 Anhänge (A–Y). Sie sind **Nachschlage- und Vertiefungs-Schicht** — du musst sie nicht von vorn bis hinten lesen. Diese Tabelle sagt dir, **wann welcher Anhang relevant ist**. Anhänge A–M sind die Grundlagen-/Tooling-Schicht, N–Y die v0.2.0-Themen (Effizienz, Privacy, Deployment, Skalierung, Verifikation, Edit-Bodyguard, Contribute-Back, Ubiquitous Language, VPS/Cloud-Team-Runbook).
+Das Handbuch hat 25 Anhänge (A–Y). Sie sind **Nachschlage- und Vertiefungs-Schicht** — du musst sie nicht von vorn bis hinten lesen. Diese Tabelle sagt dir, **wann welcher Anhang relevant ist**. Anhänge A–M sind die Grundlagen-/Tooling-Schicht, N–Y die Themen ab v0.2.0 (Wellen J–AG, bis v0.6.x): Effizienz, Privacy, Deployment, Skalierung, Verifikation, Edit-Bodyguard, Contribute-Back, Ubiquitous Language, VPS/Cloud-Team-Runbook.
 
 | Anhang | Thema | Wann relevant |
 |--------|-------|---------------|

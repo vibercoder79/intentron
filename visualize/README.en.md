@@ -4,7 +4,7 @@
 
 > One command (`/visualize <miro-board-url>`) reads all your architecture docs and produces **6 diagrams** directly in Miro — automatically placed, color-coded, and deep-linked.
 
-**Version:** 2.1.0 · **Command:** `/visualize`
+**Version:** 2.3.0 · **Command:** `/visualize`
 
 ---
 
