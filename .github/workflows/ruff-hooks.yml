@@ -1,0 +1,28 @@
+name: ruff-hooks
+
+# BOO-95: Lintet die kanonischen Python-Hooks mit striktem Profil (E,F,S @ line-length 100).
+# Verhindert, dass ausgelieferte Hooks Stil-/Bandit-Verstoesse enthalten und Downstream-
+# Projekte eine per-file-ignore-Ausnahme bauen muessen. Profil-Quelle:
+# bootstrap/references/hooks/ruff.toml (Single-Source, auch fuer lokale Laeufe).
+
+on:
+  push:
+    paths:
+      - 'bootstrap/references/hooks/**.py'
+      - 'bootstrap/references/hooks/ruff.toml'
+      - '.github/workflows/ruff-hooks.yml'
+  pull_request:
+
+jobs:
+  ruff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      # Version gepinnt fuer reproduzierbare Befunde (Ruff-Regeln aendern sich ueber Versionen).
+      - name: Ruff installieren
+        run: pip install "ruff==0.15.11"
+      - name: Kanonische Hooks linten (BOO-95)
+        run: ruff check bootstrap/references/hooks/

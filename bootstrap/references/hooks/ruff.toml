@@ -1,0 +1,14 @@
+# Ruff-Profil fuer die kanonischen INTENTRON-Hooks (BOO-95).
+#
+# Zweck: Ausgelieferte *.py-Hooks (z.B. raw-pii-guard.py) muessen ein striktes,
+# gaengiges Profil bestehen, damit Downstream-Projekte KEINE per-file-ignore-
+# Ausnahme bauen muessen. "Der Security-Guard besteht den Security-Linter."
+#
+# line-length = 100 entspricht dem im Feld gemeldeten Profil (Martin / privacy-proxy).
+# Bandit-Regeln (S) bleiben aktiv; gezielt unterdrueckte Faelle stehen als
+# `# noqa: <code>` mit Begruendung direkt am Code.
+
+line-length = 100
+
+[lint]
+select = ["E", "F", "S"]
