@@ -196,9 +196,13 @@ cp -r bootstrap/ ~/.claude/skills/bootstrap/
 
 ```bash
 # 1. Claude Code installieren
-# 2. Diesen Ordner in das Skills-Verzeichnis kopieren
-mkdir -p /root/.claude/skills/
-cp -r bootstrap/ ~/.claude/skills/bootstrap/
+# 2. Framework-Repo holen (public) und bootstrap-Ordner kopieren
+mkdir -p ~/.claude/skills
+cd /tmp
+git clone --filter=blob:none --sparse https://github.com/vibercoder79/intentron.git intentron
+cd intentron && git sparse-checkout set bootstrap
+cp -r bootstrap ~/.claude/skills/
+cd /tmp && rm -rf intentron
 
 # 3. Claude Code öffnen
 claude
