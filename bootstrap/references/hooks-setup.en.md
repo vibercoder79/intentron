@@ -405,3 +405,8 @@ jobs:
 Self-test: `python3 .claude/hooks/raw-pii-guard.py --self-test`. Cross-reference: the dpo skill
 (`dpo/references/privacy-patterns.md`) holds the PII-in-logs review guidance — this guard is the
 optional automatic enforcement layer for it.
+
+**Ruff compatibility (BOO-95):** The canonical `raw-pii-guard.py` is clean against a strict Ruff
+profile (`line-length 100`, `select = E,F,S`) — a downstream `per-file-ignore` exception is **not**
+needed. The framework lints the source itself via CI (`.github/workflows/ruff-hooks.yml`, profile
+`bootstrap/references/hooks/ruff.toml`).

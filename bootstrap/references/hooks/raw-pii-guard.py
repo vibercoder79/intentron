@@ -28,6 +28,7 @@ from __future__ import annotations
 import argparse
 import ast
 import os
+import shutil
 import subprocess
 import sys
 
@@ -63,7 +64,10 @@ def load_overlay(config_path: str | None) -> tuple[set[str], set[str]]:
 
 
 def _sink_token(func: ast.AST) -> str | None:
-    """Root-Name einer Aufruf-Funktion: bei `logger.info` -> 'logger', bei `self.log.warn` -> 'log'."""
+    """Root-Name der Aufruf-Funktion.
+
+    Beispiele: `logger.info` -> 'logger', `self.log.warn` -> 'log'.
+    """
     if isinstance(func, ast.Attribute):
         value = func.value
         if isinstance(value, ast.Name):
@@ -80,6 +84,9 @@ class _Finder(ast.NodeVisitor):
         self.filename = filename
         self.findings: list[tuple[int, int, str, str]] = []  # (line, col, sink, field)
 
+    def _record(self, node: ast.Call, sink_name: str, field: str) -> None:
+        self.findings.append((node.lineno, node.col_offset, sink_name, field))
+
     def visit_Call(self, node: ast.Call) -> None:
         token = _sink_token(node.func)
         if token is not None and token in self.sinks:
@@ -87,15 +94,15 @@ class _Finder(ast.NodeVisitor):
             # 1) verbotene Keyword-Argumente: logger.info(..., original_value=x)
             for kw in node.keywords:
                 if kw.arg and kw.arg in self.forbidden:
-                    self.findings.append((node.lineno, node.col_offset, sink_name, f"kwarg '{kw.arg}'"))
+                    self._record(node, sink_name, f"kwarg '{kw.arg}'")
             # 2) verbotene Attribut-Lesezugriffe / Namen in den Argumenten:
             #    logger.info(user.original_value)  bzw.  logger.info(plaintext)
             for arg in list(node.args) + [kw.value for kw in node.keywords]:
                 for sub in ast.walk(arg):
                     if isinstance(sub, ast.Attribute) and sub.attr in self.forbidden:
-                        self.findings.append((node.lineno, node.col_offset, sink_name, f"attr '.{sub.attr}'"))
+                        self._record(node, sink_name, f"attr '.{sub.attr}'")
                     elif isinstance(sub, ast.Name) and sub.id in self.forbidden:
-                        self.findings.append((node.lineno, node.col_offset, sink_name, f"name '{sub.id}'"))
+                        self._record(node, sink_name, f"name '{sub.id}'")
         self.generic_visit(node)
 
 
@@ -118,9 +125,13 @@ def scan_source(source: str, filename: str, forbidden: set[str], sinks: set[str]
 
 
 def staged_python_files() -> list[str]:
+    git = shutil.which("git")  # absoluter Pfad statt partiellem "git" (vermeidet S607)
+    if git is None:
+        return []
     try:
-        out = subprocess.run(
-            ["git", "diff", "--cached", "--name-only", "--diff-filter=ACM"],
+        # S603 bewusst unterdrueckt: feste argv-Liste, kein shell=True, kein User-Input.
+        out = subprocess.run(  # noqa: S603
+            [git, "diff", "--cached", "--name-only", "--diff-filter=ACM"],
             capture_output=True, text=True, check=True,
         ).stdout
     except (subprocess.CalledProcessError, FileNotFoundError):
@@ -148,7 +159,8 @@ def run(files: list[str], forbidden: set[str], sinks: set[str], strict: bool) ->
     label = "FEHLER" if strict else "WARNUNG"
     print("")
     print(f"raw-pii-guard: {total} potenzielle PII-in-Logs-Stelle(n) [{label}].")
-    print("  Roh-/Klartext-PII gehoert nicht in Logs (DSGVO Art. 5/32). Pseudonymisieren/maskieren.")
+    print("  Roh-/Klartext-PII gehoert nicht in Logs (DSGVO Art. 5/32). "
+          "Pseudonymisieren/maskieren.")
     if not strict:
         print("  (Default = Warnung. Mit --strict / STRICT=1 wird dies zum harten Fehler.)")
     return 1 if strict else 0
@@ -192,15 +204,22 @@ def self_test() -> int:
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description="Optionaler PII-in-Logs-Guard (AST, BOO-93).")
     parser.add_argument("files", nargs="*", help="zu pruefende Dateien (Default: gestagete *.py)")
-    parser.add_argument("--strict", action="store_true", help="Treffer = Exit 1 (Default: nur Warnung)")
-    parser.add_argument("--config", help="Pfad zur Overlay-Liste (Default: .claude/raw-pii-guard.local)")
-    parser.add_argument("--self-test", action="store_true", help="Internen Selbsttest laufen lassen")
+    parser.add_argument("--strict", action="store_true",
+                        help="Treffer = Exit 1 (Default: nur Warnung)")
+    parser.add_argument("--config",
+                        help="Pfad zur Overlay-Liste (Default: .claude/raw-pii-guard.local)")
+    parser.add_argument("--self-test", action="store_true",
+                        help="Internen Selbsttest laufen lassen")
     args = parser.parse_args(argv)
 
     if args.self_test:
         return self_test()
 
-    strict = args.strict or os.environ.get("STRICT") == "1" or os.environ.get("RAW_PII_STRICT") == "1"
+    strict = (
+        args.strict
+        or os.environ.get("STRICT") == "1"
+        or os.environ.get("RAW_PII_STRICT") == "1"
+    )
     extra_forbidden, extra_sinks = load_overlay(args.config)
     forbidden = DEFAULT_FORBIDDEN | extra_forbidden
     sinks = DEFAULT_SINKS | extra_sinks
