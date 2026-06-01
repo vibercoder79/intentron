@@ -36,6 +36,7 @@ Ein bestehendes Release nachtraeglich aktualisieren: `gh release edit v0.2.0 --n
 3. **Vor dem Tag**: Doku DE/EN paritaetisch, alle Linear-Issues der Version Done, `verify-setup.sh` gruen.
 4. **Tag = Stand**: erst taggen, wenn der Release-Stand wirklich fertig ist (kein Tag auf halbem EN-Stand).
 5. **Release-Body = overview**: kein separates Copy-Paste pflegen — `--notes-file` zeigt direkt auf die `v<version>-overview.md`.
+6. **Zweisprachig (DE + EN) Pflicht**: Jede `v<version>-overview.md` enthaelt den deutschen Teil oben, gefolgt von `---` + `# 🇬🇧 English Version` mit einem originalgetreuen englischen Spiegel (gleiche Struktur/Tabellen; Code-Identifier, BOO-Nummern, Pfade, Links wortgleich). Der GitHub-Release-Body ist damit selbst zweisprachig. Vor dem Tag pruefen, dass beide Teile gleichstand sind.
 
 ## Vorgaenger
 
