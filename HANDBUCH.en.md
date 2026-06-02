@@ -4382,8 +4382,46 @@ Practical rule: on the VPS you do not expect inline feedback in the editor — y
 
 Source: BOO-94 (promotion of `docs/runbooks/vps-team-setup.md` to the canonical appendix), based on the repo state at 2026-06-01 (bootstrap 3.35, BOO-86–93).
 
+## Appendix Z: Customer Onboarding — the three checklists + artifact map (BOO-108)
+
+Installing the framework at a customer needs information that the generic `/bootstrap` cannot pre-ask — and depending on the solution, artifacts (architecture design doc, specs, data-protection package …) must be created individually and reconciled against the customer's specifications. The `docs/onboarding/` folder holds **three building-block checklists**:
+
+| # | Checklist | Question | Audience |
+|---|---|---|---|
+| 1 | `bootstrap-prep.md` | What do you want to build, in which environment? (basics, up front) | Business / management / IT |
+| 2 | `integration-discovery.md` | How does the solution integrate into your live systems? (CI/CD, interfaces, network, secrets, compliance, go-live) | Customer IT |
+| 3 | `artefakt-landkarte.md` | Which artifacts exist, with whom are they reconciled, where do the rules go? | Operator + all sign-off roles |
+
+![Customer onboarding flow](docs/assets/onboarding-flow.en.png)
+
+Checklists 1 and 2 **gather input**. Checklist 3 is the **planning and sign-off layer**: it maps every framework artifact to the customer-side role that reconciles it and to the **rule sink** where the resulting rule is stored. The result is a complete enterprise rule set anchored in the right places — the precondition for an autonomous team of 3–4 people to subsequently develop in a compliant way and thereby contribute to the IT transformation.
+
+### Z.1 The seven rule sinks
+
+Rules do not land in one place but in seven defined sinks — this is the target column of the map:
+
+| Sink | Content |
+|---|---|
+| `CLAUDE.md` | Project-wide top-level rules, version history |
+| `CONVENTIONS.md` | Governance mode, strictness (loose/normal/strict), active gates, story/spec conventions |
+| `ARCHITECTURE_DESIGN.md §5` | Active quality dimensions + add-ons (logging/monitoring/audit readiness) |
+| `SECURITY.md` | Security rules, threat-model result |
+| `dpo/controls/` + DP artifacts | Legal basis, DPIA, record of processing, deletion concept, TOMs |
+| `.claude/environment.json` | Paths, available tools, sovereignty/proxy routing |
+| `DEVELOPER_ONBOARDING.md` | Handover knowledge for autonomous teams / tool switches |
+
+### Z.2 Design/CI specifications are architecture — the DESIGN.md pattern
+
+Frontend specifications (colors, typography, components) are an **architectural specification**. To keep `ARCHITECTURE_DESIGN.md` lean: as soon as the solution has a frontend, `§5` **always** adds a reference to a `DESIGN.md`. No specifications → the `DESIGN.md` says so explicitly. Specifications present → they live there (format compatible with `design-md-generator` / `lumen-visual-system`). The sign-off role is **Design/Brand**.
+
+### Z.3 Bootstrap coupling
+
+`/bootstrap` phase 4.3c (BOO-108) asks once whether a **filtered instance** of the map (`solution-artefakte.md`) should be generated for this project. The pre-filtering uses the Block A answers (frontend stack, governance intensity, PII/AI flags, monitoring) — following the **lightweight principle**, only triggered rows appear. Auto-generation directly from `.claude/environment.json` is a later stage.
+
+Source: BOO-108. Full matrix and sign-off roles: `docs/onboarding/artefakt-landkarte.md` (EN: `.en.md`).
+
 ---
 
 *This handbook is part of the INTENTRON.*
 *GitHub: github.com/vibercoder79/intentron*
-*Last updated: 2026-06-01 (v0.3.0–v0.6.2: security/governance wave, onboarding fix + docs sync — BOO-86 through BOO-97; incl. Layer-0 edit bodyguard, dpo control catalogue, CONTEXT.md ubiquitous language, raw-pii-guard, Appendix Y VPS/cloud team runbook, quickstart with self-install/self-update prompts)*
+*Last updated: 2026-06-01 (v0.3.0–v0.6.2: security/governance wave, onboarding fix + docs sync — BOO-86 through BOO-97; incl. Layer-0 edit bodyguard, dpo control catalogue, CONTEXT.md ubiquitous language, raw-pii-guard, Appendix Y VPS/cloud team runbook, quickstart with self-install/self-update prompts; Appendix Z customer-onboarding checklists + artifact map — BOO-108)*

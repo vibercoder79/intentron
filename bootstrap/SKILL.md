@@ -475,6 +475,26 @@ Zusaetzlich Skelette:
 
 > **Issue-Referenz:** BOO-91. Enforcement (dpo-Control „Vokabular folgt CONTEXT.md", Layer-0-Bodyguard-`warn` auf verbotene Begriffe) ist bewusst eine **spaetere, opt-in Ausbaustufe** — diese Stufe liefert nur die Guidance-Schicht. Details: CONVENTIONS.md §Ubiquitous Language.
 
+### 4.3c Artefakt-Landkarte seeden (BOO-108)
+
+Projekt-lokale Instanz der **Artefakt- & Freigabe-Landkarte** aus der Master-Vorlage `docs/onboarding/artefakt-landkarte.md` (DE) bzw. `artefakt-landkarte.en.md` (EN, je nach `documentation`-Sprache aus A.3) erzeugen — als `solution-artefakte.md` im Doku-SSoT. Die Landkarte ist der **Planungs- und Abnahme-Layer**: sie verknuepft jedes Framework-Artefakt mit der Kundenseiten-Rolle, die es abgleicht, und der Regel-Senke, in der die resultierende Regel landet — die Voraussetzung dafuer, dass ein autonomes Team regelkonform selbst entwickeln kann.
+
+**Frage an den Operator (einmal, Ja/Nein):**
+> „Soll ich die Artefakt-Landkarte fuer dieses Projekt erzeugen? Sie listet — gefiltert auf diese Solution — welche Artefakte mit welcher Kundenrolle abzugleichen sind und wo die Regeln hinterlegt werden. Empfohlen, wenn das Framework bei einem Kunden/Konzern ausgerollt wird."
+
+Bei **ja**: Instanz rendern und nach den Block-A-Antworten **vorfiltern** (Leichtgewicht-Prinzip — nur getriggerte Zeilen):
+- `STACK_CHOICE = b/c` (Frontend) → Zeile *Design-/CI-Vorgaben* aktiv, inkl. `DESIGN.md`-Verweis aus `ARCHITECTURE_DESIGN.md §5`
+- Governance-Intensitaet (A.5) = `streng` → *Threat Model*, *Compliance-Nachweismechanik*, Vier-Augen aktiv
+- PII/DSGVO bzw. KI-Komponente markiert → Abschnitt C (dpo-Artefakte) aktiv
+- Monitoring gewuenscht / Observability-Skelett (4.4f) → *Monitoring-/Logging-Setup* aktiv
+
+Bei **nein**: ueberspringen, Hinweis im Output („spaeter via Master-Vorlage `docs/onboarding/artefakt-landkarte.md` nachholbar").
+
+- Nur seeden wenn `solution-artefakte.md` fehlt — vorhandene Operator-Instanz nie ueberschreiben (idempotent, analog `migrate_boo_91()`).
+- `solution-artefakte.md` in `ARCHITECTURE_DESIGN.md §9 Referenzen` + Doku-Hub eintragen.
+
+> **Issue-Referenz:** BOO-108. Die Auto-Generierung direkt aus `.claude/environment.json`-Flags ist eine spaetere, opt-in Ausbaustufe — diese Stufe rendert die gefilterte Master-Vorlage. Hintergrund: HANDBUCH Anhang Z + `docs/onboarding/artefakt-landkarte.md`.
+
 ### 4.4 Linting-Konfiguration
 
 Basierend auf `STACK_CHOICE` — siehe `references/file-templates.md`:
