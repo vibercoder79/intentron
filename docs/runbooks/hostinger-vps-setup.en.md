@@ -28,9 +28,16 @@
 | 7 | Harden SSH (disable root + password) | VPS | ⚠️ **last** |
 | 8 | Install Claude Code (native installer) | VPS (as user) | yes |
 
-> **Golden rule:** Always do step 7 (SSH hardening) **last** and **only after the key login
-> as the normal user provably works.** Otherwise you lock yourself out. Keep a **second SSH
-> session open** during hardening until the new login is verified.
+> **Golden rule — the throughline against locking yourself out:** Every step that narrows access
+> is built so the way **in** is open **first**.
+> 1. **Firewall (step 6):** `allow OpenSSH` first, **then** `enable` — never the other way around.
+> 2. **SSH hardening (step 7):** **always last**, only once the key login provably works, and with
+>    a **second open SSH session** as a safety net during the test.
+
+![VPS setup pipeline — what runs where (Mac vs. server)](../vps-setup-pipeline.en.png)
+
+*The whole pipeline at a glance: which steps run on the **Mac**, which on the **VPS** — and where
+the lockout protection kicks in (steps 6 + 7). ([Excalidraw source](../vps-setup-pipeline.en.excalidraw))*
 
 ---
 
@@ -176,6 +183,16 @@ ssh <HOSTNAME>
 
 ## Step 6 — UFW firewall + fail2ban
 
+> **From here access gets narrowed — lockout protection kicks in.** The diagram below shows both
+> traps and how we avoid them: left, the firewall order (step 6); right, the reserve session during
+> hardening (step 7).
+
+![Lockout protection — why the order matters](../vps-lockout-protection.en.png)
+
+*Left: "`allow OpenSSH` first, then `enable`" — otherwise the firewall shuts the only door.
+Right: harden last, keep Session A open as an emergency exit, test in Session B.
+([Excalidraw source](../vps-lockout-protection.en.excalidraw))*
+
 ### 6a. UFW (Uncomplicated Firewall)
 
 **Principle:** default **deny all incoming**, allow outgoing, then open only the ports you need.
@@ -183,10 +200,19 @@ ssh <HOSTNAME>
 ```bash
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
-sudo ufw allow OpenSSH            # do NOT forget SSH — or you lock yourself out!
+sudo ufw allow OpenSSH            # allow SSH FIRST — before the firewall goes live!
 sudo ufw enable                   # confirm warning with 'y'
 sudo ufw status verbose           # check
 ```
+
+> **⚠️ Why the order is your lockout protection (read carefully):**
+> We allow `OpenSSH` **before** arming the firewall with `enable`. That way your live SSH
+> connection is already covered by a rule *when* the firewall becomes active — it survives. At
+> `sudo ufw enable` UFW therefore warns: *"Command may disrupt existing ssh connections. Proceed
+> with operation (y|n)?"* → confirm with **`y`**. This is safe **precisely because** the SSH rule
+> is already in place. **The other way around** (`enable` first, rule later) you'd lock yourself
+> out the moment the firewall comes up — the only door shut before you put the key in.
+> So: **`allow OpenSSH` first, then `enable`.** Always.
 
 **What exactly to open?** Only what truly must face the outside:
 
@@ -232,8 +258,15 @@ sudo fail2ban-client status sshd     # check: jail active, banned IPs
 
 ## Step 7 — Harden SSH (disable root + password)
 
-> ⚠️ **Only run once the key login as `<username>` reliably works (step 3). Keep a second SSH
-> session open in parallel until a fresh login is verified.**
+> ⚠️ **Your lockout protection here (read carefully):**
+> 1. **Hardening is the LAST step** — only once the key login as `<username>` provably works
+>    (step 3). Until that holds, `PasswordAuthentication no` shuts your only emergency exit.
+> 2. **Keep a reserve session open:** make the changes in **Session A** and leave it **open**.
+>    A `systemctl restart ssh` does **not** drop an **existing** connection — so Session A stays
+>    in even if the new config were broken.
+> 3. **Test the new login in Session B** (second terminal). Works → all good, close Session A.
+>    Doesn't work → just fix it in the still-open Session A and reload. You practically cannot
+>    lock yourself out this way.
 
 ### 7a. Check existing overrides (important cloud gotcha!)
 
@@ -262,22 +295,38 @@ PubkeyAuthentication yes
 EOF
 ```
 
-### 7c. Test the config, then reload
+### 7c. Test the config, then reload (all in Session A)
+
+First check syntax, **then** print the *effective* values — this shows you **before** reloading
+that your `00-` file really won (cloud-init override beaten):
 
 ```bash
-sudo sshd -t            # syntax check — MUST be clean before reloading
+sudo sshd -t            # syntax check — NO output = good. On error, do NOT reload.
+sudo sshd -T | grep -iE "permitrootlogin|passwordauthentication|pubkeyauthentication"
+```
+
+Expected output:
+```
+permitrootlogin no
+pubkeyauthentication yes
+passwordauthentication no
+```
+
+If that matches, reload (Session A stays connected — the restart won't drop it):
+
+```bash
 sudo systemctl restart ssh
 ```
 
-**Verify (new session, in parallel):**
+**Verify — now in Session B (second terminal), keep Session A open:**
 
 ```bash
 ssh <HOSTNAME>                 # must still get in via key
-ssh root@<VPS-IP>             # MUST now be rejected
+ssh root@<VPS-IP>             # MUST now be rejected (Permission denied)
 ```
 
-> Only once the new key login works **and** root is rejected is hardening successful.
-> Close the spare session only after that.
+> Only once the new key login in Session B works **and** root is rejected is hardening successful.
+> **Then** — and only then — may you close the reserve Session A.
 
 ---
 

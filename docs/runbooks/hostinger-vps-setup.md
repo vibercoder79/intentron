@@ -28,9 +28,15 @@
 | 7 | SSH härten (Root + Passwort sperren) | VPS | ⚠️ **zuletzt** |
 | 8 | Claude Code installieren (nativer Installer) | VPS (als User) | ja |
 
-> **Goldene Regel:** Schritt 7 (SSH-Härtung) **immer als Letztes** und **erst, wenn der
-> Key-Login als normaler User nachweislich funktioniert.** Sonst sperrst du dich aus.
-> Lass während der Härtung **eine zweite SSH-Session offen**, bis der neue Login getestet ist.
+> **Goldene Regel — der rote Faden gegen Selbst-Aussperrung:** Jeder Schritt, der den Zugang
+> verengt, wird so gebaut, dass der Weg rein **vorher** offen ist.
+> 1. **Firewall (Schritt 6):** erst `allow OpenSSH`, **dann** `enable` — nie umgekehrt.
+> 2. **SSH-Härtung (Schritt 7):** **immer als Letztes**, erst wenn der Key-Login nachweislich
+>    funktioniert, und mit einer **zweiten offenen SSH-Session** als Sicherheitsnetz während des Tests.
+
+![VPS-Setup-Pipeline — was läuft wo (Mac vs. Server)](../vps-setup-pipeline.png)
+
+*Die ganze Pipeline auf einen Blick: welche Schritte auf dem **Mac** laufen, welche auf der **VPS** — und wo der Aussperr-Schutz greift (Schritte 6 + 7). ([Excalidraw-Quelle](../vps-setup-pipeline.excalidraw))*
 
 ---
 
@@ -176,6 +182,16 @@ ssh <HOSTNAME>
 
 ## Schritt 6 — UFW-Firewall + fail2ban
 
+> **Ab hier wird der Zugang verengt — der Aussperr-Schutz greift.** Das folgende Diagramm zeigt
+> beide Fallen und wie wir sie umgehen: links die Firewall-Reihenfolge (Schritt 6), rechts die
+> Reserve-Session bei der Härtung (Schritt 7).
+
+![Aussperr-Schutz — warum die Reihenfolge zählt](../vps-lockout-protection.png)
+
+*Links: „erst `allow OpenSSH`, dann `enable`" — sonst sperrt die Firewall die einzige Tür zu.
+Rechts: Härtung zuletzt, Session A offen als Notausgang, Test in Session B.
+([Excalidraw-Quelle](../vps-lockout-protection.excalidraw))*
+
 ### 6a. UFW (Uncomplicated Firewall)
 
 **Prinzip:** Default **alles eingehende verbieten**, ausgehend erlauben, dann gezielt nur
@@ -184,10 +200,20 @@ benötigte Ports öffnen.
 ```bash
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
-sudo ufw allow OpenSSH            # SSH NICHT vergessen — sonst Aussperrung!
+sudo ufw allow OpenSSH            # SSH ZUERST erlauben — bevor die Firewall scharf wird!
 sudo ufw enable                   # Warnung mit 'y' bestätigen
 sudo ufw status verbose           # Kontrolle
 ```
+
+> **⚠️ Warum die Reihenfolge dein Aussperr-Schutz ist (genau lesen):**
+> Wir erlauben `OpenSSH` **bevor** wir die Firewall mit `enable` scharf schalten. Dadurch ist
+> deine laufende SSH-Verbindung bereits durch eine Regel gedeckt, *wenn* die Firewall aktiv wird —
+> sie bleibt bestehen. Bei `sudo ufw enable` warnt UFW deshalb:
+> *„Command may disrupt existing ssh connections. Proceed with operation (y|n)?"* → mit **`y`**
+> bestätigen. Das ist sicher, **genau weil** die SSH-Regel schon steht.
+> **Andersherum** (`enable` zuerst, Regel danach) würdest du dich in dem Moment aussperren, in dem
+> die Firewall hochfährt — die einzige Tür wäre dann zu, bevor du den Schlüssel reingelegt hast.
+> Deshalb: **erst `allow OpenSSH`, dann `enable`.** Immer.
 
 **Was genau öffnen?** Nur, was wirklich nach außen muss:
 
@@ -233,8 +259,16 @@ sudo fail2ban-client status sshd     # Kontrolle: Jail aktiv, gebannte IPs
 
 ## Schritt 7 — SSH härten (Root + Passwort sperren)
 
-> ⚠️ **Erst ausführen, wenn der Key-Login als `<username>` sicher funktioniert (Schritt 3).
-> Halte parallel eine zweite SSH-Session offen, bis ein frischer Login getestet ist.**
+> ⚠️ **Dein Aussperr-Schutz hier (genau lesen):**
+> 1. **Härten ist der LETZTE Schritt** — erst wenn der Key-Login als `<username>` nachweislich
+>    funktioniert (Schritt 3). Solange das nicht steht, sperrst du dir mit `PasswordAuthentication no`
+>    den einzigen Notausgang zu.
+> 2. **Reserve-Session offen lassen:** Mach die Änderungen in **Session A** und lass sie **offen**.
+>    Ein `systemctl restart ssh` kappt eine **bestehende** Verbindung **nicht** — Session A bleibt
+>    also drin, selbst wenn die neue Konfig kaputt wäre.
+> 3. **Neuen Login in Session B testen** (zweites Terminal). Klappt er → alles gut, Session A schließen.
+>    Klappt er **nicht** → du korrigierst einfach in der noch offenen Session A und lädst neu.
+>    So kannst du dich praktisch nicht aussperren.
 
 ### 7a. Bestehende Overrides prüfen (wichtiger Cloud-Stolperstein!)
 
@@ -263,22 +297,38 @@ PubkeyAuthentication yes
 EOF
 ```
 
-### 7c. Konfig testen, dann neu laden
+### 7c. Konfig testen, dann neu laden (alles in Session A)
+
+Erst Syntax prüfen, **dann** die *effektiven* Werte anzeigen lassen — so siehst du **vor** dem
+Neuladen, dass deine `00-`-Datei wirklich gewonnen hat (cloud-init-Override geschlagen):
 
 ```bash
-sudo sshd -t            # Syntax-Check — MUSS fehlerfrei sein, bevor du neu lädst
+sudo sshd -t            # Syntax-Check — KEINE Ausgabe = gut. Bei Fehler NICHT neu laden.
+sudo sshd -T | grep -iE "permitrootlogin|passwordauthentication|pubkeyauthentication"
+```
+
+Erwartete Ausgabe:
+```
+permitrootlogin no
+pubkeyauthentication yes
+passwordauthentication no
+```
+
+Stimmt das, neu laden (Session A bleibt dabei verbunden — Restart kappt sie nicht):
+
+```bash
 sudo systemctl restart ssh
 ```
 
-**Verifizieren (neue Session, parallel):**
+**Verifizieren — jetzt in Session B (zweites Terminal), Session A offen lassen:**
 
 ```bash
 ssh <HOSTNAME>                 # muss weiterhin per Key durchkommen
-ssh root@<VPS-IP>             # MUSS jetzt abgelehnt werden
+ssh root@<VPS-IP>             # MUSS jetzt abgelehnt werden (Permission denied)
 ```
 
-> Erst wenn der neue Key-Login klappt **und** root abgelehnt wird, ist die Härtung erfolgreich.
-> Schließe die Reserve-Session erst danach.
+> Erst wenn der neue Key-Login in Session B klappt **und** root abgelehnt wird, ist die Härtung
+> erfolgreich. **Dann** — und erst dann — darfst du die Reserve-Session A schließen.
 
 ---
 
