@@ -95,15 +95,9 @@ A dimension-by-dimension comparison against the agent-orchestration tools (an ho
 - **Specialist bundle skills** (`security-architect/`, `dpo/`) live **inside the framework repo** (vendored, since BOO-74) so a single `git clone` is self-contained. Bootstrap installs them from here.
 - **Companion skills** (`../research/`, `../skill-creator/`, etc.) are referenced by the governance flow but maintained as stand-alone skills at `claudecodeskills/` top level.
 
-Full setup guide: **[HANDBUCH.md](HANDBUCH.md)** (German, ~230 KB) + **[HANDBUCH.en.md](HANDBUCH.en.md)** (English, ~200 KB) — appendices A–Y cover Hermes, sprint sizing, Codex onboarding (J), tool adapters (K), token efficiency (N), privacy (O), deployment scenarios (P), sovereignty stack (Q), multi-operator coordination (R), skill-installation strategy (S), post-install verification (T), multi-project operation (U), Layer-0 Edit-Bodyguard (V), Contribute-Back loop (W), CONTEXT.md / Ubiquitous Language (X) and the VPS/cloud team runbook (Y).
+Full setup guide: **[HANDBUCH.md](HANDBUCH.md)** (German, ~230 KB) + **[HANDBUCH.en.md](HANDBUCH.en.md)** (English, ~200 KB) — appendices A–Z cover Hermes, sprint sizing, Codex onboarding (J), tool adapters (K), token efficiency (N), privacy (O), deployment scenarios (P), sovereignty stack (Q), multi-operator coordination (R), skill-installation strategy (S), post-install verification (T), multi-project operation (U), Layer-0 Edit-Bodyguard (V), Contribute-Back loop (W), CONTEXT.md / Ubiquitous Language (X), the VPS/cloud team runbook (Y) and customer onboarding / the artifact & sign-off map (Z).
 
-**What's new (v0.2.0):** see **[docs/releases/v0.2.0-overview.md](docs/releases/v0.2.0-overview.md)** — privacy-by-design, deployment scenarios, sovereignty stack, multi-operator coordination, dpo + security-architect as bundle skills, vault-harvest engine, post-install verification, multi-project operation, optional container profile.
-
-**What's new (v0.3.0–v0.5.0):** see **[docs/releases/v0.3.0-overview.md](docs/releases/v0.3.0-overview.md)**, **[v0.4.0-overview.md](docs/releases/v0.4.0-overview.md)** and **[v0.5.0-overview.md](docs/releases/v0.5.0-overview.md)** — Layer-0 Edit-Bodyguard (BOO-86, pre-edit-bodyguard.sh, four-layer Quality-Gate), dpo control catalogue (BOO-87, GDPR/nDSG controls as Git-tracked YAML, deterministic runner, PASS/GAP/REVIEW-NEEDED report), coverage-check v2 (BOO-88, statement-lines denominator), coverage-check single-source + Drift-Guard (BOO-89), Contribute-Back loop (BOO-90, contribute-fix.sh), CONTEXT.md Ubiquitous Language (BOO-91).
-
-**What's new (v0.7.0):** see **[v0.7.0-overview.md](docs/releases/v0.7.0-overview.md)** — enterprise readiness: value-prop frame ("fast AND compliant"), modular **EU AI Act** catalogue (`dpo/controls/optional/eu-ai-act.yml` + `AI_SYSTEM.md`, copied into the project only on opt-in), customer **integration-discovery** questionnaire, and an **audit/CISO runbook** (`docs/runbooks/audit-perspective.md`).
-
-**What's new (v0.6.0–v0.6.1):** see **[v0.6.0-overview.md](docs/releases/v0.6.0-overview.md)** and **[v0.6.1-overview.md](docs/releases/v0.6.1-overview.md)** — orphan-check work-item exception (BOO-92), raw-pii-guard AST hook against raw/plaintext PII in log sinks (BOO-93), HANDBUCH appendix Y / VPS team runbook (BOO-94), raw-pii-guard ruff-clean + framework hook lint gate (BOO-95), onboarding fix + quickstart with AI self-install/self-update prompts (BOO-96).
+**What's new (latest: v0.7.7):** the full history lives in **[docs/releases/](docs/releases/)** — every version has a bilingual GitHub Release. Highlights since v0.6: enterprise readiness & **EU AI Act** opt-in (v0.7.0–v0.7.2), end-to-end compliance mechanism + sketch (v0.7.3–v0.7.4), the customer-onboarding **[artifact & sign-off map](docs/onboarding/artefakt-landkarte.md)** that links every artifact to its sign-off role and rule sink (v0.7.5), and full DE/EN documentation parity — every skill README and every sketch in both languages (v0.7.6–v0.7.7). Earlier waves (v0.2–v0.5): privacy-by-design, deployment scenarios, sovereignty stack, multi-operator coordination, Layer-0 Edit-Bodyguard, dpo control catalogue, CONTEXT.md ubiquitous language.
 
 **Tool-neutral specification:** [CONVENTIONS.md](CONVENTIONS.md) — describes the framework conventions without binding to a specific AI tool. Read this first when adopting the framework with Codex, Cursor, or any other tool (see HANDBUCH Appendix K).
 
@@ -114,6 +108,8 @@ Full setup guide: **[HANDBUCH.md](HANDBUCH.md)** (German, ~230 KB) + **[HANDBUCH
 ## Quickstart
 
 Three ways to get INTENTRON into your AI coding tool. The framework repo is **public** and `bootstrap/` sits at the repo root — so the bootstrap skill is a single `git clone` away. The `/bootstrap` skill then sets up your project and pulls every other skill it needs.
+
+> **⚠ Rolling this out at a customer?** Before `/bootstrap`, have the three onboarding checklists ready — start with **[`bootstrap-prep.md`](docs/onboarding/bootstrap-prep.md)**: the questions that make the setup run cleanly. Full guide: **[Onboarding a customer](#onboarding-a-customer--the-three-checklists)** below.
 
 ### A) Manual install, then `/bootstrap`
 
@@ -259,6 +255,7 @@ No spec, no commit. That's the difference between a prompt and a governance fram
 | Existing project, needs structure | → [HANDBUCH.md §4](HANDBUCH.md) — step-by-step retrofit |
 | Just one specific skill | → Clone the skill folder and install it |
 | Want to understand everything first | → [HANDBUCH.md](HANDBUCH.md) — full reference |
+| Rolling out at a customer | → [docs/onboarding/](docs/onboarding/) — the three checklists (start here) |
 | Concrete operational question | → [docs/qa.md](docs/qa.md) — living Q&A |
 
 ---
@@ -271,7 +268,7 @@ Installing INTENTRON at a customer needs information that the generic bootstrap 
 |---|-----------|----------|----------|
 | 1 | [`bootstrap-prep.md`](docs/onboarding/bootstrap-prep.md) | **What do you want to build, and in which environment?** Basic questions answered up front, before the ~15-min setup call. | Business / management / IT |
 | 2 | [`integration-discovery.md`](docs/onboarding/integration-discovery.md) | **How does the solution integrate into your live systems?** CI/CD, interfaces, network, secrets, compliance, go-live. | Customer IT |
-| 3 | [`artefakt-landkarte.md`](docs/onboarding/artefakt-landkarte.md) | **Which artifacts exist, with whom are they reconciled, and where do the resulting rules go?** The bridge that turns customer specifications into framework rules. | Operator + all sign-off roles |
+| 3 | [`artefakt-landkarte.md`](docs/onboarding/artefakt-landkarte.md) | **Which artifacts exist, what purpose each serves, which stakeholders you must talk to, and where the resulting rules go?** The bridge that turns customer specifications into framework rules. | Operator + all sign-off roles |
 
 Checklists 1 and 2 gather input. Checklist 3 is the planning and sign-off layer: it maps every framework artifact to the customer-side role that reconciles it and to the rule sink where the resulting rule is stored — so an autonomous team can later develop in a compliant way on its own. Each document has an English `.en.md` sibling.
 
@@ -391,15 +388,9 @@ Ein Dimension-für-Dimension-Vergleich gegen die Agent-Orchestrierungs-Tools (eh
 - **Spezialisten-Bundle-Skills** (`security-architect/`, `dpo/`) liegen **im Framework-Repo selbst** (vendored, seit BOO-74) — ein einziges `git clone` ist self-contained. Bootstrap installiert sie von hier.
 - **Companion-Skills** (`../research/`, `../skill-creator/`, etc.) werden vom Governance-Flow referenziert, aber als eigenständige Skills auf Top-Level von `claudecodeskills/` gepflegt.
 
-Komplettes Setup-Handbuch: **[HANDBUCH.md](HANDBUCH.md)** (Deutsch, ~230 KB) + **[HANDBUCH.en.md](HANDBUCH.en.md)** (Englisch, ~200 KB) — Anhaenge A–Y decken Hermes, Sprint-Sizing, Codex-Onboarding (J), Tool-Adapter (K), Token-Effizienz (N), Privacy (O), Deployment-Szenarien (P), Souveraenitaets-Stack (Q), Multi-Operator-Koordination (R), Skill-Installations-Strategie (S), Post-Install-Verifikation (T), Multi-Projekt-Betrieb (U), Layer-0-Edit-Bodyguard (V), Contribute-Back-Schleife (W), CONTEXT.md / Ubiquitous Language (X) und das VPS/Cloud-Team-Runbook (Y) ab.
+Komplettes Setup-Handbuch: **[HANDBUCH.md](HANDBUCH.md)** (Deutsch, ~230 KB) + **[HANDBUCH.en.md](HANDBUCH.en.md)** (Englisch, ~200 KB) — Anhaenge A–Z decken Hermes, Sprint-Sizing, Codex-Onboarding (J), Tool-Adapter (K), Token-Effizienz (N), Privacy (O), Deployment-Szenarien (P), Souveraenitaets-Stack (Q), Multi-Operator-Koordination (R), Skill-Installations-Strategie (S), Post-Install-Verifikation (T), Multi-Projekt-Betrieb (U), Layer-0-Edit-Bodyguard (V), Contribute-Back-Schleife (W), CONTEXT.md / Ubiquitous Language (X), das VPS/Cloud-Team-Runbook (Y) und Kunden-Onboarding / die Artefakt- & Freigabe-Landkarte (Z) ab.
 
-**Was ist neu (v0.2.0):** siehe **[docs/releases/v0.2.0-overview.md](docs/releases/v0.2.0-overview.md)** — Privacy-by-Design, Deployment-Szenarien, Souveraenitaets-Stack, Multi-Operator-Koordination, dpo + security-architect als Bundle-Skills, Vault-Harvest-Engine, Post-Install-Verifikation, Multi-Projekt-Betrieb, optionales Container-Profil.
-
-**Was ist neu (v0.3.0–v0.5.0):** siehe **[docs/releases/v0.3.0-overview.md](docs/releases/v0.3.0-overview.md)**, **[v0.4.0-overview.md](docs/releases/v0.4.0-overview.md)** und **[v0.5.0-overview.md](docs/releases/v0.5.0-overview.md)** — Layer-0-Edit-Bodyguard (BOO-86, pre-edit-bodyguard.sh, vier-schichtige Quality-Gate-Architektur), dpo-Kontrollkatalog (BOO-87, DSGVO/nDSG-Controls als Git-versionierte YAML, deterministischer Runner, Report mit PASS/GAP/REVIEW-NEEDED), coverage-check v2 (BOO-88, Nenner = nur Statement-Zeilen), coverage-check Single-Source + Drift-Guard (BOO-89), Contribute-Back-Schleife (BOO-90, contribute-fix.sh), CONTEXT.md Ubiquitous Language (BOO-91).
-
-**Was ist neu (v0.7.0):** siehe **[v0.7.0-overview.md](docs/releases/v0.7.0-overview.md)** — Enterprise-Readiness: Value-Prop-Frame („schneller UND compliant"), modularer **EU-AI-Act**-Katalog (`dpo/controls/optional/eu-ai-act.yml` + `AI_SYSTEM.md`, nur bei Opt-in ins Projekt kopiert), Kunden-**Integration-Discovery**-Fragebogen und ein **Audit-/CISO-Runbook** (`docs/runbooks/audit-perspective.md`).
-
-**Was ist neu (v0.6.0–v0.6.1):** siehe **[v0.6.0-overview.md](docs/releases/v0.6.0-overview.md)** und **[v0.6.1-overview.md](docs/releases/v0.6.1-overview.md)** — orphan-check Work-Item-Ausnahme (BOO-92), raw-pii-guard AST-Hook gegen Roh-/Klartext-PII in Log-Senken (BOO-93), HANDBUCH-Anhang Y / VPS-Team-Runbook (BOO-94), raw-pii-guard ruff-clean + Framework-Hook-Lint-Gate (BOO-95), Onboarding-Fix + Quickstart mit AI-Self-Install/Self-Update-Prompts (BOO-96).
+**Was ist neu (aktuell: v0.7.7):** die komplette Historie liegt in **[docs/releases/](docs/releases/)** — jede Version hat ein zweisprachiges GitHub Release. Highlights seit v0.6: Enterprise-Readiness & **EU-AI-Act**-Opt-in (v0.7.0–v0.7.2), durchgaengige Compliance-Mechanik + Sketch (v0.7.3–v0.7.4), die Kunden-Onboarding-**[Artefakt- & Freigabe-Landkarte](docs/onboarding/artefakt-landkarte.md)**, die jedes Artefakt mit Abnehmer-Rolle und Regel-Senke verknuepft (v0.7.5), und volle DE/EN-Doku-Paritaet — jedes Skill-README und jeder Sketch in beiden Sprachen (v0.7.6–v0.7.7). Fruehere Wellen (v0.2–v0.5): Privacy-by-Design, Deployment-Szenarien, Souveraenitaets-Stack, Multi-Operator-Koordination, Layer-0-Edit-Bodyguard, dpo-Kontrollkatalog, CONTEXT.md Ubiquitous Language.
 
 **Tool-neutrale Spezifikation:** [CONVENTIONS.md](CONVENTIONS.md) — beschreibt die Framework-Konventionen ohne Bindung an ein bestimmtes KI-Tool. Lies das zuerst, wenn du das Framework mit Codex, Cursor oder einem anderen Tool aufnimmst (siehe HANDBUCH Anhang K).
 
@@ -410,6 +401,8 @@ Komplettes Setup-Handbuch: **[HANDBUCH.md](HANDBUCH.md)** (Deutsch, ~230 KB) + *
 ## Schnellstart
 
 Drei Wege, INTENTRON in dein KI-Coding-Tool zu bekommen. Das Framework-Repo ist **public** und `bootstrap/` liegt im Repo-Root — der Bootstrap-Skill ist also ein einziges `git clone` entfernt. Der `/bootstrap`-Skill richtet danach dein Projekt ein und holt alle weiteren Skills, die er braucht.
+
+> **⚠ Beim Kunden ausrollen?** Bevor du `/bootstrap` startest, halte die drei Onboarding-Checklisten bereit — beginne mit **[`bootstrap-prep.md`](docs/onboarding/bootstrap-prep.md)**: die Fragen, damit das Setup sauber durchlaeuft. Vollstaendig: Abschnitt **[Kunden-Onboarding](#kunden-onboarding--die-drei-checklisten)** weiter unten.
 
 ### A) Manuell installieren, dann `/bootstrap`
 
@@ -555,6 +548,7 @@ Kein Spec, kein Commit. Das ist der Unterschied zwischen einem Prompt und einem 
 | Bestehendes Projekt, Chaos | → [HANDBUCH.md §4](HANDBUCH.md) |
 | Nur einzelne Skills | → Gewünschten Skill-Ordner klonen und installieren |
 | Alles verstehen bevor ich anfange | → [HANDBUCH.md](HANDBUCH.md) |
+| Beim Kunden ausrollen | → [docs/onboarding/](docs/onboarding/) — die drei Checklisten (hier starten) |
 | Konkrete Praxisfrage | → [docs/qa.md](docs/qa.md) — lebendes Q&A |
 
 ---
@@ -567,7 +561,7 @@ Die Installation von INTENTRON beim Kunden braucht Informationen, die der generi
 |---|-----------|-------|------------|
 | 1 | [`bootstrap-prep.md`](docs/onboarding/bootstrap-prep.md) | **Was wollt ihr bauen, und in welcher Umgebung?** Grundsätzliche Fragen, vorab beantwortet vor dem ~15-Min-Setup-Gespräch. | Fachseite / Management / IT |
 | 2 | [`integration-discovery.md`](docs/onboarding/integration-discovery.md) | **Wie integriert sich die Solution in eure Live-Systeme?** CI/CD, Schnittstellen, Netzwerk, Secrets, Compliance, Go-Live. | Kunden-IT |
-| 3 | [`artefakt-landkarte.md`](docs/onboarding/artefakt-landkarte.md) | **Welche Artefakte gibt es, mit wem werden sie abgeglichen, und wo landen die resultierenden Regeln?** Die Brücke, die Kunden-Vorgaben in Framework-Regeln übersetzt. | Operator + alle Abnehmer-Rollen |
+| 3 | [`artefakt-landkarte.md`](docs/onboarding/artefakt-landkarte.md) | **Welche Artefakte gibt es, welchen Zweck erfüllt jedes, mit welchen Stakeholdern musst du sprechen, und wo landen die resultierenden Regeln?** Die Brücke, die Kunden-Vorgaben in Framework-Regeln übersetzt. | Operator + alle Abnehmer-Rollen |
 
 Checkliste 1 und 2 sammeln Input. Checkliste 3 ist der Planungs- und Abnahme-Layer: Sie verknüpft jedes Framework-Artefakt mit der Kundenseiten-Rolle, die es abgleicht, und mit der Regel-Senke, in der die resultierende Regel landet — damit ein autonomes Team anschließend regelkonform selbst entwickeln kann. Jedes Dokument hat eine englische `.en.md`-Schwester.
 
