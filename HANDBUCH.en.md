@@ -2466,7 +2466,7 @@ Appendix K is the **reference** (all tools, mappings, tool-agnostic components).
 
 > **Core principle:** Codex does **not** turn the framework into a fully autonomous developer agent. Codex is an adapter that reads the neutral story contract (`CONVENTIONS.md`) and translates it into its own way of working. The pipeline stays sequential and gate-based: backlog record → spec → controlled implementation → checks → review → result note.
 
-![Codex onboarding flow — bootstrap (RUNTIME_TARGET=codex) creates AGENTS.md/CONVENTIONS.md/.codex, make skills available, story run via @Codex/codex run-task with binding gates, verification; context bridge over files instead of MCP](docs/assets/codex-onboarding-flow.png)
+![Codex onboarding flow — bootstrap (RUNTIME_TARGET=codex) creates AGENTS.md/CONVENTIONS.md/.codex, make skills available, story run via @Codex/codex run-task with binding gates, verification; context bridge over files instead of MCP](docs/assets/codex-onboarding-flow.en.png)
 
 ### Prerequisites
 
@@ -2994,7 +2994,7 @@ Schrader delivers the theory, the bundle delivers the practice — skill code, c
 
 INTENTRON operators waste Anthropic tokens when every skill runs on the operator's default model (usually Opus). This appendix explains both levers the framework uses by default — **per-skill model routing** and **prompt caching for reused blocks**. Both follow the lightweight design decision: recommendation rather than hard lock, operator override always possible, audit trail for compliance.
 
-![Token efficiency — two levers: model routing (haiku/sonnet/opus) + prompt caching, plus the FinOps argument](docs/assets/boo-84-token-efficiency.png)
+![Token efficiency — two levers: model routing (haiku/sonnet/opus) + prompt caching, plus the FinOps argument](docs/assets/boo-84-token-efficiency.en.png)
 
 ### N.1 Model-Routing Policy
 
@@ -3064,7 +3064,7 @@ Caching is optionally enabled via a Claude-Code hook. If the hook is not set up:
 
 ## Appendix O: Privacy by Design (BOO-69) — DPO as a Framework Bundle Skill
 
-![Privacy pipeline — DPO + security-architect, three modes (ASSESS / REVIEW / AUDIT) along the skill chain](docs/assets/boo-69-privacy-pipeline.png)
+![Privacy pipeline — DPO + security-architect, three modes (ASSESS / REVIEW / AUDIT) along the skill chain](docs/assets/boo-69-privacy-pipeline.en.png)
 
 > **Compliance mechanism overview:** How gates (per-code hard stop in `/implement`) and catalogues (periodic doc audit in `/sprint-review`) interact across the lifecycle — for privacy/GDPR **and** EU AI Act, incl. automatic-vs-REVIEW-NEEDED — is explained in `docs/compliance/compliance-mechanik.md` (CISO/operator view).
 
@@ -3170,7 +3170,7 @@ DPO_PROJECT_ROOT=. python3 <dpo-skill>/scripts/dpo-audit.py
 
 This appendix describes four established setup patterns for the INTENTRON, from a solo operator on a Mac to a multi-user VPS coding factory. It exists because the bootstrap script deliberately asks only **one** additional question (default Solo-Mac) and the details land here, rather than bloating bootstrap. Operators pick their scenario via the decision matrix, read the matching scenario section, and walk through the setup steps once. The framework itself behaves identically in all four scenarios — only the surrounding environment differs.
 
-![Deployment scenarios — the four setup topologies from Solo-Mac to coding factory](docs/assets/boo-70-deployment-scenarios.png)
+![Deployment scenarios — the four setup topologies from Solo-Mac to coding factory](docs/assets/boo-70-deployment-scenarios.en.png)
 
 ### Decision Matrix
 
@@ -3383,7 +3383,7 @@ Based on BOO-9 (VPS rollout) and BOO-83 (VPS multi-user pattern).
 
 INTENTRON operators increasingly work in regulated industries — FINMA, BaFin, MaRisk, NIS-2 sectors, public-sector contracts. In those contexts the default stack composition (GitHub, Anthropic USA, iCloud) is not sovereignty-compliant, and an auditor will eventually ask for EU alternatives. This appendix is the **inspiration layer** of the framework: a curated table of EU-compliant components plus a single hook point (`llm_proxy_url`) for operator-run anonymisation or routing proxies. **No anonymisation engine inside the framework itself** — that is runtime infrastructure and belongs in the operator's hands.
 
-![Sovereignty stack — US default vs. EU alternative per component, plus the optional LLM proxy hook](docs/assets/boo-71-sovereignty-stack.png)
+![Sovereignty stack — US default vs. EU alternative per component, plus the optional LLM proxy hook](docs/assets/boo-71-sovereignty-stack.en.png)
 
 ### When is a sovereignty switch worth it?
 
@@ -3528,7 +3528,7 @@ Source: BOO-71 spec. Operator feedback Martin 2026-05-27.
 
 Appendix P (BOO-70) describes four deployment scenarios, with scenario 4 covering **2-5 operators** on a shared coding server. But what happens when a consulting engagement with ten people adopts INTENTRON? When an in-house team of twenty developers works in parallel on the same repo? This appendix is the **inspiration layer** for operator teams beyond the solo and small-team setups. It adds **no** new skill, **no** new bootstrap question, and **no** framework convention — it only shows how the existing gates from Wave A-K play out in a larger team.
 
-![Multi-Operator Coordination — 3-layer model](docs/assets/boo-72-multi-operator-3-layer.png)
+![Multi-Operator Coordination — 3-layer model](docs/assets/boo-72-multi-operator-3-layer.en.png)
 
 ### The operator question behind Appendix R
 
@@ -3615,7 +3615,7 @@ This layer is the real drift point in a team. Code conflicts are solved by Git, 
 
 > **Principle (sharply put): Obsidian is a solo tool, not an enterprise tool.** An Obsidian vault lives in the file system / iCloud of **one single person** — there is no shared vault location a team can access. For the solo entrepreneur the vault is ideal as the documentation SSoT. As soon as several people work on the same project, **the living documentation cannot live in the vault** — it belongs in the GitHub repo under `docs/`. In a team setup the vault shifts from SSoT to a **personal reading view** (see the vault-harvest pattern below).
 
-![Documentation SSoT — solo vs. team: Obsidian as solo SSoT (left) vs. the GitHub repo as team SSoT + a one-way per-person vault harvest (right)](docs/assets/vault-harvest-solo-vs-team.png)
+![Documentation SSoT — solo vs. team: Obsidian as solo SSoT (left) vs. the GitHub repo as team SSoT + a one-way per-person vault harvest (right)](docs/assets/vault-harvest-solo-vs-team.en.png)
 
 **Documentation SSoT decision matrix per team size:**
 
@@ -3729,7 +3729,7 @@ Clear delimitation against the INTENTRON philosophy "lightweight + pragmatic":
 - **Appendix N (Token efficiency, BOO-84):** at 20 operators with several stories per day, token cost becomes a FinOps topic. Model routing + prompt caching are no longer nice-to-have but cost levers.
 - **HANDBUCH §8d (coding environments):** technical Mac/VPS/CI distinction, prerequisite for Appendix P scenarios 2-4.
 
-Spec: BOO-72. Operator question Tobias 2026-05-27 after the Wave K release. Sketch: [docs/assets/boo-72-multi-operator-3-layer.png](docs/assets/boo-72-multi-operator-3-layer.png).
+Spec: BOO-72. Operator question Tobias 2026-05-27 after the Wave K release. Sketch: [docs/assets/boo-72-multi-operator-3-layer.en.png](docs/assets/boo-72-multi-operator-3-layer.en.png).
 
 
 
@@ -3737,7 +3737,7 @@ Spec: BOO-72. Operator question Tobias 2026-05-27 after the Wave K release. Sket
 
 One of the most frequent operator questions: **"Where do I actually install the skills?"** The old blanket answer was "per project" — but that creates update load (every project must be refreshed separately when the skill repo changes). This appendix consolidates the answer, scattered across bootstrap Phase 5, Appendix P (scenario 3) and Appendix R (skill-pool governance), into **one** place and gives a clear recommendation per deployment scenario — also for other AI tools, not just Claude Code.
 
-![Where do the skills belong? — three install levels (global / per-project / system pool) + a per-scenario decision matrix](docs/assets/skill-install-locations.png)
+![Where do the skills belong? — three install levels (global / per-project / system pool) + a per-scenario decision matrix](docs/assets/skill-install-locations.en.png)
 
 ### The three install levels
 
@@ -3828,7 +3828,7 @@ Source: recurring operator question Tobias 2026-05-28. Consolidates bootstrap Ph
 
 Bootstrap is done — but how do you know the scaffold actually **works**? Linters reachable, hooks firing, skills writing artifacts, artifacts present? This appendix gives the **proof checklist** — walk it manually, or automate it via `scripts/verify-setup.sh` (BOO-79), which bootstrap calls itself in Phase 7.3b.
 
-![Post-install verification — 6 automated checks (verify-setup.sh) + manual check 5 (/implement trial) as the end-to-end proof](docs/assets/post-install-verification.png)
+![Post-install verification — 6 automated checks (verify-setup.sh) + manual check 5 (/implement trial) as the end-to-end proof](docs/assets/post-install-verification.en.png)
 
 ### Automated: `scripts/verify-setup.sh`
 
@@ -3888,7 +3888,7 @@ Source: operator question Tobias 2026-05-28 ("I need the proof"). **Closes BOO-4
 
 You have INTENTRON on a machine (VPS/Mac) — and now the **second, third, tenth** project arrives. Do you reinstall everything each time? No. This appendix cleanly separates **what happens once per machine** from **what happens per project**, and shows the three onboarding paths.
 
-![Multi-project operation — base once (machine), then per-project setup per project, plus three onboarding paths](docs/assets/multi-project-onboarding.png)
+![Multi-project operation — base once (machine), then per-project setup per project, plus three onboarding paths](docs/assets/multi-project-onboarding.en.png)
 
 ### Machine level (once) vs. project level (each time)
 
