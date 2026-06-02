@@ -109,7 +109,7 @@ GitHub Repository (vibercoder79/intentron)
 
 | Software | Purpose | Download |
 |----------|---------|----------|
-| **Claude Code CLI** | The heart — AI in the terminal | `npm install -g @anthropic-ai/claude-code` ¹ |
+| **Claude Code CLI** | The heart — AI in the terminal | `curl -fsSL https://claude.ai/install.sh \| bash` ¹ |
 | **Node.js** (v18+) | Runtime for Claude Code | nodejs.org |
 | **Git** | Version control | git-scm.com |
 
@@ -194,15 +194,20 @@ ssh -T git@github.com
 ### Step 1: Install Claude Code
 
 ```bash
-# Check Node.js version (must be 18+)
-node --version
+# Install Claude Code (native installer — recommended, no Node required)
+curl -fsSL https://claude.ai/install.sh | bash
 
-# Install Claude Code
-npm install -g @anthropic-ai/claude-code
+# Activate PATH (installer puts claude into ~/.local/bin)
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc && source ~/.bashrc
 
 # Verify it works
 claude --version
 ```
+
+> **Method:** The **native installer** (`claude.ai/install.sh`) is marked *Recommended* by
+> Anthropic: no Node required, background auto-update, binary in `~/.local/bin`. The npm variant
+> (`npm install -g @anthropic-ai/claude-code`, needs Node.js v18+) still works — Node remains a
+> prerequisite for the toolchain (ESLint etc.) anyway. The URL is `claude.ai`, **not** `claude.com` (404).
 
 ### Step 2: Configure Claude Code
 
@@ -4138,6 +4143,11 @@ These steps the **VPS owner does once**. They apply to all operators and all pro
 
 **Harden the VPS:**
 
+> **Full OS bootstrap** (connect Mac→VPS, create sudo user, hostname, **UFW firewall**,
+> **fail2ban**, SSH hardening incl. the `sshd_config.d/` override gotcha, onboarding a second user) —
+> step by step: → [Runbook: Hostinger VPS Setup](docs/runbooks/hostinger-vps-setup.en.md).
+> Appendix Y is the framework-centric short form; the runbook is the OS-centric full version.
+
 ```bash
 # Set up SSH key login, then disable password login
 sudo sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
@@ -4160,7 +4170,7 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
 pipx install semgrep
 pipx install ruff
 npm install -g eslint
-npm install -g @anthropic-ai/claude-code     # Claude Code CLI
+curl -fsSL https://claude.ai/install.sh | bash   # Claude Code CLI (native installer, recommended — no Node required)
 # Optional: gh (GitHub CLI), SonarScanner — project/team dependent
 ```
 
