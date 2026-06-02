@@ -274,6 +274,22 @@ Checklists 1 and 2 gather input. Checklist 3 is the planning and sign-off layer:
 
 ---
 
+## Complementary tooling — machine setup
+
+Before you `/bootstrap` a project, the **machine/instance** itself benefits from a best-practice Claude Code setup (effort level, sandboxing, permission modes, MCP, a global `CLAUDE.md`). That is **not** part of this framework — it lives in a separate, standalone tool:
+
+**→ [claude-code-setup-checklist](https://github.com/vibercoder79/claude-code-setup-checklist)** — an interactive best-practice setup checklist for Claude Code (Opus 4.8).
+
+The two are complementary and operate at different layers. Recommended order on a fresh cloud / Claude Code instance:
+
+1. **`setup-checklist global`** — machine best practice (effort, sandbox, permission modes, MCP, global `CLAUDE.md`).
+2. **`/bootstrap`** (this framework) — project governance. Bootstrap **owns** the project `CLAUDE.md`, `CONVENTIONS.md`, governance hooks, and `.claude/environment.json`.
+3. **Optional `setup-checklist audit`** (or `projekt` additively) for what bootstrap does not provide — `.claudeignore`, `.gitignore` hygiene, `CLAUDE.local.md`. Do **not** re-create the project `CLAUDE.md` or the guard hook there; bootstrap owns those (its Layer-0 bodyguard is active).
+
+**Rule of thumb:** machine + hygiene → the checklist · project governance files → `/bootstrap`. No file is owned twice.
+
+---
+
 ## Prerequisites
 
 - **An AI coding tool** — Claude Code (CLI/IDE, reference implementation) or Codex, Cursor & co. (see HANDBUCH Appendix K)
@@ -564,6 +580,22 @@ Die Installation von INTENTRON beim Kunden braucht Informationen, die der generi
 | 3 | [`artefakt-landkarte.md`](docs/onboarding/artefakt-landkarte.md) | **Welche Artefakte gibt es, welchen Zweck erfüllt jedes, mit welchen Stakeholdern musst du sprechen, und wo landen die resultierenden Regeln?** Die Brücke, die Kunden-Vorgaben in Framework-Regeln übersetzt. | Operator + alle Abnehmer-Rollen |
 
 Checkliste 1 und 2 sammeln Input. Checkliste 3 ist der Planungs- und Abnahme-Layer: Sie verknüpft jedes Framework-Artefakt mit der Kundenseiten-Rolle, die es abgleicht, und mit der Regel-Senke, in der die resultierende Regel landet — damit ein autonomes Team anschließend regelkonform selbst entwickeln kann. Jedes Dokument hat eine englische `.en.md`-Schwester.
+
+---
+
+## Komplementäres Tooling — Maschinen-Setup
+
+Bevor du ein Projekt mit `/bootstrap` aufsetzt, profitiert die **Maschine/Instanz** selbst von einem Best-Practice-Claude-Code-Setup (Effort-Level, Sandboxing, Permission-Modi, MCP, globale `CLAUDE.md`). Das ist **nicht** Teil dieses Frameworks — es lebt in einem eigenen, eigenständigen Tool:
+
+**→ [claude-code-setup-checklist](https://github.com/vibercoder79/claude-code-setup-checklist)** — eine interaktive Best-Practice-Setup-Checkliste für Claude Code (Opus 4.8).
+
+Die beiden ergänzen sich und arbeiten auf unterschiedlichen Ebenen. Empfohlene Reihenfolge bei einer frischen Cloud-/Claude-Code-Instanz:
+
+1. **`setup-checklist global`** — Maschinen-Best-Practice (Effort, Sandbox, Permission-Modi, MCP, globale `CLAUDE.md`).
+2. **`/bootstrap`** (dieses Framework) — Projekt-Governance. Bootstrap **besitzt** die Projekt-`CLAUDE.md`, `CONVENTIONS.md`, Governance-Hooks und `.claude/environment.json`.
+3. **Optional `setup-checklist audit`** (oder `projekt` additiv) für das, was bootstrap nicht liefert — `.claudeignore`, `.gitignore`-Hygiene, `CLAUDE.local.md`. Dort die Projekt-`CLAUDE.md` und den Guard-Hook **nicht** erneut anlegen; die besitzt bootstrap (Layer-0-Bodyguard ist aktiv).
+
+**Faustregel:** Maschine + Hygiene → die Checkliste · Projekt-Governance-Dateien → `/bootstrap`. Keine Datei wird doppelt besessen.
 
 ---
 

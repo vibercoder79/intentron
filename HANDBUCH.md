@@ -4515,6 +4515,10 @@ Frontend-Vorgaben (Farben, Typografie, Komponenten) sind eine **architektonische
 
 Quelle: BOO-108. Vollstaendige Matrix und Abnehmer-Rollen: `docs/onboarding/artefakt-landkarte.md` (EN: `.en.md`).
 
+### Z.4 Komplementaeres Maschinen-Setup (setup-checklist)
+
+Die drei Checklisten oben decken das **Projekt**-Onboarding ab. Die **Maschine/Instanz** selbst (Effort, Sandboxing, Permission-Modi, MCP, globale `CLAUDE.md`) richtet ein eigenstaendiges, oeffentliches Tool ein: **[claude-code-setup-checklist](https://github.com/vibercoder79/claude-code-setup-checklist)** — bewusst losgeloest vom Framework, weil es vor und unabhaengig von jedem Projekt laeuft. Empfohlene Reihenfolge bei frischer Instanz: (1) `setup-checklist global` → (2) `/bootstrap` (Projekt-Governance, **besitzt** Projekt-`CLAUDE.md` + Governance-Hooks + `environment.json`) → (3) optional `setup-checklist audit`/`projekt` **additiv** (`.claudeignore`, `.gitignore`-Hygiene, `CLAUDE.local.md`), **ohne** Projekt-`CLAUDE.md`/Guard-Hook erneut anzulegen (Bodyguard ist aktiv). Faustregel: **Maschine + Hygiene = Checkliste · Projekt-Governance = bootstrap.** Keine Datei wird doppelt besessen. Verweis im README-Abschnitt „Komplementäres Tooling".
+
 ---
 
 *Dieses Handbuch ist Teil des INTENTRONs.*

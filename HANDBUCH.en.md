@@ -4420,6 +4420,10 @@ Frontend specifications (colors, typography, components) are an **architectural 
 
 Source: BOO-108. Full matrix and sign-off roles: `docs/onboarding/artefakt-landkarte.md` (EN: `.en.md`).
 
+### Z.4 Complementary machine setup (setup-checklist)
+
+The three checklists above cover **project** onboarding. The **machine/instance** itself (effort, sandboxing, permission modes, MCP, global `CLAUDE.md`) is set up by a separate, public tool: **[claude-code-setup-checklist](https://github.com/vibercoder79/claude-code-setup-checklist)** — deliberately decoupled from the framework because it runs before and independently of any project. Recommended order on a fresh instance: (1) `setup-checklist global` → (2) `/bootstrap` (project governance, **owns** the project `CLAUDE.md` + governance hooks + `environment.json`) → (3) optional `setup-checklist audit`/`projekt` **additively** (`.claudeignore`, `.gitignore` hygiene, `CLAUDE.local.md`), **without** re-creating the project `CLAUDE.md`/guard hook (the bodyguard is active). Rule of thumb: **machine + hygiene = the checklist · project governance = bootstrap.** No file is owned twice. See the README section "Complementary tooling".
+
 ---
 
 *This handbook is part of the INTENTRON.*
