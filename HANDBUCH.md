@@ -4477,8 +4477,46 @@ Auf einer SSH-VPS fällt **nur Layer 1 (IDE-Inline-Hints) weg** — alle anderen
 
 Quelle: BOO-94 (Promotion des standalone Runbooks `docs/runbooks/vps-team-setup.md`). Bündelt §8d + Anhänge P/Q/R/S/T/U/V. Bei Framework-Updates diesen Anhang gegen die Anhänge abgleichen.
 
+## Anhang Z: Kunden-Onboarding — die drei Checklisten + Artefakt-Landkarte (BOO-108)
+
+Die Installation des Frameworks bei einem Kunden braucht Informationen, die der generische `/bootstrap` nicht vorab abfragen kann — und je nach Solution muessen Artefakte (Architecture Design Doc, Specs, Datenschutz-Paket …) individuell erstellt und gegen Kunden-Vorgaben abgeglichen werden. Dafuer gibt es im Ordner `docs/onboarding/` **drei aufeinander aufbauende Checklisten**:
+
+| # | Checkliste | Frage | Zielgruppe |
+|---|---|---|---|
+| 1 | `bootstrap-prep.md` | Was wollt ihr bauen, in welcher Umgebung? (Grundfragen, vorab) | Fachseite / Management / IT |
+| 2 | `integration-discovery.md` | Wie integriert sich die Solution in eure Live-Systeme? (CI/CD, Schnittstellen, Netzwerk, Secrets, Compliance, Go-Live) | Kunden-IT |
+| 3 | `artefakt-landkarte.md` | Welche Artefakte gibt es, mit wem werden sie abgeglichen, wo landen die Regeln? | Operator + alle Abnehmer-Rollen |
+
+![Kunden-Onboarding-Flow](docs/assets/onboarding-flow.png)
+
+Checkliste 1 und 2 **sammeln Input**. Checkliste 3 ist der **Planungs- und Abnahme-Layer**: Sie verknuepft jedes Framework-Artefakt mit der Kundenseiten-Rolle, die es abgleicht, und der **Regel-Senke**, in der die resultierende Regel gespeichert wird. So entsteht ein vollstaendiges, an der richtigen Stelle verankertes Konzern-Regelwerk — die Voraussetzung dafuer, dass ein autonomes Team von 3–4 Personen anschliessend regelkonform selbst entwickelt und damit zur IT-Transformation beitraegt.
+
+### Z.1 Die sieben Regel-Senken
+
+Regeln landen nicht an einem Ort, sondern in sieben definierten Senken — das ist die Zielspalte der Landkarte:
+
+| Senke | Inhalt |
+|---|---|
+| `CLAUDE.md` | Projektweite Top-Regeln, Versions-Historie |
+| `CONVENTIONS.md` | Governance-Modus, Strenge (locker/normal/streng), aktive Gates, Story-/Spec-Konventionen |
+| `ARCHITECTURE_DESIGN.md §5` | Aktive Quality-Dimensionen + Add-ons (Logging/Monitoring/Audit-Faehigkeit) |
+| `SECURITY.md` | Security-Regeln, Threat-Model-Ergebnis |
+| `dpo/controls/` + DS-Artefakte | Rechtsgrundlage, DPIA, Verarbeitungsverzeichnis, Loeschkonzept, TOMs |
+| `.claude/environment.json` | Pfade, verfuegbare Tools, Souveraenitaets-/Proxy-Routing |
+| `DEVELOPER_ONBOARDING.md` | Uebergabe-Wissen fuer autonome Teams / Tool-Wechsel |
+
+### Z.2 Design-/CI-Vorgaben sind Architektur — das DESIGN.md-Muster
+
+Frontend-Vorgaben (Farben, Typografie, Komponenten) sind eine **architektonische Vorgabe**. Damit `ARCHITECTURE_DESIGN.md` schlank bleibt: sobald die Solution ein Frontend hat, legt `§5` **immer** einen Verweis auf eine `DESIGN.md` an. Keine Vorgaben → die `DESIGN.md` sagt das explizit. Vorgaben vorhanden → sie stehen dort (Format kompatibel zu `design-md-generator` / `lumen-visual-system`). Abnehmer ist die Rolle **Design/Brand**.
+
+### Z.3 Bootstrap-Kopplung
+
+`/bootstrap` Phase 4.3c (BOO-108) fragt einmal, ob fuer dieses Projekt eine **gefilterte Instanz** der Landkarte (`solution-artefakte.md`) erzeugt werden soll. Die Vorfilterung nutzt die Block-A-Antworten (Frontend-Stack, Governance-Intensitaet, PII/KI-Flags, Monitoring) — nach dem **Leichtgewicht-Prinzip** erscheinen nur getriggerte Zeilen. Die Auto-Generierung direkt aus `.claude/environment.json` ist eine spaetere Ausbaustufe.
+
+Quelle: BOO-108. Vollstaendige Matrix und Abnehmer-Rollen: `docs/onboarding/artefakt-landkarte.md` (EN: `.en.md`).
+
 ---
 
 *Dieses Handbuch ist Teil des INTENTRONs.*
 *GitHub: github.com/vibercoder79/intentron*
-*Letzte Aktualisierung: 2026-06-01 (v0.3.0–v0.6.2: Security-/Governance-Welle, Onboarding-Fix + Doku-Sync — BOO-86 bis BOO-97; u.a. Layer-0-Edit-Bodyguard, dpo-Kontrollkatalog, CONTEXT.md Ubiquitous Language, raw-pii-guard, Anhang Y VPS/Cloud-Team-Runbook, Quickstart mit Self-Install/Self-Update-Prompts)*
+*Letzte Aktualisierung: 2026-06-01 (v0.3.0–v0.6.2: Security-/Governance-Welle, Onboarding-Fix + Doku-Sync — BOO-86 bis BOO-97; u.a. Layer-0-Edit-Bodyguard, dpo-Kontrollkatalog, CONTEXT.md Ubiquitous Language, raw-pii-guard, Anhang Y VPS/Cloud-Team-Runbook, Quickstart mit Self-Install/Self-Update-Prompts; Anhang Z Kunden-Onboarding-Checklisten + Artefakt-Landkarte — BOO-108)*

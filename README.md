@@ -263,6 +263,20 @@ No spec, no commit. That's the difference between a prompt and a governance fram
 
 ---
 
+## Onboarding a customer — the three checklists
+
+Installing INTENTRON at a customer needs information that the generic bootstrap cannot pre-ask. The [`docs/onboarding/`](docs/onboarding/) folder holds three checklists — work them in order:
+
+| # | Checklist | Question | Audience |
+|---|-----------|----------|----------|
+| 1 | [`bootstrap-prep.md`](docs/onboarding/bootstrap-prep.md) | **What do you want to build, and in which environment?** Basic questions answered up front, before the ~15-min setup call. | Business / management / IT |
+| 2 | [`integration-discovery.md`](docs/onboarding/integration-discovery.md) | **How does the solution integrate into your live systems?** CI/CD, interfaces, network, secrets, compliance, go-live. | Customer IT |
+| 3 | [`artefakt-landkarte.md`](docs/onboarding/artefakt-landkarte.md) | **Which artifacts exist, with whom are they reconciled, and where do the resulting rules go?** The bridge that turns customer specifications into framework rules. | Operator + all sign-off roles |
+
+Checklists 1 and 2 gather input. Checklist 3 is the planning and sign-off layer: it maps every framework artifact to the customer-side role that reconciles it and to the rule sink where the resulting rule is stored — so an autonomous team can later develop in a compliant way on its own. Each document has an English `.en.md` sibling.
+
+---
+
 ## Prerequisites
 
 - **An AI coding tool** — Claude Code (CLI/IDE, reference implementation) or Codex, Cursor & co. (see HANDBUCH Appendix K)
@@ -542,6 +556,20 @@ Kein Spec, kein Commit. Das ist der Unterschied zwischen einem Prompt und einem 
 | Nur einzelne Skills | → Gewünschten Skill-Ordner klonen und installieren |
 | Alles verstehen bevor ich anfange | → [HANDBUCH.md](HANDBUCH.md) |
 | Konkrete Praxisfrage | → [docs/qa.md](docs/qa.md) — lebendes Q&A |
+
+---
+
+## Kunden-Onboarding — die drei Checklisten
+
+Die Installation von INTENTRON beim Kunden braucht Informationen, die der generische Bootstrap nicht vorab abfragen kann. Der Ordner [`docs/onboarding/`](docs/onboarding/) enthält drei Checklisten — der Reihe nach durcharbeiten:
+
+| # | Checkliste | Frage | Zielgruppe |
+|---|-----------|-------|------------|
+| 1 | [`bootstrap-prep.md`](docs/onboarding/bootstrap-prep.md) | **Was wollt ihr bauen, und in welcher Umgebung?** Grundsätzliche Fragen, vorab beantwortet vor dem ~15-Min-Setup-Gespräch. | Fachseite / Management / IT |
+| 2 | [`integration-discovery.md`](docs/onboarding/integration-discovery.md) | **Wie integriert sich die Solution in eure Live-Systeme?** CI/CD, Schnittstellen, Netzwerk, Secrets, Compliance, Go-Live. | Kunden-IT |
+| 3 | [`artefakt-landkarte.md`](docs/onboarding/artefakt-landkarte.md) | **Welche Artefakte gibt es, mit wem werden sie abgeglichen, und wo landen die resultierenden Regeln?** Die Brücke, die Kunden-Vorgaben in Framework-Regeln übersetzt. | Operator + alle Abnehmer-Rollen |
+
+Checkliste 1 und 2 sammeln Input. Checkliste 3 ist der Planungs- und Abnahme-Layer: Sie verknüpft jedes Framework-Artefakt mit der Kundenseiten-Rolle, die es abgleicht, und mit der Regel-Senke, in der die resultierende Regel landet — damit ein autonomes Team anschließend regelkonform selbst entwickeln kann. Jedes Dokument hat eine englische `.en.md`-Schwester.
 
 ---
 

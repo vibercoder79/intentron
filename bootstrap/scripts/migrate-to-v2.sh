@@ -3889,6 +3889,32 @@ migrate_boo_93() {
     return 0
 }
 
+migrate_boo_108() {
+    # BOO-108 — Artefakt-Landkarte (solution-artefakte.md) fuer Bestandsprojekte seeden
+    # https://linear.app/owlist/issue/BOO-108
+    log_info "BOO-108: Artefakt-Landkarte (solution-artefakte.md) seeden"
+    local script_dir; script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    # Master-Vorlage: im Monorepo unter docs/onboarding/, optional als Skill-Mitlieferung unter bootstrap/references/
+    local base=""
+    local cand
+    for cand in "$script_dir/../../docs/onboarding/artefakt-landkarte.md" "$script_dir/../references/artefakt-landkarte.md"; do
+        if [[ -f "$cand" ]]; then base="$cand"; break; fi
+    done
+    local target="solution-artefakte.md"
+    if [[ -f "$target" ]]; then
+        log_skip "$target existiert — Operator-Instanz bleibt unberuehrt"
+    elif [[ ! -f "$base" ]]; then
+        log_skip "Master-Vorlage fehlt ($base) — Landkarte uebersprungen"
+    elif [[ "$DRY_RUN" == "true" ]]; then
+        log_dry "seed $target aus docs/onboarding/artefakt-landkarte.md (volle Matrix, danach manuell filtern)"
+    else
+        cp "$base" "$target"
+        log_info "created $target (volle Matrix — nicht getriggerte Zeilen manuell streichen)"
+    fi
+    log_manual "Operator: $target auf diese Solution filtern (Leichtgewicht-Prinzip) und mit den Abnehmer-Rollen durchgehen. EN-Master: docs/onboarding/artefakt-landkarte.en.md. Details: HANDBUCH Anhang Z."
+    return 0
+}
+
 # -----------------------------------------------------------------------------
 # CLI / Argument Parsing
 # -----------------------------------------------------------------------------
@@ -3914,6 +3940,7 @@ ALL_ISSUES=(
     BOO-91
     BOO-92
     BOO-93
+    BOO-108
 )
 
 print_help() {
