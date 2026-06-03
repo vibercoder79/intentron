@@ -312,6 +312,8 @@ Rules:
 
 **Remember:** `DEPLOYMENT_SCENARIO = solo-mac | other`
 
+**Derive the install default (BOO-115):** `INSTALL_DEFAULT = system` on `solo-mac`; `INSTALL_DEFAULT = docker` (golden image / container profile) on `other` (Solo-VPS / Multi-User-VPS coding factory / team server). The operator can override the default at any time. Used in the tool-install guidance (phase 7.3b).
+
 - On `a)` the existing bootstrap path continues unchanged — Solo-Mac is the default, no extra setup logic.
 - On `b)` bootstrap only prints a hint block and does not fork the interview:
 
@@ -322,7 +324,7 @@ Rules:
   described there once. After that, bootstrap continues unchanged.
   ```
 
-- Consequence for phases 4 / 5: none, except that `DEPLOYMENT_SCENARIO` is recorded in `metadata.deployment_scenario` inside `.claude/environment.json` (informational, no skill behaviour depends on it).
+- Consequence for phases 4 / 5: `DEPLOYMENT_SCENARIO` is recorded in `metadata.deployment_scenario` inside `.claude/environment.json` and, since BOO-115, drives the **install default** (system vs. Docker) in the tool-install guidance (phase 7.3b). Otherwise no interview fork.
 
 > **Issue reference:** BOO-70. Source: HANDBUCH Appendix P (Deployment Scenarios). Migration for existing projects: `references/migration-checklist-v1-to-v2.en.md` §BOO-70.
 
@@ -1422,6 +1424,13 @@ Before the final commit, deliver the **proof** that the scaffold is complete and
 2. Run it in the project root: `bash scripts/verify-setup.sh`.
 3. The script checks read-only: environment.json, toolchain reachability, git hooks (per repo!), core artifacts (CONVENTIONS.md, ARCHITECTURE_DESIGN.md, specs/, journal/), privacy add-on (if active), backlog adapter. Output PASS/WARN/FAIL + exit code (1 on FAIL).
 4. **Fix FAIL items before finishing.** Present WARN items to the operator (often intentional, e.g. no test framework in a docs project).
+
+**Tool-install guidance for missing tools (BOO-115):** When `verify-setup.sh` (or the pre-flight gate, phase 0.2) reports a missing tool, the bootstrap emits **tool name + deeplink** — not just a WARN — and uses the `INSTALL_DEFAULT` from A.7:
+
+- **`INSTALL_DEFAULT = system`** (solo-mac): direct install → HANDBUCH **Appendix Y.2 "Install the toolchain"** (language-matched DE/EN). Order: first `bash .claude/generate-environment-json.sh --force` (flips the tool flag false→true), **then** `bash scripts/verify-setup.sh`.
+- **`INSTALL_DEFAULT = docker`** (VPS/factory/team): golden image → HANDBUCH **§Container profile (BOO-81)**. **Docker preflight:** `docker --version` → present: copy/build the container profile; missing: HANDBUCH pointer "install Docker (Linux/Mac)". Order: inside the container only `bash scripts/verify-setup.sh` is needed — `postCreateCommand` already calls `generate-environment-json.sh --force`.
+- **Scaffold-only:** the bootstrap does NOT install the tools itself (exception: `c8` as a dev dep); it only points to the right guide. The operator picks system vs. Docker (default = `INSTALL_DEFAULT`, overridable).
+
 5. The result feeds the closing table (7.5).
 
 Manual variant / background: HANDBUCH Appendix T "Post-install verification" (point-by-point checklist).
