@@ -60,22 +60,47 @@ Lies `references/info-gathering.md` fuer die vollstaendige Fragenliste. Stelle d
 
 ```
 Was moechtest du entwickeln?
-  a) Node.js / JavaScript Backend (API, CLI, Daemon)
-  b) Frontend (React, Vue, Vanilla JS)
-  c) Full-Stack (Backend + Frontend)
+  a) Node.js / TypeScript Backend (API, CLI, Daemon)
+  b) Frontend (React, Vue, Svelte, Vanilla)
+  c) Full-Stack — inkl. Meta-Frameworks (Next.js, Nuxt, SvelteKit, Remix, Astro)
   d) Python (KI/ML, Scripts, FastAPI, Django)
-  e) Anderes / Noch nicht klar
+  e) Anderes / Noch nicht klar  → Guided Discovery (A.1a)
 ```
 
-Antwort als `STACK_CHOICE` merken — bestimmt welche Linting-Tools angelegt werden:
+Antwort als `STACK_CHOICE` merken. Die Optionen sind **framework-aware**: ein Meta-Framework-Projekt (Next.js o.ae.) gehoert nach `c)`, **nicht** nach `a)` — das war die haeufigste Fehlwahl (Stack-Mismatch).
 
-| Wahl | Linter-Config | Formatter |
-|------|--------------|-----------|
-| a) Node.js | `eslint.config.mjs` | — |
-| b) Frontend | `eslint.config.mjs` + `.prettierrc` | Prettier |
-| c) Full-Stack | beide | Prettier |
-| d) Python | `pyproject.toml` (Ruff + Black) | Black |
-| e) Anderes | `eslint.config.mjs` (generisch) | — |
+**TypeScript ist first-class.** Bei `a/b/c` direkt nachfragen:
+
+```
+TypeScript oder JavaScript? [ts / js]   (Default: ts)
+```
+
+`LANG_VARIANT = ts | js` merken. Bei `ts`: zusaetzlich `tsconfig.json` + `typescript-eslint` + ein `tsc --noEmit`-CI-Gate anlegen (Phase 4.4), `metadata.stack = node-typescript`. Bei `js`: `node-javascript`. (Bei `d) Python` und `e)` entfaellt die Frage.)
+
+| Wahl | LANG_VARIANT | Linter-Config | Formatter | Typecheck |
+|------|--------------|--------------|-----------|-----------|
+| a) Node.js/TS Backend | ts (default) / js | `eslint.config.mjs` (+ `typescript-eslint` bei ts) | — | `tsc --noEmit` (bei ts) |
+| b) Frontend | ts (default) / js | `eslint.config.mjs` + `.prettierrc` (+ `typescript-eslint` bei ts) | Prettier | `tsc --noEmit` (bei ts) |
+| c) Full-Stack / Meta-Framework | ts (default) / js | beide (+ `typescript-eslint` bei ts) | Prettier | `tsc --noEmit` (bei ts) |
+| d) Python | — | `pyproject.toml` (Ruff + Black) | Black | — |
+| e) Anderes | — | `eslint.config.mjs` (generisch) bzw. Guided Discovery (A.1a) | — | — |
+
+### A.1a Guided Stack-Discovery (BOO-127 — bei `e)` oder Unsicherheit)
+
+Waehlt der Operator `e)` oder ist unsicher: **nicht raten lassen**, sondern einen Stack-**Vorschlag** ableiten.
+
+```
+Unsicher bei der Wahl? Ich kann den Stack vorschlagen:
+  (a) Quelle analysieren — bestehendes Repo / Intent-Datei / vorhandene Doku
+      (nutzt den Bestands-Quellen-Import aus A.2b, BOO-117)
+  (b) Vorhaben in 1-2 Saetzen beschreiben → ich leite Sprache, Framework und TS/JS ab
+```
+
+Aus Quelle oder Beschreibung einen Vorschlag bilden, z.B.: „Erkenne **Next.js + TypeScript + Tailwind** → Vorschlag: `STACK_CHOICE = c) Full-Stack`, `LANG_VARIANT = ts`. Uebernehmen / anpassen / selbst waehlen?"
+
+- Operator **bestaetigt oder ueberschreibt** — der Vorschlag ist nie bindend.
+- Die getroffene Stack-Entscheidung als **ADR** in `docs/domain/adrs/` festhalten (gleiche Mechanik wie die uebrigen Stack-Defaults, §4.4f). Bei `e)` **ohne** erkennbaren Stack: explizit als „noch offen" markieren, **nicht** still als JS annehmen.
+- Eine hier analysierte Quelle wird in A.2b (PROJECT_DESC) **wiederverwendet** — kein Doppel-Einlesen.
 
 ### A.1b Lighthouse-CI fuer Frontend-Performance (BOO-45, nur bei STACK_CHOICE = b oder c)
 
@@ -527,6 +552,7 @@ Basierend auf `STACK_CHOICE` — siehe `references/file-templates.md`:
 - Node.js / Full-Stack / Anderes → `eslint.config.mjs` (ESLint v9 Flat Config)
 - Frontend / Full-Stack → zusaetzlich `.prettierrc`
 - Python → `pyproject.toml` (Ruff + Black)
+- **TypeScript** (`LANG_VARIANT = ts` bei a/b/c, BOO-127) → zusaetzlich `tsconfig.json` (Template `references/file-templates.md` §`tsconfig.json (BOO-127)`); `eslint.config.mjs` bindet `typescript-eslint` ein; plus `tsc --noEmit`-Typecheck-Gate (siehe CI-Tabelle unten).
 
 Zusaetzlich Stack-abhaengig **CI-Lint-Workflow (BOO-28)** — wird nur angelegt wenn `B.2 == ja` (GitHub-Repo angelegt). Pendant zur Semgrep-CI-Action (Phase 4.4c) — gleicher Layer-3-Mechanismus, andere Tool-Klasse (Lint statt SAST):
 
@@ -541,6 +567,8 @@ Zusaetzlich Stack-abhaengig **CI-Lint-Workflow (BOO-28)** — wird nur angelegt 
 Beide Workflows schreiben SARIF nach `.ci-reports/` (Pflicht — wird in BOO-32 fuer Hermes-Konsumtion und in BOO-29 als Required Status Check `eslint` / `ruff` gelesen) und uploaden via `github/codeql-action/upload-sarif@v3` in den GitHub-Security-Tab.
 
 Bei `B.2 == nein/c` (kein GitHub gewuenscht): BOO-28-Schritt skippen, nur Layer 2 (Pre-Commit-Hook, Phase 4.6) deckt Linting lokal ab.
+
+> **TypeScript-Typecheck-Gate (BOO-127):** Bei `LANG_VARIANT = ts` (a/b/c) ergaenzt der Bootstrap einen `tsc --noEmit`-Schritt in `eslint.yml` (oder eine eigene `.github/workflows/typecheck.yml`) — Template `references/file-templates.md` §`tsc --noEmit Typecheck (BOO-127)`. Das Gate ist in BOO-29 als Required Status Check `typecheck` referenzierbar. Lokal deckt der Pre-Commit-Hook (Phase 4.6) `tsc --noEmit` zusaetzlich ab.
 
 ### 4.4b SAST-Konfiguration (Semgrep — alle Stacks)
 

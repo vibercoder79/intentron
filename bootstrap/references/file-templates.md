@@ -950,6 +950,77 @@ export default [
 
 ---
 
+## tsconfig.json (BOO-127)
+
+Nur bei `LANG_VARIANT = ts` (Stack a/b/c). Strikte Defaults — Typsicherheit ist ein Gate, keine Deko.
+
+**npm-Installation (zusaetzlich zu eslint.config.mjs):**
+```bash
+npm install --save-dev typescript typescript-eslint
+```
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2022"],
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", "dist", "build"]
+}
+```
+
+`eslint.config.mjs` bindet bei `ts` zusaetzlich `typescript-eslint` ein:
+
+```javascript
+// am Kopf von eslint.config.mjs (zusaetzlich, nur bei TypeScript)
+import tseslint from 'typescript-eslint';
+// ... im Export-Array nach js.configs.recommended:  ...tseslint.configs.recommended,
+// und die Hausregeln/`files` auf '**/*.ts','**/*.tsx' ausweiten.
+```
+
+**Frontend/Meta-Framework (Next.js, Nuxt, SvelteKit ...):** `module`/`moduleResolution` auf `Bundler`, `jsx: "preserve"`, `lib` um `DOM` ergaenzen; ein framework-eigenes `tsconfig` (z.B. `next/tsconfig`) ggf. via `extends` einbinden — Operator bestaetigt das als ADR.
+
+---
+
+## tsc --noEmit Typecheck (BOO-127)
+
+Nur bei `LANG_VARIANT = ts`. Der Bootstrap nutzt **Weg A** (Schritt in `eslint.yml`); Weg B ist optional.
+
+**Weg A — Schritt in `eslint.yml` (Default):** nach dem ESLint-Schritt ergaenzen:
+```yaml
+      - name: TypeScript typecheck
+        run: npx tsc --noEmit
+```
+
+**Weg B — eigene `.github/workflows/typecheck.yml`:**
+```yaml
+name: Typecheck
+on: [push, pull_request]
+jobs:
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: npm ci
+      - run: npx tsc --noEmit
+```
+
+Required Status Check (BOO-29): `typecheck` (Weg B) bzw. der gruene `eslint`-Lauf inkl. tsc-Schritt (Weg A). Lokal deckt der Pre-Commit-Hook (Phase 4.6) `tsc --noEmit` ab.
+
+---
+
 ## .prettierrc (Frontend / Full-Stack)
 
 ```json
