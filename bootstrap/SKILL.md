@@ -1426,6 +1426,14 @@ Kosten: Public Repos gratis. Private Repos ab ~10 EUR/Monat.
 ```
 
 Wenn `ja`: Lies `references/optional-components.md §D.5` fuer Implementation-Details inkl. Verify-Schritt.
+
+> ⚠️ **Warnung bei `ja` (BOO-122):** Mit `sonar.yml` wird **`SonarCloud` automatisch ein Required Status Check** (Branch-Protection, Phase 4.4k, baut die Checks dynamisch aus allen Workflows) — **ohne gruenen Sonar-Lauf kein Merge**. Fehlt Account/Token, failt der Job rot und **dein erster PR ist blockiert**. Daher:
+> - **Jetzt einrichten:** das SonarCloud-Setup-Runbook (BOO-119, HANDBUCH) durchlaufen (Account/Org/Token + `SONAR_TOKEN`-Secret), **dann** `ja`.
+> - **Oder spaeter aktivieren:** vorerst `nein`, Sonar ist jederzeit nachziehbar.
+> - **Sonar wieder entfernen** (falls schon scaffolded): `.github/workflows/sonar.yml` loeschen, `tools_available.sonarqube_cloud = false` setzen, Branch-Protection neu setzen (`setup-branch-protection.sh` — `SonarCloud` faellt dann aus den Required Checks).
+>
+> **Optional-Abfrage:** „Sonar-Setup jetzt durchfuehren — oder nur **scaffolden ohne** Required-Check (`sonar.yml` anlegen, aber erst nach gruenem Erst-Lauf in die Branch-Protection aufnehmen)?"
+
 Wenn `nein`: `tools_available.sonarqube_cloud = false` in `.claude/environment.json`.
 
 ### D.6 Self-Hosted-Runner (BOO-46, nur wenn Performance-Gate aktiv)
