@@ -1266,6 +1266,8 @@ SKILL_SRC=$(mktemp -d)
 git clone --depth 1 https://github.com/vibercoder79/intentron "$SKILL_SRC"
 ```
 
+> **Operator-Hinweis (BOO-121):** Halte den lokalen `bootstrap`-Skill aktuell (`git pull` im intentron-Klon). Eine veraltete Version kann Bundle-Skills (insb. `intent`) noch nach der **Pre-BOO-74-Struktur** aus `claudecodeskills` sourcen — alle Bundle-Skills kommen heute **ausschliesslich aus intentron**. Regression-Schutz: `bootstrap/scripts/check-skill-sources.sh` (CI: `skill-sources.yml`).
+
 ### Repo-Struktur (BOO-74)
 
 Das `intentron`-Repo enthaelt **alle** Bundle-Skills flach als Top-Level-Ordner — keine `intentron/`-Verschachtelung mehr (das war die alte `claudecodeskills`-Struktur):

@@ -1222,6 +1222,8 @@ SKILL_SRC=$(mktemp -d)
 git clone --depth 1 https://github.com/vibercoder79/intentron "$SKILL_SRC"
 ```
 
+> **Operator note (BOO-121):** Keep the local `bootstrap` skill current (`git pull` in the intentron clone). A stale version may still source bundle skills (esp. `intent`) per the **pre-BOO-74 structure** from `claudecodeskills` — today all bundle skills come **exclusively from intentron**. Regression guard: `bootstrap/scripts/check-skill-sources.sh` (CI: `skill-sources.yml`).
+
 ### Repo structure (BOO-74)
 
 The `intentron` repo holds **all** bundle skills flat as top-level folders — no more `intentron/` nesting (that was the old `claudecodeskills` structure):
