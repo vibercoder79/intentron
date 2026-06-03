@@ -18,6 +18,8 @@ Der Bootstrap-Skill sammelt in Block A **nur die Projekt-Kern-Informationen** ei
 | `GOVERNANCE_MODE` * | Governance-Intensitaet | `lite` / `standard` / `heavy` (default `standard`) |
 | `EXECUTION_ISOLATION` * | Parallel-Agenten-Isolation | `none` / `write-scope` / `git-worktree` (default je Modus) |
 
+> **Optionaler Bestands-Quellen-Import (A.2b, BOO-117):** Existiert bereits eine Quelle (Intent-Datei, bestehendes Repo, vorhandene Doku), kann `PROJECT_DESC` — und optional `PROJECT_NAME` sowie ein `stack_hint` (Korrektur fuer A.1) — daraus **vorgeschlagen** statt manuell erfragt werden. Variable: `SOURCE_IMPORT = {type: intent|repo|doc|none, ref, derived}`. Sauber optional: Default `none`, kein Bruch ohne Quelle, Operator bestaetigt jeden Vorschlag. Details: `SKILL.md` §A.2b.
+
 ## Add-ons (Architektur-Dimensionen)
 
 Standard-Dimensionen (immer aktiv, nicht abwaehlbar):

@@ -126,6 +126,32 @@ Bei `codex`, `cross-tool` oder `unknown` immer `AGENTS.md` anlegen. Bei `claude-
 3. Start-Version? (default 0.1.0)
 ```
 
+### A.2b Bestands-Quellen-Import (optional, BOO-117)
+
+Bevor der Operator alles manuell eintippt: pruefen, ob bereits eine Quelle existiert, aus der sich Projektinfos ableiten lassen. Diese Quelle wird **inhaltlich eingelesen** und liefert **Vorschlaege** (nie stillschweigende Uebernahme).
+
+```
+Gibt es bereits eine Quelle, aus der ich Projektinfos ziehen kann?
+  a) Intent-Datei (z.B. intents/*.md aus dem intent-Skill)
+  b) Bestehendes Repo / Verzeichnis (README, package.json, pyproject.toml, Code)
+  c) Andere Doku (Konzept, Pflichtenheft, Pitch, Notion-/Confluence-Export ...)
+  d) Nein — ich beschreibe es selbst
+  Default: d
+```
+
+Bei `a/b/c`: Quelle (Pfad/URL vom Operator) lesen und daraus **ableiten + vorschlagen**:
+- `PROJECT_DESC` (Ein-Satz-Beschreibung) — Hauptzweck dieses Schritts
+- optional `PROJECT_NAME`, ein `stack_hint` (Korrektur-Vorschlag fuer A.1 / Guided-Discovery BOO-127), erkennbare Add-ons
+
+Vorschlag dem Operator zeigen, z.B.: „Aus `<Quelle>` abgeleitet: `PROJECT_DESC = '…'` (und Stack sieht nach `…` aus). Uebernehmen, anpassen oder verwerfen?" → Operator bestaetigt oder ueberschreibt.
+
+**Merken:** `SOURCE_IMPORT = {type: intent|repo|doc|none, ref: <pfad/url>, derived: {project_desc, stack_hint, ...}}`.
+
+Sauber optional — kein Zwang, kein Bruch:
+- Bei `d`, fehlender, leerer oder unlesbarer Quelle: normal mit den A.2-Eingaben weiter, `SOURCE_IMPORT.type = none`.
+- A.1 (Stack) wurde bereits gestellt; ein hier abgeleiteter `stack_hint` wird nur als Korrektur angeboten, nie erzwungen.
+- Wurde dieselbe Quelle schon in A.1 (Guided-Discovery, BOO-127) analysiert: hier **wiederverwenden**, nicht erneut einlesen oder fragen.
+
 ### A.3 Backlog (2 Fragen)
 
 ```

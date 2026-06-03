@@ -127,6 +127,32 @@ For `codex`, `cross-tool`, or `unknown`, always scaffold `AGENTS.md`. For `claud
 3. Starting version? (default 0.1.0)
 ```
 
+### A.2b Existing-source import (optional, BOO-117)
+
+Before the operator types everything by hand: check whether a source already exists that project info can be derived from. That source is **read for content** and produces **suggestions** (never a silent take-over).
+
+```
+Is there already a source I can pull project info from?
+  a) Intent file (e.g. intents/*.md from the intent skill)
+  b) Existing repo / directory (README, package.json, pyproject.toml, code)
+  c) Other doc (concept, spec sheet, pitch, Notion/Confluence export ...)
+  d) No — I'll describe it myself
+  Default: d
+```
+
+For `a/b/c`: read the source (path/URL from the operator) and **derive + suggest**:
+- `PROJECT_DESC` (one-sentence description) — the main purpose of this step
+- optionally `PROJECT_NAME`, a `stack_hint` (correction suggestion for A.1 / guided discovery BOO-127), detectable add-ons
+
+Show the suggestion to the operator, e.g.: "Derived from `<source>`: `PROJECT_DESC = '…'` (and the stack looks like `…`). Accept, adjust, or discard?" → operator confirms or overrides.
+
+**Remember:** `SOURCE_IMPORT = {type: intent|repo|doc|none, ref: <path/url>, derived: {project_desc, stack_hint, ...}}`.
+
+Cleanly optional — no coercion, no breakage:
+- On `d`, a missing, empty, or unreadable source: continue normally with the A.2 inputs, `SOURCE_IMPORT.type = none`.
+- A.1 (stack) was already asked; a `stack_hint` derived here is only offered as a correction, never forced.
+- If the same source was already analyzed in A.1 (guided discovery, BOO-127): **reuse it here**, don't re-read or re-ask.
+
 ### A.3 Backlog (2 questions)
 
 ```
