@@ -1575,7 +1575,10 @@ Bootstrap done. Continue with:
   2. Start runtime: Claude Code (`cd {PROJECT_PATH} && claude`) or Codex in the project path
   3. /ideation or the matching Codex invocation — create your first story
   4. If learning loop active: run /sprint-review after 1–2 sprints
+  5. Check the setup anytime: `bash scripts/verify-setup.sh` (`--strict` for CI) — read-only, PASS/WARN/FAIL. Details + sketch: HANDBUCH Appendix T.
 ```
+
+> **Setup self-check anytime (BOO-128):** `verify-setup.sh` is read-only and independent of the `/implement` trial — the operator checks the setup themselves anytime. Ready-made prompt: "run `verify-setup.sh` and explain the WARN/FAIL items to me". Background + sketch: HANDBUCH Appendix T "Post-install verification".
 
 > **Check the GitHub connect proactively when GitHub is in scope (BOO-123):** before you start, check `gh auth status` (CLI/API) **and** `git remote -v` (push path: HTTPS-via-`gh` or SSH) — branch protection needs both auth layers (`gh auth` ≠ `git auth`). Runbook: HANDBUCH Appendix Y "GitHub connect per VPS".
 
