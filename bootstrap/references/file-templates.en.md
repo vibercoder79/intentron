@@ -81,15 +81,28 @@ module.exports = { VERSION, DOC_FILES, CONFIG };
 At the start of every session, first establish — **where are we?**
 1. Read the **PMO hub**: `docs/project/README.md` (or `{{PROJECT_NAME}} - PMO HUB.md`).
 2. Read the **latest entries** in `docs/project/meetings/` (recent minutes) and `docs/project/decisions/` (recent ADRs).
-3. Summarize the **state** in 2-3 sentences (open action items, latest decision) and propose the next step.
+3. Read the **latest daily note** in `journal/daily/` (where did we leave off yesterday? open items).
+4. Summarize the **state** in 2-3 sentences (open action items, latest decision) and propose the next step.
+
+## Session-end routine (daily note, BOO-139)
+
+At the natural end of a session — or when the operator ends it — **actively offer**:
+
+> "Shall I write the daily note so the next session knows where we are?"
+
+On confirmation → `journal/daily/YYYY-MM-DD.md` (one file per day, chronologically sortable):
+- **What was done** (bullets, per story/topic)
+- **Decisions** — title only + reference to `docs/project/decisions/` (no duplication)
+- **Open for next session** (action items)
 
 **Write-back convention (record the state):**
+- Daily log → `journal/daily/YYYY-MM-DD.md`
 - Meeting minutes / action items → `docs/project/meetings/YYYY-MM-DD-<topic>.md`
 - Decisions → `docs/project/decisions/` (ADRs)
 
-This turns the markdown folders into a **lightweight SecondBrain** in the repo (no Obsidian): *start reads the state → work → write minutes/decisions back.* Loop visualization: `docs/assets/boo-129-leichtgewicht-secondbrain.en.png`.
+This turns the markdown folders into a **lightweight SecondBrain** in the repo (no Obsidian): *start reads the state (PMO hub + meetings/decisions + latest daily note) → work → write daily note / minutes / decisions back.* Loop visualization: `docs/assets/boo-129-leichtgewicht-secondbrain.en.png`.
 
-> Paths apply to `documentation_ssot = repo-docs`. For `obsidian`, analogously: PMO hub + `Meetings/` + `Decisions/` in the vault. For `external-dms`: entry point per `docs/project/README.md`.
+> Paths apply to `documentation_ssot = repo-docs`. For `obsidian`, analogously: PMO hub + `Meetings/` + `Decisions/` in the vault, daily notes in the vault daily folder. For `external-dms`: entry point per `docs/project/README.md`; daily notes still local in `journal/daily/`.
 
 ## Rules (NEVER)
 

@@ -49,7 +49,7 @@ docs/project/
   archive/
 ```
 
-**Leichtgewicht-SecondBrain-Loop (BOO-129):** `repo-docs` wird erst dann ein nutzbares „Brain", wenn die generierte `CLAUDE.md` beim **Session-Start** den PMO-Hub (`README.md`) + die neuesten `meetings/`/`decisions/` liest und der Stand am Ende **zurückgeschrieben** wird (Minutes → `meetings/`, Entscheidungen → `decisions/`). Die Session-Start-Routine + Schreib-Konvention steckt im `CLAUDE.md`-Template (`references/file-templates.md §CLAUDE.md (Minimum)`).
+**Leichtgewicht-SecondBrain-Loop (BOO-129/139):** `repo-docs` wird erst dann ein nutzbares „Brain", wenn die generierte `CLAUDE.md` beim **Session-Start** den PMO-Hub (`README.md`) + die neuesten `meetings/`/`decisions/` + die letzte Daily Note (`journal/daily/`) liest und der Stand am Ende **zurückgeschrieben** wird (Tages-Logbuch → `journal/daily/YYYY-MM-DD.md`, Minutes → `meetings/`, Entscheidungen → `decisions/`). Die **Session-Start-** und **Session-Ende-Routine** + Schreib-Konvention stecken im `CLAUDE.md`-Template (`references/file-templates.md §CLAUDE.md (Minimum)`). Daily Notes nutzen das bestehende `journal/`-Baseline-Artefakt im Projekt-Root; der Unterordner `journal/daily/` entsteht beim ersten Eintrag (kein Parallel-Ordner zu `meetings/`).
 
 ![Leichtgewicht-SecondBrain-Loop — Session-Start liest PMO-Hub/meetings/decisions → arbeiten → Minutes/ADRs zurückschreiben → Loop](../../docs/assets/boo-129-leichtgewicht-secondbrain.png)
 

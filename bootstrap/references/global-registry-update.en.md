@@ -113,6 +113,23 @@ The skill presents the new entry:
 
 Operator confirms insertion point. Skill writes the line — or presents it for manual insertion.
 
+### 3a. Standard project path `PROJECTS_ROOT` (BOO-138)
+
+On a machine hosting several projects (developer VPS), the bootstrap defines **once** where projects live by default — and then reads this path as the default on every subsequent bootstrap. This is the machine-level prerequisite for frictionless multi-project operation (HANDBUCH Appendix U path 2).
+
+**Read (every bootstrap, Block B question 1):** the skill checks `~/.claude/CLAUDE.md` for a `PROJECTS_ROOT` entry. If set, question 1 is pre-filled with `<PROJECTS_ROOT>/<project-name>`; the operator confirms with Enter or overrides with a custom path.
+
+**Write (first project of the machine only):** if no `PROJECTS_ROOT` is recorded, the skill asks once and records it — after operator confirmation — in `~/.claude/CLAUDE.md`. Suggested block:
+
+```markdown
+## Project standard path
+
+- `PROJECTS_ROOT`: `~/projects` — new projects are created here by default (`<PROJECTS_ROOT>/<project-name>`).
+- Per project the standard structure applies (PMO hub, `specs/`, `journal/daily/`, `docs/project/`) + the session routines from the project `CLAUDE.md` (BOO-129/139).
+```
+
+Rules: operator confirmation required (no silent write); **no secret**; override always possible (the operator may deliberately place a project outside `PROJECTS_ROOT`). No cross-project cockpit — the daily state emerges when opening the respective project (PMO hub + latest `journal/daily/` note).
+
 ## 4. Local project memory (optional)
 
 **Only if the operator uses `~/.claude/projects/` for memory.**

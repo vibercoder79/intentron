@@ -3933,8 +3933,8 @@ You have INTENTRON on a machine (VPS/Mac) — and now the **second, third, tenth
 
 The detail is in Appendix S ("What to install once, what per project?"). Short version:
 
-- **Machine — once:** system tools (Semgrep, Ruff, ESLint), the global skill pool (`~/.claude/skills/` or `/opt/claude/skills/`), `~/.claude` config. Applies to **all** projects on the machine.
-- **Project — each time:** `CLAUDE.md`, **git hooks (per repo!)**, `.claude/environment.json`, `specs/`, doc-SSoT choice. The `.git/` directory is not cloned — that is why hooks + environment.json must be re-set per repo.
+- **Machine — once:** system tools (Semgrep, Ruff, ESLint), the global skill pool (`~/.claude/skills/` or `/opt/claude/skills/`), `~/.claude` config incl. **standard project path `PROJECTS_ROOT`** (BOO-138, e.g. `~/projects` — asked once on the first bootstrap and proposed as the default thereafter). Applies to **all** projects on the machine.
+- **Project — each time:** `CLAUDE.md` (incl. session-start/session-end routine, BOO-129/139), **git hooks (per repo!)**, `.claude/environment.json`, `specs/`, `journal/daily/` (daily notes), doc-SSoT choice. The `.git/` directory is not cloned — that is why hooks + environment.json must be re-set per repo.
 
 ### The three onboarding paths
 
@@ -3942,8 +3942,8 @@ The detail is in Appendix S ("What to install once, what per project?"). Short v
 
 **Path 2 — Project 2..N (base present).** Bootstrap fast path: Block B detects tools + global skill pool → machine setup is skipped. The focus is the **project level**:
 
-1. Project directory + GitHub repo (Block B).
-2. `CLAUDE.md` from template (project core).
+1. Project directory + GitHub repo (Block B). On a set-up machine, Block B proposes `<PROJECTS_ROOT>/<project-name>` as the default (BOO-138) — Enter confirms, a custom path overrides.
+2. `CLAUDE.md` from template (project core, incl. session-start/session-end routine + `journal/daily/` daily notes, BOO-129/139).
 3. **Install git hooks** — per repo, because `.git/hooks/` is not cloned.
 4. `bash .claude/generate-environment-json.sh` — detects the once-installed tools for this project.
 5. Choose the doc-SSoT (Block B.3 — often the same as project 1, but decidable per project).
