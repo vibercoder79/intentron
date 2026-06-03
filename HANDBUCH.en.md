@@ -4491,6 +4491,31 @@ The three checklists above cover **project** onboarding. The **machine/instance*
 
 ---
 
+## Appendix AA: SonarCloud setup runbook — two scenarios (BOO-119)
+
+External SaaS provider: the bootstrap scaffolds `sonar-project.properties` + `.github/workflows/sonar.yml`, but the **SonarCloud-side** setup (account, organization, token) is manual. Deeplinked from bootstrap **D.5** (on "yes") and from the **provider postflight (BOO-58)**. Tied to **BOO-122** (warning: SonarCloud becomes a merge-blocking required check).
+
+**Scenario A — SonarCloud account exists (possibly already GitHub-connected):**
+1. In SonarCloud, check/select the **organization** (`sonar.organization`).
+2. **Import/verify** the project ("Import from GitHub") or confirm the existing project key (`sonar.projectKey`).
+3. If no valid token: **regenerate `SONAR_TOKEN`** (My Account → Security → Generate Token).
+4. Set the token as a GitHub secret: `gh secret set SONAR_TOKEN` (or Repo → Settings → Secrets and variables → Actions).
+5. Reconcile `sonar-project.properties`: `sonar.organization` + `sonar.projectKey` must match the SonarCloud org/project.
+
+**Scenario B — from zero:**
+1. Create a SonarCloud account via **GitHub login** (sonarcloud.io → "Log in with GitHub").
+2. **Create an organization** (bind it to the GitHub org/user).
+3. **"Import from GitHub"** → select the repo → the project is created (yields `projectKey` + `organization`).
+4. **"Generate Token"** (My Account → Security) → `SONAR_TOKEN`.
+5. Set the token as a GitHub secret: `gh secret set SONAR_TOKEN`.
+6. Reconcile `sonar-project.properties` with `projectKey` / `organization`.
+
+> **First run:** the first `git push` to `main` triggers `sonar.yml` → SonarCloud analyzes. **Without a valid `SONAR_TOKEN` the job fails red** and (with branch protection active) blocks the merge — see warning **BOO-122**. The graceful skip only applies while `SonarCloud` is not yet a required status check.
+
+**Connected mode (optional, Mac):** VS Code → SonarLint → Connected Mode → SonarCloud → organization + project key. Then set `tools_available.sonarqube_ide_plugin: true` in `.claude/environment.json` (see §9).
+
+---
+
 *This handbook is part of the INTENTRON.*
 *GitHub: github.com/vibercoder79/intentron*
 *Last updated: 2026-06-01 (v0.3.0–v0.6.2: security/governance wave, onboarding fix + docs sync — BOO-86 through BOO-97; incl. Layer-0 edit bodyguard, dpo control catalogue, CONTEXT.md ubiquitous language, raw-pii-guard, Appendix Y VPS/cloud team runbook, quickstart with self-install/self-update prompts; Appendix Z customer-onboarding checklists + artifact map — BOO-108)*

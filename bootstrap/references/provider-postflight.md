@@ -24,6 +24,8 @@ Secrets werden nie angezeigt, nie in Repo-Dateien geschrieben und nie in Abschlu
 | Monitoring | `docs/MONITORING.md`, Grafana/Sonar/Health-Konzept | Plattform-spezifisch | Dashboard/API/Healthcheck erreichbar | OK/WARN/SKIP/FAIL | zentrale Plattform nutzen, eigene vorbereiten, oder Architekturfrage dokumentieren |
 | Obsidian | Vault-Pfad / DocSync | n/a | Pfad existiert und Schreibtest optional | OK/WARN/SKIP/FAIL | Vault-Pfad korrigieren oder Repo-only dokumentieren |
 
+> **SonarCloud (externer Provider, BOO-58/119):** Bei aktiviertem SonarQube Cloud (D.5 = ja) ist der Provider-Postflight der Punkt, an dem die **SonarCloud-seitige** Einrichtung geprueft wird (Org/Projekt-Key/`SONAR_TOKEN`-Secret). Schritt-fuer-Schritt: **HANDBUCH Anhang AA** (zwei Szenarien: Account existiert / von 0). Ohne gueltiges Token failt `sonar.yml` rot und blockiert den ersten Merge (siehe BOO-122).
+
 ## Monitoring- und Logging-Frage
 
 Bootstrap fragt:

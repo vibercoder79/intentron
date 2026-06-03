@@ -24,6 +24,8 @@ Secrets are never shown, never written into repository files, and never copied i
 | Monitoring | `docs/MONITORING.md`, Grafana/Sonar/health concept | provider-specific | dashboard/API/health check reachable | OK/WARN/SKIP/FAIL | Use central platform, prepare own setup, or document architecture question |
 | Obsidian | Vault path / DocSync | n/a | path exists and optional write test | OK/WARN/SKIP/FAIL | Fix vault path or document repo-only mode |
 
+> **SonarCloud (external provider, BOO-58/119):** With SonarQube Cloud enabled (D.5 = yes), the provider postflight is where the **SonarCloud-side** setup is checked (org/project key/`SONAR_TOKEN` secret). Step by step: **HANDBUCH Appendix AA** (two scenarios: account exists / from zero). Without a valid token, `sonar.yml` fails red and blocks the first merge (see BOO-122).
+
 ## Monitoring and logging question
 
 Bootstrap asks:

@@ -1425,10 +1425,10 @@ Kosten: Public Repos gratis. Private Repos ab ~10 EUR/Monat.
 [nein] (default) — kann spaeter nachgezogen werden
 ```
 
-Wenn `ja`: Lies `references/optional-components.md §D.5` fuer Implementation-Details inkl. Verify-Schritt.
+Wenn `ja`: Lies `references/optional-components.md §D.5` fuer Implementation-Details inkl. Verify-Schritt. **SonarCloud-seitig (Account/Org/Token) ist manuell** — Schritt-fuer-Schritt im **SonarCloud-Setup-Runbook (HANDBUCH Anhang AA, zwei Szenarien)**; erster `git push` triggert `sonar.yml`.
 
 > ⚠️ **Warnung bei `ja` (BOO-122):** Mit `sonar.yml` wird **`SonarCloud` automatisch ein Required Status Check** (Branch-Protection, Phase 4.4k, baut die Checks dynamisch aus allen Workflows) — **ohne gruenen Sonar-Lauf kein Merge**. Fehlt Account/Token, failt der Job rot und **dein erster PR ist blockiert**. Daher:
-> - **Jetzt einrichten:** das SonarCloud-Setup-Runbook (BOO-119, HANDBUCH) durchlaufen (Account/Org/Token + `SONAR_TOKEN`-Secret), **dann** `ja`.
+> - **Jetzt einrichten:** das SonarCloud-Setup-Runbook (BOO-119, HANDBUCH **Anhang AA**, zwei Szenarien) durchlaufen (Account/Org/Token + `SONAR_TOKEN`-Secret), **dann** `ja`.
 > - **Oder spaeter aktivieren:** vorerst `nein`, Sonar ist jederzeit nachziehbar.
 > - **Sonar wieder entfernen** (falls schon scaffolded): `.github/workflows/sonar.yml` loeschen, `tools_available.sonarqube_cloud = false` setzen, Branch-Protection neu setzen (`setup-branch-protection.sh` — `SonarCloud` faellt dann aus den Required Checks).
 >
