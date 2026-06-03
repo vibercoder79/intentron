@@ -196,6 +196,7 @@ The framework is the skeleton. **You tailor the muscles** — the appendices tel
 | **[backlog](backlog/)** | `/backlog` | Sprint planning — which story now, which later, and why. Dependency-aware. |
 | **[implement](implement/)** | `/implement` | 8-step protocol: Agent pattern → Spec → Code → Governance validation → Commit. |
 | **[architecture-review](architecture-review/)** | `/architecture-review` | Reviews architecture dimensions — risks, tech debt, improvement potential. |
+| **[knowledge-onboarding](knowledge-onboarding/)** | `/knowledge-onboarding` | Routes existing project docs (GAP analyses, legal research, README/PLAN, design files, demo storyboards, handover, prompts) deterministically into the framework artefacts via routing rubric (SSoT, Tier 0/1/2/3) + persisted manifest with pinning. Post-bootstrap. |
 | **[sprint-review](sprint-review/)** | `/sprint-review` | Quarterly audit: architecture health, tech debt, backlog hygiene, learning loop. |
 | **[pitch](pitch/)** | `/pitch` | Closes the 4P pipeline — gathers evidence (metrics, architecture diff, intent fulfillment) as a Markdown cheat sheet. No slides, human runs the demo. |
 | **[grafana](grafana/)** | `/grafana` | Grafana Cloud dashboards via MCP — panels, PromQL, alert rules. |
@@ -505,6 +506,7 @@ Das Framework ist das Skelett. **Die Muskeln schneiderst du** — die Anhaenge z
 | **[backlog](backlog/)** | `/backlog` | Sprint Planning — welche Story jetzt, welche nach hinten, warum. Abhängigkeiten-aware. |
 | **[implement](implement/)** | `/implement` | 8-Schritte-Protokoll: Agent-Pattern → Spec → Code → Governance-Validation → Commit. |
 | **[architecture-review](architecture-review/)** | `/architecture-review` | Prüft Architektur-Dimensionen — Risiken, Tech Debt, Verbesserungspotential. |
+| **[knowledge-onboarding](knowledge-onboarding/)** | `/knowledge-onboarding` | Routet Bestands-Doku (GAP-Analysen, Legal-Recherche, README/PLAN, Design-Files, Demo-Storyboards, Handover, Prompts) deterministisch in die Framework-Artefakte via Routing-Rubrik (SSoT, Tier 0/1/2/3) + persistiertes Manifest mit Pinning. Post-Bootstrap. |
 | **[sprint-review](sprint-review/)** | `/sprint-review` | Quartals-Audit: Architektur-Gesundheit, Tech Debt, Backlog-Hygiene, Learning-Loop. |
 | **[pitch](pitch/)** | `/pitch` | Schliesst die 4P-Pipeline — sammelt Evidenz (Metriken, Architektur-Diff, Intent-Erfuellung) als Markdown-Spickzettel. Keine Slides, Mensch macht die Demo. |
 | **[grafana](grafana/)** | `/grafana` | Grafana Cloud Dashboards via MCP — Panels, PromQL, Alert Rules. |
