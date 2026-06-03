@@ -1228,7 +1228,7 @@ git clone --depth 1 https://github.com/vibercoder79/intentron "$SKILL_SRC"
 
 The `intentron` repo holds **all** bundle skills flat as top-level folders — no more `intentron/` nesting (that was the old `claudecodeskills` structure):
 
-- **`$SKILL_SRC/<skill>/`** — all framework skills: `architecture-review`, `backlog`, `bootstrap`, `cloud-system-engineer`, `grafana`, `ideation`, `implement`, `intent`, `pitch`, `sprint-review`, `visualize` **plus `dpo` and `security-architect`** (vendored, BOO-74).
+- **`$SKILL_SRC/<skill>/`** — all framework skills: `architecture-review`, `backlog`, `bootstrap`, `cloud-system-engineer`, `grafana`, `ideation`, `implement`, `intent`, `knowledge-onboarding`, `pitch`, `sprint-review`, `visualize` **plus `dpo` and `security-architect`** (vendored, BOO-74). `knowledge-onboarding` is existing-doc-onboarding (BOO-137) — install only, no auto-run.
 
 **Not in the framework repo:** general-purpose standalone skills like `research`, `design-md-generator`, `setup-checklist`, `skill-creator` stay in the `claudecodeskills` repo. They are only cloned additionally on request (see optional question below).
 
@@ -1239,7 +1239,7 @@ The `intentron` repo holds **all** bundle skills flat as top-level folders — n
 ```
 Which skills to install?
   a) Minimum (ideation, implement, backlog, intent)
-  b) Standard (+ architecture-review, sprint-review, security-architect, dpo)
+  b) Standard (+ architecture-review, sprint-review, security-architect, dpo, knowledge-onboarding)
   c) Full (all framework skills: + grafana, cloud-system-engineer, visualize, pitch)
   d) Manual selection
 ```
@@ -1577,6 +1577,7 @@ Bootstrap done. Continue with:
   4. If learning loop active: run /sprint-review after 1–2 sprints
   5. Check the setup anytime: `bash scripts/verify-setup.sh` (`--strict` for CI) — read-only, PASS/WARN/FAIL. Details + sketch: HANDBUCH Appendix T.
   6. Fill SECURITY.md: run `security-architect` (DESIGN) — threat model (STRIDE) + mitigations (especially for governance standard/heavy).
+  7. If existing docs / preliminary material present (block-B flag `bestands_doku_erkannt: true` or operator knows): run `/knowledge-onboarding` — routes GAP analyses, research, design files, plan, README etc. deterministically into the governance artefacts (rubric + manifest). Details: knowledge-onboarding/SKILL.en.md (BOO-137).
 ```
 
 > **Fill SECURITY.md (BOO-136):** the bootstrap scaffolds `SECURITY.md` only as a **skeleton**. `security-architect` (DESIGN mode) fills it based on the **STRIDE/OWASP review questions** — the operator needs no security expertise; the skill asks the questions.

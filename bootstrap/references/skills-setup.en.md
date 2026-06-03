@@ -50,6 +50,7 @@ rm -rf "$SKILL_SRC"
 | `backlog` | Sprint planning + backlog overview | Minimum |
 | `intent` | Pipeline entry: intent capture (Perceive of the 4P) | Minimum |
 | `architecture-review` | Architecture review (standard dimensions + active add-ons) | Standard |
+| `knowledge-onboarding` | Existing-doc routing into governance artefacts (rubric + manifest, BOO-137) | Standard |
 | `sprint-review` | Periodic audit + **learning-loop entry** (see `learning-loop.en.md`) | Standard |
 | `research` | Deep research via WebSearch + Perplexity | Standard |
 | `security-architect` | Security review (STRIDE/OWASP) | Standard |

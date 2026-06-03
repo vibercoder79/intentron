@@ -46,10 +46,11 @@ Gegen **Drift / „Wiki-Rot"** (das Haupt-Scheitern-Muster von Wikis) wirkt stru
 
 ## 4) Bestehendes / fremdes Repo auf Stand bringen
 
-„Lies das Repo aus, mach Architektur-Review, bring die Doku auf Stand" ist ein definierter Pfad:
+„Lies das Repo aus, route die Doku, mach Architektur-Review, bring die Artefakte auf Stand" ist ein definierter Pfad — drei Schritte in dieser Reihenfolge:
 
+0. **`/knowledge-onboarding`** (BOO-137) — **menschliche Doku zuerst**. Routet vorhandenes Vor-Material (GAP-Analysen, Legal-Recherche, README, PLAN, `docs/`-Context, Design-Files, Demo-Storyboards, Handover, Prompts) deterministisch in die Governance-Artefakte. Quellen-agnostisch (GitHub-Repo / lokaler Ordner / Chat), Routing-Rubrik als SSoT, Manifest in `journal/knowledge-onboarding-map.yml` als Determinismus-Anker. Default: referenzieren (kein Volltext-Copy). Tier-3-Faelle frag Operator, nicht raten.
 1. **`/architecture-review`** liest den Code + prüft die 8 KI-Architektur-Checks.
-2. **Bestands-Onboarding** (HANDBUCH **Anhang U**) + **`references/framework-upgrade.md`** (`inspect` → `apply-safe` → `apply-with-confirmation`) ziehen Artefakte idempotent nach (`migrate-to-v2.sh --issue BOO-XX`).
+2. **Bestands-Onboarding** (HANDBUCH **Anhang U**) + **`references/framework-upgrade.md`** (`inspect` → `apply-safe` → `apply-with-confirmation`) ziehen Artefakt-Skelette idempotent nach (`migrate-to-v2.sh --issue BOO-XX`).
 3. Ergebnis-Report nach `journal/reports/framework-upgrade/YYYY-MM-DD.md`; bewusste Abweichungen werden **dokumentiert statt überschrieben**.
 
 ## Verweise
