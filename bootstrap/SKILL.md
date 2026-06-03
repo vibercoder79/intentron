@@ -32,9 +32,11 @@ Referenzen:
 
 ---
 
-## Phase 0: Briefing (vor allen Fragen)
+## Phase 0: Briefing + Pre-Flight-Gate (vor allen Fragen)
 
-Den Operator zuerst informieren, dann starten:
+### 0.1 Briefing
+
+Den Operator zuerst informieren:
 
 ```
 Bootstrap v3.0 — ich fuehre dich durch 4 Bloecke:
@@ -45,6 +47,48 @@ Bootstrap v3.0 — ich fuehre dich durch 4 Bloecke:
   Block D — Optional-Komponenten   (gezielte Ja/Nein-Fragen am Ende)
 
 Danach lege ich das Projekt an. Gesamt ~15 min.
+
+Wichtig: Ich richte Governance + Configs ein (scaffold-only). Tools/CLIs
+installiere ich NICHT — die stellst du vorab bereit (siehe Pre-Flight).
+```
+
+### 0.2 Pre-Flight-Gate (BOO-114) — Voraussetzungen pruefen, sonst Abbruch
+
+**Vor** jedem Scaffold die Kern-Voraussetzungen abfragen:
+
+```
+Pre-Flight — sind diese Voraussetzungen erfuellt? [ja / nein / unklar]
+  1. Vorab-Bogen `docs/onboarding/bootstrap-prep.md` durchgelaufen?
+  2. Toolchain bereit? (Node 18+, Git, Claude-CLI, gh; bei Container: Image gebaut)
+     — der Bootstrap installiert nichts (scaffold-only).
+  3. API-Keys / Zugaenge vorhanden? (ANTHROPIC_API_KEY; je nach Scope
+     GitHub-Token oder SSH-Key, Backlog-Tool-Key, externe Provider)
+  4. Ziel-Verzeichnis geklaert + (falls GitHub im Scope) leeres Repo/Remote bereit?
+```
+
+**Auswertung:**
+- Alle Punkte `ja` → weiter zu `Bereit?` und Phase 1.
+- Mind. ein `nein/unklar` → **kontrollierter Abbruch, kein Scaffold:**
+
+```
+⛔ Pre-Flight nicht bestanden — ich lege noch nichts an.
+
+Offen: <die mit nein/unklar markierten Punkte>.
+
+Naechste Schritte:
+  → Vorab-Bogen durcharbeiten: docs/onboarding/bootstrap-prep.md (16 Fragen).
+  → Voraussetzungs-Details: HANDBUCH §3 „Voraussetzungen und Vorbereitung"
+    + Anhang A „Checkliste vor dem ersten Bootstrap".
+  → Tools fehlen? Der Bootstrap installiert sie nicht (scaffold-only); Install-
+    Anleitungen: HANDBUCH Anhang Y.2 (Direkt-Install) bzw. Container-Profil (BOO-81).
+    Beim naechsten Lauf fuehre ich dich gezielt auf die passenden Deeplinks (BOO-115).
+
+Starte `/bootstrap` erneut, sobald die Voraussetzungen stehen.
+```
+
+Erst nach bestandenem Pre-Flight:
+
+```
 Bereit? [ja / spaeter]
 ```
 

@@ -33,9 +33,11 @@ References:
 
 ---
 
-## Phase 0: Briefing (before any questions)
+## Phase 0: Briefing + pre-flight gate (before any questions)
 
-Inform the operator first, then start:
+### 0.1 Briefing
+
+Inform the operator first:
 
 ```
 Bootstrap v3.0 — I'll walk you through 4 blocks:
@@ -46,6 +48,48 @@ Bootstrap v3.0 — I'll walk you through 4 blocks:
   Block D — Optional components   (targeted yes/no questions at the end)
 
 After that I'll scaffold the project. Total ~15 min.
+
+Note: I set up governance + configs (scaffold-only). I do NOT install
+tools/CLIs — you provide those up front (see pre-flight).
+```
+
+### 0.2 Pre-flight gate (BOO-114) — check prerequisites, else abort
+
+**Before** any scaffolding, ask for the core prerequisites:
+
+```
+Pre-flight — are these prerequisites met? [yes / no / unsure]
+  1. Prep questionnaire `docs/onboarding/bootstrap-prep.md` completed?
+  2. Toolchain ready? (Node 18+, Git, Claude CLI, gh; for container: image built)
+     — the bootstrap installs nothing (scaffold-only).
+  3. API keys / access available? (ANTHROPIC_API_KEY; depending on scope a
+     GitHub token or SSH key, backlog-tool key, external providers)
+  4. Target directory decided + (if GitHub is in scope) empty repo/remote ready?
+```
+
+**Evaluation:**
+- All items `yes` → continue to `Ready?` and phase 1.
+- At least one `no/unsure` → **controlled abort, no scaffold:**
+
+```
+⛔ Pre-flight not passed — I'm not creating anything yet.
+
+Open: <the items marked no/unsure>.
+
+Next steps:
+  → Work through the prep questionnaire: docs/onboarding/bootstrap-prep.md (16 questions).
+  → Prerequisite details: HANDBUCH §3 "Prerequisites and preparation"
+    + Appendix A "Checklist before the first bootstrap".
+  → Tools missing? The bootstrap won't install them (scaffold-only); install
+    guides: HANDBUCH Appendix Y.2 (direct install) or container profile (BOO-81).
+    On the next run I'll point you to the matching deeplinks (BOO-115).
+
+Run `/bootstrap` again once the prerequisites are in place.
+```
+
+Only after a passed pre-flight:
+
+```
 Ready? [yes / later]
 ```
 
