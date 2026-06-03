@@ -144,7 +144,7 @@ Aus Quelle oder Beschreibung einen Vorschlag bilden, z.B.: „Erkenne **Next.js 
 
 - Operator **bestaetigt oder ueberschreibt** — der Vorschlag ist nie bindend.
 - Die getroffene Stack-Entscheidung als **ADR** in `docs/domain/adrs/` festhalten (gleiche Mechanik wie die uebrigen Stack-Defaults, §4.4f). Bei `e)` **ohne** erkennbaren Stack: explizit als „noch offen" markieren, **nicht** still als JS annehmen.
-- Eine hier analysierte Quelle wird in A.2b (PROJECT_DESC) **wiederverwendet** — kein Doppel-Einlesen.
+- **Reihenfolge:** A.1 laeuft vor A.2 — eine hier (A.1a) analysierte Quelle liest A.2b **nicht erneut**, sondern verwendet das Ergebnis fuer `PROJECT_DESC` **wieder** (kein Doppel-Einlesen, keine Doppelfrage).
 
 ### A.1b Lighthouse-CI fuer Frontend-Performance (BOO-45, nur bei STACK_CHOICE = b oder c)
 

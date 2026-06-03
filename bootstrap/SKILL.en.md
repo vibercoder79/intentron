@@ -145,7 +145,7 @@ Form a suggestion from the source or description, e.g.: "I detect **Next.js + Ty
 
 - The operator **confirms or overrides** — the suggestion is never binding.
 - Record the chosen stack decision as an **ADR** in `docs/domain/adrs/` (same mechanism as the other stack defaults, §4.4f). On `e)` **without** a detectable stack: mark it explicitly as "still open", **don't** silently assume JS.
-- A source analyzed here is **reused** in A.2b (PROJECT_DESC) — no double read.
+- **Order:** A.1 runs before A.2 — a source analyzed here (A.1a) is **not re-read** by A.2b; it **reuses** the result for `PROJECT_DESC` (no double read, no double question).
 
 ### A.1b Lighthouse CI for frontend performance (BOO-45, only when STACK_CHOICE = b or c)
 
