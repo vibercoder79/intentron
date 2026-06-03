@@ -33,9 +33,11 @@ References:
 
 ---
 
-## Phase 0: Briefing (before any questions)
+## Phase 0: Briefing + pre-flight gate (before any questions)
 
-Inform the operator first, then start:
+### 0.1 Briefing
+
+Inform the operator first:
 
 ```
 Bootstrap v3.0 — I'll walk you through 4 blocks:
@@ -46,6 +48,48 @@ Bootstrap v3.0 — I'll walk you through 4 blocks:
   Block D — Optional components   (targeted yes/no questions at the end)
 
 After that I'll scaffold the project. Total ~15 min.
+
+Note: I set up governance + configs (scaffold-only). I do NOT install
+tools/CLIs — you provide those up front (see pre-flight).
+```
+
+### 0.2 Pre-flight gate (BOO-114) — check prerequisites, else abort
+
+**Before** any scaffolding, ask for the core prerequisites:
+
+```
+Pre-flight — are these prerequisites met? [yes / no / unsure]
+  1. Prep questionnaire `docs/onboarding/bootstrap-prep.md` completed?
+  2. Toolchain ready? (Node 18+, Git, Claude CLI; with GitHub scope also `gh` +
+     `gh auth status` ok; for container: image built) — the bootstrap installs nothing (scaffold-only).
+  3. API keys / access available? (ANTHROPIC_API_KEY; depending on scope a
+     GitHub token or SSH key, backlog-tool key, external providers)
+  4. Target directory decided + (if GitHub is in scope) empty repo/remote ready?
+```
+
+**Evaluation:**
+- All items `yes` → continue to `Ready?` and phase 1.
+- At least one `no/unsure` → **controlled abort, no scaffold:**
+
+```
+⛔ Pre-flight not passed — I'm not creating anything yet.
+
+Open: <the items marked no/unsure>.
+
+Next steps:
+  → Work through the prep questionnaire: docs/onboarding/bootstrap-prep.md (16 questions).
+  → Prerequisite details: HANDBUCH §3 "Prerequisites and preparation"
+    + Appendix A "Checklist before the first bootstrap".
+  → Tools missing? The bootstrap won't install them (scaffold-only); install
+    guides: HANDBUCH Appendix Y.2 (direct install) or container profile (BOO-81).
+    On the next run I'll point you to the matching deeplinks (BOO-115).
+
+Run `/bootstrap` again once the prerequisites are in place.
+```
+
+Only after a passed pre-flight:
+
+```
 Ready? [yes / later]
 ```
 
@@ -61,22 +105,47 @@ Read `references/info-gathering.en.md` for the full question list. Ask the quest
 
 ```
 What do you want to build?
-  a) Node.js / JavaScript backend (API, CLI, daemon)
-  b) Frontend (React, Vue, vanilla JS)
-  c) Full-stack (backend + frontend)
+  a) Node.js / TypeScript backend (API, CLI, daemon)
+  b) Frontend (React, Vue, Svelte, vanilla)
+  c) Full-stack — incl. meta-frameworks (Next.js, Nuxt, SvelteKit, Remix, Astro)
   d) Python (AI/ML, scripts, FastAPI, Django)
-  e) Something else / not decided yet
+  e) Something else / not decided yet  → guided discovery (A.1a)
 ```
 
-Remember the answer as `STACK_CHOICE` — determines which linting tools get scaffolded:
+Remember the answer as `STACK_CHOICE`. The options are **framework-aware**: a meta-framework project (Next.js etc.) belongs under `c)`, **not** `a)` — that was the most common mis-pick (stack mismatch).
 
-| Choice | Linter config | Formatter |
-|--------|---------------|-----------|
-| a) Node.js | `eslint.config.mjs` | — |
-| b) Frontend | `eslint.config.mjs` + `.prettierrc` | Prettier |
-| c) Full-stack | both | Prettier |
-| d) Python | `pyproject.toml` (Ruff + Black) | Black |
-| e) Other | `eslint.config.mjs` (generic) | — |
+**TypeScript is first-class.** For `a/b/c`, ask directly:
+
+```
+TypeScript or JavaScript? [ts / js]   (default: ts)
+```
+
+Remember `LANG_VARIANT = ts | js`. On `ts`: additionally scaffold `tsconfig.json` + `typescript-eslint` + a `tsc --noEmit` CI gate (phase 4.4), `metadata.stack = node-typescript`. On `js`: `node-javascript`. (For `d) Python` and `e)` the question is skipped.)
+
+| Choice | LANG_VARIANT | Linter config | Formatter | Typecheck |
+|--------|--------------|---------------|-----------|-----------|
+| a) Node.js/TS backend | ts (default) / js | `eslint.config.mjs` (+ `typescript-eslint` on ts) | — | `tsc --noEmit` (on ts) |
+| b) Frontend | ts (default) / js | `eslint.config.mjs` + `.prettierrc` (+ `typescript-eslint` on ts) | Prettier | `tsc --noEmit` (on ts) |
+| c) Full-stack / meta-framework | ts (default) / js | both (+ `typescript-eslint` on ts) | Prettier | `tsc --noEmit` (on ts) |
+| d) Python | — | `pyproject.toml` (Ruff + Black) | Black | — |
+| e) Other | — | `eslint.config.mjs` (generic) or guided discovery (A.1a) | — | — |
+
+### A.1a Guided stack discovery (BOO-127 — on `e)` or uncertainty)
+
+If the operator picks `e)` or is unsure: **don't make them guess** — derive a stack **suggestion**.
+
+```
+Unsure which to pick? I can suggest the stack:
+  (a) Analyze a source — existing repo / intent file / existing docs
+      (uses the existing-source import from A.2b, BOO-117)
+  (b) Describe the plan in 1-2 sentences → I derive language, framework, and TS/JS
+```
+
+Form a suggestion from the source or description, e.g.: "I detect **Next.js + TypeScript + Tailwind** → suggestion: `STACK_CHOICE = c) Full-stack`, `LANG_VARIANT = ts`. Accept / adjust / pick yourself?"
+
+- The operator **confirms or overrides** — the suggestion is never binding.
+- Record the chosen stack decision as an **ADR** in `docs/domain/adrs/` (same mechanism as the other stack defaults, §4.4f). On `e)` **without** a detectable stack: mark it explicitly as "still open", **don't** silently assume JS.
+- **Order:** A.1 runs before A.2 — a source analyzed here (A.1a) is **not re-read** by A.2b; it **reuses** the result for `PROJECT_DESC` (no double read, no double question).
 
 ### A.1b Lighthouse CI for frontend performance (BOO-45, only when STACK_CHOICE = b or c)
 
@@ -126,6 +195,32 @@ For `codex`, `cross-tool`, or `unknown`, always scaffold `AGENTS.md`. For `claud
 2. One-sentence description: what does the system do?
 3. Starting version? (default 0.1.0)
 ```
+
+### A.2b Existing-source import (optional, BOO-117)
+
+Before the operator types everything by hand: check whether a source already exists that project info can be derived from. That source is **read for content** and produces **suggestions** (never a silent take-over).
+
+```
+Is there already a source I can pull project info from?
+  a) Intent file (e.g. intents/*.md from the intent skill)
+  b) Existing repo / directory (README, package.json, pyproject.toml, code)
+  c) Other doc (concept, spec sheet, pitch, Notion/Confluence export ...)
+  d) No — I'll describe it myself
+  Default: d
+```
+
+For `a/b/c`: read the source (path/URL from the operator) and **derive + suggest**:
+- `PROJECT_DESC` (one-sentence description) — the main purpose of this step
+- optionally `PROJECT_NAME`, a `stack_hint` (correction suggestion for A.1 / guided discovery BOO-127), detectable add-ons
+
+Show the suggestion to the operator, e.g.: "Derived from `<source>`: `PROJECT_DESC = '…'` (and the stack looks like `…`). Accept, adjust, or discard?" → operator confirms or overrides.
+
+**Remember:** `SOURCE_IMPORT = {type: intent|repo|doc|none, ref: <path/url>, derived: {project_desc, stack_hint, ...}}`.
+
+Cleanly optional — no coercion, no breakage:
+- On `d`, a missing, empty, or unreadable source: continue normally with the A.2 inputs, `SOURCE_IMPORT.type = none`.
+- A.1 (stack) was already asked; a `stack_hint` derived here is only offered as a correction, never forced.
+- If the same source was already analyzed in A.1 (guided discovery, BOO-127): **reuse it here**, don't re-read or re-ask.
 
 ### A.3 Backlog (2 questions)
 
@@ -217,6 +312,8 @@ Rules:
 
 **Remember:** `DEPLOYMENT_SCENARIO = solo-mac | other`
 
+**Derive the install default (BOO-115):** `INSTALL_DEFAULT = system` on `solo-mac`; `INSTALL_DEFAULT = docker` (golden image / container profile) on `other` (Solo-VPS / Multi-User-VPS coding factory / team server). The operator can override the default at any time. Used in the tool-install guidance (phase 7.3b).
+
 - On `a)` the existing bootstrap path continues unchanged — Solo-Mac is the default, no extra setup logic.
 - On `b)` bootstrap only prints a hint block and does not fork the interview:
 
@@ -227,7 +324,7 @@ Rules:
   described there once. After that, bootstrap continues unchanged.
   ```
 
-- Consequence for phases 4 / 5: none, except that `DEPLOYMENT_SCENARIO` is recorded in `metadata.deployment_scenario` inside `.claude/environment.json` (informational, no skill behaviour depends on it).
+- Consequence for phases 4 / 5: `DEPLOYMENT_SCENARIO` is recorded in `metadata.deployment_scenario` inside `.claude/environment.json` and, since BOO-115, drives the **install default** (system vs. Docker) in the tool-install guidance (phase 7.3b). Otherwise no interview fork.
 
 > **Issue reference:** BOO-70. Source: HANDBUCH Appendix P (Deployment Scenarios). Migration for existing projects: `references/migration-checklist-v1-to-v2.en.md` §BOO-70.
 
@@ -481,6 +578,7 @@ Based on `STACK_CHOICE` — see `references/file-templates.en.md`:
 - Node.js / Full-stack / Other → `eslint.config.mjs` (ESLint v9 flat config)
 - Frontend / Full-stack → additionally `.prettierrc`
 - Python → `pyproject.toml` (Ruff + Black)
+- **TypeScript** (`LANG_VARIANT = ts` for a/b/c, BOO-127) → additionally `tsconfig.json` (template `references/file-templates.en.md` §`tsconfig.json (BOO-127)`); `eslint.config.mjs` wires in `typescript-eslint`; plus a `tsc --noEmit` typecheck gate (see CI table below).
 
 Additionally a stack-dependent **CI lint workflow (BOO-28)** — only created when `B.2 == yes` (GitHub repo present). Mirror of the Semgrep CI Action (phase 4.4c) — same Layer-3 mechanism, different tool class (lint instead of SAST):
 
@@ -495,6 +593,8 @@ Additionally a stack-dependent **CI lint workflow (BOO-28)** — only created wh
 Both workflows write SARIF to `.ci-reports/` (mandatory — read by BOO-32 for Hermes consumption and by BOO-29 as the required status check `eslint` / `ruff`) and upload via `github/codeql-action/upload-sarif@v3` into the GitHub Security tab.
 
 If `B.2 == no/c` (no GitHub wanted): skip the BOO-28 step; only Layer 2 (pre-commit hook, phase 4.6) covers linting locally.
+
+> **TypeScript typecheck gate (BOO-127):** On `LANG_VARIANT = ts` (a/b/c) the bootstrap adds a `tsc --noEmit` step to `eslint.yml` (or a dedicated `.github/workflows/typecheck.yml`) — template `references/file-templates.en.md` §`tsc --noEmit Typecheck (BOO-127)`. The gate is referenceable in BOO-29 as the required status check `typecheck`. Locally, the pre-commit hook (phase 4.6) covers `tsc --noEmit` as well.
 
 ### 4.4b SAST configuration (Semgrep — all stacks)
 
@@ -923,6 +1023,12 @@ Prerequisite to ensure no merge into `main` lands without green CI checks. **Run
 
 6. Open a test PR without green checks — the merge must be blocked.
 
+**Fallback without `gh` (BOO-123):** If `gh` is not installed/authenticated, the automation fails — then set branch protection **manually** (applies **regardless** of the Sonar choice):
+- **Recommended:** set up `gh` first (GitHub-connect runbook, HANDBUCH Appendix Y), then re-run `setup-branch-protection.sh`.
+- **Or in the browser** under `…/settings/branches` → "Add rule" for `main`: **Require a pull request before merging** (1 approval), **Require status checks to pass** (pick the checks listed in the detection table from the existing workflows), **Restrict who can push**. This matches 1:1 what the script sets via the API.
+
+> **Branch protection ≠ SonarQube (BOO-123):** branch protection is **not** coupled to SonarQube. `SonarCloud` is just **one** of several required checks derived dynamically from the workflows (see detection table). Without SonarQube, branch protection runs identically with the remaining checks (ESLint/Ruff/Semgrep/Tests/…). The "manual coercion" observed earlier came from a **missing `gh`**, not from Sonar.
+
 If `B.2 == no/c` (no GitHub wanted): skip phase 4.4k completely — branch protection is GitHub-specific and has no equivalent on local or self-hosted setups without GitHub.
 
 > **Issue reference:** BOO-29. Source: `scripts/setup-branch-protection.sh` (v3.18.0, 2026-05-12). Migration for existing projects: `references/migration-checklist-v1-to-v2.en.md` §BOO-29.
@@ -1110,9 +1216,9 @@ The `intentron` repo holds **all** bundle skills flat as top-level folders — n
 
 ```
 Which skills to install?
-  a) Minimum (ideation, implement, backlog)
+  a) Minimum (ideation, implement, backlog, intent)
   b) Standard (+ architecture-review, sprint-review, security-architect, dpo)
-  c) Full (all framework skills: + grafana, cloud-system-engineer, visualize, intent, pitch)
+  c) Full (all framework skills: + grafana, cloud-system-engineer, visualize, pitch)
   d) Manual selection
 ```
 
@@ -1324,6 +1430,13 @@ Before the final commit, deliver the **proof** that the scaffold is complete and
 2. Run it in the project root: `bash scripts/verify-setup.sh`.
 3. The script checks read-only: environment.json, toolchain reachability, git hooks (per repo!), core artifacts (CONVENTIONS.md, ARCHITECTURE_DESIGN.md, specs/, journal/), privacy add-on (if active), backlog adapter. Output PASS/WARN/FAIL + exit code (1 on FAIL).
 4. **Fix FAIL items before finishing.** Present WARN items to the operator (often intentional, e.g. no test framework in a docs project).
+
+**Tool-install guidance for missing tools (BOO-115):** When `verify-setup.sh` (or the pre-flight gate, phase 0.2) reports a missing tool, the bootstrap emits **tool name + deeplink** — not just a WARN — and uses the `INSTALL_DEFAULT` from A.7:
+
+- **`INSTALL_DEFAULT = system`** (solo-mac): direct install → HANDBUCH **Appendix Y.2 "Install the toolchain"** (language-matched DE/EN). Order: first `bash .claude/generate-environment-json.sh --force` (flips the tool flag false→true), **then** `bash scripts/verify-setup.sh`.
+- **`INSTALL_DEFAULT = docker`** (VPS/factory/team): golden image → HANDBUCH **§Container profile (BOO-81)**. **Docker preflight:** `docker --version` → present: copy/build the container profile; missing: HANDBUCH pointer "install Docker (Linux/Mac)". Order: inside the container only `bash scripts/verify-setup.sh` is needed — `postCreateCommand` already calls `generate-environment-json.sh --force`.
+- **Scaffold-only:** the bootstrap does NOT install the tools itself (exception: `c8` as a dev dep); it only points to the right guide. The operator picks system vs. Docker (default = `INSTALL_DEFAULT`, overridable).
+
 5. The result feeds the closing table (7.5).
 
 Manual variant / background: HANDBUCH Appendix T "Post-install verification" (point-by-point checklist).
@@ -1410,6 +1523,8 @@ Bootstrap done. Continue with:
   3. /ideation or the matching Codex invocation — create your first story
   4. If learning loop active: run /sprint-review after 1–2 sprints
 ```
+
+> **Check the GitHub connect proactively when GitHub is in scope (BOO-123):** before you start, check `gh auth status` (CLI/API) **and** `git remote -v` (push path: HTTPS-via-`gh` or SSH) — branch protection needs both auth layers (`gh auth` ≠ `git auth`). Runbook: HANDBUCH Appendix Y "GitHub connect per VPS".
 
 ---
 

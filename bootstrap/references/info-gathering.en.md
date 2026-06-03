@@ -18,6 +18,8 @@ The bootstrap skill collects **only project core information** in Block A. Exist
 | `GOVERNANCE_MODE` * | Governance intensity | `lite` / `standard` / `heavy` (default `standard`) |
 | `EXECUTION_ISOLATION` * | Parallel-agent isolation | `none` / `write-scope` / `git-worktree` (default by mode) |
 
+> **Optional existing-source import (A.2b, BOO-117):** If a source already exists (intent file, existing repo, existing docs), `PROJECT_DESC` — and optionally `PROJECT_NAME` plus a `stack_hint` (correction for A.1) — can be **suggested** from it instead of asked manually. Variable: `SOURCE_IMPORT = {type: intent|repo|doc|none, ref, derived}`. Cleanly optional: default `none`, no breakage without a source, the operator confirms every suggestion. Details: `SKILL.md` §A.2b.
+
 ## Add-ons (architecture dimensions)
 
 Standard dimensions (always active, not deselectable):

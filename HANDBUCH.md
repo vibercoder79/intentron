@@ -108,6 +108,9 @@ GitHub Repository (vibercoder79/intentron)
 | **Claude Code CLI** | Das Herzstück — KI im Terminal | `curl -fsSL https://claude.ai/install.sh \| bash` ¹ |
 | **Node.js** (v18+) | Runtime für Claude Code | nodejs.org |
 | **Git** | Versionskontrolle | git-scm.com |
+| **GitHub CLI (`gh`)** | Pflicht sobald GitHub im Scope: Branch-Protection (BOO-29), PRs, `gh api`/`gh auth` | cli.github.com — Install + Connect-Runbook: Anhang Y |
+
+> **Zwei Auth-Ebenen — nicht verwechseln (BOO-123):** `gh auth` ist die Auth fuer **CLI/API** (Branch-Protection, PRs); `git auth` ist die Auth fuer **`git push`** selbst. Du brauchst beides, aber `git push` geht **wahlweise** ueber SSH-Key (unten) **oder** ueber `gh` als HTTPS-Credential-Helper (`gh auth setup-git`) — auf einem headless VPS spart Letzteres den separaten SSH-Key. Voller GitHub-Connect-Runbook: Anhang Y.
 
 **Empfohlen:**
 
@@ -395,7 +398,7 @@ Wenn ein Projekt bereits `.claude/skills/<skill>/` enthaelt, ist Phase 5 eine Up
 
 ```
 Welche Skills installieren?
-a) Minimum (ideation, implement, backlog)      ← Für den Start ideal
+a) Minimum (ideation, implement, backlog, intent)   ← Für den Start ideal
 b) Standard (+ architecture-review, sprint-review, research, breakfix)  ← Empfohlen
 c) Voll (alle Skills)                          ← Volles Arsenal
 d) Manuell auswählen
@@ -2144,10 +2147,12 @@ SOFTWARE:
 ☐ Node.js v18+ installiert (node --version)
 ☐ Git installiert (git --version)
 ☐ Claude Code installiert (claude --version)
+☐ GitHub CLI installiert (gh --version) — Pflicht bei GitHub-Scope (Branch-Protection/PRs)
 
 ACCOUNTS:
 ☐ Anthropic Account + API Key
-☐ GitHub Account + SSH Key eingerichtet (ssh -T git@github.com)
+☐ GitHub Account + Connect: gh auth login (Scopes repo + admin:repo_hook)
+☐ git push-Auth gewaehlt: SSH-Key (ssh -T git@github.com) ODER gh-HTTPS-Helper (gh auth setup-git)
 ☐ Linear Account + API Key (optional aber empfohlen)
 
 INFORMATIONEN BEREIT:
@@ -4301,10 +4306,44 @@ pipx install semgrep
 pipx install ruff
 npm install -g eslint
 curl -fsSL https://claude.ai/install.sh | bash   # Claude Code CLI (nativer Installer, empfohlen — kein Node nötig)
-# Optional: gh (GitHub CLI), SonarScanner — projekt-/teamabhängig
+# gh (GitHub CLI): Pflicht bei GitHub-Scope — eigener Install-Block + Connect-Runbook direkt unten.
+# Optional: SonarScanner (server-side SonarQube Cloud) — projekt-/teamabhängig
 ```
 
 Genutzte Tools: **Semgrep, Ruff, ESLint** (System-Ebene), **SonarScanner** (optional, server-side SonarQube Cloud), **pytest/Vitest + Coverage** und **autocannon/pytest-benchmark** (Perf) als Projekt-Dev-Deps. Hart verifiziert (`verify-setup.sh`) werden später nur `eslint` + `semgrep`.
+
+**GitHub CLI (`gh`) installieren + GitHub-Connect pro VPS (BOO-123)** — `gh` ist **Pflicht**, sobald GitHub im Scope ist (Branch-Protection BOO-29, PR-Workflow). Offizielles GitHub-apt-Repo (Keyring + sources.list):
+
+```bash
+sudo mkdir -p -m 755 /etc/apt/keyrings
+curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+  | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null
+sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
+  | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+sudo apt-get update && sudo apt-get install -y gh
+```
+
+**Zwei Auth-Ebenen — nicht verwechseln:** `gh auth` (CLI/API) ≠ `git auth` (`git push`).
+
+```bash
+# 1) gh-Auth (CLI/API: Branch-Protection, PRs) — headless via Token:
+echo "$GH_TOKEN" | gh auth login --with-token   # Token-Scopes: repo + admin:repo_hook
+gh auth status                                   # pruefen
+#    (interaktiv stattdessen: gh auth login)
+
+# 2) git-push-Auth — BEWUSSTE WAHL, eine reicht:
+#    a) Empfohlen auf headless VPS — gh als HTTPS-Credential-Helper (kein separater SSH-Key):
+gh auth setup-git
+#    b) Klassisch — SSH-Key (ssh-keygen + Public Key in GitHub), Remote git@github.com:...
+#       (siehe HANDBUCH §3 „SSH fuer GitHub")
+
+# 3) Remote pruefen (HTTPS vs. SSH):
+git remote -v
+#    HTTPS↔SSH umstellen: git remote set-url origin <url>  (HTTPS→SSH siehe BOO-118)
+```
+
+> **Empfehlung:** Auf einem headless VPS ist der HTTPS-via-`gh`-Weg (2a) der einfachere — ein einmaliges `gh auth login` deckt CLI/API **und** `git push` ab. SSH-Key (2b) bleibt fuer wer es klassisch will. Verbindungstest: `gh auth status` **und** ein `git push`-Probelauf bzw. `ssh -T git@github.com`.
 
 **Operatoren anlegen (nur Szenario 3, Multi-User):**
 
