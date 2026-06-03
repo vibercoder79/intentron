@@ -60,8 +60,8 @@ tools/CLIs — you provide those up front (see pre-flight).
 ```
 Pre-flight — are these prerequisites met? [yes / no / unsure]
   1. Prep questionnaire `docs/onboarding/bootstrap-prep.md` completed?
-  2. Toolchain ready? (Node 18+, Git, Claude CLI, gh; for container: image built)
-     — the bootstrap installs nothing (scaffold-only).
+  2. Toolchain ready? (Node 18+, Git, Claude CLI; with GitHub scope also `gh` +
+     `gh auth status` ok; for container: image built) — the bootstrap installs nothing (scaffold-only).
   3. API keys / access available? (ANTHROPIC_API_KEY; depending on scope a
      GitHub token or SSH key, backlog-tool key, external providers)
   4. Target directory decided + (if GitHub is in scope) empty repo/remote ready?
@@ -1023,6 +1023,12 @@ Prerequisite to ensure no merge into `main` lands without green CI checks. **Run
 
 6. Open a test PR without green checks — the merge must be blocked.
 
+**Fallback without `gh` (BOO-123):** If `gh` is not installed/authenticated, the automation fails — then set branch protection **manually** (applies **regardless** of the Sonar choice):
+- **Recommended:** set up `gh` first (GitHub-connect runbook, HANDBUCH Appendix Y), then re-run `setup-branch-protection.sh`.
+- **Or in the browser** under `…/settings/branches` → "Add rule" for `main`: **Require a pull request before merging** (1 approval), **Require status checks to pass** (pick the checks listed in the detection table from the existing workflows), **Restrict who can push**. This matches 1:1 what the script sets via the API.
+
+> **Branch protection ≠ SonarQube (BOO-123):** branch protection is **not** coupled to SonarQube. `SonarCloud` is just **one** of several required checks derived dynamically from the workflows (see detection table). Without SonarQube, branch protection runs identically with the remaining checks (ESLint/Ruff/Semgrep/Tests/…). The "manual coercion" observed earlier came from a **missing `gh`**, not from Sonar.
+
 If `B.2 == no/c` (no GitHub wanted): skip phase 4.4k completely — branch protection is GitHub-specific and has no equivalent on local or self-hosted setups without GitHub.
 
 > **Issue reference:** BOO-29. Source: `scripts/setup-branch-protection.sh` (v3.18.0, 2026-05-12). Migration for existing projects: `references/migration-checklist-v1-to-v2.en.md` §BOO-29.
@@ -1517,6 +1523,8 @@ Bootstrap done. Continue with:
   3. /ideation or the matching Codex invocation — create your first story
   4. If learning loop active: run /sprint-review after 1–2 sprints
 ```
+
+> **Check the GitHub connect proactively when GitHub is in scope (BOO-123):** before you start, check `gh auth status` (CLI/API) **and** `git remote -v` (push path: HTTPS-via-`gh` or SSH) — branch protection needs both auth layers (`gh auth` ≠ `git auth`). Runbook: HANDBUCH Appendix Y "GitHub connect per VPS".
 
 ---
 
