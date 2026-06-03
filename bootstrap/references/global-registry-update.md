@@ -113,6 +113,23 @@ Der Skill zeigt den neuen Eintrag vor:
 
 Operator bestaetigt Einfuegepunkt. Skill schreibt dann die Zeile — oder zeigt sie zum manuellen Einfuegen.
 
+### 3a. Standard-Projektpfad `PROJECTS_ROOT` (BOO-138)
+
+Auf einer Maschine, die mehrere Projekte hostet (Developer-VPS), legt der Bootstrap **einmal** fest, wo Projekte standardmaessig liegen — und liest diesen Pfad danach bei jedem weiteren Bootstrap als Default vor. Das ist die Maschinen-Ebene-Voraussetzung fuer reibungsarmen Multi-Projekt-Betrieb (HANDBUCH Anhang U Weg 2).
+
+**Lesen (jeder Bootstrap, Block B Frage 1):** Skill prueft `~/.claude/CLAUDE.md` auf einen `PROJECTS_ROOT`-Eintrag. Ist er gesetzt, wird Frage 1 mit `<PROJECTS_ROOT>/<projektname>` vorbelegt; Operator bestaetigt mit Enter oder ueberschreibt mit eigenem Pfad.
+
+**Schreiben (nur erstes Projekt der Maschine):** Ist kein `PROJECTS_ROOT` hinterlegt, fragt der Skill einmalig und traegt ihn — nach Operator-Bestaetigung — in `~/.claude/CLAUDE.md` ein. Vorgeschlagener Block:
+
+```markdown
+## Projekt-Standardpfad
+
+- `PROJECTS_ROOT`: `~/projects` — neue Projekte werden standardmaessig hier angelegt (`<PROJECTS_ROOT>/<projektname>`).
+- Pro Projekt gilt die Standard-Struktur (PMO-Hub, `specs/`, `journal/daily/`, `docs/project/`) + die Session-Routinen aus der Projekt-`CLAUDE.md` (BOO-129/139).
+```
+
+Regeln: Operator-Bestaetigung Pflicht (kein stilles Schreiben); **kein Secret**; Override bleibt jederzeit moeglich (Operator kann ein Projekt bewusst ausserhalb `PROJECTS_ROOT` anlegen). Kein projektuebergreifendes Cockpit — der Tagesstand entsteht beim Oeffnen des jeweiligen Projekts (PMO-Hub + letzte `journal/daily/`-Notiz).
+
 ## 4. Lokales Projekt-Memory (optional)
 
 **Nur wenn der Operator `~/.claude/projects/` als Memory nutzt.**

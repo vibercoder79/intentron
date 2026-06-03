@@ -77,15 +77,28 @@ module.exports = { VERSION, DOC_FILES, CONFIG };
 Beim Start jeder Session zuerst klären — **wo stehen wir?**
 1. Lies den **PMO-Hub**: `docs/project/README.md` (bzw. `{{PROJECT_NAME}} - PMO HUB.md`).
 2. Lies die **neuesten Einträge** in `docs/project/meetings/` (letzte Protokolle) und `docs/project/decisions/` (jüngste ADRs).
-3. Fasse den **Stand** in 2-3 Sätzen zusammen (offene Action Items, letzte Entscheidung) und schlage den nächsten Schritt vor.
+3. Lies die **neueste Daily Note** in `journal/daily/` (wo sind wir gestern stehen geblieben? offene Punkte).
+4. Fasse den **Stand** in 2-3 Sätzen zusammen (offene Action Items, letzte Entscheidung) und schlage den nächsten Schritt vor.
+
+## Session-Ende-Routine (Daily Note, BOO-139)
+
+Am natürlichen Sessionende — oder wenn der Operator die Session beendet — **aktiv anbieten**:
+
+> „Soll ich die Daily Note schreiben, damit die nächste Session weiß, wo wir stehen?"
+
+Bei Bestätigung → `journal/daily/YYYY-MM-DD.md` (eine Datei pro Tag, chronologisch sortierbar):
+- **Was wurde gemacht** (Stichpunkte, pro Story/Thema)
+- **Entscheidungen** — nur Titel + Verweis auf `docs/project/decisions/` (keine Duplikation)
+- **Offen für nächste Session** (Action Items)
 
 **Schreib-Konvention (Stand zurückschreiben):**
+- Tages-Logbuch → `journal/daily/YYYY-MM-DD.md`
 - Meeting-Minutes / Action Items → `docs/project/meetings/YYYY-MM-DD-<thema>.md`
 - Entscheidungen → `docs/project/decisions/` (ADRs)
 
-So wird aus den Markdown-Ordnern ein **Leichtgewicht-SecondBrain** im Repo (ohne Obsidian): *Start liest Stand → arbeiten → Minutes/Decisions zurückschreiben.* Loop-Visualisierung: `docs/assets/boo-129-leichtgewicht-secondbrain.png`.
+So wird aus den Markdown-Ordnern ein **Leichtgewicht-SecondBrain** im Repo (ohne Obsidian): *Start liest Stand (PMO-Hub + Meetings/Decisions + letzte Daily Note) → arbeiten → Daily Note / Minutes / Decisions zurückschreiben.* Loop-Visualisierung: `docs/assets/boo-129-leichtgewicht-secondbrain.png`.
 
-> Pfade gelten für `documentation_ssot = repo-docs`. Bei `obsidian` sinngemäß: PMO-Hub + `Meetings/` + `Decisions/` im Vault. Bei `external-dms`: Einstiegspunkt laut `docs/project/README.md`.
+> Pfade gelten für `documentation_ssot = repo-docs`. Bei `obsidian` sinngemäß: PMO-Hub + `Meetings/` + `Decisions/` im Vault, Daily Notes im Vault-Daily-Ordner. Bei `external-dms`: Einstiegspunkt laut `docs/project/README.md`; Daily Notes weiterhin lokal in `journal/daily/`.
 
 ## Regeln (NIEMALS)
 

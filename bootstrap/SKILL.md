@@ -1,7 +1,7 @@
 ---
 name: bootstrap
 recommended_model: sonnet  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
-version: 3.35.0
+version: 3.36.0
 description: Setzt ein neues Projekt mit Governance-Framework auf — interaktiver Block-Interview-Flow in 4 Schritten, Doku-Architektur mit Hub-Auto-Verlinkung, optionaler Learning-Loop L1/L2/L3. Verwenden wenn der Operator ein neues Projekt aufsetzen will oder "/bootstrap" sagt.
 tools: [Read, Write, Edit, Bash, Glob, Grep]
 metadata:
@@ -358,12 +358,21 @@ Lies `references/existing-infra-check.md` fuer den vollstaendigen Dialog-Flow.
 
 Der Skill respektiert bereits vorhandene Infrastruktur — nicht alles neu anlegen.
 
+**Standard-Projektpfad (`PROJECTS_ROOT`, BOO-138):** Bevor Frage 1 gestellt wird, prueft der Skill, ob in der globalen Operator-`~/.claude/CLAUDE.md` ein `PROJECTS_ROOT` hinterlegt ist:
+
+- **Hinterlegt** (Maschine bereits eingerichtet): Frage 1 wird mit dem Default `<PROJECTS_ROOT>/<projektname>` vorbelegt — Operator bestaetigt mit Enter oder gibt einen eigenen Pfad an (Override bleibt jederzeit moeglich).
+- **Nicht hinterlegt** (erstes Projekt auf dieser Maschine): Der Skill fragt **einmalig** nach dem Standard-Projektpfad (`Wo sollen Projekte auf dieser Maschine standardmaessig liegen? [Default: ~/projects]`) und traegt ihn — nach Operator-Bestaetigung — in `~/.claude/CLAUDE.md` ein. So landet jedes weitere Projekt reibungsarm am selben Ort, ohne Pfad-Tipparbeit.
+
+Schreib-/Lese-Format + Operator-Bestaetigung: `references/global-registry-update.md` §Standard-Projektpfad. Kein Cockpit/Dashboard — der Tagesstand entsteht beim Oeffnen des jeweiligen Projekts (PMO-Hub + letzte `journal/daily/`-Notiz, BOO-139).
+
 ```
 Hast du bereits folgendes eingerichtet? (jede Frage einzeln beantworten)
 
 1. Projekt-Verzeichnis?
    [a] Ja + absoluter Pfad
    [b] Nein, neu anlegen — wo? (absoluter Pfad)
+       Default (wenn PROJECTS_ROOT gesetzt): <PROJECTS_ROOT>/<projektname>
+       → Enter bestaetigt den Default, eigener Pfad ueberschreibt
 
 2. GitHub-Repo?
    [a] Ja + URL
@@ -413,7 +422,7 @@ Warnung: {PROJECT_PATH} enthaelt bereits Dateien.
   [c] Abbruch
 ```
 
-**Merken:** `EXISTING_INFRA = {...}` und `DOCUMENTATION_SSOT = {type, path_or_url, project_path, fallback, status}` fuer weitere Phasen. Bei Wahl `[e]` ist `type = repo-docs-plus-vault-harvest`.
+**Merken:** `EXISTING_INFRA = {...}`, `DOCUMENTATION_SSOT = {type, path_or_url, project_path, fallback, status}` und `PROJECTS_ROOT = {path, source}` (`source = claude-md` wenn aus `~/.claude/CLAUDE.md` gelesen, `newly-set` wenn in diesem Lauf erstmals erfragt+geschrieben) fuer weitere Phasen. Bei Wahl `[e]` ist `type = repo-docs-plus-vault-harvest`.
 
 > **Wahl [e] Repo-Docs + persoenlicher Vault-Harvest (BOO-75/77):**
 > Bootstrap richtet das Vault-Harvest mit der **framework-nativen Engine** (BOO-77) vollstaendig ein:

@@ -1,7 +1,7 @@
 ---
 name: bootstrap
 recommended_model: sonnet  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
-version: 3.35.0
+version: 3.36.0
 language: en
 description: Sets up a new project with a governance framework — interactive 4-block interview flow, docs architecture with automatic hub linking, optional learning loop L1/L2/L3. Use when the operator wants to set up a new project or says "/bootstrap".
 tools: [Read, Write, Edit, Bash, Glob, Grep]
@@ -358,12 +358,21 @@ Read `references/existing-infra-check.en.md` for the full dialog flow.
 
 The skill respects existing infrastructure — it doesn't re-create everything.
 
+**Standard project path (`PROJECTS_ROOT`, BOO-138):** Before question 1 is asked, the skill checks whether a `PROJECTS_ROOT` is recorded in the global operator `~/.claude/CLAUDE.md`:
+
+- **Recorded** (machine already set up): question 1 is pre-filled with the default `<PROJECTS_ROOT>/<project-name>` — the operator confirms with Enter or supplies a different path (override always possible).
+- **Not recorded** (first project on this machine): the skill asks **once** for the standard project path (`Where should projects live by default on this machine? [default: ~/projects]`) and records it — after operator confirmation — in `~/.claude/CLAUDE.md`. This way every further project lands at the same place without path typing.
+
+Write/read format + operator confirmation: `references/global-registry-update.en.md §Standard project path`. No cockpit/dashboard — the daily state emerges when opening the respective project (PMO hub + latest `journal/daily/` note, BOO-139).
+
 ```
 Do you already have the following? (answer each individually)
 
 1. Project directory?
    [a] Yes + absolute path
    [b] No, create it — where? (absolute path)
+       Default (if PROJECTS_ROOT is set): <PROJECTS_ROOT>/<project-name>
+       → Enter confirms the default, a custom path overrides
 
 2. GitHub repo?
    [a] Yes + URL
@@ -413,7 +422,7 @@ Warning: {PROJECT_PATH} already contains files.
   [c] Abort
 ```
 
-**Remember:** `EXISTING_INFRA = {...}` and `DOCUMENTATION_SSOT = {type, path_or_url, project_path, fallback, status}` for the following phases. On choice `[e]`, `type = repo-docs-plus-vault-harvest`.
+**Remember:** `EXISTING_INFRA = {...}`, `DOCUMENTATION_SSOT = {type, path_or_url, project_path, fallback, status}` and `PROJECTS_ROOT = {path, source}` (`source = claude-md` if read from `~/.claude/CLAUDE.md`, `newly-set` if asked + written for the first time in this run) for the following phases. On choice `[e]`, `type = repo-docs-plus-vault-harvest`.
 
 > **Choice [e] Repo docs + personal vault harvest (BOO-75/77):**
 > Bootstrap sets up the vault harvest fully with the **framework-native engine** (BOO-77):

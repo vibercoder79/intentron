@@ -4065,8 +4065,8 @@ Du hast INTENTRON auf einer Maschine (VPS/Mac) — und jetzt kommt das **zweite,
 
 Das Detail steht in Anhang S ("Was einmal installieren, was pro Projekt?"). Kurzfassung:
 
-- **Maschine — einmal:** System-Tools (Semgrep, Ruff, ESLint), globaler Skill-Pool (`~/.claude/skills/` bzw. `/opt/claude/skills/`), `~/.claude`-Config. Gilt fuer **alle** Projekte der Maschine.
-- **Projekt — jedes Mal:** `CLAUDE.md`, **Git-Hooks (pro Repo!)**, `.claude/environment.json`, `specs/`, Doku-SSoT-Wahl. Das `.git/`-Verzeichnis wird nicht geklont — darum sind Hooks + environment.json pro Repo neu zu setzen.
+- **Maschine — einmal:** System-Tools (Semgrep, Ruff, ESLint), globaler Skill-Pool (`~/.claude/skills/` bzw. `/opt/claude/skills/`), `~/.claude`-Config inkl. **Standard-Projektpfad `PROJECTS_ROOT`** (BOO-138, z.B. `~/projects` — wird beim ersten Bootstrap einmalig erfragt und danach als Default vorgeschlagen). Gilt fuer **alle** Projekte der Maschine.
+- **Projekt — jedes Mal:** `CLAUDE.md` (inkl. Session-Start-/Session-Ende-Routine, BOO-129/139), **Git-Hooks (pro Repo!)**, `.claude/environment.json`, `specs/`, `journal/daily/` (Daily Notes), Doku-SSoT-Wahl. Das `.git/`-Verzeichnis wird nicht geklont — darum sind Hooks + environment.json pro Repo neu zu setzen.
 
 ### Die drei Onboarding-Wege
 
@@ -4074,8 +4074,8 @@ Das Detail steht in Anhang S ("Was einmal installieren, was pro Projekt?"). Kurz
 
 **Weg 2 — Projekt 2..N (Basis vorhanden).** Bootstrap-Schnellpfad: Block B erkennt Tools + globalen Skill-Pool → Maschinen-Setup wird uebersprungen. Der Fokus liegt auf der **Projekt-Ebene**:
 
-1. Projekt-Verzeichnis + GitHub-Repo (Block B).
-2. `CLAUDE.md` aus Template (Projekt-Kern).
+1. Projekt-Verzeichnis + GitHub-Repo (Block B). Auf einer eingerichteten Maschine schlaegt Block B `<PROJECTS_ROOT>/<projektname>` als Default vor (BOO-138) — Enter bestaetigt, eigener Pfad ueberschreibt.
+2. `CLAUDE.md` aus Template (Projekt-Kern, inkl. Session-Start-/Session-Ende-Routine + `journal/daily/`-Daily-Notes, BOO-129/139).
 3. **Git-Hooks installieren** — pro Repo, weil `.git/hooks/` nicht geklont wird.
 4. `bash .claude/generate-environment-json.sh` — erkennt die einmal-installierten Tools fuer dieses Projekt.
 5. Doku-SSoT waehlen (Block B.3 — oft dieselbe wie Projekt 1, aber pro Projekt entscheidbar).
