@@ -184,6 +184,12 @@ cat ~/.ssh/id_ed25519.pub
 # 4. Verbindung testen
 ssh -T git@github.com
 # → "Hi username! You've successfully authenticated." = Erfolg
+
+# 5. Bestehendes HTTPS-Remote auf SSH umstellen (Spezialfall, BOO-118)
+# Falls das Repo via HTTPS geklont wurde — git remote -v zeigt https://github.com/...
+git remote set-url origin git@github.com:<owner>/<repo>.git
+git remote -v            # pruefen: origin zeigt jetzt auf git@github.com:...
+ssh -T git@github.com    # Verbindungstest (wie Schritt 4)
 ```
 
 ---
@@ -467,6 +473,8 @@ Quartal → /sprint-review → System-Gesundheit
 Sprint-Ende → /pitch → Evidenz-Briefing fuer Stakeholder
 Jederzeit → /status → Was läuft gerade?
 ```
+
+> **Design-Stories (BOO-126):** Eine Design-Story laeuft als **„implement gegen eine Design-Referenz"** durch die normale Pipeline (`/ideation` → `/implement`) — **kein** eigener `change_type: design`, kein Template, keine Auto-Erkennung. Die Referenz (z.B. `DESIGN.md`, Figma-Export, Screenshot) wird in `ARCHITECTURE_DESIGN.md §9` verlinkt; `/implement` verifiziert gegen die Referenz **plus** a11y-/Lighthouse-Gates (BOO-45). **Abgrenzung:** Das Coding-Framework *setzt Design um* (messbare Gates = Ground Truth, Karpathy-Verifizierbarkeit); **reine Gestaltung** (Geschmack, Brand, Visual Identity) lebt in **opt-in externen Skills** (`design-md-generator`, `lumen-*`, Pencil-/Webflow-MCP) — nicht in der Pflicht-Pipeline. Entscheidung: ADR `docs/domain/adrs/design-story-handling.md`.
 
 Die vollstaendige 4P-Delivery-Pipeline (Schrader Code Crash Kap. 5) ist verdrahtet als:
 
@@ -4578,6 +4586,31 @@ Quelle: BOO-108. Vollstaendige Matrix und Abnehmer-Rollen: `docs/onboarding/arte
 ### Z.4 Komplementaeres Maschinen-Setup (setup-checklist)
 
 Die drei Checklisten oben decken das **Projekt**-Onboarding ab. Die **Maschine/Instanz** selbst (Effort, Sandboxing, Permission-Modi, MCP, globale `CLAUDE.md`) richtet ein eigenstaendiges, oeffentliches Tool ein: **[claude-code-setup-checklist](https://github.com/vibercoder79/claude-code-setup-checklist)** — bewusst losgeloest vom Framework, weil es vor und unabhaengig von jedem Projekt laeuft. Empfohlene Reihenfolge bei frischer Instanz: (1) `setup-checklist global` → (2) `/bootstrap` (Projekt-Governance, **besitzt** Projekt-`CLAUDE.md` + Governance-Hooks + `environment.json`) → (3) optional `setup-checklist audit`/`projekt` **additiv** (`.claudeignore`, `.gitignore`-Hygiene, `CLAUDE.local.md`), **ohne** Projekt-`CLAUDE.md`/Guard-Hook erneut anzulegen (Bodyguard ist aktiv). Faustregel: **Maschine + Hygiene = Checkliste · Projekt-Governance = bootstrap.** Keine Datei wird doppelt besessen. Verweis im README-Abschnitt „Komplementäres Tooling".
+
+---
+
+## Anhang AA: SonarCloud-Setup-Runbook — zwei Szenarien (BOO-119)
+
+Externer SaaS-Provider: Der Bootstrap scaffoldet `sonar-project.properties` + `.github/workflows/sonar.yml`, aber die **SonarCloud-seitige** Einrichtung (Account, Organisation, Token) ist manuell. Deeplink aus Bootstrap **D.5** (bei „ja") und aus dem **Provider-Postflight (BOO-58)**. Verzahnt mit **BOO-122** (Warnung: SonarCloud wird ein merge-blockierender Required Check).
+
+**Szenario A — SonarCloud-Account existiert (ggf. schon GitHub-verbunden):**
+1. In SonarCloud die **Organisation** prüfen/auswählen (`sonar.organization`).
+2. Projekt **importieren/verifizieren** („Import from GitHub") oder vorhandenen Projekt-Key bestätigen (`sonar.projectKey`).
+3. Falls kein gültiges Token: **`SONAR_TOKEN` neu generieren** (My Account → Security → Generate Token).
+4. Token als GitHub-Secret: `gh secret set SONAR_TOKEN` (oder Repo → Settings → Secrets and variables → Actions).
+5. `sonar-project.properties` abgleichen: `sonar.organization` + `sonar.projectKey` müssen zur SonarCloud-Org/-Projekt passen.
+
+**Szenario B — von 0:**
+1. SonarCloud-Account via **GitHub-Login** anlegen (sonarcloud.io → „Log in with GitHub").
+2. **Organisation anlegen** (an die GitHub-Org/-User binden).
+3. **„Import from GitHub"** → Repo auswählen → Projekt wird angelegt (liefert `projectKey` + `organization`).
+4. **„Generate Token"** (My Account → Security) → `SONAR_TOKEN`.
+5. Token als GitHub-Secret: `gh secret set SONAR_TOKEN`.
+6. `sonar-project.properties` mit `projectKey` / `organization` abgleichen.
+
+> **Erster Lauf:** Der erste `git push` auf `main` triggert `sonar.yml` → SonarCloud analysiert. **Ohne gültiges `SONAR_TOKEN` failt der Job rot** und blockiert (bei aktiver Branch-Protection) den Merge — siehe Warnung **BOO-122**. Graceful-Skip greift nur, solange `SonarCloud` noch nicht als Required Status Check gesetzt ist.
+
+**Connected Mode (optional, Mac):** VS Code → SonarLint → Connected Mode → SonarCloud → Organisation + Projekt-Key. Danach `tools_available.sonarqube_ide_plugin: true` in `.claude/environment.json` (siehe §9).
 
 ---
 

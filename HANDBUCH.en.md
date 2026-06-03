@@ -188,6 +188,12 @@ cat ~/.ssh/id_ed25519.pub
 # 4. Test connection
 ssh -T git@github.com
 # → "Hi username! You've successfully authenticated." = success
+
+# 5. Switch an existing HTTPS remote to SSH (special case, BOO-118)
+# If the repo was cloned via HTTPS — git remote -v shows https://github.com/...
+git remote set-url origin git@github.com:<owner>/<repo>.git
+git remote -v            # verify: origin now points to git@github.com:...
+ssh -T git@github.com    # connection test (as in step 4)
 ```
 
 ---
@@ -461,6 +467,8 @@ Quarter  → /sprint-review     → System health
 Sprint   → /pitch             → Evidence briefing for stakeholders
 Anytime  → /status            → What's happening right now?
 ```
+
+> **Design stories (BOO-126):** a design story runs as **"implement against a design reference"** through the normal pipeline (`/ideation` → `/implement`) — **no** dedicated `change_type: design`, no template, no auto-detection. The reference (e.g. `DESIGN.md`, Figma export, screenshot) is linked in `ARCHITECTURE_DESIGN.md §9`; `/implement` verifies against the reference **plus** a11y/Lighthouse gates (BOO-45). **Boundary:** the coding framework *implements* design (measurable gates = ground truth, Karpathy verifiability); **pure design** (taste, brand, visual identity) lives in **opt-in external skills** (`design-md-generator`, `lumen-*`, Pencil/Webflow MCP) — not in the mandatory pipeline. Decision: ADR `docs/domain/adrs/design-story-handling.md`.
 
 The full 4P delivery pipeline (Schrader Code Crash Ch. 5) is wired as:
 
@@ -4482,6 +4490,31 @@ Source: BOO-108. Full matrix and sign-off roles: `docs/onboarding/artefakt-landk
 ### Z.4 Complementary machine setup (setup-checklist)
 
 The three checklists above cover **project** onboarding. The **machine/instance** itself (effort, sandboxing, permission modes, MCP, global `CLAUDE.md`) is set up by a separate, public tool: **[claude-code-setup-checklist](https://github.com/vibercoder79/claude-code-setup-checklist)** — deliberately decoupled from the framework because it runs before and independently of any project. Recommended order on a fresh instance: (1) `setup-checklist global` → (2) `/bootstrap` (project governance, **owns** the project `CLAUDE.md` + governance hooks + `environment.json`) → (3) optional `setup-checklist audit`/`projekt` **additively** (`.claudeignore`, `.gitignore` hygiene, `CLAUDE.local.md`), **without** re-creating the project `CLAUDE.md`/guard hook (the bodyguard is active). Rule of thumb: **machine + hygiene = the checklist · project governance = bootstrap.** No file is owned twice. See the README section "Complementary tooling".
+
+---
+
+## Appendix AA: SonarCloud setup runbook — two scenarios (BOO-119)
+
+External SaaS provider: the bootstrap scaffolds `sonar-project.properties` + `.github/workflows/sonar.yml`, but the **SonarCloud-side** setup (account, organization, token) is manual. Deeplinked from bootstrap **D.5** (on "yes") and from the **provider postflight (BOO-58)**. Tied to **BOO-122** (warning: SonarCloud becomes a merge-blocking required check).
+
+**Scenario A — SonarCloud account exists (possibly already GitHub-connected):**
+1. In SonarCloud, check/select the **organization** (`sonar.organization`).
+2. **Import/verify** the project ("Import from GitHub") or confirm the existing project key (`sonar.projectKey`).
+3. If no valid token: **regenerate `SONAR_TOKEN`** (My Account → Security → Generate Token).
+4. Set the token as a GitHub secret: `gh secret set SONAR_TOKEN` (or Repo → Settings → Secrets and variables → Actions).
+5. Reconcile `sonar-project.properties`: `sonar.organization` + `sonar.projectKey` must match the SonarCloud org/project.
+
+**Scenario B — from zero:**
+1. Create a SonarCloud account via **GitHub login** (sonarcloud.io → "Log in with GitHub").
+2. **Create an organization** (bind it to the GitHub org/user).
+3. **"Import from GitHub"** → select the repo → the project is created (yields `projectKey` + `organization`).
+4. **"Generate Token"** (My Account → Security) → `SONAR_TOKEN`.
+5. Set the token as a GitHub secret: `gh secret set SONAR_TOKEN`.
+6. Reconcile `sonar-project.properties` with `projectKey` / `organization`.
+
+> **First run:** the first `git push` to `main` triggers `sonar.yml` → SonarCloud analyzes. **Without a valid `SONAR_TOKEN` the job fails red** and (with branch protection active) blocks the merge — see warning **BOO-122**. The graceful skip only applies while `SonarCloud` is not yet a required status check.
+
+**Connected mode (optional, Mac):** VS Code → SonarLint → Connected Mode → SonarCloud → organization + project key. Then set `tools_available.sonarqube_ide_plugin: true` in `.claude/environment.json` (see §9).
 
 ---
 

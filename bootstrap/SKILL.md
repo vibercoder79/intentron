@@ -1425,10 +1425,10 @@ Kosten: Public Repos gratis. Private Repos ab ~10 EUR/Monat.
 [nein] (default) — kann spaeter nachgezogen werden
 ```
 
-Wenn `ja`: Lies `references/optional-components.md §D.5` fuer Implementation-Details inkl. Verify-Schritt.
+Wenn `ja`: Lies `references/optional-components.md §D.5` fuer Implementation-Details inkl. Verify-Schritt. **SonarCloud-seitig (Account/Org/Token) ist manuell** — Schritt-fuer-Schritt im **SonarCloud-Setup-Runbook (HANDBUCH Anhang AA, zwei Szenarien)**; erster `git push` triggert `sonar.yml`.
 
 > ⚠️ **Warnung bei `ja` (BOO-122):** Mit `sonar.yml` wird **`SonarCloud` automatisch ein Required Status Check** (Branch-Protection, Phase 4.4k, baut die Checks dynamisch aus allen Workflows) — **ohne gruenen Sonar-Lauf kein Merge**. Fehlt Account/Token, failt der Job rot und **dein erster PR ist blockiert**. Daher:
-> - **Jetzt einrichten:** das SonarCloud-Setup-Runbook (BOO-119, HANDBUCH) durchlaufen (Account/Org/Token + `SONAR_TOKEN`-Secret), **dann** `ja`.
+> - **Jetzt einrichten:** das SonarCloud-Setup-Runbook (BOO-119, HANDBUCH **Anhang AA**, zwei Szenarien) durchlaufen (Account/Org/Token + `SONAR_TOKEN`-Secret), **dann** `ja`.
 > - **Oder spaeter aktivieren:** vorerst `nein`, Sonar ist jederzeit nachziehbar.
 > - **Sonar wieder entfernen** (falls schon scaffolded): `.github/workflows/sonar.yml` loeschen, `tools_available.sonarqube_cloud = false` setzen, Branch-Protection neu setzen (`setup-branch-protection.sh` — `SonarCloud` faellt dann aus den Required Checks).
 >
@@ -1619,7 +1619,10 @@ Bootstrap fertig. Weiter mit:
   2. Runtime starten: Claude Code (`cd {PROJECT_PATH} && claude`) oder Codex im Projektpfad
   3. /ideation bzw. passender Codex-Aufruf — erste Story erstellen
   4. Wenn Learning-Loop aktiv: nach 1-2 Sprints /sprint-review laufen lassen
+  5. Setup jederzeit pruefen: `bash scripts/verify-setup.sh` (`--strict` fuer CI) — read-only, PASS/WARN/FAIL. Details + Sketch: HANDBUCH Anhang T.
 ```
+
+> **Setup-Self-Check jederzeit (BOO-128):** `verify-setup.sh` ist read-only und unabhaengig vom `/implement`-Probelauf — der Operator prueft sein Setup jederzeit selbst. Fertiger Prompt: „führ `verify-setup.sh` aus und erklär mir die WARN/FAIL-Punkte". Hintergrund + Sketch: HANDBUCH Anhang T „Post-Install-Verifikation".
 
 > **GitHub-Connect proaktiv pruefen, wenn GitHub im Scope (BOO-123):** vor dem Loslegen `gh auth status` (CLI/API) **und** `git remote -v` (push-Pfad: HTTPS-via-`gh` oder SSH) checken — Branch-Protection braucht beide Auth-Ebenen (`gh auth` ≠ `git auth`). Runbook: HANDBUCH Anhang Y „GitHub-Connect pro VPS".
 

@@ -1381,10 +1381,10 @@ Cost: public repos free. Private repos from ~10 EUR/month.
 [no] (default) — can be added later
 ```
 
-On `yes`: read `references/optional-components.en.md §D.5` for implementation details including the verify step.
+On `yes`: read `references/optional-components.en.md §D.5` for implementation details including the verify step. **The SonarCloud side (account/org/token) is manual** — step by step in the **SonarCloud setup runbook (HANDBUCH Appendix AA, two scenarios)**; the first `git push` triggers `sonar.yml`.
 
 > ⚠️ **Warning on `yes` (BOO-122):** With `sonar.yml`, **`SonarCloud` automatically becomes a required status check** (branch protection, phase 4.4k, builds the checks dynamically from all workflows) — **no green Sonar run, no merge**. If the account/token is missing, the job fails red and **your first PR is blocked**. Therefore:
-> - **Set it up now:** walk through the SonarCloud setup runbook (BOO-119, HANDBUCH) (account/org/token + `SONAR_TOKEN` secret), **then** `yes`.
+> - **Set it up now:** walk through the SonarCloud setup runbook (BOO-119, HANDBUCH **Appendix AA**, two scenarios) (account/org/token + `SONAR_TOKEN` secret), **then** `yes`.
 > - **Or enable later:** pick `no` for now; Sonar can be added anytime.
 > - **Remove Sonar again** (if already scaffolded): delete `.github/workflows/sonar.yml`, set `tools_available.sonarqube_cloud = false`, re-run branch protection (`setup-branch-protection.sh` — `SonarCloud` then drops out of the required checks).
 >
@@ -1575,7 +1575,10 @@ Bootstrap done. Continue with:
   2. Start runtime: Claude Code (`cd {PROJECT_PATH} && claude`) or Codex in the project path
   3. /ideation or the matching Codex invocation — create your first story
   4. If learning loop active: run /sprint-review after 1–2 sprints
+  5. Check the setup anytime: `bash scripts/verify-setup.sh` (`--strict` for CI) — read-only, PASS/WARN/FAIL. Details + sketch: HANDBUCH Appendix T.
 ```
+
+> **Setup self-check anytime (BOO-128):** `verify-setup.sh` is read-only and independent of the `/implement` trial — the operator checks the setup themselves anytime. Ready-made prompt: "run `verify-setup.sh` and explain the WARN/FAIL items to me". Background + sketch: HANDBUCH Appendix T "Post-install verification".
 
 > **Check the GitHub connect proactively when GitHub is in scope (BOO-123):** before you start, check `gh auth status` (CLI/API) **and** `git remote -v` (push path: HTTPS-via-`gh` or SSH) — branch protection needs both auth layers (`gh auth` ≠ `git auth`). Runbook: HANDBUCH Appendix Y "GitHub connect per VPS".
 

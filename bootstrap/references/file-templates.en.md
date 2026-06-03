@@ -76,6 +76,21 @@ module.exports = { VERSION, DOC_FILES, CONFIG };
 
 {{PROJECT_DESC}}
 
+## Session-start routine (lightweight SecondBrain, BOO-129)
+
+At the start of every session, first establish — **where are we?**
+1. Read the **PMO hub**: `docs/project/README.md` (or `{{PROJECT_NAME}} - PMO HUB.md`).
+2. Read the **latest entries** in `docs/project/meetings/` (recent minutes) and `docs/project/decisions/` (recent ADRs).
+3. Summarize the **state** in 2-3 sentences (open action items, latest decision) and propose the next step.
+
+**Write-back convention (record the state):**
+- Meeting minutes / action items → `docs/project/meetings/YYYY-MM-DD-<topic>.md`
+- Decisions → `docs/project/decisions/` (ADRs)
+
+This turns the markdown folders into a **lightweight SecondBrain** in the repo (no Obsidian): *start reads the state → work → write minutes/decisions back.* Loop visualization: `docs/assets/boo-129-leichtgewicht-secondbrain.en.png`.
+
+> Paths apply to `documentation_ssot = repo-docs`. For `obsidian`, analogously: PMO hub + `Meetings/` + `Decisions/` in the vault. For `external-dms`: entry point per `docs/project/README.md`.
+
 ## Rules (NEVER)
 
 1. **NEVER** change code without a Backlog Record or adapter story

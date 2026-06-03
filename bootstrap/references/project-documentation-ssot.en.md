@@ -49,6 +49,10 @@ docs/project/
   archive/
 ```
 
+**Lightweight SecondBrain loop (BOO-129):** `repo-docs` only becomes a usable "brain" once the generated `CLAUDE.md` reads the PMO hub (`README.md`) + the latest `meetings/`/`decisions/` at **session start** and the state is **written back** at the end (minutes → `meetings/`, decisions → `decisions/`). The session-start routine + write-back convention live in the `CLAUDE.md` template (`references/file-templates.en.md §CLAUDE.md (Minimum)`).
+
+![Lightweight SecondBrain loop — session start reads PMO hub/meetings/decisions → work → write minutes/ADRs back → loop](../../docs/assets/boo-129-leichtgewicht-secondbrain.en.png)
+
 ### Option 3 — External DMS
 
 - **SSoT:** External DMS, e.g. SharePoint, Confluence, Notion, Google Drive, or a customer system.
