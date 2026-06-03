@@ -2067,6 +2067,8 @@ BOOTSTRAP SKILL:
 
 ## Appendix C: Glossary
 
+> **For non-developers (BOO-131):** plain-language explanations with everyday analogies (runner, MCP, hook, gate, PR, spec, ADR …) as training material in [`docs/glossar.en.md`](docs/glossar.en.md). This table is the technical short form.
+
 | Term | Meaning |
 |------|---------|
 | **SSoT** | Single Source of Truth — one authoritative source per information |

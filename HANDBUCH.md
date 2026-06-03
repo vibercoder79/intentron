@@ -2197,6 +2197,8 @@ BOOTSTRAP SKILL:
 
 ## Anhang C: Glossar
 
+> **Für Nicht-Entwickler (BOO-131):** Klartext-Erklärungen mit Alltagsanalogie (Runner, MCP, Hook, Gate, PR, Spec, ADR …) als Schulungs-Material in [`docs/glossar.md`](docs/glossar.md). Diese Tabelle hier ist die technische Kurzfassung.
+
 | Begriff | Bedeutung |
 |---------|-----------|
 | **SSoT** | Single Source of Truth — eine einzige Quelle für eine Information |
