@@ -38,7 +38,7 @@ Target structure:
 ```text
 docs/project/
   README.md
-  developer-onboarding.md
+  DEVELOPER_ONBOARDING.md
   governance.md
   target-architecture.md
   backlog.md
@@ -70,10 +70,12 @@ docs/project/
 
 Every mode must cover these artifacts. Names may be adjusted per language/tool, but the responsibility stays the same.
 
+> **Canonical filename (BOO-134):** the developer onboarding is named **`DEVELOPER_ONBOARDING.md`** in the repo/`repo-docs` (project root, exactly what `scripts/verify-setup.sh` checks); in Obsidian `Developer Onboarding.md` (vault convention). **The bootstrap does NOT create a `HANDBUCH.md` in the project** — `HANDBUCH.md` is the framework documentation only, never a project artifact.
+
 | Artifact | Purpose | Obsidian | Repo Docs | External DMS |
 |----------|---------|----------|-----------|--------------|
 | Project Hub / PMO Hub | Central entry point, status, links | `{PROJECT_NAME} - PMO HUB.md` | `README.md` | DMS start page |
-| Developer Onboarding | Setup, local commands, working rules | `Developer Onboarding.md` | `developer-onboarding.md` | Onboarding page |
+| Developer Onboarding | Setup, local commands, working rules | `Developer Onboarding.md` | `DEVELOPER_ONBOARDING.md` | Onboarding page |
 | Governance | Roles, gates, working process | `Projekt-Governance.md` | `governance.md` | Governance page |
 | Target Architecture | Target state, system boundaries, core decisions | `Target Architecture.md` | `target-architecture.md` | Architecture page |
 | Backlog | Backlog convention and tool links | `Backlog.md` | `backlog.md` | Backlog page |
