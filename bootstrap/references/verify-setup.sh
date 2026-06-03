@@ -100,7 +100,7 @@ done
 for d in specs journal; do
   if [[ -d "$d" ]]; then c_pass "$d/ vorhanden"; else c_warn "$d/ fehlt (wird beim ersten /ideation bzw. /implement angelegt)"; fi
 done
-if [[ -f "DEVELOPER_ONBOARDING.md" ]]; then c_pass "DEVELOPER_ONBOARDING.md vorhanden"; else c_warn "DEVELOPER_ONBOARDING.md fehlt — Uebergabe an fremde Teams erschwert"; fi
+if [[ -f "DEVELOPER_ONBOARDING.md" ]]; then c_pass "DEVELOPER_ONBOARDING.md vorhanden"; else c_warn "DEVELOPER_ONBOARDING.md fehlt im Repo-Root (kanonischer Name, BOO-134) — bei Obsidian-SSoT liegt das Onboarding im Vault (dann ok); bei repo-docs hier anlegen"; fi
 
 # --- 5. Privacy-Add-on (nur falls aktiv) -----------------------------------
 section "5. Privacy-Add-on (nur falls aktiviert)"

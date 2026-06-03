@@ -25,7 +25,7 @@
 10. [Tailoring Governance to Your Project](#10-tailoring-governance-to-your-project)
 11. [Daily Usage — A Typical Workflow](#11-daily-usage--a-typical-workflow)
 12. [FAQ](#12-faq) — incl. Claude Agent SDK migration
-13. [Appendices — signpost](#13-appendices--signpost) — A through AA at a glance
+13. [Appendices — signpost](#13-appendices--signpost) — A through AB at a glance
 
 ---
 
@@ -135,13 +135,14 @@ GitHub Repository (vibercoder79/intentron)
 2. **GitHub account** — for your repository
    - github.com/signup
    - Free tier is enough at the start
+   - **Branch protection (BOO-29):** on **private** repos only with a paid plan (GitHub Pro/Team/Enterprise); on **public** repos free. Alternative: repository rulesets. Without it, `setup-branch-protection.sh` won't take effect on a private free-tier repo.
 
 **Recommended:**
 
 3. **Linear account** — for issue tracking (backlog, stories)
    - linear.app
    - Free for small teams
-   - Linear API key: linear.app → Settings → API → Personal API Keys
+   - Linear API key: linear.app → Settings → Security and Access → Personal API Keys
 
 **Optional but valuable:**
 
@@ -158,7 +159,7 @@ Before you start `/bootstrap`, have these keys ready:
 |-----|-----------|------|----------|
 | Anthropic API Key | YES | console.anthropic.com | `ANTHROPIC_API_KEY` |
 | GitHub SSH Key | YES | `ssh-keygen` + GitHub Settings | — |
-| Linear API Key | Recommended | linear.app → Settings → API | `LINEAR_API_KEY` |
+| Linear API Key | Recommended | linear.app → Settings → Security and Access | `LINEAR_API_KEY` |
 | OpenRouter Key | Optional | openrouter.ai/keys | `OPENROUTER_API_KEY` |
 | Telegram Bot Token | Optional | @BotFather on Telegram | `TELEGRAM_BOT_TOKEN` |
 
@@ -670,6 +671,8 @@ audits (AUDIT mode), and before installing external skills (SKILL-SCAN mode).
 ---
 
 ## 7. The Artifacts — What Gets Created, Where, and Why
+
+> **One-page overview (BOO-130):** *how* the framework documents — artifacts, the 3 doc layers, the continuous gates, and the existing-repo onboarding path — is consolidated in [`docs/how-we-document.en.md`](docs/how-we-document.en.md). This §7 lists the artifacts in detail.
 
 ### What is an artifact?
 
@@ -1190,6 +1193,8 @@ gh api -X PUT "repos/${OWNER}/${REPO}/branches/main/protection" \
 ---
 
 ## 8g. Linear setup per project (BOO-30)
+
+> **MCP connection on a headless VPS (BOO-133):** this section covers the **Linear↔GitHub integration**. The **Claude Code Linear MCP OAuth on a VPS without a browser** (SSH port-forward tunnel + token setup without a leak) is described in **Appendix AB**.
 
 The Linear team that backs a project (`B.4 == Linear`) needs two pieces of configuration beyond the default to make the issue lifecycle drive itself: a **six-state workflow** and the **GitHub integration**. Both are one-off operator tasks per project — the Linear API could automate them, but the effort/benefit ratio is poor (one-time setup, well-guided UI). This is a deliberate trade-off documented here so the operator knows exactly what is manual and what is not.
 
@@ -1984,7 +1989,7 @@ postflight.
 
 ## 13. Appendices — signpost
 
-The handbook has 27 appendices (A–Z + AA). They are a **reference and deep-dive layer** — you don't need to read them front to back. This table tells you **when which appendix is relevant**. A–M are the foundations/tooling layer, N–AA the themes from v0.2.0 onward (waves J–AV): efficiency, privacy, deployment, scaling, verification, edit bodyguard, contribute-back, ubiquitous language, VPS/cloud team runbook, customer onboarding, SonarCloud setup.
+The handbook has 28 appendices (A–Z + AA + AB). They are a **reference and deep-dive layer** — you don't need to read them front to back. This table tells you **when which appendix is relevant**. A–M are the foundations/tooling layer, N–AA the themes from v0.2.0 onward (waves J–AV): efficiency, privacy, deployment, scaling, verification, edit bodyguard, contribute-back, ubiquitous language, VPS/cloud team runbook, customer onboarding, SonarCloud setup.
 
 | Appendix | Topic | When relevant |
 |----------|-------|---------------|
@@ -2015,6 +2020,7 @@ The handbook has 27 appendices (A–Z + AA). They are a **reference and deep-div
 | **Y** | VPS/cloud team runbook | INTENTRON on a shared developer VPS, multi-project, team |
 | **Z** | Customer onboarding — three checklists + artifact map | onboard customers/projects; complementary machine setup |
 | **AA** | SonarCloud setup runbook (two scenarios) | set up external SonarQube Cloud (D.5 = yes) |
+| **AB** | Linear MCP on a headless VPS | connect the Linear MCP via OAuth/SSH tunnel on a VPS + token setup |
 
 ---
 
@@ -2032,6 +2038,7 @@ SOFTWARE:
 ACCOUNTS:
 ☐ Anthropic account + API key
 ☐ GitHub account + connect: gh auth login (scopes repo + admin:repo_hook)
+☐ Branch-protection plan clarified: private = GitHub Pro/Team/Enterprise; public = free (BOO-29)
 ☐ git push auth chosen: SSH key (ssh -T git@github.com) OR gh HTTPS helper (gh auth setup-git)
 ☐ Linear account + API key (optional but recommended)
 
@@ -2062,6 +2069,8 @@ BOOTSTRAP SKILL:
 | `journal/` | All logs & incidents | Read only / written by tools |
 
 ## Appendix C: Glossary
+
+> **For non-developers (BOO-131):** plain-language explanations with everyday analogies (runner, MCP, hook, gate, PR, spec, ADR …) as training material in [`docs/glossar.en.md`](docs/glossar.en.md). This table is the technical short form.
 
 | Term | Meaning |
 |------|---------|
@@ -4517,6 +4526,46 @@ External SaaS provider: the bootstrap scaffolds `sonar-project.properties` + `.g
 > **First run:** the first `git push` to `main` triggers `sonar.yml` → SonarCloud analyzes. **Without a valid `SONAR_TOKEN` the job fails red** and (with branch protection active) blocks the merge — see warning **BOO-122**. The graceful skip only applies while `SonarCloud` is not yet a required status check.
 
 **Connected mode (optional, Mac):** VS Code → SonarLint → Connected Mode → SonarCloud → organization + project key. Then set `tools_available.sonarqube_ide_plugin: true` in `.claude/environment.json` (see §9).
+
+---
+
+## Appendix AB: Connecting the Linear MCP on a headless VPS (BOO-133)
+
+§8g covers the **Linear↔GitHub integration**. This runbook covers the **Claude Code Linear MCP OAuth** — specifically on a **headless VPS without a browser**. (GitHub Issues is the lean default — A.3b/BOO-132; this path is for teams that deliberately want Linear.)
+
+### The problem
+The OAuth callback goes to `http://localhost:51658/callback` — that's *localhost on your local machine*, **not** the VPS. But Claude Code listens on the VPS, and the VPS has no browser.
+
+### Solution: SSH local port-forward
+
+```bash
+# 1) Run on your LOCAL machine — open the tunnel and keep it open:
+ssh -L 51658:localhost:51658 <user>@<YOUR_VPS_IP>
+# forwards localhost:51658 (local) through the SSH tunnel to port 51658 on the VPS
+```
+
+### Flow
+1. Open the **SSH tunnel** on your local machine (command above) and **keep it open**.
+2. **Start the OAuth flow** — try the fast path first: `claude mcp auth linear-server`.
+3. Open the printed **URL in your local browser** and authorize.
+4. After authorization the browser redirects to `localhost:51658/callback` → goes **through the tunnel** to the VPS. **Even if the local browser shows an error:** copy the callback URL back — the auth completes on the VPS side.
+5. **Gotcha — session restart:** the MCP server is then *registered*, but the **OAuth tools load only after a session restart**. Start a **new Claude Code session** — the **SSH tunnel must stay open**. (If `claude mcp auth linear-server` doesn't exist: open a new `claude` window with the tunnel still open.)
+
+### Token setup without a leak
+- API token in Linear: **Settings → Security and Access** → create a personal API key.
+- **Never** put the token in the chat. Instead set it into the env via the terminal and read it from there:
+
+```bash
+# on the VPS, in the project — not in the chat:
+echo 'LINEAR_API_KEY=lin_api_xxx' >> .env      # .env is in .gitignore (secrets policy)
+# or for the current shell:
+export LINEAR_API_KEY=lin_api_xxx
+```
+
+- Tools/scripts read `LINEAR_API_KEY` from the env (`$(grep LINEAR_API_KEY .env | cut -d= -f2)`), so **no plaintext key appears in the cloud chat**. Tied to the secrets policy (`.env` gitignored).
+
+### Connection test
+`claude mcp list` shows `linear-server` as connected; a simple Linear read call (e.g. list teams) must go through.
 
 ---
 

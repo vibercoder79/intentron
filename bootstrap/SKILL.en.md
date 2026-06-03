@@ -254,12 +254,12 @@ Cleanly optional — no coercion, no breakage:
 ```
 Which backlog system should be used as the primary adapter?
   a) Linear
-  b) GitHub Issues
+  b) GitHub Issues  (recommended standard — lean, native to the repo, no OAuth tunnel)
   c) Jira
   d) Azure DevOps Boards
   e) Microsoft Planner
   f) none — backlog record as Markdown/file only, no external tool
-  Default: none
+  Default: none  (with a GitHub repo, recommendation: b)
 ```
 
 **Remember:** `BACKLOG_ADAPTER = linear | github | jira | azure-devops | planner | none`
@@ -1576,7 +1576,10 @@ Bootstrap done. Continue with:
   3. /ideation or the matching Codex invocation — create your first story
   4. If learning loop active: run /sprint-review after 1–2 sprints
   5. Check the setup anytime: `bash scripts/verify-setup.sh` (`--strict` for CI) — read-only, PASS/WARN/FAIL. Details + sketch: HANDBUCH Appendix T.
+  6. Fill SECURITY.md: run `security-architect` (DESIGN) — threat model (STRIDE) + mitigations (especially for governance standard/heavy).
 ```
+
+> **Fill SECURITY.md (BOO-136):** the bootstrap scaffolds `SECURITY.md` only as a **skeleton**. `security-architect` (DESIGN mode) fills it based on the **STRIDE/OWASP review questions** — the operator needs no security expertise; the skill asks the questions.
 
 > **Setup self-check anytime (BOO-128):** `verify-setup.sh` is read-only and independent of the `/implement` trial — the operator checks the setup themselves anytime. Ready-made prompt: "run `verify-setup.sh` and explain the WARN/FAIL items to me". Background + sketch: HANDBUCH Appendix T "Post-install verification".
 

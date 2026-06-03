@@ -25,7 +25,7 @@
 10. [Governance für dein Projekt anpassen](#10-governance-für-dein-projekt-anpassen)
 11. [Tägliche Nutzung — ein typischer Workflow](#11-tägliche-nutzung--ein-typischer-workflow)
 12. [Häufige Fragen](#12-häufige-fragen) — inkl. Claude Agent SDK Migration
-13. [Anhänge — Wegweiser](#13-anhänge--wegweiser) — A bis AA im Überblick
+13. [Anhänge — Wegweiser](#13-anhänge--wegweiser) — A bis AB im Überblick
 
 ---
 
@@ -131,13 +131,14 @@ GitHub Repository (vibercoder79/intentron)
 2. **GitHub Account** — für dein Repository
    - github.com/signup
    - Kostenlos reicht für den Anfang
+   - **Branch-Protection (BOO-29):** bei **privaten** Repos nur mit bezahltem Plan (GitHub Pro/Team/Enterprise); bei **public** Repos gratis. Alternative: Repository Rulesets. Ohne das greift `setup-branch-protection.sh` auf einem privaten Free-Repo nicht.
 
 **Empfohlen:**
 
 3. **Linear Account** — für Issue Tracking (Backlog, Stories)
    - linear.app
    - Kostenlos für kleine Teams
-   - Linear API Key: linear.app → Settings → API → Personal API Keys
+   - Linear API Key: linear.app → Settings → Security and Access → Personal API Keys
 
 **Optional aber wertvoll:**
 
@@ -154,7 +155,7 @@ Bevor du mit `/bootstrap` startest, halte diese Keys bereit:
 |-----|---------|-------|----------|
 | Anthropic API Key | JA | console.anthropic.com | `ANTHROPIC_API_KEY` |
 | GitHub SSH Key | JA | `ssh-keygen` + GitHub Settings | — |
-| Linear API Key | Empfohlen | linear.app → Settings → API | `LINEAR_API_KEY` |
+| Linear API Key | Empfohlen | linear.app → Settings → Security and Access | `LINEAR_API_KEY` |
 | OpenRouter Key | Optional | openrouter.ai/keys | `OPENROUTER_API_KEY` |
 | Telegram Bot Token | Optional | @BotFather auf Telegram | `TELEGRAM_BOT_TOKEN` |
 
@@ -740,6 +741,8 @@ Claude führt vordefinierte Checks durch und zeigt:
 
 ## 7. Die Artefakte — was entsteht, wo, und warum
 
+> **Überblick auf einer Seite (BOO-130):** *Wie* das Framework dokumentiert — Artefakte, 3 Doku-Schichten, fortlaufende Gates und der Bestands-Repo-Onboarding-Pfad — steht konsolidiert in [`docs/how-we-document.md`](docs/how-we-document.md). Dieser §7 listet die Artefakte im Detail.
+
 ### Was ist ein Artefakt?
 
 Ein **Artefakt** ist eine Datei, die das Governance-Framework erzeugt oder erwartet — Doku,
@@ -1260,6 +1263,8 @@ gh api -X PUT "repos/${OWNER}/${REPO}/branches/main/protection" \
 ---
 
 ## 8g. Linear-Setup pro Projekt (BOO-30)
+
+> **MCP-Verbindung auf einer headless VPS (BOO-133):** Dieser Abschnitt deckt die **Linear↔GitHub-Integration** ab. Den **Claude-Code-Linear-MCP-OAuth auf einer VPS ohne Browser** (SSH-Port-Forward-Tunnel + Token-Setup ohne Leak) beschreibt **Anhang AB**.
 
 Das Linear-Team hinter einem Projekt (`B.4 == Linear`) braucht zwei Konfigurations-Stücke zusätzlich zum Default, damit der Issue-Lebenszyklus sich selbst trägt: einen **sechsteiligen Workflow** und die **GitHub-Integration**. Beides sind einmalige Operator-Aufgaben pro Projekt — die Linear-API könnte das automatisieren, aber das Aufwand-/Nutzen-Verhältnis ist schlecht (einmaliger Setup, gut geführte UI). Bewusste Entscheidung, hier dokumentiert damit der Operator genau weiß was manuell und was automatisch ist.
 
@@ -2114,7 +2119,7 @@ und Provider-Postflight.
 
 ## 13. Anhänge — Wegweiser
 
-Das Handbuch hat 27 Anhänge (A–Z + AA). Sie sind **Nachschlage- und Vertiefungs-Schicht** — du musst sie nicht von vorn bis hinten lesen. Diese Tabelle sagt dir, **wann welcher Anhang relevant ist**. Anhänge A–M sind die Grundlagen-/Tooling-Schicht, N–AA die Themen ab v0.2.0 (Wellen J–AV): Effizienz, Privacy, Deployment, Skalierung, Verifikation, Edit-Bodyguard, Contribute-Back, Ubiquitous Language, VPS/Cloud-Team-Runbook, Kunden-Onboarding, SonarCloud-Setup.
+Das Handbuch hat 28 Anhänge (A–Z + AA + AB). Sie sind **Nachschlage- und Vertiefungs-Schicht** — du musst sie nicht von vorn bis hinten lesen. Diese Tabelle sagt dir, **wann welcher Anhang relevant ist**. Anhänge A–M sind die Grundlagen-/Tooling-Schicht, N–AA die Themen ab v0.2.0 (Wellen J–AV): Effizienz, Privacy, Deployment, Skalierung, Verifikation, Edit-Bodyguard, Contribute-Back, Ubiquitous Language, VPS/Cloud-Team-Runbook, Kunden-Onboarding, SonarCloud-Setup.
 
 | Anhang | Thema | Wann relevant |
 |--------|-------|---------------|
@@ -2145,6 +2150,7 @@ Das Handbuch hat 27 Anhänge (A–Z + AA). Sie sind **Nachschlage- und Vertiefun
 | **Y** | VPS/Cloud-Team-Runbook | INTENTRON auf einer geteilten Developer-VPS, Multi-Projekt, Team |
 | **Z** | Kunden-Onboarding — drei Checklisten + Artefakt-Landkarte | Kunden/Projekt onboarden; komplementäres Maschinen-Setup |
 | **AA** | SonarCloud-Setup-Runbook (zwei Szenarien) | externes SonarQube Cloud einrichten (D.5 = ja) |
+| **AB** | Linear-MCP auf headless VPS | Linear-MCP per OAuth/SSH-Tunnel auf einer VPS verbinden + Token-Setup |
 
 ---
 
@@ -2162,6 +2168,7 @@ SOFTWARE:
 ACCOUNTS:
 ☐ Anthropic Account + API Key
 ☐ GitHub Account + Connect: gh auth login (Scopes repo + admin:repo_hook)
+☐ Branch-Protection-Plan geklärt: privat = GitHub Pro/Team/Enterprise; public = gratis (BOO-29)
 ☐ git push-Auth gewaehlt: SSH-Key (ssh -T git@github.com) ODER gh-HTTPS-Helper (gh auth setup-git)
 ☐ Linear Account + API Key (optional aber empfohlen)
 
@@ -2192,6 +2199,8 @@ BOOTSTRAP SKILL:
 | `journal/` | Alle Logs & Incidents | Nur lesen / durch Tools schreiben |
 
 ## Anhang C: Glossar
+
+> **Für Nicht-Entwickler (BOO-131):** Klartext-Erklärungen mit Alltagsanalogie (Runner, MCP, Hook, Gate, PR, Spec, ADR …) als Schulungs-Material in [`docs/glossar.md`](docs/glossar.md). Diese Tabelle hier ist die technische Kurzfassung.
 
 | Begriff | Bedeutung |
 |---------|-----------|
@@ -4613,6 +4622,46 @@ Externer SaaS-Provider: Der Bootstrap scaffoldet `sonar-project.properties` + `.
 > **Erster Lauf:** Der erste `git push` auf `main` triggert `sonar.yml` → SonarCloud analysiert. **Ohne gültiges `SONAR_TOKEN` failt der Job rot** und blockiert (bei aktiver Branch-Protection) den Merge — siehe Warnung **BOO-122**. Graceful-Skip greift nur, solange `SonarCloud` noch nicht als Required Status Check gesetzt ist.
 
 **Connected Mode (optional, Mac):** VS Code → SonarLint → Connected Mode → SonarCloud → Organisation + Projekt-Key. Danach `tools_available.sonarqube_ide_plugin: true` in `.claude/environment.json` (siehe §9).
+
+---
+
+## Anhang AB: Linear-MCP auf einer headless VPS verbinden (BOO-133)
+
+§8g deckt die **Linear↔GitHub-Integration** ab. Dieser Runbook deckt den **Claude-Code-Linear-MCP-OAuth** ab — speziell auf einer **headless VPS ohne Browser**. (GitHub Issues ist der schlanke Default — A.3b/BOO-132; dieser Weg ist für Teams, die Linear bewusst wollen.)
+
+### Das Problem
+Der OAuth-Callback geht an `http://localhost:51658/callback` — das ist *localhost auf deinem lokalen Rechner*, **nicht** die VPS. Claude Code horcht aber auf der VPS. Auf der VPS gibt es keinen Browser.
+
+### Lösung: SSH-Local-Port-Forward
+
+```bash
+# 1) Auf dem LOKALEN Rechner ausführen — Tunnel öffnen und offen lassen:
+ssh -L 51658:localhost:51658 <user>@<DEINE_VPS_IP>
+# leitet localhost:51658 (lokal) durch den SSH-Tunnel auf Port 51658 der VPS
+```
+
+### Ablauf
+1. **SSH-Tunnel** auf dem lokalen Rechner öffnen (Befehl oben) und **offen lassen**.
+2. **OAuth-Flow starten** — zuerst den schnellen Weg versuchen: `claude mcp auth linear-server`.
+3. Die ausgegebene **URL im lokalen Browser** öffnen und autorisieren.
+4. Nach der Autorisierung leitet der Browser auf `localhost:51658/callback` um → geht **durch den Tunnel** zur VPS. **Auch wenn der lokale Browser einen Fehler zeigt:** die Callback-URL zurückkopieren — der Auth-Abschluss läuft VPS-seitig.
+5. **Gotcha — Session-Neustart:** Der MCP-Server ist danach *registriert*, aber die **OAuth-Tools werden erst nach einem Session-Neustart geladen**. Eine **neue Claude-Code-Session** starten — der **SSH-Tunnel muss dabei offen bleiben**. (Falls `claude mcp auth linear-server` nicht existiert: neues `claude`-Fenster bei offenem Tunnel.)
+
+### Token-Setup ohne Leak
+- API-Token in Linear: **Settings → Security and Access** → Personal API Key erzeugen.
+- Token **nie in den Chat** schreiben. Stattdessen über das Terminal in die Env legen und von dort lesen:
+
+```bash
+# auf der VPS, im Projekt — nicht im Chat:
+echo 'LINEAR_API_KEY=lin_api_xxx' >> .env      # .env ist in .gitignore (Secrets-Policy)
+# bzw. fuer die laufende Shell:
+export LINEAR_API_KEY=lin_api_xxx
+```
+
+- Tools/Skripte lesen `LINEAR_API_KEY` aus der Env (`$(grep LINEAR_API_KEY .env | cut -d= -f2)`), sodass **kein Klartext-Key im Cloud-Chat** erscheint. Verzahnt mit der Secrets-Policy (`.env` gitignored).
+
+### Verbindungstest
+`claude mcp list` zeigt `linear-server` als verbunden; ein einfacher Linear-Lese-Call (z.B. Teams auflisten) muss durchgehen.
 
 ---
 
