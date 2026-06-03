@@ -253,12 +253,12 @@ Sauber optional — kein Zwang, kein Bruch:
 ```
 Welches Backlog-System soll als primaerer Adapter genutzt werden?
   a) Linear
-  b) GitHub Issues
+  b) GitHub Issues  (empfohlener Standard — schlank, nativ im Repo, kein OAuth-Tunnel)
   c) Jira
   d) Azure DevOps Boards
   e) Microsoft Planner
   f) none — Backlog-Record nur als Markdown/Datei, kein externes Tool
-  Default: none
+  Default: none  (Empfehlung bei GitHub-Repo: b)
 ```
 
 **Merken:** `BACKLOG_ADAPTER = linear | github | jira | azure-devops | planner | none`
@@ -1620,7 +1620,10 @@ Bootstrap fertig. Weiter mit:
   3. /ideation bzw. passender Codex-Aufruf — erste Story erstellen
   4. Wenn Learning-Loop aktiv: nach 1-2 Sprints /sprint-review laufen lassen
   5. Setup jederzeit pruefen: `bash scripts/verify-setup.sh` (`--strict` fuer CI) — read-only, PASS/WARN/FAIL. Details + Sketch: HANDBUCH Anhang T.
+  6. SECURITY.md befuellen: `security-architect` (DESIGN) laufen lassen — Threat-Model (STRIDE) + Mitigations (besonders bei Governance standard/heavy).
 ```
+
+> **SECURITY.md befuellen (BOO-136):** Der Bootstrap legt `SECURITY.md` nur als **Skelett** an. `security-architect` (DESIGN-Modus) fuellt es auf Basis der **STRIDE/OWASP-Pruef-Fragen** — der Operator braucht kein Security-Wissen, der Skill stellt die Fragen.
 
 > **Setup-Self-Check jederzeit (BOO-128):** `verify-setup.sh` ist read-only und unabhaengig vom `/implement`-Probelauf — der Operator prueft sein Setup jederzeit selbst. Fertiger Prompt: „führ `verify-setup.sh` aus und erklär mir die WARN/FAIL-Punkte". Hintergrund + Sketch: HANDBUCH Anhang T „Post-Install-Verifikation".
 

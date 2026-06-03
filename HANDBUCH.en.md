@@ -135,6 +135,7 @@ GitHub Repository (vibercoder79/intentron)
 2. **GitHub account** — for your repository
    - github.com/signup
    - Free tier is enough at the start
+   - **Branch protection (BOO-29):** on **private** repos only with a paid plan (GitHub Pro/Team/Enterprise); on **public** repos free. Alternative: repository rulesets. Without it, `setup-branch-protection.sh` won't take effect on a private free-tier repo.
 
 **Recommended:**
 
@@ -2034,6 +2035,7 @@ SOFTWARE:
 ACCOUNTS:
 ☐ Anthropic account + API key
 ☐ GitHub account + connect: gh auth login (scopes repo + admin:repo_hook)
+☐ Branch-protection plan clarified: private = GitHub Pro/Team/Enterprise; public = free (BOO-29)
 ☐ git push auth chosen: SSH key (ssh -T git@github.com) OR gh HTTPS helper (gh auth setup-git)
 ☐ Linear account + API key (optional but recommended)
 
