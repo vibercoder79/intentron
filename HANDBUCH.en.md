@@ -468,6 +468,8 @@ Sprint   → /pitch             → Evidence briefing for stakeholders
 Anytime  → /status            → What's happening right now?
 ```
 
+> **Design stories (BOO-126):** a design story runs as **"implement against a design reference"** through the normal pipeline (`/ideation` → `/implement`) — **no** dedicated `change_type: design`, no template, no auto-detection. The reference (e.g. `DESIGN.md`, Figma export, screenshot) is linked in `ARCHITECTURE_DESIGN.md §9`; `/implement` verifies against the reference **plus** a11y/Lighthouse gates (BOO-45). **Boundary:** the coding framework *implements* design (measurable gates = ground truth, Karpathy verifiability); **pure design** (taste, brand, visual identity) lives in **opt-in external skills** (`design-md-generator`, `lumen-*`, Pencil/Webflow MCP) — not in the mandatory pipeline. Decision: ADR `docs/domain/adrs/design-story-handling.md`.
+
 The full 4P delivery pipeline (Schrader Code Crash Ch. 5) is wired as:
 
 ```

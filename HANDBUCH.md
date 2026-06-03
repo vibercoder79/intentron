@@ -474,6 +474,8 @@ Sprint-Ende → /pitch → Evidenz-Briefing fuer Stakeholder
 Jederzeit → /status → Was läuft gerade?
 ```
 
+> **Design-Stories (BOO-126):** Eine Design-Story laeuft als **„implement gegen eine Design-Referenz"** durch die normale Pipeline (`/ideation` → `/implement`) — **kein** eigener `change_type: design`, kein Template, keine Auto-Erkennung. Die Referenz (z.B. `DESIGN.md`, Figma-Export, Screenshot) wird in `ARCHITECTURE_DESIGN.md §9` verlinkt; `/implement` verifiziert gegen die Referenz **plus** a11y-/Lighthouse-Gates (BOO-45). **Abgrenzung:** Das Coding-Framework *setzt Design um* (messbare Gates = Ground Truth, Karpathy-Verifizierbarkeit); **reine Gestaltung** (Geschmack, Brand, Visual Identity) lebt in **opt-in externen Skills** (`design-md-generator`, `lumen-*`, Pencil-/Webflow-MCP) — nicht in der Pflicht-Pipeline. Entscheidung: ADR `docs/domain/adrs/design-story-handling.md`.
+
 Die vollstaendige 4P-Delivery-Pipeline (Schrader Code Crash Kap. 5) ist verdrahtet als:
 
 ```
