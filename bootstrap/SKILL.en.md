@@ -1402,6 +1402,29 @@ Activate a self-hosted runner for performance tests?
 On `yes`: pure HANDBUCH pointers (no auto-setup, because VPS installation is operator territory). `migrate_boo_46()` patches `perf.yml` later (`runs-on: ubuntu-latest` -> `self-hosted`, threshold 1.20 -> 1.10) once the operator has installed the runner.
 On `no`: no entry in `environment.json`, no perf.yml patch.
 
+### D.7 Project-specific MCP servers (BOO-125, only when STACK = Frontend/Full-stack)
+
+When `STACK_CHOICE = b` (frontend) or `c` (full-stack):
+
+```
+Set up further project-specific MCP servers?
+  Suggestion for web/frontend: Vercel, Apify — or name your own source.
+  [yes / no (default)]
+```
+
+On `yes`:
+- Register the chosen MCP servers per `references/mcp-setup.en.md` (endpoint / auth / scope).
+- Note: the **consuming story/skill** declares the MCP in its `requires_toolsets` block (HANDBUCH §requires_toolsets) — the bootstrap only sets up the server, not its usage.
+- Add to `tools_available` in `.claude/environment.json` accordingly (read by `verify-setup.sh`).
+
+**Vercel clarification (common confusion):**
+- **Deploy** runs via the **Vercel↔GitHub integration** (git push → auto-deploy) — **no** MCP needed.
+- The **Vercel MCP** is only for **agent interaction**: read/analyze deployment logs / env / config. Optional.
+
+**Frontend combo:** "Node backend + frontend" maps cleanly onto `c) Full-stack` (backend + frontend in one project) — no separate combo path needed. `b) Frontend` is the pure frontend without its own backend.
+
+On `no`: no MCP entry; project-specific MCPs can be added later anytime via `references/mcp-setup.en.md`.
+
 Phase 6 checkpoint: optional-components status including provider postflight and intentionally deselected options.
 
 ---
