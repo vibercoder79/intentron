@@ -127,7 +127,27 @@ TypeScript oder JavaScript? [ts / js]   (Default: ts)
 | b) Frontend | ts (default) / js | `eslint.config.mjs` + `.prettierrc` (+ `typescript-eslint` bei ts) | Prettier | `tsc --noEmit` (bei ts) |
 | c) Full-Stack / Meta-Framework | ts (default) / js | beide (+ `typescript-eslint` bei ts) | Prettier | `tsc --noEmit` (bei ts) |
 | d) Python | — | `pyproject.toml` (Ruff + Black) | Black | — |
-| e) Anderes | — | `eslint.config.mjs` (generisch) bzw. Guided Discovery (A.1a) | — | — |
+| e) Anderes | — | Freitext-Rueckfrage (s.u., BOO-116) bzw. Guided Discovery (A.1a) — **kein** stiller ESLint-Default | — | — |
+
+**Bei `e) Anderes` zuerst nachfragen (BOO-116) — nicht still ESLint annehmen:**
+
+```
+Welche Technologie / Sprache? (z.B. Go, Rust, Java, PHP, Ruby — oder „noch unklar")
+```
+
+- **Bekannte Tech → passender Linter-Hinweis** (kein JS-Default):
+
+  | erkannte Tech | Linter-/Format-Hinweis |
+  |---------------|------------------------|
+  | Go | `golangci-lint` (+ `gofmt`) |
+  | Rust | `clippy` (+ `rustfmt`) |
+  | Java / Kotlin | `Checkstyle` / `ktlint` + `SpotBugs` |
+  | PHP | `PHPStan` / `Psalm` + `PHP-CS-Fixer` |
+  | Ruby | `RuboCop` |
+  | sonstige | Operator nennt den Linter |
+
+  `STACK_CHOICE` bleibt `e`; das Linter-/Tooling-Setup folgt dem Hinweis (Operator richtet ein), **nicht** dem ESLint-Default. Entscheidung als ADR in `docs/domain/adrs/` festhalten.
+- **„noch unklar"** → explizit als offen markieren (kein JS-Default) **oder** Guided Discovery (A.1a) nutzen, um aus Quelle/Beschreibung einen Vorschlag abzuleiten.
 
 ### A.1a Guided Stack-Discovery (BOO-127 — bei `e)` oder Unsicherheit)
 

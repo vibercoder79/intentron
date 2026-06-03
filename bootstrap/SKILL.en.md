@@ -128,7 +128,27 @@ Remember `LANG_VARIANT = ts | js`. On `ts`: additionally scaffold `tsconfig.json
 | b) Frontend | ts (default) / js | `eslint.config.mjs` + `.prettierrc` (+ `typescript-eslint` on ts) | Prettier | `tsc --noEmit` (on ts) |
 | c) Full-stack / meta-framework | ts (default) / js | both (+ `typescript-eslint` on ts) | Prettier | `tsc --noEmit` (on ts) |
 | d) Python | — | `pyproject.toml` (Ruff + Black) | Black | — |
-| e) Other | — | `eslint.config.mjs` (generic) or guided discovery (A.1a) | — | — |
+| e) Other | — | free-text follow-up (below, BOO-116) or guided discovery (A.1a) — **no** silent ESLint default | — | — |
+
+**On `e) Other`, ask first (BOO-116) — don't silently assume ESLint:**
+
+```
+Which technology / language? (e.g. Go, Rust, Java, PHP, Ruby — or "not decided yet")
+```
+
+- **Known tech → matching linter hint** (no JS default):
+
+  | detected tech | linter/format hint |
+  |---------------|--------------------|
+  | Go | `golangci-lint` (+ `gofmt`) |
+  | Rust | `clippy` (+ `rustfmt`) |
+  | Java / Kotlin | `Checkstyle` / `ktlint` + `SpotBugs` |
+  | PHP | `PHPStan` / `Psalm` + `PHP-CS-Fixer` |
+  | Ruby | `RuboCop` |
+  | other | operator names the linter |
+
+  `STACK_CHOICE` stays `e`; the linter/tooling setup follows the hint (operator sets it up), **not** the ESLint default. Record the decision as an ADR in `docs/domain/adrs/`.
+- **"not decided yet"** → mark it explicitly as open (no JS default) **or** use guided discovery (A.1a) to derive a proposal from a source/description.
 
 ### A.1a Guided stack discovery (BOO-127 — on `e)` or uncertainty)
 
