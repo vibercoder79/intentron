@@ -1260,9 +1260,9 @@ Das `intentron`-Repo enthaelt **alle** Bundle-Skills flach als Top-Level-Ordner 
 
 ```
 Welche Skills installieren?
-  a) Minimum (ideation, implement, backlog)
+  a) Minimum (ideation, implement, backlog, intent)
   b) Standard (+ architecture-review, sprint-review, security-architect, dpo)
-  c) Voll (alle Framework-Skills: + grafana, cloud-system-engineer, visualize, intent, pitch)
+  c) Voll (alle Framework-Skills: + grafana, cloud-system-engineer, visualize, pitch)
   d) Manuell auswaehlen
 ```
 

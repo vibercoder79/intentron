@@ -80,6 +80,7 @@ Mirror of the master checklist in `intentron/bootstrap/references/migration-chec
 | BOO-38 | Sprint sizing convention                          | ✓      | manual     | see §BOO-38 + HANDBUCH Appendix G |
 | BOO-39 | Token heuristics /ideation                        | ✓      | git pull   | see §BOO-39 + token-heuristik.md |
 | BOO-40 | Token window pre-flight /implement                | ✓      | git pull   | see §BOO-40 + HANDBUCH Appendix G |
+| BOO-120 | intent into the Minimum skill set                | ✓      | migrate_boo_120 | see §BOO-120 |
 ```
 
 ---
@@ -962,6 +963,20 @@ Mirror of the master checklist in `intentron/bootstrap/references/migration-chec
 **Rollback:** operator removes the two sections from `CLAUDE.md` manually — other bundle changes stay functional, they are all additive (new field, new sub-phase, new optional file).
 **Dependencies:** none. The `meta.json` extension in BOO-36 is a prerequisite — automatically met in the current bundle.
 **Skill source:** `bootstrap/references/model-tiers.json` + `bootstrap/SKILL.en.md` phase 4.4m + `implement/SKILL.en.md` step 6f-bis + `sprint-review/SKILL.en.md` step 2b + `HANDBUCH.md` Appendix N.
+
+---
+
+### BOO-120 — intent into the Minimum skill set
+
+**Status:** ✓ in the v2 bundle — additive migration, no behavioural break
+**Effort:** small (~2 min per project)
+**Auto step:** yes (`migrate_boo_120` in `migrate-to-v2.sh`)
+**Steps:**
+1. **`[AUTO]`** Check whether `intent` is installed in the project (`.claude/skills/intent/` or `.codex/skills/intent/`). If present: skip (idempotent).
+2. **`[AUTO]`** If missing AND the original skill selection was Minimum/Standard: copy `intent` from the current `intentron` clone into the skills directory (like phase 5, **exclusively** from intentron — see BOO-121).
+**Test:** `ls .claude/skills/intent/SKILL.md` exists; `/intent` starts.
+**Rollback:** remove the `intent` folder — the pipeline entry is gone, the remaining skills are untouched.
+**Skill source:** `bootstrap/SKILL.en.md` skill selection (Minimum) + `references/skills-setup.en.md`.
 
 ---
 

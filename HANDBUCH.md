@@ -398,7 +398,7 @@ Wenn ein Projekt bereits `.claude/skills/<skill>/` enthaelt, ist Phase 5 eine Up
 
 ```
 Welche Skills installieren?
-a) Minimum (ideation, implement, backlog)      ← Für den Start ideal
+a) Minimum (ideation, implement, backlog, intent)   ← Für den Start ideal
 b) Standard (+ architecture-review, sprint-review, research, breakfix)  ← Empfohlen
 c) Voll (alle Skills)                          ← Volles Arsenal
 d) Manuell auswählen

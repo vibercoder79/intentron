@@ -392,7 +392,7 @@ If a project already has `.claude/skills/<skill>/`, treat Phase 5 as an update/m
 
 ```
 Which skills to install?
-a) Minimum (ideation, implement, backlog)       ← Ideal for the start
+a) Minimum (ideation, implement, backlog, intent)   ← Ideal for the start
 b) Standard (+ architecture-review, sprint-review, research, breakfix)  ← Recommended
 c) Full (all skills)                            ← Full arsenal
 d) Pick manually

@@ -46,6 +46,7 @@ rm -rf "$SKILL_SRC"
 | `ideation` | Deep Research + User Story Erstellung | Minimum |
 | `implement` | Implementierungs-Workflow mit Governance-Gates | Minimum |
 | `backlog` | Sprint Planning + Backlog-Uebersicht | Minimum |
+| `intent` | Pipeline-Einstieg: Intent-Erfassung (Perceive der 4P) | Minimum |
 | `architecture-review` | Architektur-Review (Standard-Dimensionen + aktivierte Add-ons) | Standard |
 | `sprint-review` | Periodisches Audit + **Learning-Loop-Eintrag** (siehe `learning-loop.md`) | Standard |
 | `research` | Deep Research via WebSearch + Perplexity | Standard |
@@ -60,7 +61,7 @@ rm -rf "$SKILL_SRC"
 
 ```
 Welche Skills installieren?
-  a) Minimum   (ideation, implement, backlog)
+  a) Minimum   (ideation, implement, backlog, intent)
   b) Standard  (+ architecture-review, sprint-review, research, security-architect, skill-creator)
   c) Voll      (alle verfuegbaren)
   d) Manuell   (Operator waehlt einzeln)

@@ -80,6 +80,7 @@ Spiegel der Master-Checkliste aus `intentron/bootstrap/references/migration-chec
 | BOO-38 | Sprint-Sizing-Konvention                          | ✓      | manuell    | siehe §BOO-38 + HANDBUCH Anhang G |
 | BOO-39 | Token-Heuristik /ideation                         | ✓      | git pull   | siehe §BOO-39 + token-heuristik.md |
 | BOO-40 | Token-Window-Pre-Flight /implement                | ✓      | git pull   | siehe §BOO-40 + HANDBUCH Anhang G |
+| BOO-120 | intent ins Minimum-Skill-Set                     | ✓      | migrate_boo_120 | siehe §BOO-120 |
 ```
 
 ---
@@ -977,6 +978,20 @@ Spiegel der Master-Checkliste aus `intentron/bootstrap/references/migration-chec
 **Rollback:** Operator entfernt die zwei Sektionen aus `CLAUDE.md` manuell — andere Bundle-Aenderungen bleiben funktional, sie sind alle additive (neues Feld, neue Sub-Phase, neues optionales File).
 **Abhaengigkeiten:** keine. `meta.json`-Erweiterung in BOO-36 ist Vor-Bedingung — automatisch erfuellt im aktuellen Bundle.
 **Skill-Quelle:** `bootstrap/references/model-tiers.json` + `bootstrap/SKILL.md` Phase 4.4m + `implement/SKILL.md` Schritt 6f-bis + `sprint-review/SKILL.md` Schritt 2b + `HANDBUCH.md` Anhang N.
+
+---
+
+### BOO-120 — intent ins Minimum-Skill-Set
+
+**Status:** ✓ in v2-Bundle — additive Migration, kein Verhaltens-Bruch
+**Aufwand:** klein (~2 Min pro Projekt)
+**Auto-Schritt:** ja (`migrate_boo_120` in `migrate-to-v2.sh`)
+**Schritte:**
+1. **`[AUTO]`** Pruefen, ob `intent` im Projekt installiert ist (`.claude/skills/intent/` bzw. `.codex/skills/intent/`). Falls vorhanden: Skip (idempotent).
+2. **`[AUTO]`** Falls fehlend UND die urspruengliche Skill-Auswahl war Minimum/Standard: `intent` aus dem aktuellen `intentron`-Klon ins Skill-Verzeichnis kopieren (analog Phase 5, **ausschliesslich** aus intentron — siehe BOO-121).
+**Test:** `ls .claude/skills/intent/SKILL.md` vorhanden; `/intent` startet.
+**Rollback:** `intent`-Ordner entfernen — Pipeline-Einstieg entfaellt, restliche Skills unberuehrt.
+**Skill-Quelle:** `bootstrap/SKILL.md` Skill-Auswahl (Minimum) + `references/skills-setup.md`.
 
 ---
 

@@ -1216,9 +1216,9 @@ The `intentron` repo holds **all** bundle skills flat as top-level folders — n
 
 ```
 Which skills to install?
-  a) Minimum (ideation, implement, backlog)
+  a) Minimum (ideation, implement, backlog, intent)
   b) Standard (+ architecture-review, sprint-review, security-architect, dpo)
-  c) Full (all framework skills: + grafana, cloud-system-engineer, visualize, intent, pitch)
+  c) Full (all framework skills: + grafana, cloud-system-engineer, visualize, pitch)
   d) Manual selection
 ```
 
