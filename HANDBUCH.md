@@ -184,6 +184,12 @@ cat ~/.ssh/id_ed25519.pub
 # 4. Verbindung testen
 ssh -T git@github.com
 # → "Hi username! You've successfully authenticated." = Erfolg
+
+# 5. Bestehendes HTTPS-Remote auf SSH umstellen (Spezialfall, BOO-118)
+# Falls das Repo via HTTPS geklont wurde — git remote -v zeigt https://github.com/...
+git remote set-url origin git@github.com:<owner>/<repo>.git
+git remote -v            # pruefen: origin zeigt jetzt auf git@github.com:...
+ssh -T git@github.com    # Verbindungstest (wie Schritt 4)
 ```
 
 ---
