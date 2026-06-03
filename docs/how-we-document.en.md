@@ -46,10 +46,11 @@ Against **drift / "wiki rot"** (the dominant failure mode of wikis), the Docs-as
 
 ## 4) Bringing an existing / foreign repo up to date
 
-"Read the repo, do an architecture review, bring the docs up to date" is a defined path:
+"Read the repo, route the docs, run the architecture review, bring the artefacts up to date" is a defined path — three steps in this order:
 
+0. **`/knowledge-onboarding`** (BOO-137) — **human docs first**. Routes existing preliminary material (GAP analyses, legal research, README, PLAN, `docs/`-context, design files, demo storyboards, handover, prompts) deterministically into the governance artefacts. Source-agnostic (GitHub repo / local folder / chat), routing rubric as SSoT, manifest in `journal/knowledge-onboarding-map.yml` as determinism anchor. Default: reference (no full-text copy). Tier-3 cases: ask operator, never guess.
 1. **`/architecture-review`** reads the code + checks the 8 AI-architecture checks.
-2. **Existing-project onboarding** (HANDBUCH **Appendix U**) + **`references/framework-upgrade.en.md`** (`inspect` → `apply-safe` → `apply-with-confirmation`) pull artifacts in idempotently (`migrate-to-v2.sh --issue BOO-XX`).
+2. **Existing-project onboarding** (HANDBUCH **Appendix U**) + **`references/framework-upgrade.en.md`** (`inspect` → `apply-safe` → `apply-with-confirmation`) pull artefact skeletons in idempotently (`migrate-to-v2.sh --issue BOO-XX`).
 3. Result report to `journal/reports/framework-upgrade/YYYY-MM-DD.md`; deliberate deviations are **documented, not overwritten**.
 
 ## References

@@ -1272,7 +1272,7 @@ git clone --depth 1 https://github.com/vibercoder79/intentron "$SKILL_SRC"
 
 Das `intentron`-Repo enthaelt **alle** Bundle-Skills flach als Top-Level-Ordner — keine `intentron/`-Verschachtelung mehr (das war die alte `claudecodeskills`-Struktur):
 
-- **`$SKILL_SRC/<skill>/`** — alle Framework-Skills: `architecture-review`, `backlog`, `bootstrap`, `cloud-system-engineer`, `grafana`, `ideation`, `implement`, `intent`, `pitch`, `sprint-review`, `visualize` **plus `dpo` und `security-architect`** (vendored, BOO-74).
+- **`$SKILL_SRC/<skill>/`** — alle Framework-Skills: `architecture-review`, `backlog`, `bootstrap`, `cloud-system-engineer`, `grafana`, `ideation`, `implement`, `intent`, `knowledge-onboarding`, `pitch`, `sprint-review`, `visualize` **plus `dpo` und `security-architect`** (vendored, BOO-74). `knowledge-onboarding` ist Bestands-Doku-Onboarding (BOO-137) — nur Installation, kein Auto-Run.
 
 **Nicht im Framework-Repo:** eigenstaendige Allzweck-Skills wie `research`, `design-md-generator`, `setup-checklist`, `skill-creator` bleiben im `claudecodeskills`-Repo. Sie werden nur auf Wunsch ergaenzend gecloned (siehe optionale Zusatzfrage unten).
 
@@ -1283,7 +1283,7 @@ Das `intentron`-Repo enthaelt **alle** Bundle-Skills flach als Top-Level-Ordner 
 ```
 Welche Skills installieren?
   a) Minimum (ideation, implement, backlog, intent)
-  b) Standard (+ architecture-review, sprint-review, security-architect, dpo)
+  b) Standard (+ architecture-review, sprint-review, security-architect, dpo, knowledge-onboarding)
   c) Voll (alle Framework-Skills: + grafana, cloud-system-engineer, visualize, pitch)
   d) Manuell auswaehlen
 ```
@@ -1621,6 +1621,7 @@ Bootstrap fertig. Weiter mit:
   4. Wenn Learning-Loop aktiv: nach 1-2 Sprints /sprint-review laufen lassen
   5. Setup jederzeit pruefen: `bash scripts/verify-setup.sh` (`--strict` fuer CI) — read-only, PASS/WARN/FAIL. Details + Sketch: HANDBUCH Anhang T.
   6. SECURITY.md befuellen: `security-architect` (DESIGN) laufen lassen — Threat-Model (STRIDE) + Mitigations (besonders bei Governance standard/heavy).
+  7. Wenn Bestands-Doku/Vor-Material vorhanden (Block-B-Flag `bestands_doku_erkannt: true` oder Operator weiss es): `/knowledge-onboarding` ausfuehren — routet GAP-Analysen, Recherchen, Design-Files, Plan, README etc. deterministisch in die Governance-Artefakte (Rubrik + Manifest). Details: knowledge-onboarding/SKILL.md (BOO-137).
 ```
 
 > **SECURITY.md befuellen (BOO-136):** Der Bootstrap legt `SECURITY.md` nur als **Skelett** an. `security-architect` (DESIGN-Modus) fuellt es auf Basis der **STRIDE/OWASP-Pruef-Fragen** — der Operator braucht kein Security-Wissen, der Skill stellt die Fragen.

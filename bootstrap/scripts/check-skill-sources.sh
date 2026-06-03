@@ -22,7 +22,8 @@ SKILLS_SETUP="$BOOTSTRAP/references/skills-setup.md"
 
 # --- Single Source of Truth: die Bundle-Skill-Liste (alle aus intentron) ---
 BUNDLE_SKILLS=(architecture-review backlog bootstrap cloud-system-engineer dpo \
-  grafana ideation implement intent pitch security-architect sprint-review visualize)
+  grafana ideation implement intent knowledge-onboarding pitch security-architect \
+  sprint-review visualize)
 # Optionale Allzweck-Skills (duerfen aus claudecodeskills kommen):
 GENERAL_SKILLS=(research design-md-generator setup-checklist skill-creator)
 

@@ -122,6 +122,14 @@ EXISTING_INFRA:
   backlog_labels_creatable: true  # Linear-API verfuegbar
   env_exists: false
   env_gitignored: true
+  bestands_doku_erkannt: false   # BOO-137 — Heuristik: True wenn Markdown-Dateien
+                                  # ausserhalb der Framework-Artefakte (CLAUDE.md/
+                                  # AGENTS.md/CONVENTIONS.md/ARCHITECTURE_DESIGN.md/
+                                  # SECURITY.md/GOVERNANCE.md/INDEX.md/
+                                  # DEVELOPER_ONBOARDING.md/README.md) gefunden werden.
+                                  # Phase 7.6 nutzt das Flag fuer den /knowledge-
+                                  # onboarding-Hinweis (Bestands-Doku → Governance-
+                                  # Artefakte routen).
 ```
 
 ## Sicherheits-Hinweise

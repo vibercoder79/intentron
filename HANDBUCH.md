@@ -4665,6 +4665,47 @@ export LINEAR_API_KEY=lin_api_xxx
 
 ---
 
+## Anhang AC: Knowledge-Onboarding — Bestands-Doku in Governance-Artefakte routen (BOO-137)
+
+> Ergaenzt §7 „Doku-Artefakte" und Anhang U „Multi-Projekt-Betrieb". Anlassfall: Kunde bringt ein Wissenspaket mit (GAP-Analyse, Legal-Recherche, README, PLAN, `docs/`-Context, Design-Files), das deterministisch in die Framework-Artefakte gehoert. Quelle: `knowledge-onboarding/SKILL.md` + `references/routing-rubric.md`.
+
+### Warum eigener Skill
+
+`/architecture-review` liest **Code** (8 Checks), nicht menschliche Doku. `framework-upgrade` zieht Artefakt-**Skelette** ins Repo, aber **ingestiert nicht** das Kunden-Wissenspaket. BOO-117 (A.2b im Bootstrap) liest nur **eine** Quelle fuer den Stack-Hint. Luecke: kein wiederholbarer, deterministischer Pfad „Wissenspaket → Governance-Artefakte". Heute ad-hoc per LLM-Whim → fabrikations-anfaellig, keine Coverage-Pruefung.
+
+### Determinismus = Rubrik + Manifest + Pinning
+
+Der Skill nutzt drei Mechanismen, damit der gleiche Input immer das gleiche Routing ergibt:
+
+1. **Routing-Rubrik (SSoT)** in `knowledge-onboarding/references/routing-rubric.md`. Vier Tiers: Tier 0 (Framework-Artefakte/Code → skip), Tier 1 (Dateiname/Pfad-Match), Tier 2 (Inhalts-Signale), Tier 3 (mehrdeutig → Operator fragt). 10 Kategorien — Intent · Legal · Design · Decision · Architektur · Kontext · Recherche · Demo · Onboarding · Prompts.
+2. **Manifest** `journal/knowledge-onboarding-map.yml` mit `sha256`-Hash pro Quell-Datei. Re-Scan liest das Manifest **zuerst**: unveraenderte Files behalten ihr Routing stumm, geaenderte werden neu klassifiziert.
+3. **Pinning**: Operator-Korrekturen werden mit `pinned: true` markiert und sind **immutable** im Re-Scan. So bleiben mehrdeutige Faelle dauerhaft geloest, ohne dass der Skill wieder fragt.
+
+### Anti-Fabrikations-Regeln (verbindlich)
+
+- Kein Routing ohne Match-Signal — wenn weder Tier 1 noch Tier 2 trifft, geht es in Tier 3. Niemals raten.
+- Kein Volltext-Copy ohne Operator-Approval — Default ist `referenzieren` (Verweis-Block im Ziel-Artefakt mit Quell-Link, Signal, Tier, Stand), `extrahieren` nur mit Diff-Approval.
+- Coverage-Check Pflicht — Skip-Quote > 50 % oder Tier-3-Quote > 30 % triggern eine Warnung.
+- Quell-Verweis Pflicht in jedem eingefuegten Block (`<!-- knowledge-onboarding · BOO-137 · source:<path> · stand:<date> -->`).
+
+### Wann den Skill nutzen
+
+- Post-Bootstrap. Skelett-Artefakte muessen existieren.
+- Wenn der Kunde Vor-Material mitbringt: GAP-Analysen, Legal-Compliance-Recherche, README/PLAN, `docs/`-Context, Design-Files, Demo-Storyboards, Handover, Prompt-Library.
+- Trigger: explizit `/knowledge-onboarding` oder Phase-7.6-Hinweis (Block-B-Flag `bestands_doku_erkannt: true`).
+
+### Einbettung im Bestands-Repo-Pfad
+
+Aus `docs/how-we-document.md` §4 — Reihenfolge im Bestands-Onboarding:
+
+1. **`/knowledge-onboarding`** — menschliche Doku routen (dieser Skill).
+2. **`/architecture-review`** — Code lesen + 8 KI-Checks.
+3. **`framework-upgrade`** — Artefakt-Skelette idempotent nachziehen (Anhang U).
+
+Verzahnt mit `/dpo` (bei Legal-Compliance-Kategorie mit personenbezogenen Daten → DPO-Vorschlag), `/intent` (extrahierte Intent-Statements landen in `intents/INTENT-XX.md`) und `/pitch` (Demo-Storyboard-Pitch-Kategorie).
+
+---
+
 *Dieses Handbuch ist Teil des INTENTRONs.*
 *GitHub: github.com/vibercoder79/intentron*
 *Letzte Aktualisierung: 2026-06-03 (v0.3.0–v0.6.2: Security-/Governance-Welle, Onboarding-Fix + Doku-Sync — BOO-86 bis BOO-97; u.a. Layer-0-Edit-Bodyguard, dpo-Kontrollkatalog, CONTEXT.md Ubiquitous Language, raw-pii-guard, Anhang Y VPS/Cloud-Team-Runbook, Quickstart mit Self-Install/Self-Update-Prompts; Anhang Z Kunden-Onboarding-Checklisten + Artefakt-Landkarte — BOO-108; 2026-06-03 Bootstrap-UX-Härtung BOO-114–129 / Wellen AT–AV — Pre-Flight-Gate, Tool-Install-Führung, Guided Stack-Discovery + TypeScript-first, gh-Voraussetzung + GitHub-Connect-Runbook, intent im Minimum, projekt-spezifische MCP-Abfrage, Sonar-Merge-Warnung + Anhang AA SonarCloud-Runbook, Branching-Standard-ADR + Sketch, Leichtgewicht-SecondBrain Session-Start, Design-Story-ADR)*

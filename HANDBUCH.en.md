@@ -4569,6 +4569,47 @@ export LINEAR_API_KEY=lin_api_xxx
 
 ---
 
+## Appendix AC: Knowledge-Onboarding — route existing docs into governance artefacts (BOO-137)
+
+> Extends §7 "Doc artifacts" and Appendix U "Multi-project operation". Trigger case: customer brings a knowledge package (GAP analysis, legal research, README, PLAN, `docs/`-context, design files) that belongs deterministically in the framework artefacts. Source: `knowledge-onboarding/SKILL.en.md` + `references/routing-rubric.en.md`.
+
+### Why a dedicated skill
+
+`/architecture-review` reads **code** (8 checks), not human docs. `framework-upgrade` pulls artefact **skeletons** into the repo but **does not ingest** the customer's knowledge package. BOO-117 (A.2b in bootstrap) reads only **one** source for the stack hint. Gap: no repeatable, deterministic path "knowledge package → governance artefacts". Today ad-hoc via LLM whim → fabrication-prone, no coverage check.
+
+### Determinism = rubric + manifest + pinning
+
+The skill uses three mechanisms so the same input always produces the same routing:
+
+1. **Routing rubric (SSoT)** in `knowledge-onboarding/references/routing-rubric.en.md`. Four tiers: Tier 0 (framework artefacts / code → skip), Tier 1 (filename / path match), Tier 2 (content signals), Tier 3 (ambiguous → operator asks). 10 categories — intent · legal · design · decision · architecture · context · research · demo · onboarding · prompts.
+2. **Manifest** `journal/knowledge-onboarding-map.yml` with `sha256` hash per source file. Re-scan reads the manifest **first**: unchanged files keep their routing silently, changed ones are re-classified.
+3. **Pinning**: operator corrections are marked `pinned: true` and are **immutable** on re-scan. Ambiguous cases stay resolved permanently; the skill won't ask again.
+
+### Anti-fabrication rules (binding)
+
+- No routing without match signal — if neither Tier 1 nor Tier 2 matches, the file goes to Tier 3. Never guess.
+- No full-text copy without operator approval — default is `reference` (reference block in target artefact with source link, signal, tier, as-of date), `extract` only with diff approval.
+- Coverage check mandatory — skip rate > 50% or Tier-3 rate > 30% triggers a warning.
+- Source reference mandatory in every inserted block (`<!-- knowledge-onboarding · BOO-137 · source:<path> · as-of:<date> -->`).
+
+### When to use the skill
+
+- Post-bootstrap. Skeleton artefacts must exist.
+- When the customer brings preliminary material: GAP analyses, legal/compliance research, README/PLAN, `docs/`-context, design files, demo storyboards, handover, prompt library.
+- Trigger: explicit `/knowledge-onboarding` or phase-7.6 hint (block-B flag `bestands_doku_erkannt: true`).
+
+### Position in the existing-repo path
+
+From `docs/how-we-document.en.md` §4 — order in existing-project onboarding:
+
+1. **`/knowledge-onboarding`** — route human docs (this skill).
+2. **`/architecture-review`** — read code + 8 AI checks.
+3. **`framework-upgrade`** — pull artefact skeletons in idempotently (Appendix U).
+
+Integrated with `/dpo` (when legal-compliance category meets personal-data signal → DPO suggestion), `/intent` (extracted intent statements land in `intents/INTENT-XX.md`) and `/pitch` (demo-storyboard-pitch category).
+
+---
+
 *This handbook is part of the INTENTRON.*
 *GitHub: github.com/vibercoder79/intentron*
 *Last updated: 2026-06-03 (v0.3.0–v0.6.2: security/governance wave, onboarding fix + docs sync — BOO-86 through BOO-97; incl. Layer-0 edit bodyguard, dpo control catalogue, CONTEXT.md ubiquitous language, raw-pii-guard, Appendix Y VPS/cloud team runbook, quickstart with self-install/self-update prompts; Appendix Z customer-onboarding checklists + artifact map — BOO-108; 2026-06-03 bootstrap-UX hardening BOO-114–129 / waves AT–AV — pre-flight gate, tool-install guidance, guided stack discovery + TypeScript-first, gh prerequisite + GitHub-connect runbook, intent in Minimum, project-specific MCP question, Sonar merge warning + Appendix AA SonarCloud runbook, branching-standard ADR + sketch, lightweight SecondBrain session-start, design-story ADR)*
