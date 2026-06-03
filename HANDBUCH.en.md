@@ -25,7 +25,7 @@
 10. [Tailoring Governance to Your Project](#10-tailoring-governance-to-your-project)
 11. [Daily Usage — A Typical Workflow](#11-daily-usage--a-typical-workflow)
 12. [FAQ](#12-faq) — incl. Claude Agent SDK migration
-13. [Appendices — signpost](#13-appendices--signpost) — A through Y at a glance
+13. [Appendices — signpost](#13-appendices--signpost) — A through AA at a glance
 
 ---
 
@@ -1984,7 +1984,7 @@ postflight.
 
 ## 13. Appendices — signpost
 
-The handbook has 25 appendices (A–Y). They are a **reference and deep-dive layer** — you don't need to read them front to back. This table tells you **when which appendix is relevant**. A–M are the foundations/tooling layer, N–Y the themes from v0.2.0 onward (waves J–AG, through v0.6.x): efficiency, privacy, deployment, scaling, verification, edit bodyguard, contribute-back, ubiquitous language, VPS/cloud team runbook.
+The handbook has 27 appendices (A–Z + AA). They are a **reference and deep-dive layer** — you don't need to read them front to back. This table tells you **when which appendix is relevant**. A–M are the foundations/tooling layer, N–AA the themes from v0.2.0 onward (waves J–AV): efficiency, privacy, deployment, scaling, verification, edit bodyguard, contribute-back, ubiquitous language, VPS/cloud team runbook, customer onboarding, SonarCloud setup.
 
 | Appendix | Topic | When relevant |
 |----------|-------|---------------|
@@ -2013,6 +2013,8 @@ The handbook has 25 appendices (A–Y). They are a **reference and deep-dive lay
 | **W** | Contribute-back loop | hand a field fix to governance artifacts back to the source |
 | **X** | CONTEXT.md — ubiquitous language | set canonical + forbidden vocabulary, bind compliance terms to their legal basis |
 | **Y** | VPS/cloud team runbook | INTENTRON on a shared developer VPS, multi-project, team |
+| **Z** | Customer onboarding — three checklists + artifact map | onboard customers/projects; complementary machine setup |
+| **AA** | SonarCloud setup runbook (two scenarios) | set up external SonarQube Cloud (D.5 = yes) |
 
 ---
 
@@ -4520,4 +4522,4 @@ External SaaS provider: the bootstrap scaffolds `sonar-project.properties` + `.g
 
 *This handbook is part of the INTENTRON.*
 *GitHub: github.com/vibercoder79/intentron*
-*Last updated: 2026-06-01 (v0.3.0–v0.6.2: security/governance wave, onboarding fix + docs sync — BOO-86 through BOO-97; incl. Layer-0 edit bodyguard, dpo control catalogue, CONTEXT.md ubiquitous language, raw-pii-guard, Appendix Y VPS/cloud team runbook, quickstart with self-install/self-update prompts; Appendix Z customer-onboarding checklists + artifact map — BOO-108)*
+*Last updated: 2026-06-03 (v0.3.0–v0.6.2: security/governance wave, onboarding fix + docs sync — BOO-86 through BOO-97; incl. Layer-0 edit bodyguard, dpo control catalogue, CONTEXT.md ubiquitous language, raw-pii-guard, Appendix Y VPS/cloud team runbook, quickstart with self-install/self-update prompts; Appendix Z customer-onboarding checklists + artifact map — BOO-108; 2026-06-03 bootstrap-UX hardening BOO-114–129 / waves AT–AV — pre-flight gate, tool-install guidance, guided stack discovery + TypeScript-first, gh prerequisite + GitHub-connect runbook, intent in Minimum, project-specific MCP question, Sonar merge warning + Appendix AA SonarCloud runbook, branching-standard ADR + sketch, lightweight SecondBrain session-start, design-story ADR)*
