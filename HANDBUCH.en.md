@@ -3554,7 +3554,17 @@ The honest answer: **partly covered, partly operator discipline.** Appendix R sp
 
 **What does not:** if operators push directly to `main`, bypass the spec-gate or merge PRs without review, governance collapses. Those are not framework gaps but team-discipline issues.
 
-**Pattern options (branch strategy):**
+**Our default standard (BOO-124): Trunk-Based with a protected `main`.**
+
+INTENTRON ships with a **named default**: **Trunk-Based Development with a protected `main` + short-lived feature branches + PR + required checks.** Rationale: lightweight, **agent-friendly** (short branches = minimal merge drift under parallel agent work), and the **protected `main`** (branch protection BOO-29 + spec gate BOO-4/27) is the quality safeguard. This is the standard we ship with — not one of three equal options.
+
+> **Sales one-liner:** "Our standard is Trunk-Based Development with a protected `main` and PR gates — lean, auditable, agent-friendly. Multi-environment branching (GitFlow & co.) we offer where the release reality demands it."
+
+![Branching standard — Trunk-Based with a protected main: short-lived feature branch → PR → required checks (green) → merge; alternatives feature branches and GitFlow](docs/assets/boo-124-branching-standard.en.png)
+
+Decision recorded as an ADR: `docs/domain/adrs/branching-standard.md` (linked from `ARCHITECTURE_DESIGN.md §9 References` in a bootstrapped project).
+
+**Alternatives (when not our default) — pattern options:**
 
 | Strategy | When it fits | Trade-off |
 |---|---|---|

@@ -1,0 +1,22 @@
+name: skill-sources
+
+# BOO-121: Source-Garantie fuer Bundle-Skills.
+# Stellt sicher, dass alle Bundle-Skills (inkl. intent) aus dem intentron-Repo
+# gesourced werden (nie aus claudecodeskills) und der Mirror vollstaendig ist.
+
+on:
+  push:
+    paths:
+      - 'bootstrap/SKILL.md'
+      - 'bootstrap/references/skills-setup*.md'
+      - 'bootstrap/scripts/check-skill-sources.sh'
+      - '.github/workflows/skill-sources.yml'
+  pull_request:
+
+jobs:
+  source-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Source-Garantie Bundle-Skills (BOO-121)
+        run: bash bootstrap/scripts/check-skill-sources.sh

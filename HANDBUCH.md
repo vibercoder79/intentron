@@ -3692,7 +3692,17 @@ Die ehrliche Antwort: **teilweise gedeckt, teilweise Operator-Disziplin.** Anhan
 
 **Was nicht:** wenn Operatoren direkt auf `main` pushen, Spec-Gate umgehen oder PRs ohne Review mergen, kollabiert die Governance. Das sind aber keine Framework-Luecken, sondern Team-Disziplin-Themen.
 
-**Pattern-Optionen (Branch-Strategie):**
+**Unser Default-Standard (BOO-124): Trunk-Based mit geschuetzter `main`.**
+
+INTENTRON liefert mit einem **benannten Default**: **Trunk-Based Development mit geschuetzter `main` + kurzlebige Feature-Branches + PR + Required Checks.** Begruendung: leichtgewichtig, **agenten-tauglich** (kurze Branches = minimale Merge-Drift bei paralleler Agentenarbeit) und die **geschuetzte `main`** (Branch-Protection BOO-29 + Spec-Gate BOO-4/27) ist die Qualitaetssicherung. Das ist der Standard, mit dem wir ausliefern — keine von drei gleichrangigen Optionen.
+
+> **Verkaufs-Einzeiler:** „Unser Standard ist Trunk-Based Development mit geschuetzter `main` und PR-Gates — schlank, auditierbar, agenten-tauglich. Multi-Environment-Branching (GitFlow & Co.) bieten wir an, wo die Release-Realitaet es verlangt."
+
+![Branching-Standard — Trunk-Based mit geschuetzter main: kurzlebiger Feature-Branch → PR → Required Checks (gruen) → Merge; Alternativen Feature-Branches und GitFlow](docs/assets/boo-124-branching-standard.png)
+
+Entscheidung als ADR dokumentiert: `docs/domain/adrs/branching-standard.md` (in einem gebootstrappten Projekt aus `ARCHITECTURE_DESIGN.md §9 Referenzen` verlinkt).
+
+**Alternativen (wenn nicht unser Default) — Pattern-Optionen:**
 
 | Strategie | Wann sinnvoll | Tradeoff |
 |---|---|---|

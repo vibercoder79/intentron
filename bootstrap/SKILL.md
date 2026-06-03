@@ -127,7 +127,27 @@ TypeScript oder JavaScript? [ts / js]   (Default: ts)
 | b) Frontend | ts (default) / js | `eslint.config.mjs` + `.prettierrc` (+ `typescript-eslint` bei ts) | Prettier | `tsc --noEmit` (bei ts) |
 | c) Full-Stack / Meta-Framework | ts (default) / js | beide (+ `typescript-eslint` bei ts) | Prettier | `tsc --noEmit` (bei ts) |
 | d) Python | — | `pyproject.toml` (Ruff + Black) | Black | — |
-| e) Anderes | — | `eslint.config.mjs` (generisch) bzw. Guided Discovery (A.1a) | — | — |
+| e) Anderes | — | Freitext-Rueckfrage (s.u., BOO-116) bzw. Guided Discovery (A.1a) — **kein** stiller ESLint-Default | — | — |
+
+**Bei `e) Anderes` zuerst nachfragen (BOO-116) — nicht still ESLint annehmen:**
+
+```
+Welche Technologie / Sprache? (z.B. Go, Rust, Java, PHP, Ruby — oder „noch unklar")
+```
+
+- **Bekannte Tech → passender Linter-Hinweis** (kein JS-Default):
+
+  | erkannte Tech | Linter-/Format-Hinweis |
+  |---------------|------------------------|
+  | Go | `golangci-lint` (+ `gofmt`) |
+  | Rust | `clippy` (+ `rustfmt`) |
+  | Java / Kotlin | `Checkstyle` / `ktlint` + `SpotBugs` |
+  | PHP | `PHPStan` / `Psalm` + `PHP-CS-Fixer` |
+  | Ruby | `RuboCop` |
+  | sonstige | Operator nennt den Linter |
+
+  `STACK_CHOICE` bleibt `e`; das Linter-/Tooling-Setup folgt dem Hinweis (Operator richtet ein), **nicht** dem ESLint-Default. Entscheidung als ADR in `docs/domain/adrs/` festhalten.
+- **„noch unklar"** → explizit als offen markieren (kein JS-Default) **oder** Guided Discovery (A.1a) nutzen, um aus Quelle/Beschreibung einen Vorschlag abzuleiten.
 
 ### A.1a Guided Stack-Discovery (BOO-127 — bei `e)` oder Unsicherheit)
 
@@ -1246,6 +1266,8 @@ SKILL_SRC=$(mktemp -d)
 git clone --depth 1 https://github.com/vibercoder79/intentron "$SKILL_SRC"
 ```
 
+> **Operator-Hinweis (BOO-121):** Halte den lokalen `bootstrap`-Skill aktuell (`git pull` im intentron-Klon). Eine veraltete Version kann Bundle-Skills (insb. `intent`) noch nach der **Pre-BOO-74-Struktur** aus `claudecodeskills` sourcen — alle Bundle-Skills kommen heute **ausschliesslich aus intentron**. Regression-Schutz: `bootstrap/scripts/check-skill-sources.sh` (CI: `skill-sources.yml`).
+
 ### Repo-Struktur (BOO-74)
 
 Das `intentron`-Repo enthaelt **alle** Bundle-Skills flach als Top-Level-Ordner — keine `intentron/`-Verschachtelung mehr (das war die alte `claudecodeskills`-Struktur):
@@ -1404,6 +1426,14 @@ Kosten: Public Repos gratis. Private Repos ab ~10 EUR/Monat.
 ```
 
 Wenn `ja`: Lies `references/optional-components.md §D.5` fuer Implementation-Details inkl. Verify-Schritt.
+
+> ⚠️ **Warnung bei `ja` (BOO-122):** Mit `sonar.yml` wird **`SonarCloud` automatisch ein Required Status Check** (Branch-Protection, Phase 4.4k, baut die Checks dynamisch aus allen Workflows) — **ohne gruenen Sonar-Lauf kein Merge**. Fehlt Account/Token, failt der Job rot und **dein erster PR ist blockiert**. Daher:
+> - **Jetzt einrichten:** das SonarCloud-Setup-Runbook (BOO-119, HANDBUCH) durchlaufen (Account/Org/Token + `SONAR_TOKEN`-Secret), **dann** `ja`.
+> - **Oder spaeter aktivieren:** vorerst `nein`, Sonar ist jederzeit nachziehbar.
+> - **Sonar wieder entfernen** (falls schon scaffolded): `.github/workflows/sonar.yml` loeschen, `tools_available.sonarqube_cloud = false` setzen, Branch-Protection neu setzen (`setup-branch-protection.sh` — `SonarCloud` faellt dann aus den Required Checks).
+>
+> **Optional-Abfrage:** „Sonar-Setup jetzt durchfuehren — oder nur **scaffolden ohne** Required-Check (`sonar.yml` anlegen, aber erst nach gruenem Erst-Lauf in die Branch-Protection aufnehmen)?"
+
 Wenn `nein`: `tools_available.sonarqube_cloud = false` in `.claude/environment.json`.
 
 ### D.6 Self-Hosted-Runner (BOO-46, nur wenn Performance-Gate aktiv)
@@ -1425,6 +1455,29 @@ Self-Hosted-Runner fuer Performance-Tests aktivieren?
 
 Wenn `ja`: Reine HANDBUCH-Verweise (kein Auto-Setup, weil VPS-Installation Operator-Hoheit ist). `migrate_boo_46()` patcht spaeter `perf.yml` (`runs-on: ubuntu-latest` -> `self-hosted`, Threshold 1.20 -> 1.10) wenn Operator den Runner installiert hat.
 Wenn `nein`: kein Eintrag in `environment.json`, kein perf.yml-Patch.
+
+### D.7 Projekt-spezifische MCP-Server (BOO-125, nur bei STACK = Frontend/Full-Stack)
+
+Wenn `STACK_CHOICE = b` (Frontend) oder `c` (Full-Stack):
+
+```
+Weitere projekt-spezifische MCP-Server einrichten?
+  Vorschlag fuer Web/Frontend: Vercel, Apify — oder eigene Quelle angeben.
+  [ja / nein (default)]
+```
+
+Bei `ja`:
+- Gewaehlte MCP-Server gemaess `references/mcp-setup.md` registrieren (Endpoint / Auth / Scope).
+- Hinweis: die **nutzende Story/Skill** deklariert den MCP in ihrem `requires_toolsets`-Block (HANDBUCH §requires_toolsets) — der Bootstrap richtet nur den Server ein, nicht die Nutzung.
+- `tools_available` in `.claude/environment.json` entsprechend ergaenzen (vom `verify-setup.sh` gelesen).
+
+**Klarstellung Vercel (haeufige Verwechslung):**
+- **Deploy** laeuft ueber die **Vercel↔GitHub-Integration** (Git-Push → Auto-Deploy) — dafuer ist **kein** MCP noetig.
+- Der **Vercel-MCP** dient nur der **Agent-Interaktion**: Deployment-Logs / Env / Config lesen + analysieren. Optional.
+
+**Frontend-Combo:** „Node-Backend + Frontend" wird sauber ueber `c) Full-Stack` abgebildet (Backend + Frontend in einem Projekt) — kein eigener Kombi-Pfad noetig. `b) Frontend` ist das reine Frontend ohne eigenes Backend.
+
+Bei `nein`: kein MCP-Eintrag; projekt-spezifische MCPs koennen jederzeit spaeter via `references/mcp-setup.md` ergaenzt werden.
 
 Phase-6-Checkpoint: Optional-Komponenten-Status inkl. Provider-Postflight und bewusst abgewaehlter Optionen.
 

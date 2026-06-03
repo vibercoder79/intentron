@@ -2,12 +2,14 @@
 
 Skills werden aus dem offiziellen GitHub-Repo via `git clone` in einen Temp-Ordner geholt und in `{PROJECT_PATH}/.claude/skills/` kopiert. Kein Symlink auf VPS-Pfade, kein globales `/root/.claude/skills/`.
 
-## Repo-Struktur
+## Repo-Struktur (BOO-74/121)
 
-Das `claudecodeskills`-Repo gruppiert die Governance-Skills:
+**Source-Garantie:** Alle **Bundle-Skills** (inkl. `intent`) kommen **immer aus dem `intentron`-Repo** — **nie** aus `claudecodeskills`. Sie liegen flach als Top-Level-Ordner (keine `intentron/`-Verschachtelung mehr — das war die alte Pre-BOO-74-Struktur):
 
-- **`$SKILL_SRC/intentron/<skill>/`** — Sub-Skills: `architecture-review`, `backlog`, `cloud-system-engineer`, `grafana`, `ideation`, `implement`, `sprint-review`, `visualize`
-- **`$SKILL_SRC/<skill>/`** — Top-Level-Skills: `design-md-generator`, `research`, `security-architect`, `setup-checklist`, `skill-creator` (und weitere eigenstaendige Skills)
+- **`$SKILL_SRC/<skill>/`** (intentron-Clone) — alle Bundle-Skills: `architecture-review`, `backlog`, `bootstrap`, `cloud-system-engineer`, `dpo`, `grafana`, `ideation`, `implement`, `intent`, `pitch`, `security-architect`, `sprint-review`, `visualize`.
+- **`claudecodeskills` (separater, optionaler Clone)** — **nur** die Allzweck-Skills `research`, `design-md-generator`, `setup-checklist`, `skill-creator`. **Kein** Bundle-Skill.
+
+> **Master vs. Mirror:** `dpo` und `security-architect` werden in `claudecodeskills` gepflegt (Master), liegen aber als **Mirror** im intentron-Bundle — Bootstrap installiert sie aus intentron. **Regression-Schutz:** `bootstrap/scripts/check-skill-sources.sh` (CI: `skill-sources.yml`) verifiziert Mirror-Vollstaendigkeit + dass kein Bundle-Skill gegen `claudecodeskills` gesourced wird. **Operator-Hinweis:** den lokalen `bootstrap`-Skill aktuell halten (`git pull` im intentron-Klon), sonst greifen veraltete Source-Pfade (Pre-BOO-74).
 
 ## Installation (Standard-Flow)
 

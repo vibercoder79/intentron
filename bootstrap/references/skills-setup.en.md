@@ -2,12 +2,14 @@
 
 Skills are fetched from the official GitHub repo via `git clone` into a temp folder and copied into `{PROJECT_PATH}/.claude/skills/`. No symlinks to VPS paths, no global `/root/.claude/skills/`.
 
-## Repo structure
+## Repo structure (BOO-74/121)
 
-The `claudecodeskills` repo groups governance skills:
+**Source guarantee:** All **bundle skills** (incl. `intent`) **always** come **from the `intentron` repo** — **never** from `claudecodeskills`. They live flat as top-level folders (no more `intentron/` nesting — that was the old pre-BOO-74 structure):
 
-- **`$SKILL_SRC/intentron/<skill>/`** — Sub-skills: `architecture-review`, `backlog`, `cloud-system-engineer`, `grafana`, `ideation`, `implement`, `sprint-review`, `visualize`
-- **`$SKILL_SRC/<skill>/`** — Top-level skills: `design-md-generator`, `research`, `security-architect`, `setup-checklist`, `skill-creator` (plus other standalone skills)
+- **`$SKILL_SRC/<skill>/`** (intentron clone) — all bundle skills: `architecture-review`, `backlog`, `bootstrap`, `cloud-system-engineer`, `dpo`, `grafana`, `ideation`, `implement`, `intent`, `pitch`, `security-architect`, `sprint-review`, `visualize`.
+- **`claudecodeskills` (separate, optional clone)** — **only** the general-purpose skills `research`, `design-md-generator`, `setup-checklist`, `skill-creator`. **No** bundle skill.
+
+> **Master vs. mirror:** `dpo` and `security-architect` are maintained in `claudecodeskills` (master) but live as a **mirror** in the intentron bundle — bootstrap installs them from intentron. **Regression guard:** `bootstrap/scripts/check-skill-sources.sh` (CI: `skill-sources.yml`) verifies mirror completeness + that no bundle skill is sourced against `claudecodeskills`. **Operator note:** keep the local `bootstrap` skill current (`git pull` in the intentron clone), otherwise stale source paths (pre-BOO-74) apply.
 
 ## Installation (standard flow)
 
