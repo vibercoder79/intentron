@@ -740,6 +740,8 @@ Claude führt vordefinierte Checks durch und zeigt:
 
 ## 7. Die Artefakte — was entsteht, wo, und warum
 
+> **Überblick auf einer Seite (BOO-130):** *Wie* das Framework dokumentiert — Artefakte, 3 Doku-Schichten, fortlaufende Gates und der Bestands-Repo-Onboarding-Pfad — steht konsolidiert in [`docs/how-we-document.md`](docs/how-we-document.md). Dieser §7 listet die Artefakte im Detail.
+
 ### Was ist ein Artefakt?
 
 Ein **Artefakt** ist eine Datei, die das Governance-Framework erzeugt oder erwartet — Doku,

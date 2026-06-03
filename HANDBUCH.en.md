@@ -671,6 +671,8 @@ audits (AUDIT mode), and before installing external skills (SKILL-SCAN mode).
 
 ## 7. The Artifacts — What Gets Created, Where, and Why
 
+> **One-page overview (BOO-130):** *how* the framework documents — artifacts, the 3 doc layers, the continuous gates, and the existing-repo onboarding path — is consolidated in [`docs/how-we-document.en.md`](docs/how-we-document.en.md). This §7 lists the artifacts in detail.
+
 ### What is an artifact?
 
 An **artifact** is a file that the governance framework creates or expects — documentation,
