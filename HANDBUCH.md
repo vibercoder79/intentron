@@ -25,7 +25,7 @@
 10. [Governance für dein Projekt anpassen](#10-governance-für-dein-projekt-anpassen)
 11. [Tägliche Nutzung — ein typischer Workflow](#11-tägliche-nutzung--ein-typischer-workflow)
 12. [Häufige Fragen](#12-häufige-fragen) — inkl. Claude Agent SDK Migration
-13. [Anhänge — Wegweiser](#13-anhänge--wegweiser) — A bis Y im Überblick
+13. [Anhänge — Wegweiser](#13-anhänge--wegweiser) — A bis AA im Überblick
 
 ---
 
@@ -2114,7 +2114,7 @@ und Provider-Postflight.
 
 ## 13. Anhänge — Wegweiser
 
-Das Handbuch hat 25 Anhänge (A–Y). Sie sind **Nachschlage- und Vertiefungs-Schicht** — du musst sie nicht von vorn bis hinten lesen. Diese Tabelle sagt dir, **wann welcher Anhang relevant ist**. Anhänge A–M sind die Grundlagen-/Tooling-Schicht, N–Y die Themen ab v0.2.0 (Wellen J–AG, bis v0.6.x): Effizienz, Privacy, Deployment, Skalierung, Verifikation, Edit-Bodyguard, Contribute-Back, Ubiquitous Language, VPS/Cloud-Team-Runbook.
+Das Handbuch hat 27 Anhänge (A–Z + AA). Sie sind **Nachschlage- und Vertiefungs-Schicht** — du musst sie nicht von vorn bis hinten lesen. Diese Tabelle sagt dir, **wann welcher Anhang relevant ist**. Anhänge A–M sind die Grundlagen-/Tooling-Schicht, N–AA die Themen ab v0.2.0 (Wellen J–AV): Effizienz, Privacy, Deployment, Skalierung, Verifikation, Edit-Bodyguard, Contribute-Back, Ubiquitous Language, VPS/Cloud-Team-Runbook, Kunden-Onboarding, SonarCloud-Setup.
 
 | Anhang | Thema | Wann relevant |
 |--------|-------|---------------|
@@ -2143,6 +2143,8 @@ Das Handbuch hat 25 Anhänge (A–Y). Sie sind **Nachschlage- und Vertiefungs-Sc
 | **W** | Contribute-Back-Schleife | Feld-Fix an Governance-Artefakten zurück an die Quelle reichen |
 | **X** | CONTEXT.md — Ubiquitous Language | kanonisches + verbotenes Vokabular festlegen, Compliance-Vokabular an Rechtsgrundlage binden |
 | **Y** | VPS/Cloud-Team-Runbook | INTENTRON auf einer geteilten Developer-VPS, Multi-Projekt, Team |
+| **Z** | Kunden-Onboarding — drei Checklisten + Artefakt-Landkarte | Kunden/Projekt onboarden; komplementäres Maschinen-Setup |
+| **AA** | SonarCloud-Setup-Runbook (zwei Szenarien) | externes SonarQube Cloud einrichten (D.5 = ja) |
 
 ---
 
@@ -4616,4 +4618,4 @@ Externer SaaS-Provider: Der Bootstrap scaffoldet `sonar-project.properties` + `.
 
 *Dieses Handbuch ist Teil des INTENTRONs.*
 *GitHub: github.com/vibercoder79/intentron*
-*Letzte Aktualisierung: 2026-06-01 (v0.3.0–v0.6.2: Security-/Governance-Welle, Onboarding-Fix + Doku-Sync — BOO-86 bis BOO-97; u.a. Layer-0-Edit-Bodyguard, dpo-Kontrollkatalog, CONTEXT.md Ubiquitous Language, raw-pii-guard, Anhang Y VPS/Cloud-Team-Runbook, Quickstart mit Self-Install/Self-Update-Prompts; Anhang Z Kunden-Onboarding-Checklisten + Artefakt-Landkarte — BOO-108)*
+*Letzte Aktualisierung: 2026-06-03 (v0.3.0–v0.6.2: Security-/Governance-Welle, Onboarding-Fix + Doku-Sync — BOO-86 bis BOO-97; u.a. Layer-0-Edit-Bodyguard, dpo-Kontrollkatalog, CONTEXT.md Ubiquitous Language, raw-pii-guard, Anhang Y VPS/Cloud-Team-Runbook, Quickstart mit Self-Install/Self-Update-Prompts; Anhang Z Kunden-Onboarding-Checklisten + Artefakt-Landkarte — BOO-108; 2026-06-03 Bootstrap-UX-Härtung BOO-114–129 / Wellen AT–AV — Pre-Flight-Gate, Tool-Install-Führung, Guided Stack-Discovery + TypeScript-first, gh-Voraussetzung + GitHub-Connect-Runbook, intent im Minimum, projekt-spezifische MCP-Abfrage, Sonar-Merge-Warnung + Anhang AA SonarCloud-Runbook, Branching-Standard-ADR + Sketch, Leichtgewicht-SecondBrain Session-Start, Design-Story-ADR)*
