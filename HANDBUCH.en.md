@@ -3319,7 +3319,7 @@ This appendix describes four established setup patterns for the INTENTRON, from 
 4. Set `UMASK 077` globally so user directories are not world-readable.
 5. Define `sudo` rules per user — who may do what, what stays root-only.
 6. Decide the skill pool strategy: either global under `/opt/claude/skills/` (read-only for users) **or** per user in `~/.claude/skills/` (own copy per operator). Both patterns are documented and supported.
-7. Repository worktrees per user: each user clones into their own home — no shared working trees.
+7. **Own clone per user** (not a worktree!): each user `git clone`s the repo into their **own home** (`/home/<user>/projects/<project>/`) — **no shared working trees**. For different system users the own **clone** is correct (own `.git` DB, own permissions, own `.env`); `git worktree` (shared `.git` DB) is for *one* person with parallel tracks, not across user boundaries. Step-by-step for a new team member: runbook `docs/runbooks/multi-user-vps.en.md`. Concept: `docs/kollisionsschutz-drei-ebenen.en.md` (level 1).
 8. Secrets STRICTLY per user in `~/.claude/.env`. No shared `.env` files.
 9. Backup strategy centrally (provider VPS snapshot) plus per home directory (Hetzner Storage Box or Backblaze B2 — operator picks).
 10. Check configuration drift periodically (`jq` diff over `~/.claude/settings.json` per user).
