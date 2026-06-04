@@ -91,7 +91,7 @@ Derived from [`integration-discovery.en.md`](./integration-discovery.en.md) (RAC
 | Artifact | Path (framework → output) | Phase | Default template | When needed | Sign-off | Rule sink | Status |
 |---|---|---|---|---|---|---|---|
 | Implement report + quality gates | `journal/reports/local/` | implement | yes | always | IT/architect | `CONVENTIONS.md` (gates) | _open_ |
-| Integration / deploy model | `docs/runbooks/` | cloud-system-engineer | yes | own operation / go-live | Operations + Customer IT | Runbook + `.claude/environment.json` | _open_ |
+| Integration / deploy model | `docs/runbooks/` — Examples: [`vercel-cicd-setup.md`](../runbooks/vercel-cicd-setup.md), [`sonarcloud-setup.md`](../runbooks/sonarcloud-setup.md) | cloud-system-engineer | yes | own operation / go-live | Operations + Customer IT | Runbook + `.claude/environment.json` | _open_ |
 | Monitoring / logging setup + alert rules | Grafana | grafana | yes | monitoring wanted / audit duty | Operations | `ARCHITECTURE_DESIGN.md` §5 + Grafana | _open_ |
 | Compliance evidence mechanism | `docs/compliance/compliance-mechanik.md` | docs/compliance | yes | "strict" / regulated industry | Audit + Sponsor | `CONVENTIONS.md` (gates, four-eyes) | _open_ |
 | Audit perspective | `docs/runbooks/audit-perspective.md` | docs/runbooks | yes | audit duty | Audit | Runbook | _open_ |
