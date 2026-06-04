@@ -4,7 +4,7 @@
 
 > Macht aus einem Linear-Issue produktionsreifen Code ueber ein nicht-ueberspringbares 8-Schritte-Protokoll: Identifizieren → Abhaengigkeiten → Kontext → Governance-Validation → Spec-Gate → Plan → Implementieren → Post-Validation. Kein Schritt optional, keine Abkuerzungen. Auch vom Automation-Daemon ohne Human-in-the-Loop nutzbar.
 
-**Version:** 2.11.1 · **Befehl:** `/implement`
+**Version:** 2.12.0 · **Befehl:** `/implement`
 
 ---
 

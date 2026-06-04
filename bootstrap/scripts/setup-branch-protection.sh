@@ -19,7 +19,12 @@
 #  Idempotenz: der PUT-Call ist Replace, also re-run-safe. Mehrfaches
 #  Ausfuehren ueberschreibt die Protection identisch — keine Akkumulation.
 #
-#  Referenz: BOO-29, file-templates §branch-protection,
+#  Review-Count = 0 (BOO-149): im Solo-/Agent-Flow gibt es keine Fremd-Approval
+#  (GitHub erlaubt keine Self-Approval), ein Count >= 1 wuerde den Merge dauerhaft
+#  blockieren. Required Status Checks bleiben Pflicht — Qualitaet wird ueber CI,
+#  nicht ueber manuelle Approvals erzwungen.
+#
+#  Referenz: BOO-29, BOO-149, file-templates §branch-protection,
 #  migration-checklist-v1-to-v2.md §BOO-29.
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -179,7 +184,7 @@ done
 GH_ARGS+=(
     -F "enforce_admins=false"
     -F "required_pull_request_reviews[dismiss_stale_reviews]=true"
-    -F "required_pull_request_reviews[required_approving_review_count]=1"
+    -F "required_pull_request_reviews[required_approving_review_count]=0"
     -F "restrictions=null"
     -F "allow_force_pushes=false"
 )
@@ -194,7 +199,7 @@ echo "  Strict:                       true"
 echo "  Required Status Checks:       ${#CONTEXTS[@]} (${CONTEXTS[*]:-keine})"
 echo "  Enforce admins:               false"
 echo "  Dismiss stale reviews:        true"
-echo "  Approving reviews required:   1"
+echo "  Approving reviews required:   0"
 echo "  Allow force pushes:           false"
 echo "════════════════════════════════════════════════════════════"
 echo ""

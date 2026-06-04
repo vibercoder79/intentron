@@ -6,7 +6,7 @@ description: |
   to closing table including post-implement validation. Use when the operator says "go",
   wants to implement a story, or runs "/implement". Also used by the automation daemon
   (no human in the loop).
-version: 2.11.1
+version: 2.12.0
 language: en
 metadata:
   hermes:
@@ -899,6 +899,50 @@ rm -f "$TOKEN_CACHE" "$OVERRIDE_CACHE"
 - `/implement` writes ONLY raw outputs to `journal/reports/local/` — including `meta.json`.
 - `/sprint-review` READS `journal/reports/local/` + `ci/` and aggregates into `journal/sprint-{date}.md` (L2). In a second phase `/sprint-review` parses the aggregated data into `journal/learnings.db` (L3).
 - **`/implement` does NOT write directly into `learnings.db`.** This separation keeps implement fast (no DB lock, no schema knowledge) and makes sprint-review the single writer of the learnings DB.
+
+**6h) Remote-CI loop — Validate-Fix-Learn against GitHub Actions (BOO-147)**
+
+> **Purpose:** The local gates (6a–6a-quart) only check the local machine (pre-commit hooks, linter, tests). CI-specific failures — wrong token syntax in workflow YAML, container-checkout errors, packages missing in the CI runner, environment drift — only surface in GitHub Actions and otherwise stay undetected until manual debugging. This loop is the **remote pendant to the local Validate-Fix-Learn loop**: after the push it waits for the CI result and, on failure, iterates the same `Validate -> Interpret -> Decide -> Fix -> Re-Validate` loop — just against the remote pipeline instead of the local gates.
+
+> **Anchor:** The code was pushed remotely in Step 5 ("Git commit + push"); spec commits (session reference, possibly human/privacy review) follow as pushes too. This loop runs **after the last push** of this run — i.e. after 6f reported PASS and 6f-bis wrote `meta.json`. If `/implement` ran without a push (pure doc run, daemon dry run, or push was skipped): skip the loop.
+
+**Graceful degradation (no hard fail) — check first:**
+
+1. **`gh` installed?** `command -v gh` empty → skip with note: "Remote-CI loop skipped — GitHub CLI (`gh`) not installed. Recommendation: install `gh` + `gh auth login`, or check CI status manually in GitHub."
+2. **`gh` logged in?** `gh auth status` fails → skip with note: "Remote-CI loop skipped — `gh` not logged in (`gh auth login`)."
+3. **Remote present + pushed?** No `origin` remote (`git remote get-url origin` empty) or no push happened in this run → skip with note: "Remote-CI loop skipped — no remote / no push."
+4. **Workflows present?** No `.github/workflows/` directory, or no run for the current commit (see below) → skip with note: "Remote-CI loop skipped — no GitHub Actions workflows for this commit."
+
+In all four cases: **no STOP, no FAIL** — note in the output + set `meta.json.skipped_gates.remote_ci` with the reason, then continue to Step 7.
+
+**Iteration loop (mandatory when preconditions are met):**
+
+```bash
+# Counter analogous to the local gates
+ITER_CI=0
+RUN_CI_STATUS="in_progress"
+
+# Wait for the CI run of the currently pushed commit (blocks until completion)
+ITER_CI=$((ITER_CI + 1))
+gh run watch --exit-status \
+  --workflow ci.yml 2>/dev/null \
+  || gh run watch --exit-status   # fallback without workflow filter: most recent run
+```
+
+1. **`gh run watch --exit-status`** waits until the CI run completes. Exit code 0 = CI green, exit code != 0 = CI failed.
+2. **CI green (exit 0):** loop passed — `RUN_CI_STATUS="passed"`, continue to Step 7.
+3. **CI failure (exit != 0):**
+   a. **Interpret:** run `gh run view --log-failed` — prints only the failed steps/jobs (more compact than the full log). Read the output and classify the cause (workflow YAML syntax / token-/secret reference / container checkout / missing package / real test/lint failure that didn't reproduce locally / environment drift).
+   b. **Decide + Fix:** formulate a fix only for the **identified cause** (no blind symptom patching — same rule as in the local loop). Workflow/config changes via the Edit tool, code changes analogous to Step 5.
+   c. **Re-Validate:** commit + push the fix, increment `ITER_CI`, re-run `gh run watch --exit-status` for the new commit.
+4. **Maximum 3 iterations.** At iteration 3 without green: STOP, **operator escalation** with a clear note: which job/step persists, which fixes were attempted, the relevant `gh run view --log-failed` excerpt, and why the fixes didn't take. Operator decides (manual fix, CI-config review, or mark the story as carry-over). `RUN_CI_STATUS="stopped_iteration_limit"`.
+
+**Persistence + meta.json (analogous to 6a / 6f-bis):**
+- Per failure iteration, write the `gh run view --log-failed` excerpt to `${RUN_DIR}/ci-iter${ITER_CI}.log` (raw output for `/sprint-review`, same convention as `eslint-iter{N}.sarif`).
+- Add `meta.json.iterations.remote_ci` = `${ITER_CI}`; on skip set `meta.json.skipped_gates.remote_ci` with the reason (e.g. `"gh not installed"`, `"no push in this run"`).
+- On `RUN_CI_STATUS="stopped_iteration_limit"`, `final_status` is carried accordingly in 6f-bis (a CI failure blocks `Done` just like a local gate failure — `Done` is allowed only when CI is green or the operator confirms a documented exception).
+
+> **Relation to the local loop:** 6a–6a-quart catch what is locally checkable; 6h catches what only becomes visible in the CI runner. Both use the same mechanics (iterate until green, cause-driven fixes, hard iteration limit, operator escalation). Local loop: max 5 iterations per gate. Remote-CI loop: max 3 iterations (CI runs are costlier/slower — a lower ceiling forces earlier operator escalation instead of an endless push loop).
 
 ### Step 7: Backlog update
 

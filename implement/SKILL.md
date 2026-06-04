@@ -6,7 +6,7 @@ description: |
   bis Ergebnis-Tabelle inkl. Post-Implement Validation. Verwenden wenn der Operator "los" sagt,
   eine Story umsetzen will, oder "/implement" ausfuehrt. Wird auch vom Automation Daemon genutzt
   (ohne Human-in-the-Loop).
-version: 2.11.1
+version: 2.12.0
 metadata:
   hermes:
     category: coding
@@ -966,6 +966,50 @@ rm -f "$TOKEN_CACHE" "$OVERRIDE_CACHE"
 4. Wenn Metriken ⚠ oder ❌ → Hinweis: "Intent-Metrik [X] nicht erreicht — neue Story zur Nacharbeit empfohlen?"
 
 **Blockt nicht.** Selbst wenn eine Metrik schlechter geworden ist, geht der Commit durch. Der Measure-Loop dokumentiert nur, damit die naechste Story gezielt gegensteuern kann. (Schrader: "Nach jedem KI-Output fragt sich das Team: Erfuellt das unseren Intent?")
+
+**6h) Remote-CI-Loop — Validate-Fix-Learn gegen GitHub Actions (BOO-147)**
+
+> **Zweck:** Die lokalen Gates (6a–6a-quart) pruefen nur die lokale Maschine (Pre-Commit-Hooks, Linter, Tests). CI-spezifische Fehler — falsche Token-Syntax in Workflow-YAML, Container-Checkout-Fehler, im CI-Runner fehlende Pakete, Umgebungs-Drift — schlagen erst in GitHub Actions zu und bleiben sonst unentdeckt bis zum manuellen Debugging. Dieser Loop ist das **Remote-Pendant zum lokalen Validate-Fix-Learn-Loop**: Er wartet nach dem Push auf das CI-Ergebnis und iteriert bei Failure dieselbe `Validate -> Interpret -> Decide -> Fix -> Re-Validate`-Schleife — nur gegen die Remote-Pipeline statt gegen die lokalen Gates.
+
+> **Anker:** Der Code wurde in Schritt 5 ("Git Commit + Push") remote gepusht; Spec-Commits (Session-Referenz, ggf. Human/Privacy Review) folgen ebenfalls als Push. Dieser Loop laeuft **nach dem letzten Push** dieses Runs — also nachdem 6f PASS gemeldet und 6f-bis `meta.json` geschrieben hat. Wenn `/implement` ohne Push lief (reiner Doku-Lauf, Daemon-Dry-Run, oder Push wurde uebersprungen): Loop ueberspringen.
+
+**Graceful Degradation (kein Hard-Fail) — zuerst pruefen:**
+
+1. **`gh` installiert?** `command -v gh` leer → Skip mit Hinweis: "Remote-CI-Loop uebersprungen — GitHub CLI (`gh`) nicht installiert. Empfehlung: `gh` installieren + `gh auth login`, oder CI-Status manuell in GitHub pruefen."
+2. **`gh` eingeloggt?** `gh auth status` schlaegt fehl → Skip mit Hinweis: "Remote-CI-Loop uebersprungen — `gh` nicht eingeloggt (`gh auth login`)."
+3. **Remote vorhanden + gepusht?** Kein `origin`-Remote (`git remote get-url origin` leer) oder es lief gar kein Push in diesem Run → Skip mit Hinweis: "Remote-CI-Loop uebersprungen — kein Remote/kein Push."
+4. **Workflows vorhanden?** Kein `.github/workflows/`-Verzeichnis bzw. kein Run fuer den aktuellen Commit (siehe unten) → Skip mit Hinweis: "Remote-CI-Loop uebersprungen — keine GitHub-Actions-Workflows fuer diesen Commit."
+
+In allen vier Faellen: **kein STOPP, kein FAIL** — Hinweis im Output + `meta.json.skipped_gates.remote_ci` mit Grund setzen, dann weiter zu Schritt 7.
+
+**Iterations-Loop (Pflicht, wenn Vorbedingungen erfuellt):**
+
+```bash
+# Counter analog zu den lokalen Gates
+ITER_CI=0
+RUN_CI_STATUS="in_progress"
+
+# Auf den CI-Run fuer den aktuell gepushten Commit warten (blockierend bis Abschluss)
+ITER_CI=$((ITER_CI + 1))
+gh run watch --exit-status \
+  --workflow ci.yml 2>/dev/null \
+  || gh run watch --exit-status   # Fallback ohne Workflow-Filter: juengster Run
+```
+
+1. **`gh run watch --exit-status`** wartet, bis der CI-Run abgeschlossen ist. Exit-Code 0 = CI gruen, Exit-Code != 0 = CI fehlgeschlagen.
+2. **Bei CI gruen (Exit 0):** Loop bestanden — `RUN_CI_STATUS="passed"`, weiter zu Schritt 7.
+3. **Bei CI-Failure (Exit != 0):**
+   a. **Interpret:** `gh run view --log-failed` ausfuehren — nur die fehlgeschlagenen Steps/Jobs ausgeben (kompakter als der volle Log). Den Output lesen und die Ursache klassifizieren (Workflow-YAML-Syntax / Token-/Secret-Referenz / Container-Checkout / fehlendes Paket / echter Test-/Lint-Fail, der lokal nicht reproduzierte / Umgebungs-Drift).
+   b. **Decide + Fix:** Fix nur fuer die **erkannte Ursache** formulieren (kein blindes Symptom-Patchen — gleiche Regel wie im lokalen Loop). Workflow-/Config-Aenderungen via Edit-Tool, Code-Aenderungen analog Schritt 5.
+   c. **Re-Validate:** Fix committen + pushen, `ITER_CI` erhoehen, erneut `gh run watch --exit-status` fuer den neuen Commit.
+4. **Maximal 3 Iterationen.** Bei Iteration 3 ohne gruen: STOPP, **Operator-Eskalation** mit klarem Hinweis: welcher Job/Step persistiert, welche Fixes versucht wurden, der relevante `gh run view --log-failed`-Auszug, und warum die Fixes nicht griffen. Operator entscheidet (manueller Fix, CI-Config-Review, oder Story als Carry-Over markieren). `RUN_CI_STATUS="stopped_iteration_limit"`.
+
+**Persistenz + meta.json (analog 6a/6f-bis):**
+- Pro Failure-Iteration den `gh run view --log-failed`-Auszug nach `${RUN_DIR}/ci-iter${ITER_CI}.log` schreiben (raw Output fuer `/sprint-review`, gleiche Konvention wie `eslint-iter{N}.sarif`).
+- `meta.json.iterations.remote_ci` = `${ITER_CI}` ergaenzen; bei Skip `meta.json.skipped_gates.remote_ci` mit Grund setzen (z.B. `"gh not installed"`, `"no push in this run"`).
+- Bei `RUN_CI_STATUS="stopped_iteration_limit"` wird `final_status` in 6f-bis entsprechend gefuehrt (CI-Fail blockiert `Done` genauso wie ein lokaler Gate-Fail — `Done` erst wenn CI gruen ist oder der Operator eine dokumentierte Ausnahme bestaetigt).
+
+> **Verhaeltnis zum lokalen Loop:** 6a–6a-quart fangen ab, was lokal pruefbar ist; 6h faengt ab, was erst im CI-Runner sichtbar wird. Beide nutzen dieselbe Mechanik (iterieren bis gruen, Ursachen-getriebene Fixes, hartes Iterations-Limit, Operator-Eskalation). Lokaler Loop: max 5 Iterationen pro Gate. Remote-CI-Loop: max 3 Iterationen (CI-Runs sind teurer/langsamer — eine niedrigere Decke erzwingt fruehere Operator-Eskalation statt endloser Push-Schleifen).
 
 ### Schritt 7: Backlog-Update
 

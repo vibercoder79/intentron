@@ -1,7 +1,7 @@
 ---
 name: bootstrap
 recommended_model: sonnet  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
-version: 3.37.0
+version: 3.38.0
 description: Setzt ein neues Projekt mit Governance-Framework auf — interaktiver Block-Interview-Flow in 4 Schritten, Doku-Architektur mit Hub-Auto-Verlinkung, optionaler Learning-Loop L1/L2/L3. Verwenden wenn der Operator ein neues Projekt aufsetzen will oder "/bootstrap" sagt.
 tools: [Read, Write, Edit, Bash, Glob, Grep]
 metadata:
@@ -614,6 +614,26 @@ Zusaetzlich Skelette:
 
 > **KERN-REGEL im Runtime-Einstieg (`AGENTS.md`/`CLAUDE.md`):** Jede neue Datei MUSS sofort in `ARCHITECTURE_DESIGN.md §9 Referenzen` UND `INDEX.md` eingetragen werden — vor dem git commit.
 
+### 4.3a PROJEKT-TYP-Marker setzen (BOO-148)
+
+Beim Befuellen der `CLAUDE.md` (Template `references/file-templates.md` §`CLAUDE.md (Minimum)`) den Platzhalter `{{PROJECT_TYPE_MARKER}}` setzen — der Marker steht als erste Zeile nach dem H1-Titel und steuert, ob Deployment-/CI-Gates fuer dieses Repo greifen. Entscheidungsregel:
+
+- **Aktiv-Projekt** (Code + Deployment hier) → AKTIV-Marker:
+
+  ```markdown
+  > **PROJEKT-TYP: AKTIV** — Code + Deployment in diesem Repo
+  ```
+
+- **Reine Docs/Specs / Governance-Referenz** (kein Coding) → GOVERNANCE-REFERENZ-Marker:
+
+  ```markdown
+  > **PROJEKT-TYP: GOVERNANCE-REFERENZ** — nur Docs/Specs, kein Coding
+  ```
+
+**Default = AKTIV** — im Zweifel nicht nachfragen, AKTIV setzen (~80% der Faelle). Nur auf eindeutige Docs/Specs-Repos (z.B. Governance-Buch, reine Referenz-Sammlung) GOVERNANCE-REFERENZ setzen.
+
+> **Issue-Referenz:** BOO-148. Migration fuer Bestands-Projekte: `references/migration-checklist-v1-to-v2.md` §BOO-148 (`migrate_boo_148`).
+
 ### 4.3b CONTEXT.md seeden — Ubiquitous Language (BOO-91)
 
 `CONTEXT.md` im Projekt-Root aus `references/context-base.md` (DE) bzw. `references/context-base.en.md` (EN, je nach `documentation`-Sprache aus A.3) seeden: vorgefuelltes **kanonisches Vokabular** + **Verbotsliste** (Compliance + Governance, jeder Begriff mit Quelle) plus eine leere Sektion `## Projekt-Domaene (vom Operator fuellen)` fuer projektspezifische Begriffe. Die KI liest `CONTEXT.md` beim Schreiben und nutzt konsequent die kanonischen Begriffe — **Default Guidance, kein Hard-Gate** (kein Block, nur Fuehrung).
@@ -1078,7 +1098,7 @@ Voraussetzung dafuer, dass kein Merge in `main` ohne gruene CI-Checks moeglich i
      -F required_status_checks[contexts][]=<dynamisch> \
      -F enforce_admins=false \
      -F required_pull_request_reviews[dismiss_stale_reviews]=true \
-     -F required_pull_request_reviews[required_approving_review_count]=1 \
+     -F required_pull_request_reviews[required_approving_review_count]=0 \
      -F restrictions=null \
      -F allow_force_pushes=false
    ```

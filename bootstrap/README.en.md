@@ -41,7 +41,7 @@ When you type `/bootstrap` in Claude Code, it walks you through setting up:
 | What | Why |
 |------|-----|
 | **GOVERNANCE.md** | Blueprint for the AI-driven development lifecycle — rules, workflows, quality gates |
-| **AGENTS.md / CLAUDE.md** | Runtime entries: Codex via AGENTS.md, Claude Code via CLAUDE.md, both bound by CONVENTIONS.md |
+| **AGENTS.md / CLAUDE.md** | Runtime entries: Codex via AGENTS.md, Claude Code via CLAUDE.md, both bound by CONVENTIONS.md. `CLAUDE.md` carries a **project-type marker** (BOO-148): `ACTIVE` (code + deployment, default) or `GOVERNANCE REFERENCE` (docs/specs only, no coding) — controls whether deployment/CI gates apply |
 | **CONVENTIONS.md** | Adapter contract for runtime, backlog adapter, governance mode, execution isolation, and gates |
 | **Self-Healing Agent** | Watches document versions + daemon health every 15 min (cron) |
 | **Doc-sync module** | Keeps all docs on the same version, optionally mirrored to Obsidian |
