@@ -42,6 +42,37 @@ Vier getrennte Verantwortungs-Spalten — Reihenfolge von oben nach unten:
 
 Danach ist Anna voll arbeitsfähig — in **ihrem** Klon, isoliert von allen anderen.
 
+## Fertiger Operator-Prompt (Schritte C + D — in der Claude-Code-Session des Teammitglieds)
+
+Voraussetzung: **A** (System-User/SSH) + **B** (GitHub-Zugang) hat der Owner erledigt. Dieser Prompt richtet den eigenen Klon + Hooks + Verify ein — **idempotent**, Secrets trägt der Mensch ein:
+
+```text
+Ziel: Ich bin neu im Team und richte meinen Arbeitsplatz für "projektX" auf dieser
+VPS ein. Mein System-User + SSH + GitHub-Zugang stehen bereits. Ich brauche: eigenen
+Klon + Git-Hooks + environment.json + Verify. Schritt für Schritt, frag bei Unklarheiten,
+schreibe KEINE Secrets.
+
+1. MASCHINEN-EBENE prüfen (~/.claude/, wird NICHT geklont):
+   - Skills vorhanden (eigene ~/.claude/skills/ ODER globaler Pool /opt/claude/skills/)?
+   - ~/.claude/.env (Mode 600)? Wenn nein: weise mich an, sie anzulegen — Tokens trage ICH ein.
+
+2. EIGENER KLON in mein Home (NICHT in fremdes/geteiltes Verzeichnis):
+   - Zielpfad bestätigen lassen: <PROJECTS_ROOT>/projektX  (Default ~/projects/projektX)
+   - git clone <repo-ssh-url> <zielpfad> && cd <zielpfad>
+
+3. REPO-LOKALES SETZEN:
+   - bash scripts/install-hooks.sh   (aktiviert die versionierten Git-Hooks via core.hooksPath;
+     .git/hooks/ wird nicht geklont). Runtime-Hooks (spec-gate etc.) sind via $CLAUDE_PROJECT_DIR
+     schon aktiv mit dem Klon.
+   - bash .claude/generate-environment-json.sh
+   - bash scripts/verify-setup.sh    → muss 0 FAIL zeigen; FAILs legst du mir vor.
+
+4. ISOLATION bestätigen: pwd liegt unter /home/<ich>/...; journal/daily/ bleibt lokal (.gitignore).
+
+5. ÜBERSICHT am Ende: Klon-Pfad · Hook-Status (core.hooksPath) · verify-Ergebnis · nächster Schritt
+   (cd <klon> && claude → arbeiten, pushen/PR über GitHub).
+```
+
 ## Was geteilt wird, was lokal bleibt
 
 | Artefakt | Geteilt (via Git, committet) | Lokal pro User |

@@ -543,7 +543,7 @@ estimation_basis: |
 
 set -euo pipefail
 
-WORKSPACE="{{PROJECT_PATH}}"
+WORKSPACE="${CLAUDE_PROJECT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
 ISSUE_PREFIX="{{ISSUE_PREFIX}}"  # e.g. "PROJ-"
 
 # Parse JSON → extract command
@@ -985,6 +985,32 @@ exit 0
 ```
 
 **Two-layer logic:** Anyone bypassing with `--no-verify` is caught in CI Layer 3 (`.github/workflows/semgrep.yml`). Both layers read the same manifest — drift impossible.
+
+**Clone portability (BOO-152):** `.git/hooks/` is **not** carried over by `git clone`. So every fresh clone gets the pre-commit gate, the bootstrap additionally stores the hook **versioned** under `.githooks/pre-commit` (same content) and `scripts/install-hooks.sh` activates it via `core.hooksPath`. A new team member only runs `bash scripts/install-hooks.sh` after `git clone`.
+
+---
+
+## scripts/install-hooks.sh (BOO-152 — activate git hooks per clone)
+
+> `.git/hooks/` is not carried over by `git clone`. This script activates the **versioned** hooks from `.githooks/` via `core.hooksPath` — idempotent, one command per clone.
+
+```bash
+#!/usr/bin/env bash
+# scripts/install-hooks.sh — activate the versioned git hooks for this clone (BOO-152)
+set -euo pipefail
+cd "$(git rev-parse --show-toplevel)"
+
+if [ -d .githooks ]; then
+  git config core.hooksPath .githooks
+  chmod +x .githooks/* 2>/dev/null || true
+  echo "OK — core.hooksPath=.githooks set. Pre-commit gate active."
+else
+  echo "WARN — .githooks/ missing. Retrofit hooks via '/bootstrap' (merge mode) or 'migrate-to-v2.sh'." >&2
+  exit 1
+fi
+```
+
+> The Claude Code runtime hooks (`spec-gate`, `doc-version-sync`, `pre-edit-bodyguard`) already come committed with `.claude/` + `settings.json` (paths via `$CLAUDE_PROJECT_DIR`) — they do **not** need `install-hooks.sh`. Only the native git `pre-commit` (Quality-Gate Layer 2) is activated this way.
 
 ---
 

@@ -4100,7 +4100,7 @@ Effekt: Projekt 2..N ist in Minuten governance-ready, ohne Tools/Skills neu zu i
 Was **muss** pro Projekt passieren, sonst greifen Gates + Skills nicht:
 
 - [ ] `CLAUDE.md` (Projekt-Vertrag) vorhanden
-- [ ] **Git-Hooks installiert** (`.git/hooks/pre-commit` — pro Repo!) — alternativ `core.hooksPath` global gesetzt
+- [ ] **Git-Hooks installiert** — `bash scripts/install-hooks.sh` (setzt `core.hooksPath=.githooks`; `.git/hooks/` wird nicht geklont). Runtime-Hooks kommen via `$CLAUDE_PROJECT_DIR` schon mit dem Klon (BOO-152).
 - [ ] `.claude/environment.json` generiert (Tool-Erreichbarkeit fuer dieses Projekt)
 - [ ] Doku-SSoT festgelegt (Block B.3)
 - [ ] `bash scripts/verify-setup.sh` zeigt 0 FAIL
@@ -4470,7 +4470,7 @@ Prüft: environment.json, Toolchain (`command -v` pro Tool), **Git-Hooks (pro Re
 **Pro-Projekt-Minimal-Checkliste (Anhang U):**
 
 - [ ] `CLAUDE.md` (Projekt-Vertrag) vorhanden
-- [ ] **Git-Hooks installiert** (`.git/hooks/pre-commit` — pro Repo!) — alternativ `core.hooksPath` global
+- [ ] **Git-Hooks installiert** — `bash scripts/install-hooks.sh` (setzt `core.hooksPath=.githooks`; `.git/hooks/` wird nicht geklont). Runtime-Hooks kommen via `$CLAUDE_PROJECT_DIR` schon mit dem Klon (BOO-152).
 - [ ] `.claude/environment.json` generiert
 - [ ] Doku-SSoT festgelegt
 - [ ] `bash scripts/verify-setup.sh` zeigt **0 FAIL**

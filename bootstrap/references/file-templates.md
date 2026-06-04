@@ -581,7 +581,7 @@ estimation_basis: |
 
 set -euo pipefail
 
-WORKSPACE="{{PROJECT_PATH}}"
+WORKSPACE="${CLAUDE_PROJECT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
 ISSUE_PREFIX="{{ISSUE_PREFIX}}"  # z.B. "PROJ-"
 
 # JSON parsen → Command extrahieren
@@ -710,7 +710,7 @@ exit 0
 
 set -euo pipefail
 
-WORKSPACE="{{PROJECT_PATH}}"
+WORKSPACE="${CLAUDE_PROJECT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
 
 INPUT=$(cat)
 CMD=$(echo "$INPUT" | python3 -c "
@@ -1243,6 +1243,32 @@ exit 0
 ```
 
 **Two-Layer-Logik:** Wer `--no-verify` umgeht, wird im CI-Layer 3 (`.github/workflows/semgrep.yml`) gefangen. Beide Layer lesen dasselbe Manifest — Drift unmoeglich.
+
+**Klon-Portabilitaet (BOO-152):** `.git/hooks/` wird von `git clone` **nicht** uebernommen. Damit jedes frische Klon das Pre-Commit-Gate bekommt, legt der Bootstrap den Hook **zusaetzlich versioniert** unter `.githooks/pre-commit` ab (gleicher Inhalt) und `scripts/install-hooks.sh` aktiviert ihn per `core.hooksPath`. Ein neues Teammitglied ruft nach `git clone` nur `bash scripts/install-hooks.sh` auf.
+
+---
+
+## scripts/install-hooks.sh (BOO-152 — Git-Hooks pro Klon aktivieren)
+
+> `.git/hooks/` wird von `git clone` nicht uebernommen. Dieses Script aktiviert die **versionierten** Hooks aus `.githooks/` per `core.hooksPath` — idempotent, ein Befehl pro Klon.
+
+```bash
+#!/usr/bin/env bash
+# scripts/install-hooks.sh — aktiviert die versionierten Git-Hooks fuer diesen Klon (BOO-152)
+set -euo pipefail
+cd "$(git rev-parse --show-toplevel)"
+
+if [ -d .githooks ]; then
+  git config core.hooksPath .githooks
+  chmod +x .githooks/* 2>/dev/null || true
+  echo "OK — core.hooksPath=.githooks gesetzt. Pre-Commit-Gate aktiv."
+else
+  echo "WARN — .githooks/ fehlt. Hooks via '/bootstrap' (Merge-Modus) oder 'migrate-to-v2.sh' nachziehen." >&2
+  exit 1
+fi
+```
+
+> Die Claude-Code-Runtime-Hooks (`spec-gate`, `doc-version-sync`, `pre-edit-bodyguard`) kommen bereits committet mit `.claude/` + `settings.json` (Pfade via `$CLAUDE_PROJECT_DIR`) — sie brauchen `install-hooks.sh` **nicht**. Nur der native Git-`pre-commit` (Quality-Gate Layer 2) wird so aktiviert.
 
 ---
 
