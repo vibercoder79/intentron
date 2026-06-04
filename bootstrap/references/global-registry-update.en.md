@@ -130,6 +130,29 @@ On a machine hosting several projects (developer VPS), the bootstrap defines **o
 
 Rules: operator confirmation required (no silent write); **no secret**; override always possible (the operator may deliberately place a project outside `PROJECTS_ROOT`). No cross-project cockpit — the daily state emerges when opening the respective project (PMO hub + latest `journal/daily/` note).
 
+### 3b. Machine context (BOO-145)
+
+At the end of **Block A** (A.8) the bootstrap automatically writes a `## Machine context` section into the global `~/.claude/CLAUDE.md` — **idempotent + with no separate operator step**. It gives every AI session on the machine immediate orientation (OS, framework version, preferred stack, available skills). Together with `PROJECTS_ROOT` (§3a) it forms the **machine-level context** of the global `~/.claude/CLAUDE.md`.
+
+**Read (every bootstrap, A.8):** the skill checks `~/.claude/CLAUDE.md` for a `## Machine context` section. If present, **do nothing** (do not overwrite — the operator may freely adjust it).
+
+**Write (only if the section is missing):** determine the values and append:
+
+- **Type:** `uname -s` → `Darwin` = `macOS`, `Linux` = `Linux` (fallback `$OSTYPE`).
+- **Framework version:** `git -C <intentron-repo> describe --tags --abbrev=0` (e.g. `v0.8.1`); fallback `bootstrap` skill version.
+- **Stack preference:** from `STACK_CHOICE`/`LANG_VARIANT` (A.1), plain text.
+- **Available skills:** `ls ~/.claude/skills/` (comma-separated).
+
+```markdown
+## Machine context
+- Type: macOS
+- Framework: intentron v0.8.1 — skills under ~/.claude/skills/ + per project
+- Stack preference: Node.js / Next.js / TypeScript
+- Available skills: anti-slop, content-veredler, projekt-init, research, ...
+```
+
+Rules: no secret; do not overwrite (idempotent); if the global `~/.claude/CLAUDE.md` is missing, it is created. Acceptance: after `/bootstrap` the machine context is present, **without** a separate user step.
+
 ## 4. Local project memory (optional)
 
 **Only if the operator uses `~/.claude/projects/` for memory.**

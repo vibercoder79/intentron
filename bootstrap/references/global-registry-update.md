@@ -130,6 +130,29 @@ Auf einer Maschine, die mehrere Projekte hostet (Developer-VPS), legt der Bootst
 
 Regeln: Operator-Bestaetigung Pflicht (kein stilles Schreiben); **kein Secret**; Override bleibt jederzeit moeglich (Operator kann ein Projekt bewusst ausserhalb `PROJECTS_ROOT` anlegen). Kein projektuebergreifendes Cockpit — der Tagesstand entsteht beim Oeffnen des jeweiligen Projekts (PMO-Hub + letzte `journal/daily/`-Notiz).
 
+### 3b. Maschinen-Kontext (BOO-145)
+
+Der Bootstrap schreibt am Ende von **Block A** (A.8) automatisch einen `## Maschinen-Kontext`-Abschnitt in die globale `~/.claude/CLAUDE.md` — **idempotent + ohne separaten Operator-Schritt**. Er gibt jeder KI-Session auf der Maschine sofort Orientierung (OS, Framework-Version, bevorzugter Stack, verfuegbare Skills). Zusammen mit `PROJECTS_ROOT` (§3a) bildet er den **Maschinen-Ebene-Kontext** der globalen `~/.claude/CLAUDE.md`.
+
+**Lesen (jeder Bootstrap, A.8):** Skill prueft `~/.claude/CLAUDE.md` auf einen `## Maschinen-Kontext`-Abschnitt. Ist er vorhanden, **nichts tun** (nicht ueberschreiben — der Operator kann ihn frei anpassen).
+
+**Schreiben (nur wenn der Abschnitt fehlt):** Werte ermitteln und anhaengen:
+
+- **Typ:** `uname -s` → `Darwin` = `macOS`, `Linux` = `Linux` (Fallback `$OSTYPE`).
+- **Framework-Version:** `git -C <intentron-repo> describe --tags --abbrev=0` (z.B. `v0.8.1`); Fallback `bootstrap`-Skill-Version.
+- **Stack-Praeferenz:** aus `STACK_CHOICE`/`LANG_VARIANT` (A.1), Klartext.
+- **Verfuegbare Skills:** `ls ~/.claude/skills/` (kommasepariert).
+
+```markdown
+## Maschinen-Kontext
+- Typ: macOS
+- Framework: intentron v0.8.1 — Skills unter ~/.claude/skills/ + pro Projekt
+- Stack-Praeferenz: Node.js / Next.js / TypeScript
+- Verfuegbare Skills: anti-slop, content-veredler, projekt-init, research, ...
+```
+
+Regeln: kein Secret; nicht ueberschreiben (idempotent); fehlt die globale `~/.claude/CLAUDE.md`, wird sie angelegt. Akzeptanz: nach `/bootstrap` ist der Maschinen-Kontext vorhanden, **ohne** separaten Nutzer-Schritt.
+
 ## 4. Lokales Projekt-Memory (optional)
 
 **Nur wenn der Operator `~/.claude/projects/` als Memory nutzt.**

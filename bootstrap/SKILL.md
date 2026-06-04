@@ -1,7 +1,7 @@
 ---
 name: bootstrap
 recommended_model: sonnet  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
-version: 3.36.0
+version: 3.37.0
 description: Setzt ein neues Projekt mit Governance-Framework auf — interaktiver Block-Interview-Flow in 4 Schritten, Doku-Architektur mit Hub-Auto-Verlinkung, optionaler Learning-Loop L1/L2/L3. Verwenden wenn der Operator ein neues Projekt aufsetzen will oder "/bootstrap" sagt.
 tools: [Read, Write, Edit, Bash, Glob, Grep]
 metadata:
@@ -347,6 +347,29 @@ Regeln:
 - Konsequenz fuer Phase 4 / 5: `DEPLOYMENT_SCENARIO` wird in `metadata.deployment_scenario` der `.claude/environment.json` festgehalten und steuert ab BOO-115 den **Install-Default** (System vs. Docker) in der Tool-Install-Fuehrung (Phase 7.3b). Sonst kein Interview-Fork.
 
 > **Issue-Referenz:** BOO-70. Quelle: HANDBUCH Anhang P (Deployment-Szenarien). Migration fuer Bestands-Projekte: `references/migration-checklist-v1-to-v2.md` §BOO-70.
+
+### A.8 Maschinen-Kontext (BOO-145)
+
+Zum Abschluss von Block A — die Stack-Antwort aus A.1 liegt vor — den **Maschinen-Kontext** automatisch in die globale `~/.claude/CLAUDE.md` schreiben. **Idempotent + ohne separaten Operator-Schritt:** zuerst `~/.claude/CLAUDE.md` lesen; steht dort bereits ein `## Maschinen-Kontext`-Abschnitt, **nichts tun** (nicht ueberschreiben). Fehlt die Datei, anlegen.
+
+Werte ermitteln:
+
+- **Typ:** `uname -s` → `Darwin` = `macOS`, `Linux` = `Linux` (Fallback `$OSTYPE`).
+- **Framework-Version:** neuester Release-Tag des intentron-Repos via `git -C <intentron-repo> describe --tags --abbrev=0` (z.B. `v0.8.1`); Fallback: `bootstrap`-Skill-Version aus dem SKILL.md-Frontmatter.
+- **Stack-Praeferenz:** aus `STACK_CHOICE` + `LANG_VARIANT` (A.1), in Klartext (z.B. „Node.js / Next.js / TypeScript").
+- **Verfuegbare Skills:** `ls ~/.claude/skills/` (kommasepariert in einer Zeile).
+
+Abschnitt anhaengen (nur wenn `## Maschinen-Kontext` fehlt):
+
+```markdown
+## Maschinen-Kontext
+- Typ: <macOS | Linux>
+- Framework: intentron <VERSION> — Skills unter ~/.claude/skills/ + pro Projekt
+- Stack-Praeferenz: <Stack aus A.1>
+- Verfuegbare Skills: <ls ~/.claude/skills/>
+```
+
+Kein Secret schreiben. Schreib-/Lese-Format + Idempotenz-Regel: `references/global-registry-update.md §Maschinen-Kontext`. Verwandt: `PROJECTS_ROOT` (BOO-138, Block B) — beide bilden den Maschinen-Ebene-Kontext der globalen `~/.claude/CLAUDE.md`.
 
 Phase-1-Checkpoint: Kurze Bestaetigung der Antworten ausgeben.
 

@@ -1,7 +1,7 @@
 ---
 name: bootstrap
 recommended_model: sonnet  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
-version: 3.36.0
+version: 3.37.0
 language: en
 description: Sets up a new project with a governance framework — interactive 4-block interview flow, docs architecture with automatic hub linking, optional learning loop L1/L2/L3. Use when the operator wants to set up a new project or says "/bootstrap".
 tools: [Read, Write, Edit, Bash, Glob, Grep]
@@ -347,6 +347,29 @@ Rules:
 - Consequence for phases 4 / 5: `DEPLOYMENT_SCENARIO` is recorded in `metadata.deployment_scenario` inside `.claude/environment.json` and, since BOO-115, drives the **install default** (system vs. Docker) in the tool-install guidance (phase 7.3b). Otherwise no interview fork.
 
 > **Issue reference:** BOO-70. Source: HANDBUCH Appendix P (Deployment Scenarios). Migration for existing projects: `references/migration-checklist-v1-to-v2.en.md` §BOO-70.
+
+### A.8 Machine context (BOO-145)
+
+At the end of Block A — the stack answer from A.1 is available — write the **machine context** automatically into the global `~/.claude/CLAUDE.md`. **Idempotent + no separate operator step:** first read `~/.claude/CLAUDE.md`; if a `## Machine context` section is already present, **do nothing** (do not overwrite). If the file is missing, create it.
+
+Determine the values:
+
+- **Type:** `uname -s` → `Darwin` = `macOS`, `Linux` = `Linux` (fallback `$OSTYPE`).
+- **Framework version:** latest release tag of the intentron repo via `git -C <intentron-repo> describe --tags --abbrev=0` (e.g. `v0.8.1`); fallback: `bootstrap` skill version from the SKILL.md frontmatter.
+- **Stack preference:** from `STACK_CHOICE` + `LANG_VARIANT` (A.1), in plain text (e.g. "Node.js / Next.js / TypeScript").
+- **Available skills:** `ls ~/.claude/skills/` (comma-separated on one line).
+
+Append the section (only if `## Machine context` is missing):
+
+```markdown
+## Machine context
+- Type: <macOS | Linux>
+- Framework: intentron <VERSION> — skills under ~/.claude/skills/ + per project
+- Stack preference: <stack from A.1>
+- Available skills: <ls ~/.claude/skills/>
+```
+
+Do not write any secret. Write/read format + idempotency rule: `references/global-registry-update.en.md §Machine context`. Related: `PROJECTS_ROOT` (BOO-138, Block B) — together they form the machine-level context of the global `~/.claude/CLAUDE.md`.
 
 Phase 1 checkpoint: print a short confirmation of the answers.
 
