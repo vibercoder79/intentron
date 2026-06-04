@@ -1153,7 +1153,7 @@ Rule of thumb: when you work on the VPS via SSH, do not expect inline hints in t
 
 > **Note on the sketch caption:** The Excalidraw still shows BOO-28 as "planned". As of v3.17.0 (2026-05-12) BOO-28 is done — `migrate_boo_28()` drops `.github/workflows/eslint.yml` (Node stacks) or `.github/workflows/ruff.yml` (Python stacks) with mandatory SARIF output to `.ci-reports/` (prepares BOO-32 Hermes consumption). The PNG re-render is out of scope for this task.
 
-**CI layer (Layer 3) — GitHub Actions:** Bootstrap drops the following workflow files stack-dependent into `.github/workflows/` — all three write SARIF to `.ci-reports/` and upload it via `github/codeql-action/upload-sarif@v3` into the GitHub Security tab.
+**CI layer (Layer 3) — GitHub Actions:** Bootstrap drops the following workflow files stack-dependent into `.github/workflows/` — all three write SARIF to `.ci-reports/` and upload it via `github/codeql-action/upload-sarif@v4` into the GitHub Security tab.
 
 | Workflow | Trigger | Tool | Stack | Source (BOO) |
 |----------|---------|------|-------|--------------|
@@ -1164,6 +1164,8 @@ Rule of thumb: when you work on the VPS via SSH, do not expect inline hints in t
 | `sonar.yml` | push on main | SonarQube Cloud | all | BOO-5 |
 
 Required status checks `ESLint`, `Ruff`, `Semgrep`, `SonarCloud` are activated via `gh api ... branches/main/protection` (BOO-29) — without a green run, no merge.
+
+> **Next.js first-CI-run hardening (Wave BA, BOO-140–143):** `semgrep.yml` runs **without** a Docker container (Semgrep via `pip install`, otherwise `actions/checkout` fails on PRs); all three SARIF uploads use `upload-sarif@v4` + `if: always() && hashFiles(...) != ''`. `perf.yml` **skips** its benchmarks green while `journal/perf-baseline.json` is empty (`Check prerequisites` step). For React/TSX, `eslint.config.mjs` gets a frontend block (`...globals.browser` + `React: 'readonly'`), and a `"lint": "next lint"` in `package.json` is rewritten to `"lint": "eslint ."`. Existing projects: `migrate_boo_140/141/142/143`.
 
 ### Branch-protection setup (BOO-29)
 

@@ -1223,7 +1223,7 @@ Praxisregel: Wenn du auf dem VPS via SSH arbeitest, erwartest du keine Inline-Hi
 
 > **Hinweis zur Skizzen-Beschriftung:** Die Excalidraw zeigt BOO-28 noch als "geplant". Seit v3.17.0 (2026-05-12) ist BOO-28 done — `migrate_boo_28()` legt `.github/workflows/eslint.yml` (Node-Stacks) bzw. `.github/workflows/ruff.yml` (Python-Stacks) mit Pflicht-SARIF-Output nach `.ci-reports/` an (Vorbereitung BOO-32 Hermes-Konsumtion). Das Neu-Rendern der PNG ist nicht Scope dieser Aufgabe.
 
-**CI-Layer (Layer 3) — GitHub Actions:** Bootstrap legt Stack-abhängig die folgenden Workflow-Files in `.github/workflows/` an — alle drei schreiben SARIF nach `.ci-reports/` und uploaden via `github/codeql-action/upload-sarif@v3` in den GitHub-Security-Tab.
+**CI-Layer (Layer 3) — GitHub Actions:** Bootstrap legt Stack-abhängig die folgenden Workflow-Files in `.github/workflows/` an — alle drei schreiben SARIF nach `.ci-reports/` und uploaden via `github/codeql-action/upload-sarif@v4` in den GitHub-Security-Tab.
 
 | Workflow | Trigger | Tool | Stack | Quelle (BOO) |
 |----------|---------|------|-------|--------------|
@@ -1234,6 +1234,8 @@ Praxisregel: Wenn du auf dem VPS via SSH arbeitest, erwartest du keine Inline-Hi
 | `sonar.yml` | push auf main | SonarQube Cloud | alle | BOO-5 |
 
 Required Status Checks `ESLint`, `Ruff`, `Semgrep`, `SonarCloud` werden über `gh api ... branches/main/protection` (BOO-29) aktiviert — ohne grünen Lauf kein Merge.
+
+> **Next.js-Erstlauf-Härtung (Wave BA, BOO-140–143):** `semgrep.yml` läuft **ohne** Docker-Container (Semgrep via `pip install`, sonst scheitert `actions/checkout` auf PRs); alle drei SARIF-Uploads nutzen `upload-sarif@v4` + `if: always() && hashFiles(...) != ''`. `perf.yml` **skippt** seine Benchmarks grün, solange `journal/perf-baseline.json` leer ist (`Check prerequisites`-Step). Für React/TSX bekommt `eslint.config.mjs` einen Frontend-Block (`...globals.browser` + `React: 'readonly'`), und ein `"lint": "next lint"` in `package.json` wird auf `"lint": "eslint ."` umgebogen. Bestands-Projekte: `migrate_boo_140/141/142/143`.
 
 ### Branch-Protection-Setup (BOO-29)
 

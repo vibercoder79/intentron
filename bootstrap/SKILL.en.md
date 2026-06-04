@@ -631,6 +631,8 @@ Based on `STACK_CHOICE` — see `references/file-templates.en.md`:
 - Frontend / Full-stack → additionally `.prettierrc`
 - Python → `pyproject.toml` (Ruff + Black)
 - **TypeScript** (`LANG_VARIANT = ts` for a/b/c, BOO-127) → additionally `tsconfig.json` (template `references/file-templates.en.md` §`tsconfig.json (BOO-127)`); `eslint.config.mjs` wires in `typescript-eslint`; plus a `tsc --noEmit` typecheck gate (see CI table below).
+- **React / frontend with JSX** (stack b/c, BOO-141) → `eslint.config.mjs` additionally gets a frontend block with `...globals.browser` **and** `React: 'readonly'` (package `globals` as a devDep). Mandatory — otherwise `no-undef` throws `'React' is not defined` on every `.tsx` file. Template: `references/file-templates.en.md` §`eslint.config.mjs` → "With React / frontend (TSX)".
+- **Next.js / meta-framework `package.json` `lint` script** (stack b/c, BOO-140) → if `create-next-app` or similar already created a `"lint": "next lint"` in `package.json`, rewrite the script idempotently to `"lint": "eslint ."` (operator confirmation as an ADR). Reason: `next lint` does not understand the ESLint v9 flat config (`eslint.config.mjs`) and aborts with `Invalid project directory ... /lint`; CI uses `npx eslint .` anyway (BOO-28). For existing projects: `migrate_boo_140()`.
 
 Additionally a stack-dependent **CI lint workflow (BOO-28)** — only created when `B.2 == yes` (GitHub repo present). Mirror of the Semgrep CI Action (phase 4.4c) — same Layer-3 mechanism, different tool class (lint instead of SAST):
 
@@ -642,7 +644,7 @@ Additionally a stack-dependent **CI lint workflow (BOO-28)** — only created wh
 | d) Python | `.github/workflows/ruff.yml` | `references/file-templates.en.md` §`.github/workflows/ruff.yml (BOO-28 — Ruff CI Gate)` |
 | e) Other | none — operator decides manually | — |
 
-Both workflows write SARIF to `.ci-reports/` (mandatory — read by BOO-32 for Hermes consumption and by BOO-29 as the required status check `eslint` / `ruff`) and upload via `github/codeql-action/upload-sarif@v3` into the GitHub Security tab.
+Both workflows write SARIF to `.ci-reports/` (mandatory — read by BOO-32 for Hermes consumption and by BOO-29 as the required status check `eslint` / `ruff`) and upload via `github/codeql-action/upload-sarif@v4` into the GitHub Security tab.
 
 If `B.2 == no/c` (no GitHub wanted): skip the BOO-28 step; only Layer 2 (pre-commit hook, phase 4.6) covers linting locally.
 

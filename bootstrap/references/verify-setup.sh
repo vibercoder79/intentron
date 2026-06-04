@@ -123,6 +123,49 @@ else
   c_warn "Keine Backlog-Adapter-Konfig gefunden (Markdown-only-Backlog?)"
 fi
 
+# --- 7. CI-Workflow-Sanity (Next.js-Erstlauf-Haertung, BOO-140/142/143) ----
+section "7. CI-Workflow-Sanity (Next.js-Erstlauf-Haertung)"
+WF=".github/workflows"
+# BOO-140: package.json lint-Script darf nicht 'next lint' sein (flat-config-inkompatibel)
+if [[ -f "package.json" ]]; then
+  if grep -Eq '"lint"[[:space:]]*:[[:space:]]*"next lint"' package.json; then
+    c_fail "package.json: \"lint\": \"next lint\" — auf \"eslint .\" umbiegen (BOO-140; next lint versteht ESLint-v9-Flat-Config nicht)"
+  else
+    c_pass "package.json lint-Script ist nicht 'next lint' (BOO-140)"
+  fi
+fi
+# BOO-140: eslint.yml ruft eslint direkt, nicht next lint / npm run lint
+if [[ -f "$WF/eslint.yml" ]]; then
+  if grep -Eq 'next lint|npm run lint' "$WF/eslint.yml"; then
+    c_fail "$WF/eslint.yml nutzt 'next lint'/'npm run lint' — auf 'npx eslint .' umstellen (BOO-140)"
+  else
+    c_pass "eslint.yml nutzt direkten eslint-Aufruf (BOO-140)"
+  fi
+fi
+# BOO-142: semgrep.yml ohne Container; alle SARIF-Uploads auf v4
+if [[ -f "$WF/semgrep.yml" ]]; then
+  if grep -Eq '^[[:space:]]*container:' "$WF/semgrep.yml"; then
+    c_fail "$WF/semgrep.yml laeuft in einem Container — entfernen, Semgrep via 'pip install semgrep' (BOO-142; checkout schlaegt im Container bei PRs fehl)"
+  else
+    c_pass "semgrep.yml ohne Container (BOO-142)"
+  fi
+fi
+if ls "$WF"/*.yml >/dev/null 2>&1; then
+  if grep -Rql 'upload-sarif@v3' "$WF" 2>/dev/null; then
+    c_warn "upload-sarif@v3 in $WF gefunden — auf @v4 anheben (v3 deprecated Dez 2026, BOO-142)"
+  else
+    c_pass "kein upload-sarif@v3 in Workflows (BOO-142)"
+  fi
+fi
+# BOO-143: perf.yml skippt bei leerer Baseline (Prerequisite-Check)
+if [[ -f "$WF/perf.yml" ]]; then
+  if grep -q 'Check prerequisites' "$WF/perf.yml"; then
+    c_pass "perf.yml hat Baseline-Prerequisite-Skip (BOO-143)"
+  else
+    c_warn "$WF/perf.yml ohne Prerequisite-Skip — frischer Repo failt am Perf-Gate (BOO-143)"
+  fi
+fi
+
 # --- Summary ---------------------------------------------------------------
 printf '\n\033[1mErgebnis:\033[0m %d PASS, %d WARN, %d FAIL\n' "$PASS" "$WARN" "$FAIL"
 if [[ $FAIL -gt 0 ]]; then
