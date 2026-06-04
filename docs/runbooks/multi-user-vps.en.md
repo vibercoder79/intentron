@@ -42,6 +42,36 @@ Four separate responsibility columns — order top to bottom:
 
 After that Anna is fully productive — in **her** clone, isolated from everyone else.
 
+## Ready operator prompt (steps C + D — in the team member's Claude Code session)
+
+Prerequisite: **A** (system user/SSH) + **B** (GitHub access) done by the owner. This prompt sets up the own clone + hooks + verify — **idempotent**, secrets entered by the human:
+
+```text
+Goal: I'm new to the team and setting up my workspace for "projektX" on this VPS.
+My system user + SSH + GitHub access are already in place. I need: own clone +
+git hooks + environment.json + verify. Step by step, ask if unclear, write NO secrets.
+
+1. CHECK MACHINE LEVEL (~/.claude/, NOT cloned):
+   - Skills present (own ~/.claude/skills/ OR global pool /opt/claude/skills/)?
+   - ~/.claude/.env (mode 600)? If not: instruct me to create it — I enter the tokens.
+
+2. OWN CLONE into my home (NOT a foreign/shared directory):
+   - Confirm target path: <PROJECTS_ROOT>/projektX  (default ~/projects/projektX)
+   - git clone <repo-ssh-url> <target> && cd <target>
+
+3. REPO-LOCAL SETUP:
+   - bash scripts/install-hooks.sh   (activates the versioned git hooks via core.hooksPath;
+     .git/hooks/ is not cloned). Runtime hooks (spec-gate etc.) are already active with the
+     clone via $CLAUDE_PROJECT_DIR.
+   - bash .claude/generate-environment-json.sh
+   - bash scripts/verify-setup.sh    → must show 0 FAIL; show me any FAILs.
+
+4. CONFIRM ISOLATION: pwd is under /home/<me>/...; journal/daily/ stays local (.gitignore).
+
+5. SUMMARY at the end: clone path · hook status (core.hooksPath) · verify result · next step
+   (cd <clone> && claude → work, push/PR via GitHub).
+```
+
 ## What is shared, what stays local
 
 | Artifact | Shared (via Git, committed) | Local per user |

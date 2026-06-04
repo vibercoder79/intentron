@@ -1,7 +1,7 @@
 ---
 name: bootstrap
 recommended_model: sonnet  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
-version: 3.39.0
+version: 3.40.0
 description: Setzt ein neues Projekt mit Governance-Framework auf — interaktiver Block-Interview-Flow in 4 Schritten, Doku-Architektur mit Hub-Auto-Verlinkung, optionaler Learning-Loop L1/L2/L3. Verwenden wenn der Operator ein neues Projekt aufsetzen will oder "/bootstrap" sagt.
 tools: [Read, Write, Edit, Bash, Glob, Grep]
 metadata:
@@ -971,14 +971,14 @@ Registrierung:
       {
         "matcher": "Bash",
         "hooks": [
-          { "type": "command", "command": "bash {PROJECT_PATH}/.claude/hooks/spec-gate.sh" },
-          { "type": "command", "command": "bash {PROJECT_PATH}/.claude/hooks/doc-version-sync.sh" }
+          { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/spec-gate.sh\"" },
+          { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/doc-version-sync.sh\"" }
         ]
       },
       {
         "matcher": "Edit|Write|MultiEdit",
         "hooks": [
-          { "type": "command", "command": "bash {PROJECT_PATH}/.claude/hooks/pre-edit-bodyguard.sh" }
+          { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/pre-edit-bodyguard.sh\"" }
         ]
       }
     ]
@@ -987,6 +987,10 @@ Registrierung:
 ```
 
 > **Hinweis:** Der Claude-Code-Harness kann `.claude/settings.json` bei Permission-Grants auto-regenerieren und Hook-Sektionen stripppen. Als robusten Fallback: Hooks zusaetzlich in `.claude/settings.local.json` (gitignored) registrieren.
+
+> **Klon-Portabilitaet (BOO-152):** Hook-Pfade verwenden `$CLAUDE_PROJECT_DIR` (vom Claude-Code-Harness auf das Projekt-Root gesetzt) statt eines absoluten Pfads. So funktioniert die committete `settings.json` in **jedem** Klon/Home unveraendert — Voraussetzung fuer Multi-User-VPS (Anhang P §3, `docs/runbooks/multi-user-vps.md`).
+
+**Nativer Pre-Commit-Hook + `.githooks/` (BOO-152):** Den Quality-Gate-Layer-2-`pre-commit` (BOO-4) **zusaetzlich versioniert** unter `.githooks/pre-commit` ablegen (gleicher Inhalt), `scripts/install-hooks.sh` aus `references/file-templates.md` kopieren und einmal ausfuehren: `bash scripts/install-hooks.sh` (setzt `core.hooksPath=.githooks`). So bekommt jedes frische `git clone` das Pre-Commit-Gate mit **einem** Befehl — `.git/hooks/` wird nicht geklont. Die Claude-Code-Runtime-Hooks (`spec-gate`, `doc-version-sync`, `pre-edit-bodyguard`) kommen bereits committet mit `.claude/` + `settings.json`.
 
 Hook-Test (probeweise):
 ```bash

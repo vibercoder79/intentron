@@ -3968,7 +3968,7 @@ Effect: project 2..N is governance-ready in minutes, without reinstalling tools/
 What **must** happen per project, otherwise gates + skills do not engage:
 
 - [ ] `CLAUDE.md` (project contract) present
-- [ ] **Git hooks installed** (`.git/hooks/pre-commit` — per repo!) — or `core.hooksPath` set globally
+- [ ] **Git hooks installed** — `bash scripts/install-hooks.sh` (sets `core.hooksPath=.githooks`; `.git/hooks/` is not cloned). Runtime hooks come with the clone via `$CLAUDE_PROJECT_DIR` (BOO-152).
 - [ ] `.claude/environment.json` generated (tool reachability for this project)
 - [ ] Doc-SSoT chosen (Block B.3)
 - [ ] `bash scripts/verify-setup.sh` shows 0 FAIL
@@ -4352,7 +4352,7 @@ Checks: environment.json, toolchain (`command -v` per tool), **git hooks (per re
 **Per-project minimal checklist (Appendix U):**
 
 - [ ] `CLAUDE.md` (project contract) present
-- [ ] **Git hooks installed** (`.git/hooks/pre-commit` — per repo!) — or `core.hooksPath` set globally
+- [ ] **Git hooks installed** — `bash scripts/install-hooks.sh` (sets `core.hooksPath=.githooks`; `.git/hooks/` is not cloned). Runtime hooks come with the clone via `$CLAUDE_PROJECT_DIR` (BOO-152).
 - [ ] `.claude/environment.json` generated
 - [ ] Doc SSoT set
 - [ ] `bash scripts/verify-setup.sh` shows **0 FAIL**
