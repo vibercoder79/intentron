@@ -325,6 +325,11 @@ CLAUDE.local.md
 # (ESLint SARIF, test JUnit XML, coverage JSON, Semgrep SARIF, meta.json per run)
 # NOT committed — /sprint-review aggregates them into journal/sprint-{date}.md.
 journal/reports/local/
+
+# BOO-151: enable ONLY for multi-user VPS (several people, one project) —
+# daily notes are then personal per user -> local, not shared.
+# For solo/single-operator, journal/daily/ stays committed (= SecondBrain log).
+# journal/daily/
 ```
 
 ---

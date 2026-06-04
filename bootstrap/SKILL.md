@@ -1,7 +1,7 @@
 ---
 name: bootstrap
 recommended_model: sonnet  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
-version: 3.38.0
+version: 3.39.0
 description: Setzt ein neues Projekt mit Governance-Framework auf — interaktiver Block-Interview-Flow in 4 Schritten, Doku-Architektur mit Hub-Auto-Verlinkung, optionaler Learning-Loop L1/L2/L3. Verwenden wenn der Operator ein neues Projekt aufsetzen will oder "/bootstrap" sagt.
 tools: [Read, Write, Edit, Bash, Glob, Grep]
 metadata:
@@ -333,7 +333,7 @@ Regeln:
 
 **Install-Default ableiten (BOO-115):** `INSTALL_DEFAULT = system` bei `solo-mac`; `INSTALL_DEFAULT = docker` (Golden Image / Container-Profil) bei `other` (Solo-VPS / Multi-User-VPS-Coding-Factory / Team-Server). Der Operator kann den Default jederzeit ueberschreiben. Verwendet in der Tool-Install-Fuehrung (Phase 7.3b).
 
-- Bei `a)` laeuft der bestehende Bootstrap-Pfad unveraendert weiter — Solo-Mac ist Default, keine zusaetzliche Setup-Logik.
+- Bei `a)` laeuft der bestehende Bootstrap-Pfad unveraendert weiter — Solo-Mac ist Default, keine zusaetzliche Setup-Logik. (Solo-Hinweis: arbeitest du parallel an **zwei Sessions auf demselben Klon**, nutze `git worktree` statt zweimal denselben Working Tree — Kollisionsschutz Ebene 2, `docs/kollisionsschutz-drei-ebenen.md`.)
 - Bei `b)` gibt der Bootstrap nur einen Hinweis-Block aus und keinen Interview-Fork:
 
   ```
@@ -344,6 +344,7 @@ Regeln:
   unveraendert weiterlaufen lassen.
   ```
 
+- **Bei Multi-User-VPS** (mehrere Menschen, ein Projekt): zusaetzlich das Runbook `docs/runbooks/multi-user-vps.md` (Teammitglied-Checkliste — einmal VPS / einmal GitHub / einmal Claude / pro Repo) + Anhang P §3. Jeder User bekommt einen **eigenen Klon** (kein geteilter Working Tree), `journal/daily/` wird pro User lokal (`.gitignore`). Konzept: `docs/kollisionsschutz-drei-ebenen.md` (Ebene 1).
 - Konsequenz fuer Phase 4 / 5: `DEPLOYMENT_SCENARIO` wird in `metadata.deployment_scenario` der `.claude/environment.json` festgehalten und steuert ab BOO-115 den **Install-Default** (System vs. Docker) in der Tool-Install-Fuehrung (Phase 7.3b). Sonst kein Interview-Fork.
 
 > **Issue-Referenz:** BOO-70. Quelle: HANDBUCH Anhang P (Deployment-Szenarien). Migration fuer Bestands-Projekte: `references/migration-checklist-v1-to-v2.md` §BOO-70.

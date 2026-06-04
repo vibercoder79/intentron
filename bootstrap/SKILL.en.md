@@ -1,7 +1,7 @@
 ---
 name: bootstrap
 recommended_model: sonnet  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
-version: 3.38.0
+version: 3.39.0
 language: en
 description: Sets up a new project with a governance framework — interactive 4-block interview flow, docs architecture with automatic hub linking, optional learning loop L1/L2/L3. Use when the operator wants to set up a new project or says "/bootstrap".
 tools: [Read, Write, Edit, Bash, Glob, Grep]
@@ -334,7 +334,7 @@ Rules:
 
 **Derive the install default (BOO-115):** `INSTALL_DEFAULT = system` on `solo-mac`; `INSTALL_DEFAULT = docker` (golden image / container profile) on `other` (Solo-VPS / Multi-User-VPS coding factory / team server). The operator can override the default at any time. Used in the tool-install guidance (phase 7.3b).
 
-- On `a)` the existing bootstrap path continues unchanged — Solo-Mac is the default, no extra setup logic.
+- On `a)` the existing bootstrap path continues unchanged — Solo-Mac is the default, no extra setup logic. (Solo hint: if you work in parallel in **two sessions on the same clone**, use `git worktree` instead of the same working tree twice — collision protection level 2, `docs/kollisionsschutz-drei-ebenen.en.md`.)
 - On `b)` bootstrap only prints a hint block and does not fork the interview:
 
   ```
@@ -344,6 +344,7 @@ Rules:
   described there once. After that, bootstrap continues unchanged.
   ```
 
+- **For multi-user VPS** (several people, one project): additionally the runbook `docs/runbooks/multi-user-vps.en.md` (team-member checklist — once VPS / once GitHub / once Claude / per repo) + Appendix P §3. Each user gets their **own clone** (no shared working tree), `journal/daily/` is local per user (`.gitignore`). Concept: `docs/kollisionsschutz-drei-ebenen.en.md` (level 1).
 - Consequence for phases 4 / 5: `DEPLOYMENT_SCENARIO` is recorded in `metadata.deployment_scenario` inside `.claude/environment.json` and, since BOO-115, drives the **install default** (system vs. Docker) in the tool-install guidance (phase 7.3b). Otherwise no interview fork.
 
 > **Issue reference:** BOO-70. Source: HANDBUCH Appendix P (Deployment Scenarios). Migration for existing projects: `references/migration-checklist-v1-to-v2.en.md` §BOO-70.

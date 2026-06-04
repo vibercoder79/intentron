@@ -814,6 +814,11 @@ venv/
 # (ESLint-SARIF, Test-JUnit-XML, Coverage-JSON, Semgrep-SARIF, meta.json pro Run)
 # Werden NICHT committed — /sprint-review aggregiert sie in journal/sprint-{date}.md.
 journal/reports/local/
+
+# BOO-151: NUR bei Multi-User-VPS (mehrere Menschen, ein Projekt) aktivieren —
+# Daily Notes sind dann persoenlich pro User -> lokal, nicht geteilt.
+# Bei Solo/Single-Operator bleibt journal/daily/ committet (= SecondBrain-Logbuch).
+# journal/daily/
 ```
 
 ---
