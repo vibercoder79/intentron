@@ -692,36 +692,35 @@ export default [
 
   // House rules (override or extend the configs above on purpose)
   {
+    files: ['**/*.js', '**/*.mjs'],
     languageOptions: {
-      ecmaVersion: 'latest',
-      sourceType: 'module',
-      globals: { console: 'readonly', process: 'readonly' }
+      ecmaVersion: 2022,
+      sourceType: 'commonjs',
+      globals: {
+        require: 'readonly',
+        module: 'readonly',
+        exports: 'readonly',
+        process: 'readonly',
+        console: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly',
+        Buffer: 'readonly',
+      },
     },
     rules: {
-      // Error prevention
-      'no-undef': 'error',
-      'no-unreachable': 'error',
-      'use-isnan': 'error',
-
-      // Security
-      'no-eval': 'error',
-      'no-implied-eval': 'error',
-      'no-new-func': 'error',
-
-      // Quality
-      'eqeqeq': ['error', 'always'],
       'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
-      'prefer-const': 'error',
-
-      // Async
-      'no-async-promise-executor': 'error',
-      'no-await-in-loop': 'warn',
-
-      // Readability
-      'max-len': ['warn', { code: 120 }],
-      'max-depth': ['warn', 5]
-    }
-  }
+      'no-console': 'off',
+      'semi': ['error', 'always'],
+      'no-undef': 'error',
+    },
+  },
+  {
+    ignores: ['node_modules/**', 'dist/**', 'build/**'],
+  },
 ];
 ```
 
