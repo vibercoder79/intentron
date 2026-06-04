@@ -6,7 +6,7 @@ description: |
   to closing table including post-implement validation. Use when the operator says "go",
   wants to implement a story, or runs "/implement". Also used by the automation daemon
   (no human in the loop).
-version: 2.12.0
+version: 2.13.0
 language: en
 metadata:
   hermes:
@@ -107,6 +107,8 @@ Before each story, check whether the estimated story load crosses the sprint-box
 ### Step 0c: Execution-isolation pre-flight (BOO-52, hard for parallel work)
 
 Before implementation, validate the story against `CONVENTIONS.md`:
+
+> **Cross-session note (BOO-154):** this pre-flight isolates parallel **agents within ONE story** (level 3). When **several people/sessions** work on the same project in parallel, additionally: **own clone per person** resp. **`git worktree` per session** — never two sessions in the same working tree (otherwise branch/file collisions, branches switched out from under you). The three levels of collision protection: `docs/kollisionsschutz-drei-ebenen.en.md`.
 
 1. Read project convention:
    - `governance_mode`
