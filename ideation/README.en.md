@@ -33,7 +33,9 @@ The output is a story that a teammate can pick up in six months and still unders
 | 4 | **Story draft** | Combines ADD + story template (feature or fix/refactor); actively choose `Change-Type`, even for non-code stories |
 | 5 | **Alignment + sprint-fit** | Dependencies (bidirectional), priority in context, SP estimate, WIP check, carry-over risk |
 | 5b | **Token heuristic + SP + execution mode (BOO-39)** | Estimate token consumption, derive SP class + mode (`linear` / `sub-agents` / `agentic`), check execution isolation against `CONVENTIONS.md`, fill frontmatter. SP=8 → split the story. |
-| 6 | **Finalize (after OK)** | Linear issue created + affected issues updated |
+| 6 | **Finalize (after OK)** | Linear issue created + affected issues updated; **backlog-first IDs** (number comes from the backlog tool, then the spec file with exactly that number — BOO-154) |
+
+> **Backlog-first against cross-session drift (step 6, BOO-154):** the story number comes **from the backlog tool** — create the issue first, **then** name the spec file `specs/<PREFIX>XXX.md` with **exactly that** number. Never guess numbers manually or assign them in parallel: with several sessions/developers working at once this causes number collisions + repo↔backlog drift. Check against the backlog tool before assigning (open + most recently assigned issues). This is the level-1/2 avoidance from the three-level collision protection → `docs/kollisionsschutz-drei-ebenen.md`.
 
 ---
 

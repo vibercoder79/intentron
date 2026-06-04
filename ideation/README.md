@@ -33,7 +33,9 @@ Output: Eine Story die jemand in sechs Monaten aufschlagen kann und weiss worum 
 | 4 | **Story-Draft** | Kombiniert ADD + Story-Template (Feature oder Fix/Refactor); `Change-Type` aktiv waehlen, auch fuer Non-Code-Stories |
 | 5 | **Abgleich + Sprint-Fit** | Abhaengigkeiten (bidirektional), Prio im Kontext, SP-Estimate, WIP-Check, Carry-Over-Risiko |
 | 5b | **Token-Heuristik + SP + Ausfuehrungsmodus (BOO-39)** | Token-Verbrauch schaetzen, daraus SP-Klasse + Modus (`linear` / `sub-agents` / `agentic`) ableiten, Execution-Isolation gegen `CONVENTIONS.md` pruefen, Frontmatter befuellen. SP=8 → Story splitten. |
-| 6 | **Finalisieren (nach OK)** | Linear-Issue erstellt + betroffene Issues upgedatet |
+| 6 | **Finalisieren (nach OK)** | Linear-Issue erstellt + betroffene Issues upgedatet; **Backlog-first-IDs** (Nummer kommt vom Backlog-Tool, dann erst die Spec-Datei mit genau dieser Nummer — BOO-154) |
+
+> **Backlog-first gegen Cross-Session-Drift (Schritt 6, BOO-154):** Die Story-Nummer kommt **vom Backlog-Tool** — erst das Issue anlegen, **dann** die Spec-Datei `specs/<PREFIX>XXX.md` mit **genau dieser** Nummer benennen. Nummern nie manuell raten oder parallel vergeben: arbeiten mehrere Sessions/Entwickler gleichzeitig, fuehrt das sonst zu Nummern-Kollisionen + Repo↔Backlog-Versatz. Vor der Vergabe gegen das Backlog-Tool pruefen (offene + zuletzt vergebene Issues). Das ist die Ebene-1/2-Vermeidung aus dem Drei-Ebenen-Kollisionsschutz → `docs/kollisionsschutz-drei-ebenen.md`.
 
 ---
 
