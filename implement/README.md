@@ -42,6 +42,8 @@ Das Protokoll ist seit v1.5.0 deutlich gewachsen — vor den 8 Kern-Schritten la
 
 > Schritt 0c-Hinweis: Sub-Agents duerfen nur mit disjunktem Write-Scope starten; Mini-Briefings muessen Rolle, Aufgabe, erlaubte/verbotene Pfade und Integrationsregel enthalten.
 
+> **Cross-Session-Hinweis (Schritt 0c, BOO-154):** Dieser Pre-Flight isoliert parallele **Agenten EINER Story** (Ebene 3). Arbeiten **mehrere Menschen/Sessions** gleichzeitig am selben Repo, ist das ein **anderer** Mechanismus: **eigener Klon pro Person** bzw. **`git worktree` pro Session** (Ebene 1/2) — sonst wandert der lokale `main`/Branch unter einem weg und Nummern/Waves kollidieren. Die drei Ebenen des Kollisionsschutzes: `docs/kollisionsschutz-drei-ebenen.md`.
+
 ### Post-Implement Validation (Schritt 6)
 
 Schritt 6 ist eine Schleife, kein Einmal-Check: `Validate → Interpret → Decide → Fix → Re-Validate → PASS/FAIL → Learn`. Pro Run wird einmal ein gitignored Persistenz-Verzeichnis `journal/reports/local/{YYYY-MM-DD_HHMM}_{STORY-ID}/` fuer raw Tool-Outputs angelegt (BOO-36). `/implement` schreibt nur raw Outputs; `/sprint-review` aggregiert spaeter (harte Trennung — kein direkter `learnings.db`-Schreibzugriff).

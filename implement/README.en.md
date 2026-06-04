@@ -42,6 +42,8 @@ The protocol has grown considerably since v1.5.0 — three pre-flight checks (st
 
 > Step 0c note: sub-agents may only start with a disjoint write scope; mini-briefings must include role, task, allowed/forbidden paths, and integration rule.
 
+> **Cross-session note (step 0c, BOO-154):** this pre-flight isolates parallel **agents within ONE story** (level 3). When **several people/sessions** work on the same repo at once, that's a **different** mechanism: **own clone per person** or **`git worktree` per session** (levels 1/2) — otherwise the local `main`/branch shifts under you and numbers/waves collide. The three levels of collision protection: `docs/kollisionsschutz-drei-ebenen.md`.
+
 ### Post-Implement Validation (Step 6)
 
 Step 6 is a loop, not a one-shot check: `Validate → Interpret → Decide → Fix → Re-Validate → PASS/FAIL → Learn`. Once per run a gitignored persistence directory `journal/reports/local/{YYYY-MM-DD_HHMM}_{STORY-ID}/` for raw tool outputs is created (BOO-36). `/implement` only writes raw outputs; `/sprint-review` aggregates later (hard separation — no direct `learnings.db` writes).
