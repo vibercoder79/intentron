@@ -135,7 +135,7 @@ Claude Code has shell access, so it can install itself. Paste this into a sessio
 
 ### C) AI self-update for an old / brownfield install
 
-For an existing repo that still runs an older INTENTRON version, the safe upgrade follows **[`bootstrap/references/framework-upgrade.md`](bootstrap/references/framework-upgrade.md)** (see also **[HANDBUCH](HANDBUCH.md)** §"Upgrade path for existing projects") — it never overwrites local decisions blindly, in three stages:
+For an existing repo that still runs an older INTENTRON version, the safe upgrade follows **[`bootstrap/references/framework-upgrade.md`](bootstrap/references/framework-upgrade.md)** (step-by-step copy-paste runbook: **[`docs/runbooks/framework-update.md`](docs/runbooks/framework-update.md)**; see also **[HANDBUCH](HANDBUCH.md)** §"Upgrade path for existing projects") — it never overwrites local decisions blindly, in three stages:
 
 1. **`inspect`** — read the current project state, diff it against the new version, show risks and manual TODOs. Writes nothing.
 2. **`apply-safe`** — apply only additive/idempotent changes (new templates, missing sections); existing content stays.
@@ -445,7 +445,7 @@ Claude Code hat Shell-Zugriff und kann sich selbst installieren. Diesen Prompt i
 
 ### C) AI-Self-Update für eine alte / Brownfield-Installation
 
-Für ein bestehendes Repo mit älterer INTENTRON-Version folgt das sichere Upgrade **[`bootstrap/references/framework-upgrade.md`](bootstrap/references/framework-upgrade.md)** (siehe auch **[HANDBUCH](HANDBUCH.md)** §„Upgrade-Pfad für bestehende Projekte") — es überschreibt lokale Entscheidungen nie blind, in drei Stufen:
+Für ein bestehendes Repo mit älterer INTENTRON-Version folgt das sichere Upgrade **[`bootstrap/references/framework-upgrade.md`](bootstrap/references/framework-upgrade.md)** (Schritt-für-Schritt-Runbook zum Kopieren: **[`docs/runbooks/framework-update.md`](docs/runbooks/framework-update.md)**; siehe auch **[HANDBUCH](HANDBUCH.md)** §„Upgrade-Pfad für bestehende Projekte") — es überschreibt lokale Entscheidungen nie blind, in drei Stufen:
 
 1. **`inspect`** — Ist-Zustand lesen, Diff zur neuen Version, Risiken und manuelle TODOs zeigen. Schreibt nichts.
 2. **`apply-safe`** — nur additive/idempotente Änderungen (neue Templates, fehlende Sektionen); Bestehendes bleibt.
