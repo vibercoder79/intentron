@@ -1962,8 +1962,10 @@ git sparse-checkout set bootstrap
 cp -r bootstrap ~/.claude/skills/
 cd /tmp && rm -rf intentron
 
-# In Claude Code: bootstrap can update existing skills
-/bootstrap --update
+# In Claude Code: run /bootstrap inside the project — it auto-detects an existing
+# framework installation and asks for the upgrade mode
+# (inspect / apply-safe / apply-with-confirmation, see bootstrap/references/framework-upgrade.md)
+/bootstrap
 ```
 
 ### Upgrade path for existing projects

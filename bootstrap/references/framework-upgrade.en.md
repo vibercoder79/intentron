@@ -23,9 +23,14 @@ Project-local skills are a reproducible project state. An upgrade is a conscious
 5. Adopt new skill versions only according to the selected mode.
 6. Migrate project contract and runtime mapping.
 7. Add new required artifacts as skeletons without overwriting local content.
-8. Run provider postflight in upgrade mode.
+8. Run provider postflight in upgrade mode (`bootstrap/references/provider-postflight.md`).
 9. Review the diff.
 10. Commit and push only after operator confirmation.
+
+> Individual baseline artifacts (missing required files, hardened gates) are pulled in
+> idempotently via `bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-NN` — one function per
+> issue, safe to run multiple times. Which migration an upgrade needs is stated by the release
+> notes in `docs/releases/`.
 
 ## File categories
 
@@ -36,6 +41,9 @@ Project-local skills are a reproducible project state. An upgrade is a conscious
 | `AGENTS.md` / `CLAUDE.md` | Do not replace; add precedence and runtime bridge. |
 | Architecture/security files | Never overwrite wholesale; insert new required sections or mark as TODO. |
 | `.codex/hooks.json` / `.claude/settings.json` | Register new hooks while preserving existing entries. |
+| `CONTEXT.md`, `solution-artefakte.md`, `DEVELOPER_ONBOARDING.md` | Seed only when missing (idempotent); never overwrite existing operator content. |
+| `.claude/environment.json` (+ `generate-environment-json.sh`) | Add missing fields additively, then `bash .claude/generate-environment-json.sh --force`; keep existing values. |
+| `docs/kollisionsschutz-drei-ebenen.md` | Create only when missing (multi-user / multi-session note). |
 | `.env`, secrets, local reports | Never touch, never commit, never copy into reports. |
 
 ## Upgrade report
