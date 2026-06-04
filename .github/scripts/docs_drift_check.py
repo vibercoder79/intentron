@@ -11,6 +11,8 @@ Checks (alle deterministisch, nur python3-Stdlib):
   2) Versions-Gleichstand SKILL.md (`version:`) <-> README.md (`**Version:**`)
   3) DE/EN-Paritaet: zu SKILL.md/README.md existiert .en.md; v*-overview.md hat EN-Spiegel
   4) Skills-Tabelle: jeder Skill-Ordner (mit SKILL.md) ist in README.md verlinkt
+  5) Wave-Dopplungen: kein neuer Release-Wave-Buchstabe doppelt belegt
+     (BOO-153 Cross-Session-Drift-Guard; Alt-Dopplungen ba/bb/bc als Allowlist)
 """
 from __future__ import annotations
 
@@ -81,6 +83,25 @@ readme = read(os.path.join(ROOT, "README.md"))
 for d in skill_dirs:
     if f"({d}/)" not in readme:
         errors.append(f"[skills-table] Skill '{d}' fehlt in README.md (kein Link ({d}/))")
+
+# --- 5) Doppelte Release-Wave-Buchstaben (BOO-153 — Cross-Session-Drift-Guard) ---
+# Vor dem Guard entstandene Alt-Dopplungen (im ADR cross-session-drift dokumentiert):
+WAVE_DUP_ALLOW = {"ba", "bb", "bc"}
+wave_re = re.compile(r"^wave-([a-z]+)-(.+)\.md$")
+wave_map: dict[str, set[str]] = {}
+for wf in glob.glob(os.path.join(ROOT, "docs/releases/wave-*.md")):
+    name = os.path.basename(wf)
+    if name.endswith(".en.md"):
+        continue
+    m = wave_re.match(name)
+    if m:
+        wave_map.setdefault(m.group(1), set()).add(m.group(2))
+for letter, slugs in sorted(wave_map.items()):
+    if len(slugs) > 1 and letter not in WAVE_DUP_ALLOW:
+        errors.append(
+            f"[wave-dup] Wave-Buchstabe '{letter}' doppelt belegt: {sorted(slugs)} "
+            f"— vor Vergabe naechsten freien Buchstaben gegen docs/releases/ pruefen (ADR cross-session-drift)"
+        )
 
 print(f"docs-drift-check: {len(skill_dirs)} Skills geprueft, {len(errors)} Drift-Befund(e).")
 for e in errors:
