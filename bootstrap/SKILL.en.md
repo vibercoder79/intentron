@@ -1,7 +1,7 @@
 ---
 name: bootstrap
 recommended_model: sonnet  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
-version: 3.37.0
+version: 3.38.0
 language: en
 description: Sets up a new project with a governance framework — interactive 4-block interview flow, docs architecture with automatic hub linking, optional learning loop L1/L2/L3. Use when the operator wants to set up a new project or says "/bootstrap".
 tools: [Read, Write, Edit, Bash, Glob, Grep]
@@ -614,6 +614,26 @@ Plus skeletons:
 
 > **CORE RULE in the runtime entry (`AGENTS.md`/`CLAUDE.md`):** every new file MUST be registered immediately in `ARCHITECTURE_DESIGN.md §9 References` AND `INDEX.md` — before `git commit`.
 
+### 4.3a Set the project-type marker (BOO-148)
+
+When populating `CLAUDE.md` (template `references/file-templates.en.md` §`CLAUDE.md (minimum)`), set the placeholder `{{PROJECT_TYPE_MARKER}}` — the marker sits as the first line after the H1 title and controls whether deployment/CI gates apply to this repo. Decision rule:
+
+- **Active project** (code + deployment here) → ACTIVE marker:
+
+  ```markdown
+  > **PROJECT TYPE: ACTIVE** — code + deployment in this repo
+  ```
+
+- **Docs/specs only / governance reference** (no coding) → GOVERNANCE REFERENCE marker:
+
+  ```markdown
+  > **PROJECT TYPE: GOVERNANCE REFERENCE** — docs/specs only, no coding
+  ```
+
+**Default = ACTIVE** — when in doubt, do not ask; set ACTIVE (~80% of cases). Only set GOVERNANCE REFERENCE for unambiguous docs/specs repos (e.g. a governance book, a pure reference collection).
+
+> **Issue reference:** BOO-148. Migration for existing projects: `references/migration-checklist-v1-to-v2.en.md` §BOO-148 (`migrate_boo_148`).
+
 ### 4.3b Seed CONTEXT.md — Ubiquitous Language (BOO-91)
 
 Seed `CONTEXT.md` in the project root from `references/context-base.md` (DE) or `references/context-base.en.md` (EN, per the `documentation` language from A.3): pre-filled **canonical vocabulary** + **forbidden list** (compliance + governance, every term with its source) plus an empty section `## Project domain (operator to fill)` for project-specific terms. The AI reads `CONTEXT.md` while writing and uses the canonical terms consistently — **default guidance, no hard gate** (no block, only guidance).
@@ -1058,7 +1078,7 @@ Prerequisite to ensure no merge into `main` lands without green CI checks. **Run
      -F required_status_checks[contexts][]=<dynamic> \
      -F enforce_admins=false \
      -F required_pull_request_reviews[dismiss_stale_reviews]=true \
-     -F required_pull_request_reviews[required_approving_review_count]=1 \
+     -F required_pull_request_reviews[required_approving_review_count]=0 \
      -F restrictions=null \
      -F allow_force_pushes=false
    ```

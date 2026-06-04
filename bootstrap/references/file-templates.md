@@ -65,6 +65,9 @@ module.exports = { VERSION, DOC_FILES, CONFIG };
 ```markdown
 # {{PROJECT_NAME}} — AI System Reference
 
+<!-- {{PROJECT_TYPE_MARKER}} mögliche Werte: "> **PROJEKT-TYP: AKTIV** — Code + Deployment in diesem Repo" oder "> **PROJEKT-TYP: GOVERNANCE-REFERENZ** — nur Docs/Specs, kein Coding" -->
+{{PROJECT_TYPE_MARKER}}
+
 **Version:** {{VERSION_START}} | **Stand:** {{TODAY}}
 **Repository:** {{GITHUB_REPO}}
 
@@ -1257,6 +1260,10 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+  security-events: write
+
 jobs:
   semgrep:
     runs-on: ubuntu-latest
@@ -1309,6 +1316,11 @@ jobs:
 ```yaml
 name: ESLint
 on: [push, pull_request]
+
+permissions:
+  contents: read
+  security-events: write
+
 jobs:
   eslint:
     runs-on: ubuntu-latest
@@ -1338,6 +1350,11 @@ jobs:
 ```yaml
 name: Ruff
 on: [push, pull_request]
+
+permissions:
+  contents: read
+  security-events: write
+
 jobs:
   ruff:
     runs-on: ubuntu-latest

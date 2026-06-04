@@ -317,14 +317,14 @@ Spiegel der Master-Checkliste aus `intentron/bootstrap/references/migration-chec
 
    Standard-Set bei allen aktivierten Workflows: `ESLint`, `Ruff`, `Semgrep`, `Tests`, `Coverage`, `Perf`, `SonarQube` (oder `SonarCloud`).
 
-3. **`[AUTO]`** Der `gh api`-Aufruf erfolgt 1:1 aus dem BOO-29-Issue-Body:
+3. **`[AUTO]`** Der `gh api`-Aufruf (Stand BOO-149, `required_approving_review_count=0` — vorher `1`):
    ```bash
    gh api -X PUT "repos/${OWNER}/${REPO}/branches/main/protection" \
      -F required_status_checks[strict]=true \
      -F required_status_checks[contexts][]=<dynamisch> \
      -F enforce_admins=false \
      -F required_pull_request_reviews[dismiss_stale_reviews]=true \
-     -F required_pull_request_reviews[required_approving_review_count]=1 \
+     -F required_pull_request_reviews[required_approving_review_count]=0 \
      -F restrictions=null \
      -F allow_force_pushes=false
    ```
@@ -1421,6 +1421,109 @@ Spiegel der Master-Checkliste aus `intentron/bootstrap/references/migration-chec
 **Skill-Quelle:** `bootstrap/references/context-base.md` (+ `.en.md`) — die vorgefuellte Framework-Basis (Compliance- + Governance-Vokabular, jeder Eintrag mit Quelle, DSGVO-Artikel / nDSG / INTENTRON-Governance). Bezug zum Ubiquitous-Language-Pattern aus Matt Pococks `skills`-Repo — **kein Code uebernommen**, nur das Pattern nachgebaut. Enforcement (dpo-Control „Vokabular folgt CONTEXT.md", Layer-0-Bodyguard-`warn`) ist eine spaetere Ausbaustufe (BOO-87 / BOO-86), nicht Teil dieser Migration.
 
 **Verweise:** `docs/releases/wave-aa-context-ubiquitous-language.md`, `bootstrap/references/context-base.md` (+ `.en.md`), HANDBUCH Anhang X, `specs/BOO-91.md`.
+
+---
+
+## §BOO-146 — SARIF-Upload braucht `permissions.security-events: write` in CI-Workflows
+
+**Status:** ✓ in v2-Bundle — additiv, nicht-destruktiv. Patcht vorhandene CI-Workflows.
+**Aufwand:** klein (~1 Min, automatisch).
+**Linear:** <https://linear.app/owlist/issue/BOO-146>
+**Auto-Schritt:** ja (`migrate_boo_146`, idempotent + additiv).
+
+**Was es tut:** Ruestet den `permissions`-Block (`contents: read` / `security-events: write`) in vorhandenen `semgrep.yml`, `eslint.yml` und `ruff.yml` nach. Der GitHub-Default-`GITHUB_TOKEN` hat seit der Hardened-Runner-Policy nur noch `contents: read` — der `github/codeql-action/upload-sarif`-Step dieser Lint-/SAST-Workflows scheitert **still** ohne expliziten `permissions`-Block (kein SARIF im Security-Tab). SSoT: `bootstrap/references/file-templates.md` §`semgrep/eslint/ruff.yml` tragen den Block bereits fuer Neu-Renders; diese Migration zieht ihn fuer Bestands-Projekte nach.
+
+**Auto-Vorbereitung:**
+
+- `bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-146` — patcht pro File `semgrep.yml` / `eslint.yml` / `ruff.yml` unter `.github/workflows/`:
+  - fehlt `.github/workflows/`: `[SKIP]` (keine Workflows).
+  - fehlt eine einzelne Datei: `[SKIP]` fuer diese Datei, andere weiter.
+  - der Block wird via `awk` (`!ins`-Guard, analog BOO-142) vor die erste `jobs:`-Zeile eingefuegt.
+- **Idempotenz:** ist `security-events: write` pro File bereits vorhanden → `[SKIP]`, kein Diff; `--dry-run` loggt nur (`[DRY]`).
+
+**Tests / Verifikation:**
+
+- [ ] Block vorhanden: `grep -q 'security-events: write' .github/workflows/semgrep.yml` → Exit 0 (analog `eslint.yml` / `ruff.yml`, soweit vorhanden).
+- [ ] Idempotenz: zweiter `--issue BOO-146`-Lauf → nur `[SKIP]`, kein Diff.
+- [ ] CI gruen: nach Push laeuft der `upload-sarif`-Step ohne `Resource not accessible by integration`-Fehler durch.
+
+**Operator-Schritte:**
+
+- [ ] Pruefen, dass der SARIF-Upload im GitHub-Security-Tab erscheint (Workflow-Run → Security → Code scanning alerts).
+
+**Rollback:**
+
+- Den eingefuegten `permissions:`-Block (`contents: read` / `security-events: write`) aus den betroffenen Workflow-Files manuell entfernen.
+
+**Skill-Quelle:** `bootstrap/references/file-templates.md` (+ `.en.md`) §`semgrep.yml` / §`eslint.yml` / §`ruff.yml`, `bootstrap/scripts/migrate-to-v2.sh` §`migrate_boo_146` — und `bootstrap/SKILL.md` Phase 4.4 (CI-Lint/SAST-Workflows) fuer den Bootstrap-Flow neuer Projekte.
+
+---
+
+## §BOO-148 — CLAUDE.md PROJEKT-TYP-Marker (AKTIV / GOVERNANCE-REFERENZ)
+
+**Status:** ✓ in v2-Bundle — additiv, nicht-destruktiv. Patcht die Projekt-`CLAUDE.md`.
+**Aufwand:** klein (~1 Min, automatisch).
+**Linear:** <https://linear.app/owlist/issue/BOO-148>
+**Auto-Schritt:** ja (`migrate_boo_148`, idempotent + additiv).
+
+**Was es tut:** Setzt einen **PROJEKT-TYP-Marker** als erste Zeile nach dem H1-Titel der `CLAUDE.md`. Der Marker steuert, ob Deployment-/CI-Gates fuer das Repo greifen: `AKTIV` (Code + Deployment in diesem Repo) oder `GOVERNANCE-REFERENZ` (nur Docs/Specs, kein Coding). Default = **AKTIV** (~80% der Faelle); reine Docs-/Spec-/Governance-Referenz-Repos setzen `GOVERNANCE-REFERENZ`. Bestands-Projekte ziehen den Marker nach.
+
+**Auto-Vorbereitung:**
+
+- `bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-148` — fuegt nach der ersten H1-Zeile (`^# `) den AKTIV-Marker ein:
+  - `> **PROJEKT-TYP: AKTIV** — Code + Deployment in diesem Repo`
+  - fehlt `CLAUDE.md`: `[SKIP]`.
+  - der Marker wird via `awk` (`!ins`-Guard) nach dem H1-Titel eingefuegt.
+- **Idempotenz:** existiert bereits ein `PROJEKT-TYP:`-Marker → `[SKIP]`, kein Diff; `--dry-run` loggt nur (`[DRY]`).
+
+**Tests / Verifikation:**
+
+- [ ] Marker vorhanden: `grep -q 'PROJEKT-TYP:' CLAUDE.md` → Exit 0.
+- [ ] Position: der Marker steht direkt nach der ersten `# `-Zeile.
+- [ ] Idempotenz: zweiter `--issue BOO-148`-Lauf → nur `[SKIP]`, kein Diff.
+
+**Operator-Schritte:**
+
+- [ ] Bei reinen Doku-/Spec-/Governance-Referenz-Repos ohne Deployment den Marker manuell auf `> **PROJEKT-TYP: GOVERNANCE-REFERENZ** — nur Docs/Specs, kein Coding` setzen — dann greifen Deployment-Gates nicht.
+
+**Rollback:**
+
+- Die Marker-Zeile (`> **PROJEKT-TYP: ...`) aus `CLAUDE.md` manuell entfernen.
+
+**Skill-Quelle:** `bootstrap/references/file-templates.md` (+ `.en.md`) §`CLAUDE.md (Minimum)` (Platzhalter `{{PROJECT_TYPE_MARKER}}`), `bootstrap/scripts/migrate-to-v2.sh` §`migrate_boo_148` — und `bootstrap/SKILL.md` Phase 4.3a fuer den Bootstrap-Flow neuer Projekte.
+
+---
+
+## §BOO-149 — Branch-Protection erneut anwenden (Review-Count 1 → 0)
+
+**Status:** ✓ in v2-Bundle — additiv, re-run-safe. Wendet die Branch-Protection erneut an.
+**Aufwand:** klein (~1 Min, automatisch).
+**Linear:** <https://linear.app/owlist/issue/BOO-149>
+**Auto-Schritt:** ja (`migrate_boo_149`, Wrapper analog `migrate_boo_29`).
+
+**Was es tut:** Setzt die Branch-Protection mit `required_approving_review_count = 0` neu. Der Review-Count wurde in `scripts/setup-branch-protection.sh` von `1` auf `0` gesenkt — der Solo-/Agent-Flow hat keine Fremd-Approval, und GitHub erlaubt keine Self-Approval; ein Review-Count von `1` wuerde Merges dauerhaft blockieren. Die **Required Status Checks bleiben Pflicht** — nur die Approval-Pflicht entfaellt. Bestands-Projekte ziehen den neuen Wert nach, indem die Protection erneut gesetzt wird.
+
+**Auto-Vorbereitung:**
+
+- `bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-149` — Wrapper analog `migrate_boo_29`: prueft die Voraussetzungen (`gh` installiert, `gh auth status`, `git remote get-url origin`) und ruft dann `scripts/setup-branch-protection.sh` auf. Bei `DRY_RUN=true` wird nur der geplante Aufruf geloggt.
+- **Idempotenz:** der `gh api -X PUT`-Call ist Replace — re-run-safe; `count=0` wird durch den Re-Run wirksam.
+
+**Tests / Verifikation:**
+
+- [ ] `gh api repos/<owner>/<repo>/branches/main/protection` → 200 mit `required_pull_request_reviews.required_approving_review_count == 0`.
+- [ ] Status-Checks weiterhin Pflicht: `required_status_checks.contexts` bleibt befuellt.
+- [ ] PR mit gruenen Checks kann ohne Fremd-Approval gemergt werden.
+
+**Operator-Schritte:**
+
+- [ ] Falls einer der Auto-Checks fehlschlaegt: `brew install gh` (Mac) / <https://cli.github.com/>, `gh auth login` (Token im `repo`-Scope) bzw. `git remote add origin ...` + einmal `git push -u origin main` — dann erneut `--issue BOO-149`.
+- [ ] In der GitHub-UI verifizieren: `https://github.com/<owner>/<repo>/settings/branches` zeigt die aktive Protection-Rule mit Review-Count 0.
+
+**Rollback:**
+
+- `bash scripts/setup-branch-protection.sh` mit dem alten Wert (Review-Count 1) erneut laufen lassen, oder `gh api -X DELETE repos/<owner>/<repo>/branches/main/protection` (loescht die Protection vollstaendig).
+
+**Skill-Quelle:** `bootstrap/scripts/setup-branch-protection.sh` (Review-Count 0), `bootstrap/scripts/migrate-to-v2.sh` §`migrate_boo_149` — und `bootstrap/SKILL.md` Phase 4.4k (Branch-Protection) fuer den Bootstrap-Flow neuer Projekte. Verwandt: §BOO-29 (Branch-Protection mit Required Status Checks).
 
 ---
 

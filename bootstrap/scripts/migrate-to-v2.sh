@@ -313,6 +313,10 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+  security-events: write
+
 jobs:
   semgrep:
     runs-on: ubuntu-latest
@@ -727,6 +731,9 @@ migrate_boo_28() {
             cat > "$eslint_yml" <<'ESLINT_YML_EOF'
 name: ESLint
 on: [push, pull_request]
+permissions:
+  contents: read
+  security-events: write
 jobs:
   eslint:
     runs-on: ubuntu-latest
@@ -775,6 +782,9 @@ ESLINT_YML_EOF
             cat > "$ruff_yml" <<'RUFF_YML_EOF'
 name: Ruff
 on: [push, pull_request]
+permissions:
+  contents: read
+  security-events: write
 jobs:
   ruff:
     runs-on: ubuntu-latest
@@ -818,7 +828,7 @@ migrate_boo_29() {
     #     (erstes Top-Level `name:`-Feld pro Workflow-Datei)
     #   - enforce_admins = false
     #   - required_pull_request_reviews.dismiss_stale_reviews = true
-    #   - required_pull_request_reviews.required_approving_review_count = 1
+    #   - required_pull_request_reviews.required_approving_review_count = 0  # BOO-149 (vorher 1)
     #   - restrictions = null
     #   - allow_force_pushes = false
     #
@@ -2904,6 +2914,11 @@ migrate_all() {
     migrate_boo_142
     migrate_boo_143
 
+    # Wave — CI-Hardening-Gaps (BOO-146-149): SARIF-Permissions, PROJEKT-TYP-Marker, Review-Count
+    migrate_boo_146
+    migrate_boo_148
+    migrate_boo_149
+
     log_info "DE: Migration abgeschlossen. Status pro Projekt in migration-status.md eintragen."
     log_info "EN: Migration finished. Record per-project status in migration-status.md."
 }
@@ -4074,6 +4089,162 @@ migrate_boo_143() {
     return 0
 }
 
+migrate_boo_146() {
+    # BOO-146 — SARIF-Upload braucht permissions.security-events: write in CI-Workflows
+    # https://linear.app/owlist/issue/BOO-146
+    #
+    # GitHub-Default-GITHUB_TOKEN hat seit der Hardened-Runner-Policy nur noch
+    # 'contents: read' — der upload-sarif-Step der Lint-/SAST-Workflows scheitert
+    # ohne expliziten permissions-Block. Diese Funktion ruestet den Block in
+    # vorhandenen semgrep.yml / eslint.yml / ruff.yml nach (SSoT: file-templates.md
+    # + migrate-to-v2.sh-Heredocs tragen ihn bereits fuer Neu-Renders).
+    #
+    # Idempotenz: grep auf "security-events: write" pro File -> vorhanden = [SKIP].
+    # Fehlt der Block: vor die erste 'jobs:'-Zeile eingefuegt (via awk, !ins-Guard).
+    log_info "BOO-146: permissions-Block (security-events: write) in CI-Workflows nachruesten"
+    local wf=".github/workflows"
+    if [[ ! -d "$wf" ]]; then
+        log_skip "BOO-146: $wf fehlt — keine Workflows zu patchen"
+        return 0
+    fi
+    local yml
+    for yml in semgrep eslint ruff; do
+        local f="$wf/$yml.yml"
+        if [[ ! -f "$f" ]]; then
+            log_skip "BOO-146: $f fehlt — uebersprungen"
+            continue
+        fi
+        if grep -q 'security-events: write' "$f" 2>/dev/null; then
+            log_skip "BOO-146: $f hat bereits permissions.security-events: write — nichts zu tun (idempotent)"
+            continue
+        fi
+        if [[ "$DRY_RUN" == "true" ]]; then
+            log_dry "patch $f: permissions-Block (contents: read / security-events: write) vor erster 'jobs:'-Zeile einfuegen"
+            continue
+        fi
+        # permissions-Block vor die erste 'jobs:'-Zeile einfuegen (awk, !ins-Guard analog BOO-142)
+        awk '
+          /^jobs:[[:space:]]*$/ && !ins {
+            print "permissions:"
+            print "  contents: read"
+            print "  security-events: write"
+            print ""
+            print
+            ins=1
+            next
+          }
+          { print }
+        ' "$f" > "$f.tmp" && mv "$f.tmp" "$f"
+        log_info "BOO-146: permissions-Block in $f vor 'jobs:' eingefuegt"
+    done
+    log_manual "BOO-146: SARIF-Upload (github/codeql-action/upload-sarif) braucht 'security-events: write' — ohne den Block scheitert der CI-Step still. Vorlage: file-templates.md §semgrep/eslint/ruff.yml."
+    return 0
+}
+
+migrate_boo_148() {
+    # BOO-148 — CLAUDE.md PROJEKT-TYP-Marker (AKTIV/GOVERNANCE-REFERENZ) als erste Zeile nach H1
+    # https://linear.app/owlist/issue/BOO-148
+    #
+    # Der PROJEKT-TYP-Marker steuert, ob Deployment-/CI-Gates fuer das Repo
+    # greifen. Default 'AKTIV' (Code + Deployment im Repo). Bestands-Projekte
+    # ziehen den Marker als erste Zeile nach dem H1-Titel der CLAUDE.md nach.
+    #
+    # Idempotenz: grep auf "PROJEKT-TYP:" -> vorhanden = [SKIP].
+    # Fehlt der Marker: nach der ersten H1-Zeile (^# ) eingefuegt (via awk, !ins-Guard).
+    log_info "BOO-148: PROJEKT-TYP-Marker in CLAUDE.md nachruesten (Default: AKTIV)"
+    local claude_md="CLAUDE.md"
+    if [[ ! -f "$claude_md" ]]; then
+        log_skip "BOO-148: $claude_md fehlt — uebersprungen"
+        return 0
+    fi
+    if grep -q 'PROJEKT-TYP:' "$claude_md" 2>/dev/null; then
+        log_skip "BOO-148: $claude_md hat bereits einen PROJEKT-TYP-Marker — nichts zu tun (idempotent)"
+        return 0
+    fi
+    if [[ "$DRY_RUN" == "true" ]]; then
+        log_dry "patch $claude_md: PROJEKT-TYP-Marker (AKTIV) als erste Zeile nach H1-Titel einfuegen"
+        return 0
+    fi
+    # Marker nach der ersten H1-Zeile (^# ) einfuegen (awk, !ins-Guard)
+    awk '
+      /^# / && !ins {
+        print
+        print ""
+        print "> **PROJEKT-TYP: AKTIV** — Code + Deployment in diesem Repo"
+        ins=1
+        next
+      }
+      { print }
+    ' "$claude_md" > "$claude_md.tmp" && mv "$claude_md.tmp" "$claude_md"
+    log_info "BOO-148: PROJEKT-TYP-Marker (AKTIV) in $claude_md nach H1 eingefuegt"
+    log_manual "BOO-148: bei reinen Doku-/Spec-Repos ohne Deployment den Marker manuell auf 'PROJEKT-TYP: GOVERNANCE-REFERENZ' setzen — dann greifen Deployment-Gates nicht."
+    return 0
+}
+
+migrate_boo_149() {
+    # BOO-149 — Branch-Protection erneut anwenden (required_approving_review_count 1->0)
+    # https://linear.app/owlist/issue/BOO-149
+    #
+    # Der Review-Count wurde in setup-branch-protection.sh von 1 auf 0 gesenkt
+    # (Solo-/Agent-Flow hat keine Fremd-Approval; GitHub erlaubt keine
+    # Self-Approval). Status-Checks bleiben Pflicht. Bestands-Projekte ziehen
+    # den neuen Wert nach, indem die Branch-Protection erneut gesetzt wird.
+    #
+    # Eigentliche Logik in scripts/setup-branch-protection.sh — diese Funktion
+    # ist Wrapper analog migrate_boo_29 (gleiche Voraussetzungs-Checks + Dispatch).
+    #
+    # Idempotenz: PUT-Call ist Replace — re-run-safe, count=0 wird durch Re-Run wirksam.
+    log_info "BOO-149: Branch-Protection erneut anwenden (Review-Count 1->0)"
+
+    # --- Voraussetzungs-Check 1: gh CLI installiert? ---
+    if ! command -v gh >/dev/null 2>&1; then
+        log_warn "gh CLI nicht gefunden — BOO-149 uebersprungen"
+        log_manual "Operator: 'brew install gh' (Mac) oder https://cli.github.com/ — danach erneut '--issue BOO-149' laufen lassen"
+        return 0
+    fi
+
+    # --- Voraussetzungs-Check 2: gh auth status — eingeloggt? ---
+    if ! gh auth status >/dev/null 2>&1; then
+        log_warn "gh CLI nicht eingeloggt — BOO-149 uebersprungen"
+        log_manual "Operator: 'gh auth login' ausfuehren (Browser-Flow oder Token mit 'repo'-Scope), danach erneut '--issue BOO-149' laufen lassen"
+        return 0
+    fi
+
+    # --- Voraussetzungs-Check 3: Remote 'origin' vorhanden? ---
+    if ! git remote get-url origin >/dev/null 2>&1; then
+        log_warn "Kein git remote 'origin' im aktuellen Repo — BOO-149 uebersprungen"
+        log_manual "Operator: 'git remote add origin git@github.com:<owner>/<repo>.git' und 'git push -u origin main' laufen lassen, dann erneut '--issue BOO-149'"
+        return 0
+    fi
+
+    # --- Skript-Pfad finden — neben migrate-to-v2.sh im selben Verzeichnis ---
+    local script_dir
+    script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    local bp_script="$script_dir/setup-branch-protection.sh"
+
+    if [[ ! -f "$bp_script" ]]; then
+        log_warn "setup-branch-protection.sh nicht gefunden unter $bp_script — BOO-149 uebersprungen"
+        log_manual "Operator: scripts/setup-branch-protection.sh aus dem Bootstrap-Repo (intentron/bootstrap/scripts/) ins Projekt kopieren und dann erneut laufen lassen"
+        return 0
+    fi
+
+    # --- Dispatch: Dry-Run vs. echter Lauf ---
+    if [[ "$DRY_RUN" == "true" ]]; then
+        log_dry "bash $bp_script --dry-run (Branch-Protection erneut setzen, Review-Count=0)"
+    else
+        log_info "Rufe $bp_script auf — Branch-Protection wird erneut gesetzt (Review-Count=0)"
+        if bash "$bp_script"; then
+            log_info "Branch-Protection erfolgreich erneut gesetzt (Review-Count=0)"
+        else
+            log_warn "setup-branch-protection.sh fehlgeschlagen — Operator-Schritte unten beachten"
+            log_manual "Operator: bash $bp_script manuell ausfuehren und Fehlerausgabe pruefen (Permissions? main remote? Free-Plan-Limit?)"
+        fi
+    fi
+
+    log_manual "Operator: in GitHub-UI verifizieren (Settings -> Branches -> main) — 'Require approvals' sollte auf 0 stehen, Status-Checks weiter Pflicht"
+    return 0
+}
+
 # -----------------------------------------------------------------------------
 # CLI / Argument Parsing
 # -----------------------------------------------------------------------------
@@ -4101,6 +4272,7 @@ ALL_ISSUES=(
     BOO-93
     BOO-108
     BOO-140 BOO-141 BOO-142 BOO-143
+    BOO-146 BOO-148 BOO-149
 )
 
 print_help() {

@@ -1167,6 +1167,8 @@ Required status checks `ESLint`, `Ruff`, `Semgrep`, `SonarCloud` are activated v
 
 > **Next.js first-CI-run hardening (Wave BA, BOO-140–143):** `semgrep.yml` runs **without** a Docker container (Semgrep via `pip install`, otherwise `actions/checkout` fails on PRs); all three SARIF uploads use `upload-sarif@v4` + `if: always() && hashFiles(...) != ''`. `perf.yml` **skips** its benchmarks green while `journal/perf-baseline.json` is empty (`Check prerequisites` step). For React/TSX, `eslint.config.mjs` gets a frontend block (`...globals.browser` + `React: 'readonly'`), and a `"lint": "next lint"` in `package.json` is rewritten to `"lint": "eslint ."`. Existing projects: `migrate_boo_140/141/142/143`.
 
+> **CI-hardening gaps (Wave BB, BOO-146–149):** The `semgrep/eslint/ruff` workflow templates get an explicit `permissions` block (`contents: read` / `security-events: write`) — with a hardened `GITHUB_TOKEN`, `upload-sarif` otherwise fails silently (BOO-146). Branch protection lowers the `required_approving_review_count` from 1 to **0** (solo/agent flow without self-approval; status checks stay mandatory, BOO-149). Existing projects: `migrate_boo_146/148/149`.
+
 ### Branch-protection setup (BOO-29)
 
 Since v3.18.0 (2026-05-12), `/bootstrap` configures the `main` branch protection automatically in **phase 4.4k** — right after the first `git push -u origin main` (phase 4.9). The logic lives in `intentron/bootstrap/scripts/setup-branch-protection.sh`. Three points matter:
@@ -1185,12 +1187,12 @@ gh api -X PUT "repos/${OWNER}/${REPO}/branches/main/protection" \
   -F required_status_checks[contexts][]=<dynamic> \
   -F enforce_admins=false \
   -F required_pull_request_reviews[dismiss_stale_reviews]=true \
-  -F required_pull_request_reviews[required_approving_review_count]=1 \
+  -F required_pull_request_reviews[required_approving_review_count]=0 \
   -F restrictions=null \
   -F allow_force_pushes=false
 ```
 
-`enforce_admins=false` is intentional — the operator (typically an admin) is allowed to push directly to `main` in emergencies. `allow_force_pushes=false` protects the git history from accidental overwrites. `dismiss_stale_reviews=true` forces every push after a review to a fresh approval round — keeping the code-review trail current.
+`enforce_admins=false` is intentional — the operator (typically an admin) is allowed to push directly to `main` in emergencies. `allow_force_pushes=false` protects the git history from accidental overwrites. `dismiss_stale_reviews=true` forces every push after a review to a fresh approval round — keeping the code-review trail current. `required_approving_review_count=0` since Wave BB (BOO-149): in the solo/agent flow there is no second reviewer for a self-approval — the required status checks stay mandatory, though. Teams with the four-eyes convention set the value to `1` (see Appendix R).
 
 ---
 
