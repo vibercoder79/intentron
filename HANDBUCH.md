@@ -4089,6 +4089,8 @@ Effekt: Projekt 2..N ist in Minuten governance-ready, ohne Tools/Skills neu zu i
 2. `bash bootstrap/scripts/migrate-to-v2.sh --all` (oder gezielt `--issue BOO-N`) zieht die Governance-Bausteine nach (Hooks, Gates, environment.json, Privacy/Vault-Harvest falls gewuenscht).
 3. `bash scripts/verify-setup.sh` — schliesst die Luecken-Liste.
 
+**Weg 4 — Nur SecondBrain nachziehen (ohne Re-Bootstrap).** Framework schon installiert, aber du willst **nur** das Leichtgewicht-SecondBrain-Setup (Standard-Projektpfad + Daily-Note-Loop, BOO-138/139) nachruesten — ohne `/bootstrap` und ohne Hooks/Gates/Specs anzufassen? Dafuer gibt es ein eigenes Runbook mit fertigem, **idempotentem** Operator-Prompt: er ergaenzt `~/.claude/CLAUDE.md` um `PROJECTS_ROOT` und ruestet bestehende Projekte um `journal/daily/` + Session-Start-/Ende-Routine nach. → **Runbook: [`docs/runbooks/secondbrain-nachziehen.md`](docs/runbooks/secondbrain-nachziehen.md)** (EN: [`.en.md`](docs/runbooks/secondbrain-nachziehen.en.md), mit Sketch).
+
 ### Pro-Projekt-Minimal-Checkliste
 
 Was **muss** pro Projekt passieren, sonst greifen Gates + Skills nicht:
@@ -4106,6 +4108,7 @@ Was **muss** pro Projekt passieren, sonst greifen Gates + Skills nicht:
 - **Anhang P (Deployment-Szenarien):** auf welcher Topologie die Projekte liegen (Solo-Mac / VPS / Multi-User-VPS).
 - **Anhang Y (VPS/Cloud-Team-Runbook):** der vollständige VPS-Team-Lebenszyklus (einmal pro VPS → pro Projekt → Team), in den dieser Multi-Projekt-Schritt eingebettet ist.
 - **Bootstrap Block B + Phase 5:** Infra-Erkennung + Skill-Installation, die den Schnellpfad ermoeglichen.
+- **Runbook „SecondBrain nachziehen" (`docs/runbooks/secondbrain-nachziehen.md`):** Weg 4 — nur die SecondBrain-Bausteine (BOO-138/139) ohne Re-Bootstrap nachruesten (DE+EN, mit Sketch).
 
 Quelle: Operator-Frage Tobias 2026-05-28 ("mehrere Projekte — pro Projekt bootstrappen oder Basis-schon-da-Pfad?").
 

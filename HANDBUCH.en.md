@@ -3957,6 +3957,8 @@ Effect: project 2..N is governance-ready in minutes, without reinstalling tools/
 2. `bash bootstrap/scripts/migrate-to-v2.sh --all` (or selectively `--issue BOO-N`) retrofits the governance building blocks (hooks, gates, environment.json, privacy/vault-harvest if wanted).
 3. `bash scripts/verify-setup.sh` — closes the gap list.
 
+**Path 4 — Retrofit just the SecondBrain (no re-bootstrap).** Framework already installed, but you want **only** the lightweight SecondBrain setup (standard project path + daily-note loop, BOO-138/139) — without `/bootstrap` and without touching hooks/gates/specs? There is a dedicated runbook with a ready, **idempotent** operator prompt: it adds `PROJECTS_ROOT` to `~/.claude/CLAUDE.md` and retrofits existing projects with `journal/daily/` + session-start/end routine. → **Runbook: [`docs/runbooks/secondbrain-nachziehen.en.md`](docs/runbooks/secondbrain-nachziehen.en.md)** (DE: [`.md`](docs/runbooks/secondbrain-nachziehen.md), with sketch).
+
 ### Per-project minimal checklist
 
 What **must** happen per project, otherwise gates + skills do not engage:
@@ -3974,6 +3976,7 @@ What **must** happen per project, otherwise gates + skills do not engage:
 - **Appendix P (Deployment scenarios):** the topology the projects sit on (Solo-Mac / VPS / multi-user VPS).
 - **Appendix Y (VPS/cloud team runbook):** the full once-per-VPS vs. per-project lifecycle this multi-project flow is part of.
 - **Bootstrap Block B + Phase 5:** infra detection + skill installation that enable the fast path.
+- **Runbook "Retrofit the SecondBrain" (`docs/runbooks/secondbrain-nachziehen.en.md`):** path 4 — retrofit just the SecondBrain blocks (BOO-138/139) without re-bootstrapping (DE+EN, with sketch).
 
 Source: operator question Tobias 2026-05-28 ("several projects — bootstrap per project or a base-already-there path?").
 
