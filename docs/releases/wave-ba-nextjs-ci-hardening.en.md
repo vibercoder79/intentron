@@ -25,4 +25,4 @@ All changes are DE+EN-parity (`.en.md` counterparts updated).
 
 ## References
 
-Specs: `specs/BOO-140.md`–`specs/BOO-143.md`. Branch: `feat/boo-140-143-nextjs-ci-template-fixes`. Trigger: `bko-widerspruch-assistent` (Next.js 16, first CI run, 2026-06-03). Related: BOO-28 (ESLint/Ruff CI gate), BOO-2 (ESLint ruleset), BOO-3/BOO-4 (Semgrep), BOO-16/BOO-45 (perf/Lighthouse gate).
+Specs: `specs/BOO-140.md`–`specs/BOO-143.md`. Branch: `feat/boo-140-143-nextjs-ci-template-fixes`. PR: [vibercoder79/intentron#47](https://github.com/vibercoder79/intentron/pull/47). Trigger: `bko-widerspruch-assistent` (Next.js 16, first CI run, 2026-06-03). Related: BOO-28 (ESLint/Ruff CI gate), BOO-2 (ESLint ruleset), BOO-3/BOO-4 (Semgrep), BOO-16/BOO-45 (perf/Lighthouse gate).
