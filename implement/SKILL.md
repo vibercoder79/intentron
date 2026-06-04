@@ -6,7 +6,7 @@ description: |
   bis Ergebnis-Tabelle inkl. Post-Implement Validation. Verwenden wenn der Operator "los" sagt,
   eine Story umsetzen will, oder "/implement" ausfuehrt. Wird auch vom Automation Daemon genutzt
   (ohne Human-in-the-Loop).
-version: 2.12.0
+version: 2.13.0
 metadata:
   hermes:
     category: coding
@@ -106,6 +106,8 @@ Vor jeder Story pruefen, ob die geschaetzte Story-Last die Sprint-Box-Grenze kna
 ### Schritt 0c: Execution-Isolation-Pre-Flight (BOO-52, hart bei Parallelitaet)
 
 Vor jeder Story pruefen, ob der Ausfuehrungsmodus zur projektlokalen `CONVENTIONS.md` passt.
+
+> **Cross-Session-Hinweis (BOO-154):** Dieser Pre-Flight isoliert parallele **Agenten EINER Story** (Ebene 3). Arbeiten **mehrere Menschen/Sessions** parallel am selben Projekt, gilt zusaetzlich: **eigener Klon pro Person** bzw. **`git worktree` pro Session** — nie zwei Sessions im selben Working Tree (sonst Branch-/Datei-Kollisionen, weggewechselte Branches). Die drei Ebenen des Kollisionsschutzes: `docs/kollisionsschutz-drei-ebenen.md`.
 
 **Ablauf:**
 

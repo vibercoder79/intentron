@@ -6,7 +6,7 @@ description: |
   den Learning-Loop (falls aktiv) und warnt bei Anti-Pattern-Match. Verwenden wenn der Nutzer
   eine neue Idee hat, ein Feature vorschlaegt, oder "ideation" / "neue Story" sagt.
   Ausloeser sind Anfragen wie "ich hab eine Idee", "neues Feature", "wir brauchen X", "/ideation".
-version: 2.7.0
+version: 2.8.0
 metadata:
   hermes:
     category: coding
@@ -371,3 +371,5 @@ Vor dem Linear-Push: Token-Verbrauch schaetzen und daraus SP + Modus ableiten. K
 1. Linear-Issue erstellen mit vollstaendigem Template
 2. Betroffene bestehende Issues updaten (Abhaengigkeiten, Gesamtplan)
 3. Operator zusammenfassen: Was wurde erstellt, was wurde geaendert
+
+> **Backlog-first gegen Cross-Session-Drift (BOO-154):** Die Story-Nummer kommt **vom Backlog-Tool** — erst das Issue anlegen, **dann** die Spec-Datei `specs/<PREFIX>XXX.md` mit **genau dieser** Nummer benennen. Nummern **nie manuell raten oder parallel vergeben**: arbeiten mehrere Sessions/Entwickler gleichzeitig, fuehrt das zu Nummern-Kollisionen + Repo↔Backlog-Versatz. Vor der Vergabe einer Nummer gegen das Backlog-Tool pruefen (offene + zuletzt vergebene Issues). Hintergrund: `docs/kollisionsschutz-drei-ebenen.md` (Ebene 1/2).

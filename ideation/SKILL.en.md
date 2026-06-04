@@ -6,7 +6,7 @@ description: |
   learning loop (if active) and warns on anti-pattern matches. Use when the user has a new idea,
   suggests a feature, or says "ideation" / "new story".
   Triggers: "I have an idea", "new feature", "we need X", "/ideation".
-version: 2.7.0
+version: 2.8.0
 language: en
 metadata:
   hermes:
@@ -361,3 +361,5 @@ Before pushing to Linear: estimate token usage and derive SP + mode. Convention:
 1. Create the Linear issue with the full template
 2. Update affected existing issues (dependencies, overall plan)
 3. Summarize for the operator: what was created, what was changed
+
+> **Backlog-first against cross-session drift (BOO-154):** the story number comes **from the backlog tool** — first create the issue, **then** name the spec file `specs/<PREFIX>XXX.md` with **exactly** that number. **Never** guess numbers manually or assign them in parallel: with several concurrent sessions/developers this causes number collisions + repo↔backlog offset. Before assigning a number, check the backlog tool (open + recently assigned issues). Background: `docs/kollisionsschutz-drei-ebenen.en.md` (levels 1/2).

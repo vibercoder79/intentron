@@ -4,7 +4,7 @@
 
 > Workflow that turns a raw idea into a production-ready Linear issue — with research, architecture design document (ADD), dependency mapping, sprint-fit check, intent gate, privacy pre-flight, and token heuristic. No more "what did we actually agree on?" three weeks later.
 
-**Version:** 2.7.0 · **Command:** `/ideation`
+**Version:** 2.8.0 · **Command:** `/ideation`
 
 ---
 
