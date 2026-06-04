@@ -10,10 +10,10 @@ Abgrenzung zu den Nachbar-Runbooks:
 - Nur den Leichtgewicht-SecondBrain-Baustein nachrüsten (ohne Upgrade) → [`secondbrain-nachziehen.md`](secondbrain-nachziehen.md)
 - Mehrere Menschen, ein VPS-Projekt → [`multi-user-vps.md`](multi-user-vps.md)
 
-Zwei Ebenen, beide nicht-destruktiv:
+Zwei Schritte, beide nicht-destruktiv:
 
 1. **Werkzeug aktualisieren** — den `bootstrap`-Skill auf der Maschine auf den neuesten Stand bringen.
-2. **Projekt hochziehen** — `/bootstrap` im Projekt erkennt die bestehende Installation und fährt den Upgrade in drei Modi.
+2. **Projekt hochziehen** — diesen Upgrade-Prompt in die Claude-Code-Session einfügen; der Skill erkennt die bestehende Installation und fährt drei Modi (inspect → apply-safe → apply-with-confirmation).
 
 ## Schritt 1 — Bootstrap-Skill aktualisieren
 
@@ -29,19 +29,9 @@ cd /tmp && rm -rf intentron
 
 > Auf einem **Multi-User-VPS** mit zentralem Skill-Pool stattdessen einmal `git pull` im Pool (`/opt/claude/skills/`) — siehe [`multi-user-vps.md`](multi-user-vps.md) bzw. HANDBUCH Anhang R (Skill-Pool-Governance).
 
-## Schritt 2 — Upgrade im Projekt fahren (Dry-run zuerst)
+## Schritt 2 — Upgrade-Prompt in die Claude-Code-Session einfügen
 
-In einer Claude-Code-Session **im Projektordner** einfach **`/bootstrap`** tippen. Der Skill erkennt die bestehende Installation (§7.5a) und fragt den Modus ab — kein Flag nötig:
-
-| Modus | Verhalten |
-|---|---|
-| **`inspect`** | nur Diff + Risiken + manuelle TODOs zeigen, **schreibt nichts** (Dry-run) |
-| **`apply-safe`** | nur additive/idempotente Änderungen (neue Templates, fehlende Sektionen); bestehende Inhalte bleiben |
-| **`apply-with-confirmation`** | alles, was bestehende Regeln, Hooks, CI oder Skill-Versionen ändert, einzeln bestätigen |
-
-**Empfohlene Reihenfolge: `inspect` → `apply-safe` → `apply-with-confirmation`.**
-
-Ein-Klick-Prompt — alternativ zur interaktiven Modus-Abfrage in Claude Code im alten Repo einfügen:
+Öffne Claude Code **im Projektordner** und füge diesen Prompt ein — das Upgrade läuft ohne interaktives Interview:
 
 ```text
 Dieses Repo fährt evtl. eine ältere INTENTRON-Version. Aktualisiere es sicher nach
@@ -57,6 +47,16 @@ bootstrap/references/framework-upgrade.md (Modi inspect → apply-safe → apply
 Zum Schluss bootstrap/references/verify-setup.sh ausführen und einen Upgrade-Report nach
 journal/reports/framework-upgrade/YYYY-MM-DD.md schreiben.
 ```
+
+Der Prompt fährt automatisch drei Phasen: **inspect** (Dry-run, nichts wird geschrieben) → **apply-safe** (nur additive Änderungen) → **apply-with-confirmation** (alles Destruktive einzeln bestätigen).
+
+| Modus | Verhalten |
+|---|---|
+| **`inspect`** | Diff + Risiken + manuelle TODOs zeigen, **schreibt nichts** |
+| **`apply-safe`** | nur additive/idempotente Änderungen; bestehende Inhalte bleiben |
+| **`apply-with-confirmation`** | alles, was bestehende Regeln, Hooks, CI oder Skill-Versionen ändert, einzeln bestätigen |
+
+> **Alternativ:** `/bootstrap` in der Session tippen — der Skill erkennt die bestehende Installation (§7.5a) und fragt den Modus interaktiv ab.
 
 ## Sicherheit & Idempotenz
 

@@ -10,10 +10,10 @@ Distinction from the neighbouring runbooks:
 - Only retrofit the lightweight SecondBrain building block (without upgrading) → [`secondbrain-nachziehen.md`](secondbrain-nachziehen.md)
 - Several people, one VPS project → [`multi-user-vps.md`](multi-user-vps.md)
 
-Two levels, both non-destructive:
+Two steps, both non-destructive:
 
 1. **Update the tool** — bring the `bootstrap` skill on the machine up to date.
-2. **Lift the project** — `/bootstrap` in the project detects the existing installation and runs the upgrade in three modes.
+2. **Lift the project** — paste the upgrade prompt into the Claude Code session; the skill detects the existing installation and runs three modes (inspect → apply-safe → apply-with-confirmation).
 
 ## Step 1 — Update the bootstrap skill
 
@@ -29,19 +29,9 @@ cd /tmp && rm -rf intentron
 
 > On a **multi-user VPS** with a central skill pool, do a single `git pull` in the pool (`/opt/claude/skills/`) instead — see [`multi-user-vps.md`](multi-user-vps.md) or HANDBUCH Appendix R (skill pool governance).
 
-## Step 2 — Run the upgrade in the project (dry-run first)
+## Step 2 — Paste the upgrade prompt into the Claude Code session
 
-In a Claude Code session **inside the project folder**, simply type **`/bootstrap`**. The skill detects the existing installation (§7.5a) and asks for the mode — no flag needed:
-
-| Mode | Behavior |
-|---|---|
-| **`inspect`** | show diff + risks + manual TODOs only, **writes nothing** (dry-run) |
-| **`apply-safe`** | additive/idempotent changes only (new templates, missing sections); existing content stays |
-| **`apply-with-confirmation`** | anything that changes existing rules, hooks, CI or skill versions is confirmed per change |
-
-**Recommended order: `inspect` → `apply-safe` → `apply-with-confirmation`.**
-
-One-shot prompt — paste into Claude Code opened in the old repo as an alternative to the interactive mode prompt:
+Open Claude Code **inside the project folder** and paste this prompt — the upgrade runs without an interactive interview:
 
 ```text
 This repo may run an older INTENTRON version. Upgrade it safely following
@@ -57,6 +47,16 @@ bootstrap/references/framework-upgrade.md (modes inspect → apply-safe → appl
 Finally run bootstrap/references/verify-setup.sh and write an upgrade report to
 journal/reports/framework-upgrade/YYYY-MM-DD.md.
 ```
+
+The prompt automatically runs three phases: **inspect** (dry-run, nothing is written) → **apply-safe** (additive changes only) → **apply-with-confirmation** (confirm each destructive change individually).
+
+| Mode | Behavior |
+|---|---|
+| **`inspect`** | show diff + risks + manual TODOs only, **writes nothing** |
+| **`apply-safe`** | additive/idempotent changes only; existing content stays |
+| **`apply-with-confirmation`** | anything that changes existing rules, hooks, CI or skill versions is confirmed per change |
+
+> **Alternative:** type `/bootstrap` in the session — the skill detects the existing installation (§7.5a) and asks for the mode interactively.
 
 ## Safety & idempotency
 
