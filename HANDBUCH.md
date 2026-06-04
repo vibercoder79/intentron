@@ -1223,7 +1223,7 @@ Praxisregel: Wenn du auf dem VPS via SSH arbeitest, erwartest du keine Inline-Hi
 
 > **Hinweis zur Skizzen-Beschriftung:** Die Excalidraw zeigt BOO-28 noch als "geplant". Seit v3.17.0 (2026-05-12) ist BOO-28 done — `migrate_boo_28()` legt `.github/workflows/eslint.yml` (Node-Stacks) bzw. `.github/workflows/ruff.yml` (Python-Stacks) mit Pflicht-SARIF-Output nach `.ci-reports/` an (Vorbereitung BOO-32 Hermes-Konsumtion). Das Neu-Rendern der PNG ist nicht Scope dieser Aufgabe.
 
-**CI-Layer (Layer 3) — GitHub Actions:** Bootstrap legt Stack-abhängig die folgenden Workflow-Files in `.github/workflows/` an — alle drei schreiben SARIF nach `.ci-reports/` und uploaden via `github/codeql-action/upload-sarif@v3` in den GitHub-Security-Tab.
+**CI-Layer (Layer 3) — GitHub Actions:** Bootstrap legt Stack-abhängig die folgenden Workflow-Files in `.github/workflows/` an — alle drei schreiben SARIF nach `.ci-reports/` und uploaden via `github/codeql-action/upload-sarif@v4` in den GitHub-Security-Tab.
 
 | Workflow | Trigger | Tool | Stack | Quelle (BOO) |
 |----------|---------|------|-------|--------------|
@@ -1234,6 +1234,8 @@ Praxisregel: Wenn du auf dem VPS via SSH arbeitest, erwartest du keine Inline-Hi
 | `sonar.yml` | push auf main | SonarQube Cloud | alle | BOO-5 |
 
 Required Status Checks `ESLint`, `Ruff`, `Semgrep`, `SonarCloud` werden über `gh api ... branches/main/protection` (BOO-29) aktiviert — ohne grünen Lauf kein Merge.
+
+> **Next.js-Erstlauf-Härtung (Wave BA, BOO-140–143):** `semgrep.yml` läuft **ohne** Docker-Container (Semgrep via `pip install`, sonst scheitert `actions/checkout` auf PRs); alle drei SARIF-Uploads nutzen `upload-sarif@v4` + `if: always() && hashFiles(...) != ''`. `perf.yml` **skippt** seine Benchmarks grün, solange `journal/perf-baseline.json` leer ist (`Check prerequisites`-Step). Für React/TSX bekommt `eslint.config.mjs` einen Frontend-Block (`...globals.browser` + `React: 'readonly'`), und ein `"lint": "next lint"` in `package.json` wird auf `"lint": "eslint ."` umgebogen. Bestands-Projekte: `migrate_boo_140/141/142/143`.
 
 ### Branch-Protection-Setup (BOO-29)
 
@@ -4089,6 +4091,8 @@ Effekt: Projekt 2..N ist in Minuten governance-ready, ohne Tools/Skills neu zu i
 2. `bash bootstrap/scripts/migrate-to-v2.sh --all` (oder gezielt `--issue BOO-N`) zieht die Governance-Bausteine nach (Hooks, Gates, environment.json, Privacy/Vault-Harvest falls gewuenscht).
 3. `bash scripts/verify-setup.sh` — schliesst die Luecken-Liste.
 
+**Weg 4 — Nur SecondBrain nachziehen (ohne Re-Bootstrap).** Framework schon installiert, aber du willst **nur** das Leichtgewicht-SecondBrain-Setup (Standard-Projektpfad + Daily-Note-Loop, BOO-138/139) nachruesten — ohne `/bootstrap` und ohne Hooks/Gates/Specs anzufassen? Dafuer gibt es ein eigenes Runbook mit fertigem, **idempotentem** Operator-Prompt: er ergaenzt `~/.claude/CLAUDE.md` um `PROJECTS_ROOT` und ruestet bestehende Projekte um `journal/daily/` + Session-Start-/Ende-Routine nach. → **Runbook: [`docs/runbooks/secondbrain-nachziehen.md`](docs/runbooks/secondbrain-nachziehen.md)** (EN: [`.en.md`](docs/runbooks/secondbrain-nachziehen.en.md), mit Sketch).
+
 ### Pro-Projekt-Minimal-Checkliste
 
 Was **muss** pro Projekt passieren, sonst greifen Gates + Skills nicht:
@@ -4106,6 +4110,7 @@ Was **muss** pro Projekt passieren, sonst greifen Gates + Skills nicht:
 - **Anhang P (Deployment-Szenarien):** auf welcher Topologie die Projekte liegen (Solo-Mac / VPS / Multi-User-VPS).
 - **Anhang Y (VPS/Cloud-Team-Runbook):** der vollständige VPS-Team-Lebenszyklus (einmal pro VPS → pro Projekt → Team), in den dieser Multi-Projekt-Schritt eingebettet ist.
 - **Bootstrap Block B + Phase 5:** Infra-Erkennung + Skill-Installation, die den Schnellpfad ermoeglichen.
+- **Runbook „SecondBrain nachziehen" (`docs/runbooks/secondbrain-nachziehen.md`):** Weg 4 — nur die SecondBrain-Bausteine (BOO-138/139) ohne Re-Bootstrap nachruesten (DE+EN, mit Sketch).
 
 Quelle: Operator-Frage Tobias 2026-05-28 ("mehrere Projekte — pro Projekt bootstrappen oder Basis-schon-da-Pfad?").
 

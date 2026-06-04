@@ -972,7 +972,36 @@ export default [
 ];
 ```
 
-**Mit React:** statt `eslint-config-airbnb-base` das Paket `eslint-config-airbnb` verwenden (zieht React-spezifische Regeln mit, plus `eslint-plugin-react` und `eslint-plugin-jsx-a11y` als Peer Deps).
+**Mit React / Frontend (TSX):** statt `eslint-config-airbnb-base` das Paket `eslint-config-airbnb` verwenden (zieht React-spezifische Regeln mit, plus `eslint-plugin-react` und `eslint-plugin-jsx-a11y` als Peer Deps).
+
+**Zusaetzlich fuer `.tsx`/JSX (BOO-141, Pflicht bei Stack b/c mit React):** das `globals`-Paket installieren und einen eigenen Frontend-Block mit Browser- **und** React-Globals ergaenzen. Ohne diesen Block wirft `js.configs.recommended`'s `no-undef`-Regel bei jeder `.tsx`-Datei mit JSX `'React' is not defined` (und `window`/`document`/`fetch` sind ebenfalls undefiniert), weil der Node-Hausregeln-Block oben nur Node-Globals kennt:
+
+```bash
+npm install --save-dev globals
+```
+
+```javascript
+// am Kopf von eslint.config.mjs (zusaetzlich, nur bei React/Frontend)
+import globals from 'globals';
+
+// ... im Export-Array als eigener Frontend-Block (nach den Layer-Configs,
+//     parallel zum Node-Hausregeln-Block):
+{
+  files: ['**/*.ts', '**/*.tsx'],
+  languageOptions: {
+    ecmaVersion: 2022,
+    sourceType: 'module',
+    globals: {
+      ...globals.browser,   // window, document, fetch, ...
+      React: 'readonly',    // klassischer JSX-Transform / React.*-Referenzen
+    },
+  },
+  rules: {
+    'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+    'no-undef': 'error',
+  },
+},
+```
 
 **Iteration im Implement-Skill:** `/implement` Schritt 6a iteriert deklarativ ueber den ESLint-Output bis 0 Errors (max. 5 Iterationen, dann Stopp mit Hinweis). Compound Engineering Mechanik #1 nach Schrader Code Crash.
 
@@ -1231,9 +1260,11 @@ on:
 jobs:
   semgrep:
     runs-on: ubuntu-latest
-    container: returntocorp/semgrep
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install Semgrep
+        run: pip install semgrep
 
       - name: Read manifest and run Semgrep
         run: |
@@ -1250,10 +1281,10 @@ jobs:
           # shellcheck disable=SC2086
           semgrep $ARGS --error --sarif --output=.ci-reports/semgrep.sarif
 
-      - uses: github/codeql-action/upload-sarif@v3
+      - uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: .ci-reports/semgrep.sarif
-        if: always()
+        if: always() && hashFiles('.ci-reports/semgrep.sarif') != ''
 
       - uses: actions/upload-artifact@v4
         with:
@@ -1269,7 +1300,7 @@ jobs:
 
 **CI-Layer seit BOO-28 (2026-05-12):** Dritter Layer der Quality-Gate-Architektur fuer Linting (Pendant zur Semgrep-Action, anderer Tool-Klasse). Wird in Phase 4.4 des Bootstrap-Flows fuer Stacks `a) Node.js Backend`, `b) Frontend` und `c) Full-Stack` angelegt. Pendant fuer Python ist `ruff.yml` (naechster Block).
 
-**SARIF-Output (Pflicht):** Die Action schreibt das Ergebnis als SARIF nach `.ci-reports/eslint.sarif` und uploaded es via `github/codeql-action/upload-sarif@v3` in den GitHub-Security-Tab. SARIF-Output ist Pflicht — wird in BOO-32 (CI-Output-Standardisierung) fuer Hermes-Konsumtion gelesen.
+**SARIF-Output (Pflicht):** Die Action schreibt das Ergebnis als SARIF nach `.ci-reports/eslint.sarif` und uploaded es via `github/codeql-action/upload-sarif@v4` in den GitHub-Security-Tab. SARIF-Output ist Pflicht — wird in BOO-32 (CI-Output-Standardisierung) fuer Hermes-Konsumtion gelesen.
 
 **SARIF-Formatter:** `@microsoft/eslint-formatter-sarif` muss als devDependency installiert sein — `npm install --save-dev @microsoft/eslint-formatter-sarif`. Wird vom `npm ci`-Step im Workflow automatisch installiert, sobald die devDependency in `package.json` vorhanden ist.
 
@@ -1287,9 +1318,9 @@ jobs:
         with: { node-version: '20', cache: 'npm' }
       - run: npm ci
       - run: npx eslint . --format=@microsoft/eslint-formatter-sarif --output-file=.ci-reports/eslint.sarif
-      - uses: github/codeql-action/upload-sarif@v3
+      - uses: github/codeql-action/upload-sarif@v4
         with: { sarif_file: .ci-reports/eslint.sarif }
-        if: always()
+        if: always() && hashFiles('.ci-reports/eslint.sarif') != ''
 ```
 
 **Two-Layer-Logik:** Pre-Commit-Hook (Layer 2, Phase 4.6) blockiert lokal via `npx eslint --max-warnings=0`, diese Action (Layer 3) blockiert CI. Wer den Hook via `--no-verify` umgeht, wird in Layer 3 gefangen.
@@ -1300,7 +1331,7 @@ jobs:
 
 **CI-Layer seit BOO-28 (2026-05-12):** Python-Pendant zur ESLint-Action (vorheriger Block). Wird in Phase 4.4 des Bootstrap-Flows fuer Stack `d) Python` angelegt.
 
-**SARIF-Output (Pflicht):** Ruff hat seit Version 0.5 nativen SARIF-Support via `--output-format=sarif`. Die Action schreibt nach `.ci-reports/ruff.sarif` und uploaded via `github/codeql-action/upload-sarif@v3`. Wird in BOO-32 fuer Hermes-Konsumtion gelesen.
+**SARIF-Output (Pflicht):** Ruff hat seit Version 0.5 nativen SARIF-Support via `--output-format=sarif`. Die Action schreibt nach `.ci-reports/ruff.sarif` und uploaded via `github/codeql-action/upload-sarif@v4`. Wird in BOO-32 fuer Hermes-Konsumtion gelesen.
 
 **Branch-Protection:** Required Status Check `ruff` wird in BOO-29 aktiviert (analog `eslint` fuer Node-Projekte).
 
@@ -1318,9 +1349,9 @@ jobs:
       - run: |
           mkdir -p .ci-reports
           ruff check . --output-format=sarif --output-file=.ci-reports/ruff.sarif
-      - uses: github/codeql-action/upload-sarif@v3
+      - uses: github/codeql-action/upload-sarif@v4
         with: { sarif_file: .ci-reports/ruff.sarif }
-        if: always()
+        if: always() && hashFiles('.ci-reports/ruff.sarif') != ''
 ```
 
 **Two-Layer-Logik:** Analog zu ESLint — Pre-Commit-Hook (Layer 2) ruft `ruff check` lokal auf, diese Action (Layer 3) blockiert CI.
@@ -2592,7 +2623,7 @@ Zweiter Arm der Performance-Saeule. BOO-14 hat bereits den **Production-Alarm** 
 ```
 
 > [!note] Erstbefuellung
-> Beim Bootstrap legt der Skill `services: []` an. Erst nach dem ersten gruenen CI-Lauf laed der Operator das `journal/reports/perf/<service>-bench-<sha>.json`-Artefakt herunter, kopiert die p50/p95/p99/req_per_sec-Werte in die Baseline und committed sie als "BOO-16: initial baseline for <service>". Davor laeuft der Comparator-Step im Gate-Modus "Baseline fehlt — Fail", was bei einem frischen Repo erwartet ist.
+> Beim Bootstrap legt der Skill `services: []` an. Solange die Baseline leer ist, **skippt** der Perf-Workflow seine Benchmarks via Prerequisite-Check (BOO-143) und das Gate bleibt **gruen** — ein frisches Repo bricht nicht mehr am Perf-Gate ab. Sobald der Operator nach einem ersten Bench-Lauf das `journal/reports/perf/<service>-bench-<sha>.json`-Artefakt herunterlaedt, die p50/p95/p99/req_per_sec-Werte in die Baseline kopiert und als "BOO-16: initial baseline for <service>" committed, laeuft das Gate ab dem naechsten Lauf normal (Vergleich gegen Baseline).
 
 **Anti-Patterns:**
 - KEINE automatische Ueberschreibung der Baseline durch CI — nur Operator. Sonst ist das Gate sinnlos (Baseline waechst mit jeder Regression mit).
@@ -2844,6 +2875,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # --- Prerequisite-Check (BOO-143): leere/fehlende Baseline => Benchmarks skippen, Gate gruen ---
+      # Ein frisches Projekt hat journal/perf-baseline.json mit services: [] — ohne diesen Check
+      # bricht der erste CI-Lauf am Service-Start/Bench ab. Sobald die Baseline befuellt ist, laeuft das Gate normal.
+      - name: Check prerequisites
+        id: prereq
+        run: |
+          if [ ! -f journal/perf-baseline.json ]; then
+            echo "INFO: journal/perf-baseline.json fehlt — Benchmarks werden uebersprungen (Gate gruen)."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          SERVICES=$(python3 -c "import json; print(len(json.load(open('journal/perf-baseline.json')).get('services', [])))" 2>/dev/null || echo 0)
+          if [ "$SERVICES" = "0" ]; then
+            echo "INFO: Baseline noch leer (services: []) — Benchmarks uebersprungen, bis die Baseline befuellt ist (Gate gruen)."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
       # --- Stack-Setup: eines von beiden, je nach Stack-Choice (Block A) ---
       - name: Setup Node.js
         if: ${{ hashFiles('package.json') != '' }}
@@ -2870,6 +2920,7 @@ jobs:
       # Annahme: Service horcht auf Port 8080. Fuer Multi-Service-Projekte
       # pro Service einen eigenen Workflow-Job mit eigenem Port.
       - name: Start service (background)
+        if: steps.prereq.outputs.skip == 'false'
         run: |
           # TODO Operator: hier den Start-Command fuer ${{ matrix.service }} eintragen.
           # Beispiele:
@@ -2878,6 +2929,7 @@ jobs:
           echo "Operator: Start-Command fuer ${{ matrix.service }} hier eintragen" && exit 1
 
       - name: Wait for service
+        if: steps.prereq.outputs.skip == 'false'
         run: |
           for i in $(seq 1 30); do
             if curl -sf http://localhost:8080/health > /dev/null; then
@@ -2889,14 +2941,14 @@ jobs:
 
       # --- Bench laufen lassen (eines von beiden) ---
       - name: Run bench (Node)
-        if: ${{ hashFiles('package.json') != '' }}
+        if: ${{ steps.prereq.outputs.skip == 'false' && hashFiles('package.json') != '' }}
         env:
           BENCH_URL: http://localhost:8080/
           BENCH_DURATION: '30'
         run: node bench/${{ matrix.service }}.bench.js
 
       - name: Run bench (Python)
-        if: ${{ hashFiles('pyproject.toml') != '' }}
+        if: ${{ steps.prereq.outputs.skip == 'false' && hashFiles('pyproject.toml') != '' }}
         env:
           BENCH_URL: http://localhost:8080/
         run: |
@@ -2907,6 +2959,7 @@ jobs:
       # --- Comparator: Ratio current_p95 / baseline_p95 ---
       - name: Compare against baseline
         id: compare
+        if: steps.prereq.outputs.skip == 'false'
         env:
           SERVICE: ${{ matrix.service }}
           PR_LABELS: ${{ toJson(github.event.pull_request.labels.*.name) }}

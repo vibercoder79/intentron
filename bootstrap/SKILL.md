@@ -1,7 +1,7 @@
 ---
 name: bootstrap
 recommended_model: sonnet  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
-version: 3.36.0
+version: 3.37.0
 description: Setzt ein neues Projekt mit Governance-Framework auf — interaktiver Block-Interview-Flow in 4 Schritten, Doku-Architektur mit Hub-Auto-Verlinkung, optionaler Learning-Loop L1/L2/L3. Verwenden wenn der Operator ein neues Projekt aufsetzen will oder "/bootstrap" sagt.
 tools: [Read, Write, Edit, Bash, Glob, Grep]
 metadata:
@@ -628,6 +628,8 @@ Basierend auf `STACK_CHOICE` — siehe `references/file-templates.md`:
 - Frontend / Full-Stack → zusaetzlich `.prettierrc`
 - Python → `pyproject.toml` (Ruff + Black)
 - **TypeScript** (`LANG_VARIANT = ts` bei a/b/c, BOO-127) → zusaetzlich `tsconfig.json` (Template `references/file-templates.md` §`tsconfig.json (BOO-127)`); `eslint.config.mjs` bindet `typescript-eslint` ein; plus `tsc --noEmit`-Typecheck-Gate (siehe CI-Tabelle unten).
+- **React / Frontend mit JSX** (Stack b/c, BOO-141) → `eslint.config.mjs` bekommt zusaetzlich einen Frontend-Block mit `...globals.browser` **und** `React: 'readonly'` (Paket `globals` als devDep). Pflicht, sonst wirft `no-undef` bei jeder `.tsx`-Datei `'React' is not defined`. Template: `references/file-templates.md` §`eslint.config.mjs` → „Mit React / Frontend (TSX)".
+- **Next.js / Meta-Framework `package.json`-`lint`-Script** (Stack b/c, BOO-140) → falls `create-next-app` o.ae. bereits ein `"lint": "next lint"` in `package.json` angelegt hat, das Script idempotent auf `"lint": "eslint ."` umbiegen (Operator-Bestaetigung als ADR). Grund: `next lint` versteht die ESLint-v9-Flat-Config (`eslint.config.mjs`) nicht und bricht mit `Invalid project directory ... /lint` ab; die CI nutzt ohnehin `npx eslint .` (BOO-28). Fuer Bestands-Projekte: `migrate_boo_140()`.
 
 Zusaetzlich Stack-abhaengig **CI-Lint-Workflow (BOO-28)** — wird nur angelegt wenn `B.2 == ja` (GitHub-Repo angelegt). Pendant zur Semgrep-CI-Action (Phase 4.4c) — gleicher Layer-3-Mechanismus, andere Tool-Klasse (Lint statt SAST):
 
@@ -639,7 +641,7 @@ Zusaetzlich Stack-abhaengig **CI-Lint-Workflow (BOO-28)** — wird nur angelegt 
 | d) Python | `.github/workflows/ruff.yml` | `references/file-templates.md` §`.github/workflows/ruff.yml (BOO-28 — Ruff CI Gate)` |
 | e) Anderes | keiner — Operator entscheidet manuell | — |
 
-Beide Workflows schreiben SARIF nach `.ci-reports/` (Pflicht — wird in BOO-32 fuer Hermes-Konsumtion und in BOO-29 als Required Status Check `eslint` / `ruff` gelesen) und uploaden via `github/codeql-action/upload-sarif@v3` in den GitHub-Security-Tab.
+Beide Workflows schreiben SARIF nach `.ci-reports/` (Pflicht — wird in BOO-32 fuer Hermes-Konsumtion und in BOO-29 als Required Status Check `eslint` / `ruff` gelesen) und uploaden via `github/codeql-action/upload-sarif@v4` in den GitHub-Security-Tab.
 
 Bei `B.2 == nein/c` (kein GitHub gewuenscht): BOO-28-Schritt skippen, nur Layer 2 (Pre-Commit-Hook, Phase 4.6) deckt Linting lokal ab.
 

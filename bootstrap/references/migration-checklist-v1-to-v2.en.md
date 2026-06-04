@@ -277,7 +277,7 @@ Mirror of the master checklist in `intentron/bootstrap/references/migration-chec
 **Auto step:** yes (files dropped by `migrate_boo_28()`, stack detection automatic)
 **Steps:**
 1. **`[AUTO]`** From the project root run `bash <path>/migrate-to-v2.sh --issue BOO-28` — drops stack-dependent workflow file(s):
-   - **Node stack** (`package.json` present) → `.github/workflows/eslint.yml`. Workflow runs `npx eslint . --format=@microsoft/eslint-formatter-sarif --output-file=.ci-reports/eslint.sarif` and uploads the SARIF via `github/codeql-action/upload-sarif@v3` into the GitHub Security tab. SARIF output is mandatory — read by BOO-32 (CI output standardisation) for Hermes consumption.
+   - **Node stack** (`package.json` present) → `.github/workflows/eslint.yml`. Workflow runs `npx eslint . --format=@microsoft/eslint-formatter-sarif --output-file=.ci-reports/eslint.sarif` and uploads the SARIF via `github/codeql-action/upload-sarif@v4` into the GitHub Security tab. SARIF output is mandatory — read by BOO-32 (CI output standardisation) for Hermes consumption.
    - **Python stack** (`pyproject.toml` OR `requirements.txt` present) → `.github/workflows/ruff.yml`. Workflow runs `ruff check . --output-format=sarif --output-file=.ci-reports/ruff.sarif` and uploads similarly.
    - **Mixed stack** (both manifest files present) → both workflows in parallel.
    - **Unknown stack** (no manifest file) → `log_warn` + hint, no workflow created.

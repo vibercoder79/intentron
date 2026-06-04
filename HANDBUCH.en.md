@@ -1153,7 +1153,7 @@ Rule of thumb: when you work on the VPS via SSH, do not expect inline hints in t
 
 > **Note on the sketch caption:** The Excalidraw still shows BOO-28 as "planned". As of v3.17.0 (2026-05-12) BOO-28 is done — `migrate_boo_28()` drops `.github/workflows/eslint.yml` (Node stacks) or `.github/workflows/ruff.yml` (Python stacks) with mandatory SARIF output to `.ci-reports/` (prepares BOO-32 Hermes consumption). The PNG re-render is out of scope for this task.
 
-**CI layer (Layer 3) — GitHub Actions:** Bootstrap drops the following workflow files stack-dependent into `.github/workflows/` — all three write SARIF to `.ci-reports/` and upload it via `github/codeql-action/upload-sarif@v3` into the GitHub Security tab.
+**CI layer (Layer 3) — GitHub Actions:** Bootstrap drops the following workflow files stack-dependent into `.github/workflows/` — all three write SARIF to `.ci-reports/` and upload it via `github/codeql-action/upload-sarif@v4` into the GitHub Security tab.
 
 | Workflow | Trigger | Tool | Stack | Source (BOO) |
 |----------|---------|------|-------|--------------|
@@ -1164,6 +1164,8 @@ Rule of thumb: when you work on the VPS via SSH, do not expect inline hints in t
 | `sonar.yml` | push on main | SonarQube Cloud | all | BOO-5 |
 
 Required status checks `ESLint`, `Ruff`, `Semgrep`, `SonarCloud` are activated via `gh api ... branches/main/protection` (BOO-29) — without a green run, no merge.
+
+> **Next.js first-CI-run hardening (Wave BA, BOO-140–143):** `semgrep.yml` runs **without** a Docker container (Semgrep via `pip install`, otherwise `actions/checkout` fails on PRs); all three SARIF uploads use `upload-sarif@v4` + `if: always() && hashFiles(...) != ''`. `perf.yml` **skips** its benchmarks green while `journal/perf-baseline.json` is empty (`Check prerequisites` step). For React/TSX, `eslint.config.mjs` gets a frontend block (`...globals.browser` + `React: 'readonly'`), and a `"lint": "next lint"` in `package.json` is rewritten to `"lint": "eslint ."`. Existing projects: `migrate_boo_140/141/142/143`.
 
 ### Branch-protection setup (BOO-29)
 
@@ -3957,6 +3959,8 @@ Effect: project 2..N is governance-ready in minutes, without reinstalling tools/
 2. `bash bootstrap/scripts/migrate-to-v2.sh --all` (or selectively `--issue BOO-N`) retrofits the governance building blocks (hooks, gates, environment.json, privacy/vault-harvest if wanted).
 3. `bash scripts/verify-setup.sh` — closes the gap list.
 
+**Path 4 — Retrofit just the SecondBrain (no re-bootstrap).** Framework already installed, but you want **only** the lightweight SecondBrain setup (standard project path + daily-note loop, BOO-138/139) — without `/bootstrap` and without touching hooks/gates/specs? There is a dedicated runbook with a ready, **idempotent** operator prompt: it adds `PROJECTS_ROOT` to `~/.claude/CLAUDE.md` and retrofits existing projects with `journal/daily/` + session-start/end routine. → **Runbook: [`docs/runbooks/secondbrain-nachziehen.en.md`](docs/runbooks/secondbrain-nachziehen.en.md)** (DE: [`.md`](docs/runbooks/secondbrain-nachziehen.md), with sketch).
+
 ### Per-project minimal checklist
 
 What **must** happen per project, otherwise gates + skills do not engage:
@@ -3974,6 +3978,7 @@ What **must** happen per project, otherwise gates + skills do not engage:
 - **Appendix P (Deployment scenarios):** the topology the projects sit on (Solo-Mac / VPS / multi-user VPS).
 - **Appendix Y (VPS/cloud team runbook):** the full once-per-VPS vs. per-project lifecycle this multi-project flow is part of.
 - **Bootstrap Block B + Phase 5:** infra detection + skill installation that enable the fast path.
+- **Runbook "Retrofit the SecondBrain" (`docs/runbooks/secondbrain-nachziehen.en.md`):** path 4 — retrofit just the SecondBrain blocks (BOO-138/139) without re-bootstrapping (DE+EN, with sketch).
 
 Source: operator question Tobias 2026-05-28 ("several projects — bootstrap per project or a base-already-there path?").
 

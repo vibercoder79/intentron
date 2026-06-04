@@ -316,9 +316,11 @@ on:
 jobs:
   semgrep:
     runs-on: ubuntu-latest
-    container: returntocorp/semgrep
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install Semgrep
+        run: pip install semgrep
 
       - name: Read manifest and run Semgrep
         run: |
@@ -334,10 +336,10 @@ jobs:
           fi
           semgrep $ARGS --error --sarif --output=.ci-reports/semgrep.sarif
 
-      - uses: github/codeql-action/upload-sarif@v3
+      - uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: .ci-reports/semgrep.sarif
-        if: always()
+        if: always() && hashFiles('.ci-reports/semgrep.sarif') != ''
 
       - uses: actions/upload-artifact@v4
         with:
@@ -684,7 +686,7 @@ migrate_boo_28() {
     #   Mixed-Stack (beide Manifest-Files vorhanden) -> beide Workflows parallel.
     #
     # SARIF-Output ist Pflicht (BOO-32-Vorbereitung) — beide Workflows schreiben nach
-    # .ci-reports/<tool>.sarif und uploaden via github/codeql-action/upload-sarif@v3.
+    # .ci-reports/<tool>.sarif und uploaden via github/codeql-action/upload-sarif@v4.
     #
     # Stack-Detection: identisches Pattern zu migrate_boo_16/migrate_boo_25.
     #   - package.json                                 -> Node
@@ -734,9 +736,9 @@ jobs:
         with: { node-version: '20', cache: 'npm' }
       - run: npm ci
       - run: npx eslint . --format=@microsoft/eslint-formatter-sarif --output-file=.ci-reports/eslint.sarif
-      - uses: github/codeql-action/upload-sarif@v3
+      - uses: github/codeql-action/upload-sarif@v4
         with: { sarif_file: .ci-reports/eslint.sarif }
-        if: always()
+        if: always() && hashFiles('.ci-reports/eslint.sarif') != ''
 ESLINT_YML_EOF
             log_info "created $eslint_yml (SARIF-Output nach .ci-reports/eslint.sarif)"
         fi
@@ -784,9 +786,9 @@ jobs:
       - run: |
           mkdir -p .ci-reports
           ruff check . --output-format=sarif --output-file=.ci-reports/ruff.sarif
-      - uses: github/codeql-action/upload-sarif@v3
+      - uses: github/codeql-action/upload-sarif@v4
         with: { sarif_file: .ci-reports/ruff.sarif }
-        if: always()
+        if: always() && hashFiles('.ci-reports/ruff.sarif') != ''
 RUFF_YML_EOF
             log_info "created $ruff_yml (SARIF-Output nach .ci-reports/ruff.sarif)"
         fi
@@ -1851,6 +1853,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # --- Prerequisite-Check (BOO-143): leere/fehlende Baseline => Benchmarks skippen, Gate gruen ---
+      - name: Check prerequisites
+        id: prereq
+        run: |
+          if [ ! -f journal/perf-baseline.json ]; then
+            echo "INFO: journal/perf-baseline.json fehlt — Benchmarks werden uebersprungen (Gate gruen)."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          SERVICES=$(python3 -c "import json; print(len(json.load(open('journal/perf-baseline.json')).get('services', [])))" 2>/dev/null || echo 0)
+          if [ "$SERVICES" = "0" ]; then
+            echo "INFO: Baseline noch leer (services: []) — Benchmarks uebersprungen, bis die Baseline befuellt ist (Gate gruen)."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
       # --- Stack-Setup: eines von beiden, je nach Stack-Choice (Block A) ---
       - name: Setup Node.js
         if: ${{ hashFiles('package.json') != '' }}
@@ -1877,6 +1896,7 @@ jobs:
       # Annahme: Service horcht auf Port 8080. Fuer Multi-Service-Projekte
       # pro Service einen eigenen Workflow-Job mit eigenem Port.
       - name: Start service (background)
+        if: steps.prereq.outputs.skip == 'false'
         run: |
           # TODO Operator: hier den Start-Command fuer ${{ matrix.service }} eintragen.
           # Beispiele:
@@ -1885,6 +1905,7 @@ jobs:
           echo "Operator: Start-Command fuer ${{ matrix.service }} hier eintragen" && exit 1
 
       - name: Wait for service
+        if: steps.prereq.outputs.skip == 'false'
         run: |
           for i in $(seq 1 30); do
             if curl -sf http://localhost:8080/health > /dev/null; then
@@ -1896,14 +1917,14 @@ jobs:
 
       # --- Bench laufen lassen (eines von beiden) ---
       - name: Run bench (Node)
-        if: ${{ hashFiles('package.json') != '' }}
+        if: ${{ steps.prereq.outputs.skip == 'false' && hashFiles('package.json') != '' }}
         env:
           BENCH_URL: http://localhost:8080/
           BENCH_DURATION: '30'
         run: node bench/${{ matrix.service }}.bench.js
 
       - name: Run bench (Python)
-        if: ${{ hashFiles('pyproject.toml') != '' }}
+        if: ${{ steps.prereq.outputs.skip == 'false' && hashFiles('pyproject.toml') != '' }}
         env:
           BENCH_URL: http://localhost:8080/
         run: |
@@ -1914,6 +1935,7 @@ jobs:
       # --- Comparator: Ratio current_p95 / baseline_p95 ---
       - name: Compare against baseline
         id: compare
+        if: steps.prereq.outputs.skip == 'false'
         env:
           SERVICE: ${{ matrix.service }}
           PR_LABELS: ${{ toJson(github.event.pull_request.labels.*.name) }}
@@ -2875,6 +2897,12 @@ migrate_all() {
 
     # Wave I — Token-Efficiency (BOO-84)
     migrate_boo_84
+
+    # Wave — Next.js-Erstlauf-Haertung (BOO-140-143): CI-Template-Bugfixes, kein Opt-in
+    migrate_boo_140
+    migrate_boo_141
+    migrate_boo_142
+    migrate_boo_143
 
     log_info "DE: Migration abgeschlossen. Status pro Projekt in migration-status.md eintragen."
     log_info "EN: Migration finished. Record per-project status in migration-status.md."
@@ -3915,6 +3943,137 @@ migrate_boo_108() {
     return 0
 }
 
+migrate_boo_140() {
+    # BOO-140 — Next.js package.json lint-Script: 'next lint' -> 'eslint .'
+    # https://linear.app/owlist/issue/BOO-140
+    log_info "BOO-140: package.json lint-Script auf 'eslint .' umbiegen (falls 'next lint')"
+    if [[ ! -f "package.json" ]]; then
+        log_skip "BOO-140: kein package.json — uebersprungen"
+        return 0
+    fi
+    if ! grep -Eq '"lint"[[:space:]]*:[[:space:]]*"next lint"' package.json; then
+        log_skip "BOO-140: package.json lint-Script ist nicht 'next lint' — nichts zu tun (idempotent)"
+        return 0
+    fi
+    if [[ "$DRY_RUN" == "true" ]]; then
+        log_dry "patch package.json: \"lint\": \"next lint\" -> \"eslint .\""
+        return 0
+    fi
+    if command -v jq >/dev/null 2>&1; then
+        jq '.scripts.lint = "eslint ."' package.json > package.json.tmp && mv package.json.tmp package.json
+        log_info "BOO-140: package.json lint-Script auf 'eslint .' gesetzt"
+    else
+        log_warn "BOO-140: jq nicht gefunden — Operator: \"lint\"-Script in package.json manuell auf 'eslint .' setzen"
+    fi
+    log_manual "BOO-140: ESLint-v9-Flat-Config braucht 'eslint .' statt 'next lint' (Erstlauf-Fix). CI nutzt ohnehin 'npx eslint .' (BOO-28)."
+    return 0
+}
+
+migrate_boo_141() {
+    # BOO-141 — eslint.config.mjs: React-/Browser-Globals fuer TSX
+    # https://linear.app/owlist/issue/BOO-141
+    log_info "BOO-141: Frontend/React-Globals-Block in eslint.config.mjs (TSX)"
+    if [[ ! -f "eslint.config.mjs" ]]; then
+        log_skip "BOO-141: kein eslint.config.mjs — uebersprungen (kein Node/Frontend-Stack)"
+        return 0
+    fi
+    # Nur relevant fuer React/Frontend (react/next in package.json ODER .tsx-Dateien vorhanden)
+    local is_frontend="false"
+    if [[ -f package.json ]] && grep -Eq '"(react|next)"[[:space:]]*:' package.json 2>/dev/null; then
+        is_frontend="true"
+    fi
+    if [[ "$is_frontend" != "true" && -n "$(find . -path ./node_modules -prune -o -name '*.tsx' -print 2>/dev/null | head -1)" ]]; then
+        is_frontend="true"
+    fi
+    if [[ "$is_frontend" != "true" ]]; then
+        log_skip "BOO-141: kein React/TSX erkannt — Frontend-Globals-Block nicht noetig"
+        return 0
+    fi
+    if grep -q "globals.browser" eslint.config.mjs 2>/dev/null; then
+        log_skip "BOO-141: eslint.config.mjs hat bereits browser-Globals — nichts zu tun (idempotent)"
+        return 0
+    fi
+    # eslint.config.mjs wird operator-gerendert — kein Auto-Patch (analog migrate_boo_2). Manueller Hinweis:
+    log_manual "BOO-141: 'npm install --save-dev globals' und in eslint.config.mjs ergaenzen: 'import globals from \"globals\";' plus ein Frontend-Block:"
+    log_manual "  { files: ['**/*.ts','**/*.tsx'], languageOptions: { ecmaVersion: 2022, sourceType: 'module', globals: { ...globals.browser, React: 'readonly' } }, rules: { 'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }], 'no-undef': 'error' } }"
+    log_manual "  Vorlage: bootstrap/references/file-templates.md §eslint.config.mjs -> 'Mit React / Frontend (TSX)'. Sonst wirft no-undef 'React is not defined' bei jeder .tsx."
+    return 0
+}
+
+migrate_boo_142() {
+    # BOO-142 — Semgrep-Container raus + 'pip install semgrep' + upload-sarif@v3 -> @v4
+    # https://linear.app/owlist/issue/BOO-142
+    log_info "BOO-142: Semgrep-Container entfernen + upload-sarif v3->v4 in CI-Workflows"
+    local wf=".github/workflows"
+    if [[ ! -d "$wf" ]]; then
+        log_skip "BOO-142: $wf fehlt — keine Workflows zu patchen"
+        return 0
+    fi
+    # --- 1. semgrep.yml: container-Zeile entfernen + pip-install-Step nach checkout ---
+    if [[ -f "$wf/semgrep.yml" ]]; then
+        if grep -Eq '^[[:space:]]*container:' "$wf/semgrep.yml"; then
+            if [[ "$DRY_RUN" == "true" ]]; then
+                log_dry "patch $wf/semgrep.yml: container-Zeile entfernen + 'pip install semgrep'-Step nach checkout"
+            else
+                cp -f "$wf/semgrep.yml" "$wf/semgrep.yml.boo142-backup"
+                sed -i '' -E '/^[[:space:]]*container:[[:space:]]*returntocorp\/semgrep[[:space:]]*$/d' "$wf/semgrep.yml"
+                if ! grep -q 'pip install semgrep' "$wf/semgrep.yml"; then
+                    awk '
+                      /uses:[[:space:]]*actions\/checkout@v4/ && !ins {
+                        print
+                        print "      - name: Install Semgrep"
+                        print "        run: pip install semgrep"
+                        ins=1
+                        next
+                      }
+                      { print }
+                    ' "$wf/semgrep.yml" > "$wf/semgrep.yml.tmp" && mv "$wf/semgrep.yml.tmp" "$wf/semgrep.yml"
+                fi
+                log_info "BOO-142: $wf/semgrep.yml entcontainert + pip-install ergaenzt (Backup: semgrep.yml.boo142-backup)"
+            fi
+        else
+            log_skip "BOO-142: $wf/semgrep.yml hat keinen Container — nichts zu tun"
+        fi
+    fi
+    # --- 2. upload-sarif@v3 -> @v4 in allen Workflows ---
+    local patched_v4="false"
+    local f
+    for f in "$wf"/*.yml; do
+        [[ -f "$f" ]] || continue
+        if grep -q 'upload-sarif@v3' "$f"; then
+            if [[ "$DRY_RUN" == "true" ]]; then
+                log_dry "patch $f: upload-sarif@v3 -> @v4"
+            else
+                sed -i '' 's|upload-sarif@v3|upload-sarif@v4|g' "$f"
+                patched_v4="true"
+            fi
+        fi
+    done
+    [[ "$patched_v4" == "true" ]] && log_info "BOO-142: upload-sarif@v3 -> @v4 in CI-Workflows angehoben"
+    log_manual "BOO-142: optional die 'if: always()' der upload-sarif-Steps verschaerfen zu 'if: always() && hashFiles(\"...sarif\") != \"\"' (Vorlage: file-templates.md §semgrep/eslint/ruff.yml)."
+    return 0
+}
+
+migrate_boo_143() {
+    # BOO-143 — perf.yml skippt bei leerer Baseline (Prerequisite-Check)
+    # https://linear.app/owlist/issue/BOO-143
+    log_info "BOO-143: perf.yml Prerequisite-Skip bei leerer perf-baseline.json"
+    local perf_yml=".github/workflows/perf.yml"
+    if [[ ! -f "$perf_yml" ]]; then
+        log_skip "BOO-143: $perf_yml fehlt — kein Perf-Gate (Frontend-only nutzt Lighthouse) — uebersprungen"
+        return 0
+    fi
+    if grep -q 'Check prerequisites' "$perf_yml"; then
+        log_skip "BOO-143: $perf_yml hat bereits den Prerequisite-Skip — nichts zu tun (idempotent)"
+        return 0
+    fi
+    # perf.yml traegt operator-spezifische Service-Matrix — kein riskanter Auto-Patch der if-Guards.
+    log_warn "BOO-143: $perf_yml failt bei leerer Baseline (exit 1) — Prerequisite-Skip fehlt."
+    log_manual "BOO-143: sauberster Pfad — 'migrate_boo_16 --force' regeneriert perf.yml inkl. Skip (danach Service-Matrix neu eintragen)."
+    log_manual "BOO-143: alternativ manuell: 'Check prerequisites'-Step (services.length==0 -> skip=true) nach Checkout einfuegen und Start/Wait/Run-bench/Compare-Steps mit \"if: steps.prereq.outputs.skip == 'false'\" gaten. Vorlage: file-templates.md §.github/workflows/perf.yml."
+    return 0
+}
+
 # -----------------------------------------------------------------------------
 # CLI / Argument Parsing
 # -----------------------------------------------------------------------------
@@ -3941,6 +4100,7 @@ ALL_ISSUES=(
     BOO-92
     BOO-93
     BOO-108
+    BOO-140 BOO-141 BOO-142 BOO-143
 )
 
 print_help() {
