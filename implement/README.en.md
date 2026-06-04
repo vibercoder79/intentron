@@ -4,7 +4,7 @@
 
 > Turns a Linear issue into shipped code through a non-skippable 8-step protocol: identify → dependencies → context → governance validation → spec-gate → plan → implement → post-validation. No step optional, no shortcuts. Also usable by the automation daemon without human in the loop.
 
-**Version:** 2.11.1 · **Command:** `/implement`
+**Version:** 2.12.0 · **Command:** `/implement`
 
 ---
 
