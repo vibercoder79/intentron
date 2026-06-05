@@ -623,6 +623,24 @@ Claude zeigt:
 → Empfehlung: SHOP-38 zuerst (blockiert SHOP-42)
 ```
 
+### `/sprint-run` — Sprint-Orchestrator (ganzer Sprint, vollautomatisch)
+
+![Sprint-Run Skill](sprint-run/overview.png)
+
+**Wann:** Du willst einen ganzen Sprint vollautomatisch fahren, statt Story für Story manuell `/implement` aufzurufen.
+
+**Was passiert:**
+1. Wählt Stories aus dem priorisierten Backlog
+2. Setzt jede Story per `/implement` im Daemon-Modus um — eigener `git worktree` + Branch pro Story
+3. Pflegt den Linear-Status (Backlog → In Progress → Done), wartet auf grüne Remote-CI, merged, räumt den Worktree ab
+4. Stoppt am 80%-Token-Boundary und triggert `/sprint-review`
+
+**Abgrenzung:** `/implement` = eine Story. `/sprint-run` = N Stories (ganzer Sprint). `/sprint-run` ist reiner Orchestrator — `/implement`, `/backlog`, `/sprint-review` bleiben unverändert.
+
+**Gate-Blocks** (sensitive-paths / personal-data) pausieren den Daemon und werden **nie** automatisch überbrückt — Resume nur nach `review-ok` / `privacy-ok`.
+
+> Vollständiges Kapitel mit allen Diagrammen (Daemon-Loop, Story-Breakdown, Agent-Interaktion, GitHub-Integration, Gate-Block-Handling): **Anhang AD**.
+
 ### `/breakfix` — Wenn etwas kaputt ist
 
 **Wann:** Das System hat ein Problem, einen Bug, oder verhält sich komisch.
@@ -4715,8 +4733,87 @@ Aus `docs/how-we-document.md` §4 — Reihenfolge im Bestands-Onboarding:
 
 Verzahnt mit `/dpo` (bei Legal-Compliance-Kategorie mit personenbezogenen Daten → DPO-Vorschlag), `/intent` (extrahierte Intent-Statements landen in `intents/INTENT-XX.md`) und `/pitch` (Demo-Storyboard-Pitch-Kategorie).
 
+## Anhang AD: /sprint-run — Sprint-Orchestrator (BOO-157)
+
+> Ergaenzt §6 (Skill-Uebersicht) und Anhang G (Sprint-Sizing). `/sprint-run` faehrt einen ganzen Sprint vollautomatisch, indem es die bestehenden Skills verkettet — es veraendert sie nicht. Quelle: `sprint-run/SKILL.md` + `sprint-run/references/`.
+
+### Was ist /sprint-run?
+
+`/implement` setzt **eine** Story um. `/sprint-run` faehrt **N** Stories als Sprint: es waehlt Stories aus dem priorisierten Backlog, ruft `/implement` pro Story im Daemon-Modus auf, pflegt den Linear-Status, wartet auf gruene Remote-CI, merged, raeumt Worktrees ab und schliesst den Sprint mit `/sprint-review` ab. Reiner Orchestrator — `/implement`, `/backlog`, `/sprint-review` bleiben unveraendert.
+
+![Sprint-Run-Flow — der Daemon-Loop von /sprint-run bis /sprint-review](sprint-run/docs/sprint-run-flow.png)
+
+### Wann einsetzen?
+
+Voraussetzungen, geprueft im **Sprint-Pre-Flight** (Schritt 1, HARD GATE):
+
+- Backlog priorisiert (`/backlog` gelaufen, geordnete Kandidatenliste)
+- Jede Kandidaten-Story hat eine vollstaendige Spec (`specs/<ISSUE>.md`, Schrader-vollstaendig, mit `Execution Isolation`-Block)
+- Governance-Gates gruen (`governance_mode`, sensitive-paths/personal-data konfiguriert)
+- `git worktree` verfuegbar, `gh` authentifiziert, `main` clean
+
+Ist ein Punkt rot, wird die Story aus dem Sprint genommen (Daemon: uebersprungen + protokolliert) oder der Lauf stoppt.
+
+### Schritt-fuer-Schritt-Ablauf (Daemon-Loop)
+
+Pro Story in der Sprint-Reihenfolge:
+
+| # | Aktion |
+|---|--------|
+| 4.1 | Linear → In Progress |
+| 4.2 | `git worktree add ../wt-<ISSUE> -b feat/boo-<n>-<slug>` |
+| 4.3 | `/implement` im Daemon-Modus (Schritt-4-Freigabe uebersprungen, alle Gates aktiv) |
+| 4.4 | Gate-Block-Pause (s.u.) bei Sensitive-/Personal-Data-Treffer |
+| 4.5 | Remote-CI-Wait (`gh run watch --exit-status`, BOO-148) — rot → max 3 Fix-Iterationen |
+| 4.6 | Merge **nur** bei gruener CI → `main`; `git worktree remove` |
+| 4.7 | Linear → Done (mit AC-Evidenz); bei Fehler Story zurueck + `daemon_fail_policy` |
+| 4.8 | Token-Check gegen 80%-Boundary |
+
+![Story-Breakdown — eine Story von worktree bis cleanup](sprint-run/docs/story-breakdown.png)
+
+### Agent-Interaktion
+
+`/sprint-run` ruft auf: `/backlog` (Story-Auswahl, einmal pro Sprint), `/implement` (pro Story, im Daemon-Modus) und `/sprint-review` (am Sprint-Ende). Es schreibt keinen Produktcode selbst und veraendert die orchestrierten Skills nicht. Kette: `intent → ideation → backlog → sprint-run → ( implement )* → sprint-review`.
+
+![Agent-Interaktion — wer ruft wen, welche Artefakte fliessen](sprint-run/docs/agent-interaction.png)
+
+### Gate-Block-Verhalten
+
+Loest `/implement` einen **Sensitive-Paths-Gate** (Schritt 5.5) oder **Personal-Data-Gate** (Schritt 5.5b) aus, pausiert der Daemon sofort, benachrichtigt den Operator (Story-ID + Grund) und faehrt **erst** nach explizitem `review-ok` (technisch) bzw. `privacy-ok` (rechtlich, DSGVO Art. 25) fort. **Kein** automatischer Bypass, **kein** Timeout-Resume — auch im `--auto`-Modus.
+
+![Gate-Block-Handling — Zustandsmaschine laufend → pausiert → resumed](sprint-run/docs/gate-block-handling.png)
+
+### Token-Boundary-Logik
+
+Ein Sprint ist **80 % des Context-Windows** (Token-Box statt Zeit-Box, Anhang G). `/sprint-run` projiziert vor dem Lauf die Summe der `token_estimate` gegen das Budget und prueft nach jeder Story den kumulierten Verbrauch. Bei ≥ `token_hard_threshold` (Default 80) verlaesst der Daemon den Loop, triggert `/sprint-review` und meldet **"Sprint-Boundary erreicht"**. Verbleibende Stories bleiben fuer den naechsten Sprint im Backlog.
+
+### GitHub-Integration
+
+Pro Story entsteht ein Branch `feat/boo-<n>-<slug>` in einem eigenen Worktree. `/implement` committet und pusht dort, optional via PR (`gh pr create`); der Remote-CI-Lauf wird mit `gh run watch --exit-status` abgewartet (BOO-148). **Merge nur bei gruener CI** — bleibt die CI nach drei Fix-Iterationen rot, eskaliert der Daemon und merged nicht.
+
+![GitHub-Integration — Story → Branch → PR → CI → Merge](sprint-run/docs/github-integration.png)
+
+### Fehlerbehandlung
+
+- **`/implement` schlaegt fehl:** Story zurueck auf `Backlog`; `daemon_fail_policy` = `stop` (Default, Sprint anhalten + Notify) oder `continue` (naechste Story).
+- **CI bleibt rot** nach 3 Iterationen: kein Merge, Story bleibt `In Progress`, Eskalation mit Log-Auszug.
+- **Dirty `main` / Worktree-Konflikt:** STOPP — niemals mit unsauberem Baum mergen.
+
+### Konfiguration
+
+| Feld | Bedeutung | Default |
+|---|---|---|
+| `token_hard_threshold` | Sprint-Boundary in % des Context-Windows | `80` |
+| `daemon_fail_policy` | Verhalten bei Story-Fehler: `stop` / `continue` | `stop` |
+| `worktree_strategy` | Isolation pro Story | `git-worktree` |
+| `parallel_story_limit` | max. parallele Story-Worktrees (1 = sequentiell) | `1` |
+
+### Verweise
+
+`sprint-run/SKILL.md` · `sprint-run/references/{orchestration-checklist,gate-block-handling,worktree-flow,token-boundary}.md` · Runbook `docs/runbooks/sprint-run.md` · Anhang G (Sprint-Sizing) · BOO-148 (Remote-CI-Loop) · BOO-157.
+
 ---
 
 *Dieses Handbuch ist Teil des INTENTRONs.*
 *GitHub: github.com/vibercoder79/intentron*
-*Letzte Aktualisierung: 2026-06-03 (v0.3.0–v0.6.2: Security-/Governance-Welle, Onboarding-Fix + Doku-Sync — BOO-86 bis BOO-97; u.a. Layer-0-Edit-Bodyguard, dpo-Kontrollkatalog, CONTEXT.md Ubiquitous Language, raw-pii-guard, Anhang Y VPS/Cloud-Team-Runbook, Quickstart mit Self-Install/Self-Update-Prompts; Anhang Z Kunden-Onboarding-Checklisten + Artefakt-Landkarte — BOO-108; 2026-06-03 Bootstrap-UX-Härtung BOO-114–129 / Wellen AT–AV — Pre-Flight-Gate, Tool-Install-Führung, Guided Stack-Discovery + TypeScript-first, gh-Voraussetzung + GitHub-Connect-Runbook, intent im Minimum, projekt-spezifische MCP-Abfrage, Sonar-Merge-Warnung + Anhang AA SonarCloud-Runbook, Branching-Standard-ADR + Sketch, Leichtgewicht-SecondBrain Session-Start, Design-Story-ADR; 2026-06-03 Wave AW Doku-Härtung BOO-130–136 — konsolidierter `docs/how-we-document.md`, Klartext-Glossar, GitHub Issues als empfohlener Backlog-Default, Anhang AB Linear-MCP-auf-VPS-Runbook, kanonischer `DEVELOPER_ONBOARDING.md`-Dateiname, GitHub-Pro/Team-Hinweis, SECURITY.md-Next-Step; 2026-06-03 Wave AX Knowledge-Onboarding BOO-137 — neuer Bundle-Skill `knowledge-onboarding` (Routing-Rubrik SSoT + Manifest + Anti-Fabrikation), Anhang AC; 2026-06-05 Wave BH knowledge-onboarding v1.1.0 — 5 Erklaer-Sketches DE+EN in README/SKILL eingebettet)*
+*Letzte Aktualisierung: 2026-06-03 (v0.3.0–v0.6.2: Security-/Governance-Welle, Onboarding-Fix + Doku-Sync — BOO-86 bis BOO-97; u.a. Layer-0-Edit-Bodyguard, dpo-Kontrollkatalog, CONTEXT.md Ubiquitous Language, raw-pii-guard, Anhang Y VPS/Cloud-Team-Runbook, Quickstart mit Self-Install/Self-Update-Prompts; Anhang Z Kunden-Onboarding-Checklisten + Artefakt-Landkarte — BOO-108; 2026-06-03 Bootstrap-UX-Härtung BOO-114–129 / Wellen AT–AV — Pre-Flight-Gate, Tool-Install-Führung, Guided Stack-Discovery + TypeScript-first, gh-Voraussetzung + GitHub-Connect-Runbook, intent im Minimum, projekt-spezifische MCP-Abfrage, Sonar-Merge-Warnung + Anhang AA SonarCloud-Runbook, Branching-Standard-ADR + Sketch, Leichtgewicht-SecondBrain Session-Start, Design-Story-ADR; 2026-06-03 Wave AW Doku-Härtung BOO-130–136 — konsolidierter `docs/how-we-document.md`, Klartext-Glossar, GitHub Issues als empfohlener Backlog-Default, Anhang AB Linear-MCP-auf-VPS-Runbook, kanonischer `DEVELOPER_ONBOARDING.md`-Dateiname, GitHub-Pro/Team-Hinweis, SECURITY.md-Next-Step; 2026-06-03 Wave AX Knowledge-Onboarding BOO-137 — neuer Bundle-Skill `knowledge-onboarding` (Routing-Rubrik SSoT + Manifest + Anti-Fabrikation), Anhang AC; 2026-06-05 Wave BH knowledge-onboarding v1.1.0 — 5 Erklaer-Sketches DE+EN in README/SKILL eingebettet; 2026-06-05 Wave BI `/sprint-run` BOO-157 — neuer Orchestrator-Skill (Backlog → implement im Daemon-Modus → sprint-review, Worktree pro Story, 80%-Token-Boundary, Gate-Block-Pause), §6-Eintrag + Anhang AD mit 5 Owlist-Sketches)*

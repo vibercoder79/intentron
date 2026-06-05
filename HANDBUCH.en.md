@@ -591,6 +591,24 @@ On `no` the skill stops, the operator runs `/architecture-review`, then `/ideati
 4. Schema-chain check: flags conflicts (two stories targeting same `schemaVersion`)
 5. Shows hygiene suggestions (orphaned refs, obsolete issues)
 
+### `/sprint-run` — Sprint orchestrator (a whole sprint, fully automatic)
+
+![Sprint-Run skill](sprint-run/overview.en.png)
+
+**When:** You want to run a whole sprint fully automatically instead of calling `/implement` story by story.
+
+**What happens:**
+1. Picks stories from the prioritized backlog
+2. Implements each story via `/implement` in daemon mode — its own `git worktree` + branch per story
+3. Maintains Linear status (Backlog → In Progress → Done), waits for green remote CI, merges, removes the worktree
+4. Stops at the 80% token boundary and triggers `/sprint-review`
+
+**Distinction:** `/implement` = one story. `/sprint-run` = N stories (a whole sprint). `/sprint-run` is a pure orchestrator — `/implement`, `/backlog`, `/sprint-review` stay unchanged.
+
+**Gate blocks** (sensitive-paths / personal-data) pause the daemon and are **never** bypassed automatically — resume only after `review-ok` / `privacy-ok`.
+
+> Full chapter with all diagrams (daemon loop, story breakdown, agent interaction, GitHub integration, gate-block handling): **Appendix AD**.
+
 ### `/breakfix` — When something is broken
 
 **When:** The system has a problem, a bug, or is acting weird.
@@ -4619,8 +4637,87 @@ From `docs/how-we-document.en.md` §4 — order in existing-project onboarding:
 
 Integrated with `/dpo` (when legal-compliance category meets personal-data signal → DPO suggestion), `/intent` (extracted intent statements land in `intents/INTENT-XX.md`) and `/pitch` (demo-storyboard-pitch category).
 
+## Appendix AD: /sprint-run — sprint orchestrator (BOO-157)
+
+> Complements §6 (skill overview) and Appendix G (sprint sizing). `/sprint-run` runs a whole sprint fully automatically by chaining the existing skills — it does not change them. Source: `sprint-run/SKILL.md` + `sprint-run/references/`.
+
+### What is /sprint-run?
+
+`/implement` ships **one** story. `/sprint-run` runs **N** stories as a sprint: it picks stories from the prioritized backlog, calls `/implement` per story in daemon mode, maintains Linear status, waits for green remote CI, merges, removes worktrees and closes the sprint with `/sprint-review`. Pure orchestrator — `/implement`, `/backlog`, `/sprint-review` stay unchanged.
+
+![Sprint-run flow — the daemon loop from /sprint-run to /sprint-review](sprint-run/docs/sprint-run-flow.en.png)
+
+### When to use it?
+
+Preconditions, checked in the **sprint pre-flight** (step 1, HARD GATE):
+
+- backlog prioritized (`/backlog` has run, ordered candidate list)
+- every candidate story has a complete spec (`specs/<ISSUE>.md`, Schrader-complete, with `Execution Isolation` block)
+- governance gates green (`governance_mode`, sensitive-paths/personal-data configured)
+- `git worktree` available, `gh` authenticated, `main` clean
+
+If a check is red, the story is dropped from the sprint (daemon: skipped + logged) or the run stops.
+
+### Step-by-step (daemon loop)
+
+Per story, in sprint order:
+
+| # | Action |
+|---|--------|
+| 4.1 | Linear → In Progress |
+| 4.2 | `git worktree add ../wt-<ISSUE> -b feat/boo-<n>-<slug>` |
+| 4.3 | `/implement` in daemon mode (step-4 approval skipped, all gates active) |
+| 4.4 | Gate-block pause (below) on sensitive/personal-data hit |
+| 4.5 | Remote-CI wait (`gh run watch --exit-status`, BOO-148) — red → max 3 fix iterations |
+| 4.6 | Merge **only** on green CI → `main`; `git worktree remove` |
+| 4.7 | Linear → Done (with AC evidence); on failure story back + `daemon_fail_policy` |
+| 4.8 | Token check against the 80% boundary |
+
+![Story breakdown — one story from worktree to cleanup](sprint-run/docs/story-breakdown.en.png)
+
+### Agent interaction
+
+`/sprint-run` calls: `/backlog` (story selection, once per sprint), `/implement` (per story, in daemon mode) and `/sprint-review` (at sprint end). It writes no product code itself and does not change the orchestrated skills. Chain: `intent → ideation → backlog → sprint-run → ( implement )* → sprint-review`.
+
+![Agent interaction — who calls whom, which artefacts flow](sprint-run/docs/agent-interaction.en.png)
+
+### Gate-block behaviour
+
+If `/implement` triggers a **sensitive-paths gate** (step 5.5) or **personal-data gate** (step 5.5b), the daemon pauses immediately, notifies the operator (story ID + reason) and resumes **only** after explicit `review-ok` (technical) or `privacy-ok` (legal, GDPR Art. 25). **No** automatic bypass, **no** timeout resume — even in `--auto` mode.
+
+![Gate-block handling — state machine running → paused → resumed](sprint-run/docs/gate-block-handling.en.png)
+
+### Token-boundary logic
+
+A sprint is **80% of the context window** (token box, not time box, Appendix G). `/sprint-run` projects the sum of `token_estimate` against the budget before the run and checks cumulative usage after each story. At ≥ `token_hard_threshold` (default 80) the daemon leaves the loop, triggers `/sprint-review` and reports **"sprint boundary reached"**. Remaining stories stay in the backlog for the next sprint.
+
+### GitHub integration
+
+Each story gets a branch `feat/boo-<n>-<slug>` in its own worktree. `/implement` commits and pushes there, optionally via PR (`gh pr create`); the remote CI run is awaited with `gh run watch --exit-status` (BOO-148). **Merge only on green CI** — if CI stays red after three fix iterations, the daemon escalates and does not merge.
+
+![GitHub integration — story → branch → PR → CI → merge](sprint-run/docs/github-integration.en.png)
+
+### Error handling
+
+- **`/implement` fails:** story back to `Backlog`; `daemon_fail_policy` = `stop` (default, halt sprint + notify) or `continue` (next story).
+- **CI stays red** after 3 iterations: no merge, story stays `In Progress`, escalation with log excerpt.
+- **Dirty `main` / worktree conflict:** STOP — never merge with an unclean tree.
+
+### Configuration
+
+| Field | Meaning | Default |
+|---|---|---|
+| `token_hard_threshold` | sprint boundary in % of the context window | `80` |
+| `daemon_fail_policy` | behaviour on story failure: `stop` / `continue` | `stop` |
+| `worktree_strategy` | isolation per story | `git-worktree` |
+| `parallel_story_limit` | max. parallel story worktrees (1 = sequential) | `1` |
+
+### References
+
+`sprint-run/SKILL.md` · `sprint-run/references/{orchestration-checklist,gate-block-handling,worktree-flow,token-boundary}.md` · runbook `docs/runbooks/sprint-run.md` · Appendix G (sprint sizing) · BOO-148 (remote-CI loop) · BOO-157.
+
 ---
 
 *This handbook is part of the INTENTRON.*
 *GitHub: github.com/vibercoder79/intentron*
-*Last updated: 2026-06-03 (v0.3.0–v0.6.2: security/governance wave, onboarding fix + docs sync — BOO-86 through BOO-97; incl. Layer-0 edit bodyguard, dpo control catalogue, CONTEXT.md ubiquitous language, raw-pii-guard, Appendix Y VPS/cloud team runbook, quickstart with self-install/self-update prompts; Appendix Z customer-onboarding checklists + artifact map — BOO-108; 2026-06-03 bootstrap-UX hardening BOO-114–129 / waves AT–AV — pre-flight gate, tool-install guidance, guided stack discovery + TypeScript-first, gh prerequisite + GitHub-connect runbook, intent in Minimum, project-specific MCP question, Sonar merge warning + Appendix AA SonarCloud runbook, branching-standard ADR + sketch, lightweight SecondBrain session-start, design-story ADR; 2026-06-03 Wave AW docs hardening BOO-130–136 — consolidated `docs/how-we-document.md`, plain-language glossary, GitHub Issues as recommended backlog default, Appendix AB Linear-MCP-on-VPS runbook, canonical `DEVELOPER_ONBOARDING.md` filename, GitHub Pro/Team note, SECURITY.md next-step; 2026-06-03 Wave AX knowledge-onboarding BOO-137 — new bundle skill `knowledge-onboarding` (routing rubric SSoT + manifest + anti-fabrication), Appendix AC; 2026-06-05 Wave BH knowledge-onboarding v1.1.0 — 5 explainer sketches DE+EN embedded in README/SKILL)*
+*Last updated: 2026-06-03 (v0.3.0–v0.6.2: security/governance wave, onboarding fix + docs sync — BOO-86 through BOO-97; incl. Layer-0 edit bodyguard, dpo control catalogue, CONTEXT.md ubiquitous language, raw-pii-guard, Appendix Y VPS/cloud team runbook, quickstart with self-install/self-update prompts; Appendix Z customer-onboarding checklists + artifact map — BOO-108; 2026-06-03 bootstrap-UX hardening BOO-114–129 / waves AT–AV — pre-flight gate, tool-install guidance, guided stack discovery + TypeScript-first, gh prerequisite + GitHub-connect runbook, intent in Minimum, project-specific MCP question, Sonar merge warning + Appendix AA SonarCloud runbook, branching-standard ADR + sketch, lightweight SecondBrain session-start, design-story ADR; 2026-06-03 Wave AW docs hardening BOO-130–136 — consolidated `docs/how-we-document.md`, plain-language glossary, GitHub Issues as recommended backlog default, Appendix AB Linear-MCP-on-VPS runbook, canonical `DEVELOPER_ONBOARDING.md` filename, GitHub Pro/Team note, SECURITY.md next-step; 2026-06-03 Wave AX knowledge-onboarding BOO-137 — new bundle skill `knowledge-onboarding` (routing rubric SSoT + manifest + anti-fabrication), Appendix AC; 2026-06-05 Wave BH knowledge-onboarding v1.1.0 — 5 explainer sketches DE+EN embedded in README/SKILL; 2026-06-05 Wave BI `/sprint-run` BOO-157 — new orchestrator skill (backlog → implement in daemon mode → sprint-review, worktree per story, 80% token boundary, gate-block pause), §6 entry + Appendix AD with 5 Owlist sketches)*

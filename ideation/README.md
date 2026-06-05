@@ -6,6 +6,8 @@
 
 **Version:** 2.8.0 · **Befehl:** `/ideation`
 
+> 🔗 Sprint-Automation: **`/sprint-run`** faehrt einen ganzen Sprint und orchestriert die Kette `backlog → implement → sprint-review`. Siehe [`sprint-run/`](../sprint-run/README.md) · HANDBUCH Anhang AD.
+
 ---
 
 ## Was der Skill tut

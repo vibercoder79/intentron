@@ -195,6 +195,7 @@ The framework is the skeleton. **You tailor the muscles** — the appendices tel
 | **[ideation](ideation/)** | `/ideation` | Idea → 4-perspective research → Linear issue with acceptance criteria. |
 | **[backlog](backlog/)** | `/backlog` | Sprint planning — which story now, which later, and why. Dependency-aware. |
 | **[implement](implement/)** | `/implement` | 8-step protocol: Agent pattern → Spec → Code → Governance validation → Commit. |
+| **[sprint-run](sprint-run/)** | `/sprint-run` | Sprint orchestrator — runs a whole sprint automatically: picks stories, runs `/implement` per story (worktree + branch), waits for green CI, merges, triggers `/sprint-review` at the 80% token boundary. |
 | **[architecture-review](architecture-review/)** | `/architecture-review` | Reviews architecture dimensions — risks, tech debt, improvement potential. |
 | **[knowledge-onboarding](knowledge-onboarding/)** | `/knowledge-onboarding` | Routes existing project docs (GAP analyses, legal research, README/PLAN, design files, demo storyboards, handover, prompts) deterministically into the framework artefacts via routing rubric (SSoT, Tier 0/1/2/3) + persisted manifest with pinning. Post-bootstrap. |
 | **[sprint-review](sprint-review/)** | `/sprint-review` | Quarterly audit: architecture health, tech debt, backlog hygiene, learning loop. |
@@ -258,6 +259,23 @@ No spec, no commit. That's the difference between a prompt and a governance fram
 | Want to understand everything first | → [HANDBUCH.md](HANDBUCH.md) — full reference |
 | Rolling out at a customer | → [docs/onboarding/](docs/onboarding/) — the three checklists (start here) |
 | Concrete operational question | → [docs/qa.md](docs/qa.md) — living Q&A |
+
+---
+
+## Role-specific runbooks — read the framework through your lens
+
+Different leadership roles care about different things. These runbooks explain INTENTRON from one role's point of view — what the framework means for *you*, which gatekeepers apply, which artefacts and skills are relevant, and where you take control. Each reads in under 10 minutes and is not new machinery — it is a lens on what the framework already does.
+
+![The four role runbooks mapped onto the INTENTRON lifecycle](docs/role-runbooks-map.en.png)
+
+| Role | Runbook | The question it answers |
+|---|---|---|
+| **Managing director / decision-maker** | [`ceo-business-case.md`](docs/runbooks/ceo-business-case.md) | Why invest in this framework — which business risk does it lower? |
+| **CISO / IT lead** | [`ciso-security.md`](docs/runbooks/ciso-security.md) | Which security gatekeepers apply, and how is security-by-design enforced? |
+| **Data protection officer** | [`dpo-privacy.md`](docs/runbooks/dpo-privacy.md) | Where is privacy anchored, and how is it auditable (GDPR/BDSG/nDSG)? |
+| **CTO / head of engineering** | [`cto-code-quality.md`](docs/runbooks/cto-code-quality.md) | How is code quality kept and technical debt avoided? |
+
+Each runbook has an English `.en.md` sibling. For the auditor's checklist (question → proof → place), see [`audit-perspective.md`](docs/runbooks/audit-perspective.md).
 
 ---
 
@@ -505,6 +523,7 @@ Das Framework ist das Skelett. **Die Muskeln schneiderst du** — die Anhaenge z
 | **[ideation](ideation/)** | `/ideation` | Idee → 4-Perspektiven-Research → Linear Issue mit ACs. |
 | **[backlog](backlog/)** | `/backlog` | Sprint Planning — welche Story jetzt, welche nach hinten, warum. Abhängigkeiten-aware. |
 | **[implement](implement/)** | `/implement` | 8-Schritte-Protokoll: Agent-Pattern → Spec → Code → Governance-Validation → Commit. |
+| **[sprint-run](sprint-run/)** | `/sprint-run` | Sprint-Orchestrator — fährt einen ganzen Sprint automatisch: wählt Stories, setzt jede per `/implement` um (Worktree + Branch), wartet auf grüne CI, merged, triggert am 80%-Token-Boundary `/sprint-review`. |
 | **[architecture-review](architecture-review/)** | `/architecture-review` | Prüft Architektur-Dimensionen — Risiken, Tech Debt, Verbesserungspotential. |
 | **[knowledge-onboarding](knowledge-onboarding/)** | `/knowledge-onboarding` | Routet Bestands-Doku (GAP-Analysen, Legal-Recherche, README/PLAN, Design-Files, Demo-Storyboards, Handover, Prompts) deterministisch in die Framework-Artefakte via Routing-Rubrik (SSoT, Tier 0/1/2/3) + persistiertes Manifest mit Pinning. Post-Bootstrap. |
 | **[sprint-review](sprint-review/)** | `/sprint-review` | Quartals-Audit: Architektur-Gesundheit, Tech Debt, Backlog-Hygiene, Learning-Loop. |
@@ -568,6 +587,23 @@ Kein Spec, kein Commit. Das ist der Unterschied zwischen einem Prompt und einem 
 | Alles verstehen bevor ich anfange | → [HANDBUCH.md](HANDBUCH.md) |
 | Beim Kunden ausrollen | → [docs/onboarding/](docs/onboarding/) — die drei Checklisten (hier starten) |
 | Konkrete Praxisfrage | → [docs/qa.md](docs/qa.md) — lebendes Q&A |
+
+---
+
+## Rollenspezifische Runbooks — das Framework durch Ihre Brille
+
+Verschiedene Führungsrollen haben verschiedene Anliegen. Diese Runbooks erklären INTENTRON aus Sicht je einer Rolle — was das Framework für *Sie* bedeutet, welche Gatekeeper greifen, welche Artefakte und Skills relevant sind und wo Sie Einfluss nehmen. Jedes liest sich in unter 10 Minuten und ist keine neue Mechanik, sondern eine Lesebrille auf das, was das Framework ohnehin tut.
+
+![Die vier Rollen-Runbooks im INTENTRON-Lebenszyklus](docs/role-runbooks-map.png)
+
+| Rolle | Runbook | Die Frage, die es beantwortet |
+|---|---|---|
+| **Geschäftsführung / Entscheider** | [`ceo-business-case.md`](docs/runbooks/ceo-business-case.md) | Warum in das Framework investieren — welches Geschäftsrisiko senkt es? |
+| **CISO / IT-Leitung** | [`ciso-security.md`](docs/runbooks/ciso-security.md) | Welche Security-Gatekeeper greifen, und wie wird Security by Design durchgesetzt? |
+| **Datenschutzbeauftragte:r** | [`dpo-privacy.md`](docs/runbooks/dpo-privacy.md) | Wo ist Datenschutz verankert, und wie ist er auditierbar (DSGVO/BDSG/nDSG)? |
+| **CTO / Head of Engineering** | [`cto-code-quality.md`](docs/runbooks/cto-code-quality.md) | Wie werden Codequalität gesichert und Technical Debt vermieden? |
+
+Jedes Runbook hat eine englische `.en.md`-Fassung. Für die Auditor-Checkliste (Frage → Beleg → Ort) siehe [`audit-perspective.md`](docs/runbooks/audit-perspective.md).
 
 ---
 
