@@ -8,7 +8,7 @@ description: |
   over, coverage check. Use when existing documentation / preliminary material is
   available (post-bootstrap). Triggers: "/knowledge-onboarding", "we already have
   a knowledge package", "wire the existing repo into our artefacts".
-version: 1.0.0
+version: 1.1.0
 language: en
 metadata:
   hermes:
@@ -21,6 +21,8 @@ metadata:
 # Knowledge-Onboarding
 
 Route existing project knowledge — whether GitHub repo, local folder / upload, or chat-provided — **deterministically and repeatably** into the framework's governance artefacts. Runs **after** bootstrap and **before** starting with `/ideation`/`/implement`, when the customer brings a knowledge package.
+
+![Problem → Solution: deterministic, not LLM whim](references/sketches/01-problem-loesung.en.png)
 
 ## When to use this skill
 
@@ -35,6 +37,8 @@ Route existing project knowledge — whether GitHub repo, local folder / upload,
 ## Workflow (8 steps)
 
 ### Step 1: Adapter choice
+
+![3 adapters → one normalised file list](references/sketches/02-adapter-funnel.en.png)
 
 ```
 Which source should be routed?
@@ -87,6 +91,8 @@ Per file in the source list:
 Result: two lists — `unchanged[]` (adopted) and `to_classify[]` (step 4).
 
 ### Step 4: Classification (Tier 0/1/2/3)
+
+![Tier waterfall: every file falls through until exactly one category matches](references/sketches/03-tier-wasserfall.en.png)
 
 Per file in `to_classify[]`:
 
@@ -228,6 +234,8 @@ If `skip rate > 50%`: warning "Unusually high skip rate — rubric may not fit, 
 
 ## Re-scan behaviour
 
+![Manifest determinism: re-scan reads the manifest first — re-read, not re-infer](references/sketches/04-manifest-determinismus.en.png)
+
 On re-run:
 
 1. Manifest is **read first** (step 3).
@@ -237,6 +245,8 @@ On re-run:
 5. Deleted files (in manifest, not in source) are marked in manifest as `status: removed`; reference blocks in target artefacts **remain** (audit trail), but get a `_(source no longer present, as-of: YYYY-MM-DD)_` suffix.
 
 ## Anti-fabrication — binding rules
+
+![Anti-fabrication: propose, don't blindly apply — with operator gate and coverage check](references/sketches/05-anti-fabrikation.en.png)
 
 1. **No routing without match signal.** If neither Tier-1 nor Tier-2 signal matches → Tier 3 (operator question). Never guess.
 2. **No full-text copy without operator approval.** Default is `reference`. `extract` only with explicit diff approval.

@@ -2,11 +2,37 @@
 
 > Framework bundle skill — routes a project's existing documentation deterministically into the governance artefacts. Origin: BOO-137 (2026-06-03).
 
+**Version:** 1.1.0 · **Command:** `/knowledge-onboarding`
+
 ## What the skill does
 
 `knowledge-onboarding` takes an existing knowledge package — GitHub repo, local folder, upload or chat-provided — and assigns each file to **the right place in the framework artefacts**. Instead of "analyse the repo and take everything over" (LLM whim, fabrication-prone, non-deterministic), the skill uses a **routing rubric (SSoT, Tier 0/1/2/3)** and a **persisted manifest** (`journal/knowledge-onboarding-map.yml`). On re-scan the manifest is read first — known files keep their routing, only new / changed ones are reclassified.
 
 **Determinism = rubric + manifest + operator pinning.**
+
+## Sketches — explained visually
+
+Five explainer sketches in OWLIST design dive into the core concepts. The big picture is in `overview.png`; these sketches zoom into one concept each.
+
+**1 · Problem → Solution** — deterministic, not LLM whim
+
+![Problem → Solution](references/sketches/01-problem-loesung.en.png)
+
+**2 · 3 adapters → one file list** — every source becomes the same normalised list
+
+![3 adapters → one file list](references/sketches/02-adapter-funnel.en.png)
+
+**3 · Tier waterfall** — every file falls through until exactly one category matches
+
+![Tier waterfall](references/sketches/03-tier-wasserfall.en.png)
+
+**4 · Manifest determinism** — re-scan reads the manifest first (re-read, not re-infer)
+
+![Manifest determinism](references/sketches/04-manifest-determinismus.en.png)
+
+**5 · Anti-fabrication** — propose, don't blindly apply
+
+![Anti-fabrication](references/sketches/05-anti-fabrikation.en.png)
 
 ## When to use
 
@@ -82,7 +108,13 @@ knowledge-onboarding/
 ├── overview.en.png
 └── references/
     ├── routing-rubric.md         Routing-table SSoT (DE)
-    └── routing-rubric.en.md      SSoT (EN)
+    ├── routing-rubric.en.md      SSoT (EN)
+    └── sketches/                 5 explainer sketches (OWLIST), DE + EN each
+        ├── 01-problem-loesung.excalidraw/.png (+ .en)
+        ├── 02-adapter-funnel.excalidraw/.png (+ .en)
+        ├── 03-tier-wasserfall.excalidraw/.png (+ .en)
+        ├── 04-manifest-determinismus.excalidraw/.png (+ .en)
+        └── 05-anti-fabrikation.excalidraw/.png (+ .en)
 ```
 
 ## Sources

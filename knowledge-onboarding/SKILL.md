@@ -8,7 +8,7 @@ description: |
   Coverage-Check. Verwenden wenn Bestands-Doku/Vor-Material vorhanden ist (post-bootstrap).
   Ausloeser: "/knowledge-onboarding", "wir haben schon ein Wissenspaket", "verknuepfe
   das bestehende Repo mit unseren Artefakten".
-version: 1.0.0
+version: 1.1.0
 metadata:
   hermes:
     category: onboarding
@@ -20,6 +20,8 @@ metadata:
 # Knowledge-Onboarding
 
 Vorhandenes Projekt-Wissen — egal ob GitHub-Repo, lokaler Ordner / Upload oder im Chat bereitgestellt — **deterministisch + wiederholbar** in die Governance-Artefakte des Frameworks routen. Laeuft **nach** dem Bootstrap, **bevor** mit `/ideation`/`/implement` gestartet wird, wenn der Kunde schon ein Wissenspaket mitbringt.
+
+![Problem → Lösung: deterministisch statt LLM-Whim](references/sketches/01-problem-loesung.png)
 
 ## Wann diesen Skill nutzen
 
@@ -34,6 +36,8 @@ Vorhandenes Projekt-Wissen — egal ob GitHub-Repo, lokaler Ordner / Upload oder
 ## Workflow (8 Schritte)
 
 ### Schritt 1: Adapter-Wahl
+
+![3 Adapter → eine normalisierte Datei-Liste](references/sketches/02-adapter-funnel.png)
 
 ```
 Welche Quelle soll geroutet werden?
@@ -86,6 +90,8 @@ Pro Datei in der Quell-Liste:
 Ergebnis: zwei Listen — `unchanged[]` (uebernommen) und `to_classify[]` (Schritt 4).
 
 ### Schritt 4: Klassifikation (Tier 0/1/2/3)
+
+![Tier-Wasserfall: jede Datei fällt durch, bis genau eine Kategorie greift](references/sketches/03-tier-wasserfall.png)
 
 Pro Datei in `to_classify[]`:
 
@@ -227,6 +233,8 @@ Wenn `Skip-Quote > 50 %`: Warnung "Auffaellig hohe Skip-Quote — Rubrik koennte
 
 ## Re-Scan-Verhalten
 
+![Manifest-Determinismus: Re-Scan liest das Manifest zuerst — re-read statt re-infer](references/sketches/04-manifest-determinismus.png)
+
 Beim erneuten Lauf:
 
 1. Manifest wird **zuerst gelesen** (Schritt 3).
@@ -236,6 +244,8 @@ Beim erneuten Lauf:
 5. Geloeschte Files (im Manifest, nicht in Quelle) werden im Manifest als `status: removed` markiert, Verweis-Bloecke in Ziel-Artefakten **bleiben** (Audit-Trail), bekommen aber einen `_(Quelle nicht mehr vorhanden, Stand: YYYY-MM-DD)_`-Suffix.
 
 ## Anti-Fabrikation — verbindliche Regeln
+
+![Anti-Fabrikation: vorschlagen statt blind übernehmen, mit Operator-Gate und Coverage-Check](references/sketches/05-anti-fabrikation.png)
 
 1. **Kein Routing ohne Match-Signal.** Wenn weder Tier-1- noch Tier-2-Signal matcht → Tier 3 (Operator-Frage). Niemals raten.
 2. **Kein Volltext-Copy ohne Operator-Approval.** Default ist `referenzieren`. `extrahieren` nur mit explizitem Diff-Approval.

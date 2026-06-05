@@ -2,11 +2,37 @@
 
 > Framework-Bundle-Skill — routet Bestands-Doku eines Projekts deterministisch in die Governance-Artefakte. Anlassfall: BOO-137 (2026-06-03).
 
+**Version:** 1.1.0 · **Befehl:** `/knowledge-onboarding`
+
 ## Was der Skill tut
 
 `knowledge-onboarding` nimmt ein vorhandenes Wissenspaket — GitHub-Repo, lokalen Ordner, Upload oder Chat-Bereitstellung — und ordnet jede Datei der **richtigen Stelle in den Framework-Artefakten** zu. Statt "analysiere das Repo und uebernimm alles" (LLM-Whim, fabrikations-anfaellig, nicht-deterministisch) nutzt der Skill eine **Routing-Rubrik (SSoT, Tier 0/1/2/3)** und ein **persistiertes Manifest** (`journal/knowledge-onboarding-map.yml`). Re-Scan liest das Manifest zuerst — bekannte Files behalten ihr Routing, nur neue/geaenderte werden neu klassifiziert.
 
 **Determinismus = Rubrik + Manifest + Operator-Pinning.**
+
+## Sketches — visuell erklärt
+
+Fünf Erklär-Sketches im OWLIST-Design vertiefen die Kern-Konzepte. Das Gesamtbild liefert `overview.png`; diese Sketches zoomen in je ein Konzept hinein.
+
+**1 · Problem → Lösung** — deterministisch statt LLM-Whim
+
+![Problem → Lösung](references/sketches/01-problem-loesung.png)
+
+**2 · 3 Adapter → eine Datei-Liste** — jede Quelle wird zur selben normalisierten Liste
+
+![3 Adapter → eine Datei-Liste](references/sketches/02-adapter-funnel.png)
+
+**3 · Tier-Wasserfall** — jede Datei fällt durch, bis genau eine Kategorie greift
+
+![Tier-Wasserfall](references/sketches/03-tier-wasserfall.png)
+
+**4 · Manifest-Determinismus** — Re-Scan liest das Manifest zuerst (re-read statt re-infer)
+
+![Manifest-Determinismus](references/sketches/04-manifest-determinismus.png)
+
+**5 · Anti-Fabrikation** — vorschlagen statt blind übernehmen
+
+![Anti-Fabrikation](references/sketches/05-anti-fabrikation.png)
 
 ## Wann anwenden
 
@@ -82,7 +108,13 @@ knowledge-onboarding/
 ├── overview.en.png
 └── references/
     ├── routing-rubric.md         SSoT der Routing-Tabelle (DE)
-    └── routing-rubric.en.md      SSoT (EN)
+    ├── routing-rubric.en.md      SSoT (EN)
+    └── sketches/                 5 Erklär-Sketches (OWLIST), je DE + EN
+        ├── 01-problem-loesung.excalidraw/.png (+ .en)
+        ├── 02-adapter-funnel.excalidraw/.png (+ .en)
+        ├── 03-tier-wasserfall.excalidraw/.png (+ .en)
+        ├── 04-manifest-determinismus.excalidraw/.png (+ .en)
+        └── 05-anti-fabrikation.excalidraw/.png (+ .en)
 ```
 
 ## Quellen
