@@ -47,6 +47,8 @@ Abgeleitet aus [`integration-discovery.md`](./integration-discovery.md) (RACI, A
 - **Audit** — Revision / Compliance
 - **Design/Brand** — Markenvorgaben (Farben, Frontend-Design, CI-Guidelines)
 
+> **Rollen-Einstieg (Lesebrillen).** Für vier dieser Rollen gibt es narrative Einstiegs-Runbooks, die das Framework aus ihrer Sicht erklären — was es für sie bedeutet, welche Gatekeeper greifen, wo sie Einfluss nehmen: [`ciso-security.md`](../runbooks/ciso-security.md) (Security), [`dpo-privacy.md`](../runbooks/dpo-privacy.md) (Datenschutz), [`cto-code-quality.md`](../runbooks/cto-code-quality.md) (Codequalität), [`ceo-business-case.md`](../runbooks/ceo-business-case.md) (Geschäftsführung).
+
 ---
 
 ## Master-Matrix
