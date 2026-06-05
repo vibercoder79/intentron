@@ -6,6 +6,8 @@
 
 **Version:** 1.5.0 · **Command:** `/backlog`
 
+> 🔗 Sprint automation: **`/sprint-run`** runs a whole sprint and orchestrates the chain `backlog → implement → sprint-review`. See [`sprint-run/`](../sprint-run/README.en.md) · HANDBUCH Appendix AD.
+
 ---
 
 ## What It Does
