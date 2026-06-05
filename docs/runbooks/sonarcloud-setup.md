@@ -23,8 +23,9 @@ SonarCloud triggert via GitHub Actions bei jedem Push. Ohne eine CI-Pipeline ist
 **Bei Direct-Deploy-Setups (VPS, kein GitHub Actions):**
 Lokale Hooks decken dieselben Quality-Gates ab: `pre-edit-bodyguard` (Layer 0), `spec-gate`, `semgrep pre-commit` (Layer 2). SonarCloud kann nachgerüstet werden, wenn später eine CI-Pipeline eingeführt wird.
 
-> Visueller Überblick der beiden Deployment-Modi:
-> [`sonarcloud-setup.excalidraw`](sonarcloud-setup.excalidraw) — in Excalidraw.com öffnen
+![SonarCloud: wann sinnvoll?](sonarcloud-setup.png)
+
+> Excalidraw-Quelle zum Bearbeiten: [`sonarcloud-setup.excalidraw`](sonarcloud-setup.excalidraw)
 
 ---
 
