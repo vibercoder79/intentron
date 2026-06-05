@@ -19,8 +19,9 @@ Projektlokale Skills sind reproduzierbarer Projektstand. Ein Upgrade ist eine be
 1. Git-Arbeitsbaum pruefen: clean oder Aenderungen sichern.
 2. Aktuelle Framework-Version und Quelle feststellen.
 3. Neue Framework-Version in einen Temp-Ordner ziehen.
-4. Projektlokale Skills vergleichen.
-5. Neue Skill-Versionen nur nach Modus-Regel uebernehmen.
+4. Projektlokale Skills vergleichen — Versionen bestehender Skills pruefen.
+4a. Neue Skills inventarisieren — Skills im Framework die im Projekt fehlen auflisten (siehe unten).
+5. Neue Skill-Versionen und neue Skills nach Modus-Regel uebernehmen.
 6. Projektvertrag und Runtime-Mapping migrieren.
 7. Neue Pflichtartefakte als Skelett anlegen, ohne lokale Inhalte zu ueberschreiben.
 8. Provider-Postflight im Upgrade-Modus ausfuehren (`bootstrap/references/provider-postflight.md`).
@@ -37,6 +38,7 @@ Projektlokale Skills sind reproduzierbarer Projektstand. Ein Upgrade ist eine be
 | Kategorie | Upgrade-Verhalten |
 |---|---|
 | Projektlokale Skill-Kopien | Aktualisieren nur nach Diff/Backup oder Versionshinweis. |
+| Neue Skills (im Framework, nicht im Projekt) | In Schritt 4a inventarisieren und nach Operator-Wahl additiv installieren. |
 | `CONVENTIONS.md` | Nicht ersetzen; neue Sektionen mergen oder als TODO markieren. |
 | `AGENTS.md` / `CLAUDE.md` | Nicht ersetzen; Precedence und Runtime-Bruecke nachziehen. |
 | Architektur-/Security-Dateien | Nie pauschal ueberschreiben; neue Pflichtsektionen einfuegen oder als TODO markieren. |
@@ -45,6 +47,60 @@ Projektlokale Skills sind reproduzierbarer Projektstand. Ein Upgrade ist eine be
 | `.claude/environment.json` (+ `generate-environment-json.sh`) | Fehlende Felder additiv ergaenzen, danach `bash .claude/generate-environment-json.sh --force`; bestehende Werte erhalten. |
 | `docs/kollisionsschutz-drei-ebenen.md` | Nur anlegen wenn fehlend (Multi-User-/Multi-Session-Hinweis). |
 | `.env`, Secrets, lokale Reports | Nie anfassen, nie committen, nie in Reports kopieren. |
+
+## Schritt 4a: Neue Skills inventarisieren
+
+Skills die im Framework-Repo vorhanden sind, aber noch nicht in `.claude/skills/` des Projekts liegen,
+werden explizit aufgelistet. Dieser Schritt laeuft in allen drei Modi (`inspect`, `apply-safe`,
+`apply-with-confirmation`).
+
+**Delta ermitteln:**
+
+```bash
+REPO="OWNER/intentron"  # aus aktuellem Upgrade-Kontext
+
+# Alle Skills im Framework (Verzeichnisse mit SKILL.md im Root)
+FRAMEWORK_SKILLS=$(gh api "repos/${REPO}/contents/" \
+  --jq '.[].name' | while read d; do
+    gh api "repos/${REPO}/contents/${d}/SKILL.md" \
+      --jq "\"${d}\"" 2>/dev/null
+  done | sort)
+
+# Lokale Skills im Projekt
+LOCAL_SKILLS=$(ls .claude/skills/ 2>/dev/null | sort)
+
+# Fehlende Skills
+NEW_SKILLS=$(comm -23 <(echo "$FRAMEWORK_SKILLS") <(echo "$LOCAL_SKILLS"))
+```
+
+Fuer jeden fehlenden Skill: `name`, `description` und `recommended_model` aus dem
+SKILL.md-Frontmatter lesen und dem Operator anzeigen.
+
+**Operator-Auswahl (alle drei Modi):**
+
+```
+Neue Skills in v{NEUE_VERSION} (nicht im Projekt):
+  1. knowledge-onboarding — Bestands-Doku in Governance-Artefakte routen (sonnet)
+  2. pitch             — Demo-Storyboard und Pitch-Materialien verwalten (sonnet)
+  3. visualize         — Mermaid-Diagramme aus Architektur-Artefakten generieren (haiku)
+  ...
+
+Welche installieren?
+  a) Alle
+  b) Ausgewaehlte (Komma-getrennte Nummern: 1,3)
+  c) Keine — spaeter manuell per `gh api` nachinstallieren
+```
+
+**Modus-Verhalten:**
+
+| Modus | Verhalten |
+|---|---|
+| `inspect` | Listet neue Skills, schreibt nichts. |
+| `apply-safe` | Installiert nach Operator-Wahl additiv (kein Ueberschreiben moeglich, da Skills neu sind). |
+| `apply-with-confirmation` | Fragt pro Skill einzeln. |
+
+**Nach der Installation:** Manifest-Eintrag in `journal/reports/framework-upgrade/YYYY-MM-DD.md`
+unter neuer Sektion `## Neu installierte Skills` (siehe Upgrade-Report-Skelett unten).
 
 ## Upgrade-Report
 
@@ -66,11 +122,17 @@ Modus: inspect | apply-safe | apply-with-confirmation
 
 - Alte Version / Quelle:
 - Neue Version / Commit:
+- `environment.json` `bootstrap_version` aktualisiert auf:
 
 ## Aktualisierte Skills
 
 | Skill | Alt | Neu | Entscheidung |
 |---|---|---|---|
+
+## Neu installierte Skills
+
+| Skill | Version | Entscheidung |
+|---|---|---|
 
 ## Neu angelegte Dateien
 
