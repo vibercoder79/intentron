@@ -47,6 +47,8 @@ Derived from [`integration-discovery.en.md`](./integration-discovery.en.md) (RAC
 - **Audit** — internal audit / compliance
 - **Design/Brand** — brand specifications (colors, frontend design, CI guidelines)
 
+> **Role entry points (lenses).** Four of these roles have narrative entry-point runbooks that explain the framework from their point of view — what it means for them, which gatekeepers apply, where they take control: [`ciso-security.en.md`](../runbooks/ciso-security.en.md) (security), [`dpo-privacy.en.md`](../runbooks/dpo-privacy.en.md) (data protection), [`cto-code-quality.en.md`](../runbooks/cto-code-quality.en.md) (code quality), [`ceo-business-case.en.md`](../runbooks/ceo-business-case.en.md) (managing director).
+
 ---
 
 ## Master matrix
