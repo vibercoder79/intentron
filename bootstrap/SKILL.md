@@ -349,6 +349,46 @@ Regeln:
 
 > **Issue-Referenz:** BOO-70. Quelle: HANDBUCH Anhang P (Deployment-Szenarien). Migration fuer Bestands-Projekte: `references/migration-checklist-v1-to-v2.md` §BOO-70.
 
+### A.7b CI/CD-Modus
+
+```
+Wie wird Code deployed und integriert?
+  a) GitHub Actions CI/CD — Push → GitHub Actions → automatisches Deploy/Test
+     (SonarQube, CI-Lint/SAST, Performance-Gate sinnvoll)
+  b) Direkt auf VPS — GitHub = Code-Storage, kein CI/CD-Pipeline
+     (SonarQube und CI-Workflows entfallen — lokale Hooks ersetzen CI-Gates)
+  c) Hybrid — manche Workflows via CI, Deployment direkt
+  Default: b) (bei solo-mac/VPS-Setup ohne konfiguriertes CI)
+```
+
+**Merken:** `CI_MODE = github-actions | direct-deploy | hybrid`
+
+Bei `direct-deploy` (b) gelten folgende Konsequenzen fuer den Rest des Bootstraps:
+- **D.5 SonarQube:** automatisch `SKIP` — SonarCloud benoetigt GitHub Actions, nicht nur ein GitHub-Repo
+- **Phase 4.4c (Semgrep CI-Action):** `SKIP`
+- **Phase 4.4g (Performance-Gate CI):** `SKIP`
+- **Phase 4.4k (Branch-Protection):** optional, aber kein SonarCloud Required Check
+
+Beim Skip-Output immer erklaeren warum:
+
+```
+CI_MODE = direct-deploy erkannt.
+
+SonarCloud, Semgrep-CI-Action und Performance-Gate werden uebersprungen
+— diese Tools benoetigen eine GitHub-Actions-Pipeline als Ausloesemechanismus.
+
+Lokale Hooks ersetzen die CI-Layer fuer dieses Setup:
+  Layer 0: pre-edit-bodyguard (schreibt keine unsicheren Muster)
+  Layer 2: pre-commit (spec-gate, semgrep lokal wenn installiert)
+
+SonarCloud kann nachgezogen werden wenn GitHub Actions spaeter
+eingerichtet wird — Runbook: docs/runbooks/sonarcloud-setup.md
+```
+
+`CI_MODE` wird in `.claude/environment.json` unter `metadata.ci_mode` gespeichert.
+
+> **Visueller Ueberblick:** `docs/runbooks/sonarcloud-setup.excalidraw` zeigt den Unterschied zwischen CI/CD-Pipeline und Direct-Deploy fuer SonarCloud.
+
 ### A.8 Maschinen-Kontext (BOO-145)
 
 Zum Abschluss von Block A — die Stack-Antwort aus A.1 liegt vor — den **Maschinen-Kontext** automatisch in die globale `~/.claude/CLAUDE.md` schreiben. **Idempotent + ohne separaten Operator-Schritt:** zuerst `~/.claude/CLAUDE.md` lesen; steht dort bereits ein `## Maschinen-Kontext`-Abschnitt, **nichts tun** (nicht ueberschreiben). Fehlt die Datei, anlegen.

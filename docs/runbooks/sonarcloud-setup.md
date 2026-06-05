@@ -2,7 +2,29 @@
 
 **Zweck:** Schritt-für-Schritt-Anleitung zum Einrichten von SonarCloud als Required Status Check in einem neuen GitHub-Repository.
 
-**Zuletzt aktualisiert:** 2026-06-04
+**Zuletzt aktualisiert:** 2026-06-05
+
+> EN: [`sonarcloud-setup.en.md`](sonarcloud-setup.en.md)
+
+---
+
+## Wann macht SonarCloud Sinn?
+
+**Kurzantwort: nur wenn GitHub Actions als CI/CD-Pipeline genutzt wird.**
+
+SonarCloud triggert via GitHub Actions bei jedem Push. Ohne eine CI-Pipeline ist dieses Setup sinnlos.
+
+| Setup | SonarCloud? |
+|-------|------------|
+| GitHub Actions CI/CD — Push → Actions → Deploy | **Ja — voller Nutzen** |
+| Direkt auf VPS — GitHub = nur Code-Storage | **Nein — lokale Hooks ersetzen CI-Gates** |
+| Hybrid (manche Branches via CI) | Optional, pro Branch |
+
+**Bei Direct-Deploy-Setups (VPS, kein GitHub Actions):**
+Lokale Hooks decken dieselben Quality-Gates ab: `pre-edit-bodyguard` (Layer 0), `spec-gate`, `semgrep pre-commit` (Layer 2). SonarCloud kann nachgerüstet werden, wenn später eine CI-Pipeline eingeführt wird.
+
+> Visueller Überblick der beiden Deployment-Modi:
+> [`sonarcloud-setup.excalidraw`](sonarcloud-setup.excalidraw) — in Excalidraw.com öffnen
 
 ---
 
