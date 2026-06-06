@@ -4641,7 +4641,7 @@ Integrated with `/dpo` (when legal-compliance category meets personal-data signa
 
 ## Appendix AD: /sprint-run — sprint orchestrator (BOO-157)
 
-> Complements §6 (skill overview) and Appendix G (sprint sizing). `/sprint-run` runs a whole sprint fully automatically by chaining the existing skills — it does not change them. Source: `sprint-run/SKILL.md` + `sprint-run/references/`.
+> Complements §6 (skill overview) and Appendix G (sprint sizing). `/sprint-run` runs a whole sprint fully automatically by chaining the existing skills — it does not change them. Source: `sprint-run/SKILL.md` + `sprint-run/references/`. Operator README (intro + diagrams): [`sprint-run/README.en.md`](sprint-run/README.en.md).
 
 ### What is /sprint-run?
 

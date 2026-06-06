@@ -4737,7 +4737,7 @@ Verzahnt mit `/dpo` (bei Legal-Compliance-Kategorie mit personenbezogenen Daten 
 
 ## Anhang AD: /sprint-run — Sprint-Orchestrator (BOO-157)
 
-> Ergaenzt §6 (Skill-Uebersicht) und Anhang G (Sprint-Sizing). `/sprint-run` faehrt einen ganzen Sprint vollautomatisch, indem es die bestehenden Skills verkettet — es veraendert sie nicht. Quelle: `sprint-run/SKILL.md` + `sprint-run/references/`.
+> Ergaenzt §6 (Skill-Uebersicht) und Anhang G (Sprint-Sizing). `/sprint-run` faehrt einen ganzen Sprint vollautomatisch, indem es die bestehenden Skills verkettet — es veraendert sie nicht. Quelle: `sprint-run/SKILL.md` + `sprint-run/references/`. Operator-README (Einstieg + Diagramme): [`sprint-run/README.md`](sprint-run/README.md).
 
 ### Was ist /sprint-run?
 
