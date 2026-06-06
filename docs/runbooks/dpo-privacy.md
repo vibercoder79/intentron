@@ -1,10 +1,9 @@
 # Runbook: DPO-Sicht — Datenschutz im INTENTRON-Framework
 
-> **Für wen.** Sie sind Datenschutzbeauftragte:r (DPO) und sollen dieses Framework bewerten oder
-> seine Einführung begleiten. Sie haben keine Zeit, das ganze HANDBUCH zu lesen. Dieses Runbook
-> beantwortet in unter 10 Minuten Ihre eine Kernfrage: *Wenn ein Team mit diesem Framework
-> entwickelt — was bedeutet das für den Datenschutz? Wo wird Datenschutz verankert, wie ist es
-> auditierbar, welche Artefakte und Skills greifen, wo nehme ich Einfluss?*
+> **Zielgruppe:** Datenschutzbeauftragte:r (DPO), der/die dieses Framework bewertet oder seine
+> Einführung begleitet. In unter 10 Minuten beantwortet diese eine Kernfrage: *Wenn ein Team mit
+> diesem Framework entwickelt — was bedeutet das für den Datenschutz? Wo wird Datenschutz verankert,
+> wie ist es auditierbar, welche Artefakte und Skills greifen, wo nehme ich Einfluss?*
 >
 > **Keine neue Mechanik.** Dieses Dokument erfindet nichts dazu. Es bündelt die im Repo bereits
 > vorhandenen Datenschutz-Mechanismen zu einer Lesebrille für Ihre Rolle. Die technische

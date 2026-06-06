@@ -1,8 +1,9 @@
 # Runbook: Business Case — warum ein Entscheider in INTENTRON investiert
 
-> **Für wen.** Sie sind Geschäftsführerin, Geschäftsführer oder Entscheider und wollen in unter
-> zehn Minuten wissen: Warum sollten wir in dieses Framework investieren? Welches Geschäftsrisiko
-> senkt es? Was kostet es, und wann lohnt es sich?
+> **Zielgruppe:** Geschäftsführerin, Geschäftsführer oder Entscheider.
+>
+> In unter zehn Minuten beantwortet dieses Runbook: Warum sollten wir in dieses Framework
+> investieren? Welches Geschäftsrisiko senkt es? Was kostet es, und wann lohnt es sich?
 >
 > **Was dieses Runbook ist — und was nicht.** Dies ist die Einstiegs-Lesebrille: die
 > Investitions- und Entscheidungssicht. Es geht hier **nicht** um technische Details, Gate-Mechanik
@@ -59,11 +60,11 @@ Der Effekt für Sie als Entscheider lässt sich in Geschäftssprache zusammenfas
 
 | Geschäftsrisiko | Wie das Framework es senkt | Beleg / Runbook |
 |---|---|---|
-| Non-compliant Software fällt erst im Audit auf — wenn die Korrektur teuer ist | Regeln werden im Commit erzwungen, nicht nachgelagert geprüft | CISO-Runbook, DPO-Runbook, `audit-perspective.md` |
-| Tech Debt macht das Produkt in zwölf Monaten unwartbar | Spec-first plus Quality-Gates plus Learning Loop halten die Qualität messbar | CTO-Runbook |
-| Ein Schlüsselentwickler geht — und das Wissen geht mit | Specs, Audit-Trail und Onboarding-Doku halten das Wissen im Projekt | CTO-Runbook |
-| Datenschutz-Verstoß bedeutet Bußgeld plus Reputationsschaden | DPO-Katalog und ein Datenschutz-Gate prüfen Verarbeitungen personenbezogener Daten | DPO-Runbook |
-| Vendor-Lock an ein einzelnes KI-Tool | Tool-neutraler Adapter-Vertrag statt Bindung an einen Anbieter | README / HANDBUCH |
+| Non-compliant Software fällt erst im Audit auf — wenn die Korrektur teuer ist | Regeln werden im Commit erzwungen, nicht nachgelagert geprüft | [CISO-Runbook](ciso-security.md), [DPO-Runbook](dpo-privacy.md), [Auditor-Sicht](audit-perspective.md) |
+| Tech Debt macht das Produkt in zwölf Monaten unwartbar | Spec-first plus Quality-Gates plus Learning Loop halten die Qualität messbar | [CTO-Runbook](cto-code-quality.md) |
+| Ein Schlüsselentwickler geht — und das Wissen geht mit | Specs, Audit-Trail und Onboarding-Doku halten das Wissen im Projekt | [CTO-Runbook](cto-code-quality.md) |
+| Datenschutz-Verstoß bedeutet Bußgeld plus Reputationsschaden | DPO-Katalog und ein Datenschutz-Gate prüfen Verarbeitungen personenbezogener Daten | [DPO-Runbook](dpo-privacy.md) |
+| Vendor-Lock an ein einzelnes KI-Tool | Tool-neutraler Adapter-Vertrag statt Bindung an einen Anbieter | [README](../../README.md) / [HANDBUCH — Anhang K](../../HANDBUCH.md#anhang-k-tool-adapter--dieses-framework-mit-anderen-ki-tools-nutzen-boo-49) |
 
 Drei Eigenschaften machen diesen Nutzen tragfähig über die Zeit:
 

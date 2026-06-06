@@ -19,6 +19,9 @@
 - **Runner** — the computer (often in the cloud) that executes the automatic checks. *Analogy:* the test bench the checks run on.
 - **CI** (Continuous Integration) — the automation that starts all checks on the runner on every change. *Analogy:* the end-of-line inspection that fires for each item.
 - **Branch protection** — the rule that forbids changing `main` directly and enforces PR + green gates. *Analogy:* "only via quality control, no shortcut into the fair copy".
+- **Auditor** — a reviewer (cyber-security or code quality) who checks after the fact whether the framework was actually followed — without changing anything themselves. *Analogy:* the auditor who reads the books but does not do the bookkeeping. Dedicated entry runbook: [`audit-perspective.en.md`](runbooks/audit-perspective.en.md).
+- **Audit trail** — the unbroken chain that leads every change back to its documented intent and the work step that triggered it (commit → spec → session). *Analogy:* the document flow in accounting: every entry has a receipt.
+- **Audit artifact** — a piece of evidence the framework produces for an auditor to inspect (e.g. check reports, privacy audit, sprint metrics). *Analogy:* the stamped inspection records in the binder. What matters is durability: permanent in the repo, 30 days in CI, or only ephemeral on the working machine.
 
 ## Docs & control
 

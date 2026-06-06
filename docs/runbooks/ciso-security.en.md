@@ -1,8 +1,8 @@
 # Runbook: The CISO View — what INTENTRON means for your cyber security
 
-> **Who this is for.** You are a CISO or head of IT deciding whether your team may adopt this
-> framework — or you are rolling it out right now. You don't have 30 minutes to read the HANDBUCH.
-> This runbook answers one question in under 10 minutes: *If my developers build code with AI agents
+> **Audience:** CISO or head of IT.
+>
+> In under 10 minutes this runbook answers one question: *If my developers build code with AI agents
 > and put this framework on top — which security gatekeepers kick in, how do they fit together, and
 > where do I take control?*
 >
@@ -50,7 +50,7 @@ takes.
 
 | Lifecycle step | Mechanism / gate | Artifact / evidence |
 |---|---|---|
-| **Idea / planning** | `security-architect` in **DESIGN** mode: threat modeling with STRIDE + DREAD, trust boundaries. | Threat-Model report → `SECURITY.md` |
+| **Idea / planning** | `security-architect` in **DESIGN** mode: threat modeling with STRIDE + DREAD, trust boundaries. | Threat-Model report → [`SECURITY.md`](../../SECURITY.md) |
 | **Before writing** | **Edit-Bodyguard (BOO-86)** — PreToolUse hook, catches secrets and unsafe patterns before the AI writes them to disk (Layer 0, Claude-Code-specific). | intercepted write (warning; hard block via switch) |
 | **On every code change** | `security-architect` in **REVIEW** mode: OWASP Top 10:2025 quick check, secrets check, security headers, risk classification. | Security-Review report; **HIGH finding = blocker** |
 | **On every code change** | **Semgrep SAST** as a pre-commit and CI gate; **dependency gate** against slopsquatting (existence, age, CVE check). | SARIF under `journal/reports/` |
@@ -80,7 +80,7 @@ evidence-based. Standards: STRIDE/DREAD, OWASP Top 10:2025, ASVS 5.0, Agentic AI
 
 | Mode | When | What it does | Output |
 |---|---|---|---|
-| **DESIGN** | before code, at ideation/planning | STRIDE + DREAD threat modeling, trust boundaries | Threat-Model report → `SECURITY.md` |
+| **DESIGN** | before code, at ideation/planning | STRIDE + DREAD threat modeling, trust boundaries | Threat-Model report → [`SECURITY.md`](../../SECURITY.md) |
 | **REVIEW** | on every code change | OWASP Top 10:2025 quick check, secrets check, security headers, risk classification HIGH/MEDIUM/LOW | Security-Review report (HIGH = blocker) |
 | **AUDIT** | on demand / periodic | full scan, dependency analysis, attack-surface analysis, Agentic AI Security (ASI01–ASI10) | Audit report |
 | **SKILL-SCAN** | before installing third-party skills | prompt-injection scan across 8 categories: override/hijacking, exfiltration, privilege escalation, destructive actions, settings manipulation, indirect injection, hidden instructions, social engineering | rating SAFE / SUSPICIOUS / DANGEROUS |
@@ -124,7 +124,7 @@ systems, `heavy`.
 - **`.claude/sensitive-paths.json`** — you define which paths force a mandatory human sign-off
   (e.g. `auth/**`, payment logic, anything containing "credential").
 - **Semgrep pack selection** — which SAST rule sets run.
-- **Enable branch protection** — via `setup-branch-protection.sh` (BOO-29). This is the layer that
+- **Enable branch protection** — via [`setup-branch-protection.sh`](../../bootstrap/scripts/setup-branch-protection.sh) (BOO-29). This is the layer that
   catches the local bypass; without it, Layer 3 is not armed.
 - **Set the ASVS level** — how deep the review goes per ASVS 5.0.
 - **Trigger DESIGN mode at ideation** — you can (and should) require a threat model for new features

@@ -1,10 +1,10 @@
 # Runbook: Codequalität & Tech-Debt — wie ein CTO mit INTENTRON Qualität sichert
 
-> **Für wen.** Sie sind CTO oder Head of Engineering und prüfen, ob Sie dieses Framework einführen.
-> Sie wollen in unter zehn Minuten wissen: Wenn mein Team mit KI Code schreibt — wie wird
-> Codequalität sichergestellt? Wie verhindere ich, dass dabei still ein Berg Technical Debt
-> wächst? Welche Quality Gates greifen, wie läuft eine Story von der Idee bis zum Merge, und wo
-> nehme ich als Führungskraft Einfluss?
+> **Zielgruppe:** CTO oder Head of Engineering, der prüft, ob dieses Framework eingeführt wird.
+> In unter zehn Minuten beantwortet: Wenn mein Team mit KI Code schreibt — wie wird Codequalität
+> sichergestellt? Wie verhindere ich, dass dabei still ein Berg Technical Debt wächst? Welche
+> Quality Gates greifen, wie läuft eine Story von der Idee bis zum Merge, und wo nehme ich als
+> Führungskraft Einfluss?
 >
 > **Was dieses Runbook ist — und was nicht.** Dies ist die Einstiegs-Lesebrille für die
 > Engineering-Sicht. Es führt **keine neue Mechanik** ein — es bündelt, was bereits im Repo lebt:
@@ -87,8 +87,8 @@ prüfbares Artefakt hinterlässt.
 Der wichtigste Baustein gegen „undokumentierten KI-Code" ist der Audit-Trail (BOO-19). Jeder
 `/implement`-Run schreibt einen `## Session-Referenz`-Block in die Spec — Commit-SHA, Session-ID,
 Log-Pfad. Damit lässt sich später jeder Commit zurückverfolgen: vom Commit zur Spec zum Intent zur
-KI-Session. Das Script `audit-trace.sh` rekonstruiert diese Kette. Sie sehen nicht nur *was* geändert
-wurde, sondern *aus welcher Absicht heraus*.
+KI-Session. Das Script [`audit-trace.sh`](../../bootstrap/scripts/audit-trace.sh) rekonstruiert diese
+Kette. Sie sehen nicht nur *was* geändert wurde, sondern *aus welcher Absicht heraus*.
 
 ### Wie die Learning Loop Tech-Debt-Wiederholung verhindert
 
@@ -106,8 +106,9 @@ Anti-Pattern droht. So fließt gestern Gelerntes in die heutige Story-Definition
 
 ### `governance_mode` — die Gate-Strenge skaliert mit dem Risiko
 
-Nicht jedes Projekt braucht die volle Härte. `governance_mode` in der `CONVENTIONS.md` skaliert die
-Gates entlang des Risikos.
+Nicht jedes Projekt braucht die volle Härte. `governance_mode` in der
+[`CONVENTIONS.md`](../../CONVENTIONS.md) skaliert die Gates entlang des Risikos (die drei Modi sind im
+[HANDBUCH](../../HANDBUCH.md#governance-modi-lite-standard-heavy) ausführlich beschrieben).
 
 | Modus | Ergänzt gegenüber dem Vorgänger |
 |---|---|
@@ -175,10 +176,15 @@ nicht.
 
 - [`CONVENTIONS.md`](../../CONVENTIONS.md) — die Gate-Architektur (4 Layer, Spec-Gate),
   `governance_mode`, `execution_isolation`, aktive Gates im Detail.
-- [`HANDBUCH.md`](../../HANDBUCH.md) — das vollständige Setup- und Betriebshandbuch.
+- [`HANDBUCH.md`](../../HANDBUCH.md) — das vollständige Setup- und Betriebshandbuch; die Gates stehen
+  in [Kapitel 8 — Die Guardrails](../../HANDBUCH.md#8-die-guardrails--dein-sicherheitsnetz), die
+  Artefakte in [Kapitel 7](../../HANDBUCH.md#7-die-artefakte--was-entsteht-wo-und-warum).
 - [`ARCHITECTURE_DESIGN`-Vorlage](../../bootstrap/references/architecture-design-template.md) — die
   Template-Basis des Architektur-Hubs (im Projekt entsteht daraus `ARCHITECTURE_DESIGN.md` mit den
   aktiven Quality-Dimensionen §5).
+- [`GOVERNANCE`-Vorlage](../../bootstrap/references/governance-template.md) und
+  [`DEVELOPER_ONBOARDING`-Vorlage](../../bootstrap/references/developer-onboarding-template.md) — die
+  Template-Basen, aus denen im Projekt `GOVERNANCE.md` und `DEVELOPER_ONBOARDING.md` entstehen.
 - [`audit-perspective.md`](audit-perspective.md) — wie ein Auditor die Belege prüft
   (Frage → Beleg → Ort).
 - [`../quality-gate-four-layers.excalidraw`](../quality-gate-four-layers.excalidraw) — die Quelle

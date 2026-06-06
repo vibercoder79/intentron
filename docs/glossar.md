@@ -19,6 +19,9 @@
 - **Runner** — der Computer (oft in der Cloud), der die automatischen Prüfungen ausführt. *Analogie:* der Prüfstand, auf dem die Tests laufen.
 - **CI** (Continuous Integration) — die Automatik, die bei jeder Änderung alle Prüfungen auf dem Runner startet. *Analogie:* die Endkontrolle am Fließband, die bei jedem Stück anspringt.
 - **Branch-Protection** — die Regel, die direktes Ändern von `main` verbietet und PR + grüne Gates erzwingt. *Analogie:* „Nur über die Qualitätskontrolle, kein Schleichweg in die Reinschrift."
+- **Auditor** — eine prüfende Person (Cyber-Security oder Code-Qualität), die nachträglich kontrolliert, ob das Framework auch wirklich eingehalten wurde — ohne selbst etwas zu ändern. *Analogie:* die Wirtschaftsprüferin, die die Bücher liest, aber nicht mitbucht. Eigenes Einstiegs-Runbook: [`audit-perspective.md`](runbooks/audit-perspective.md).
+- **Audit-Trail** — die lückenlose Spur, die jede Änderung zurück auf ihre dokumentierte Absicht und den auslösenden Arbeitsschritt führt (Commit → Spec → Session). *Analogie:* der Belegfluss in der Buchhaltung: zu jeder Buchung gibt es einen Beleg.
+- **Audit-Artefakt** — ein vom Framework erzeugter Nachweis, den ein Auditor einsehen kann (z. B. Prüf-Reports, Datenschutz-Audit, Sprint-Metriken). *Analogie:* die abgestempelten Prüfprotokolle im Ordner. Wichtig ist die Haltbarkeit: dauerhaft im Repo, 30 Tage in der CI, oder nur flüchtig auf dem Arbeitsrechner.
 
 ## Doku & Steuerung
 
