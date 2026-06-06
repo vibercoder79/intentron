@@ -6,7 +6,7 @@ description: |
   bis Ergebnis-Tabelle inkl. Post-Implement Validation. Verwenden wenn der Operator "los" sagt,
   eine Story umsetzen will, oder "/implement" ausfuehrt. Wird auch vom Automation Daemon genutzt
   (ohne Human-in-the-Loop).
-version: 2.14.0
+version: 2.15.0
 metadata:
   hermes:
     category: coding
@@ -565,6 +565,16 @@ RUN_FINAL_STATUS="in_progress"
 Der Skill iteriert ueber den ESLint-Output bis 0 Errors — der Skill formuliert Code-Fixes
 basierend auf den Findings, prueft erneut, und stoppt erst wenn das Gate gruen ist oder
 das Iterations-Limit erreicht ist.
+
+> **Modell-Delegation (BOO-171):** Diese und die folgende mechanische Iterations-Schleife (6a-bis Semgrep)
+> sind stumpfe „fix bis gruen"-Arbeit ohne tiefes Reasoning. Der Opus-Parent **delegiert** sie an einen
+> **`lint-fixer`-Subagenten mit `model: haiku`** (Kopiervorlage: [`references/lint-fixer.agent.md`](references/lint-fixer.agent.md)
+> — als Projekt-Subagent nach `.claude/agents/lint-fixer.md` ablegen, oder direkt per Agent-Tool mit
+> `model: haiku` und diesem Briefing spawnen). Mini-Briefing: geaenderte Dateien,
+> Linter-Output, erlaubte Schreib-Pfade, Iterations-Limit. **Code-Kern (Schritt 5) und Security-Findings (6e)
+> bleiben Opus.** Das `meta.json`-Schema (`skill_invoked: implement-iterations`, `model_tier: haiku`) bildet
+> das bereits ab; Tier-Quelle `bootstrap/references/model-tiers.json`. Faellt der Subagent aus, iteriert der
+> Parent selbst weiter (kein Hard-Block).
 
 ```bash
 # Alle in diesem Commit geaenderten JS-Dateien pruefen — Pflicht-Run + SARIF-Persistenz pro Iteration

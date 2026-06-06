@@ -6,7 +6,7 @@ description: |
   to closing table including post-implement validation. Use when the operator says "go",
   wants to implement a story, or runs "/implement". Also used by the automation daemon
   (no human in the loop).
-version: 2.14.0
+version: 2.15.0
 language: en
 metadata:
   hermes:
@@ -515,6 +515,16 @@ RUN_FINAL_STATUS="in_progress"
 The skill iterates over the ESLint output until 0 errors — the skill formulates code fixes
 based on the findings, re-checks, and stops only when the gate is green or the iteration
 limit is reached.
+
+> **Model delegation (BOO-171):** This and the following mechanical iteration loop (6a-bis Semgrep) are
+> blunt "fix until green" work without deep reasoning. The opus parent **delegates** them to a
+> **`lint-fixer` subagent with `model: haiku`** (copy template: [`references/lint-fixer.agent.md`](references/lint-fixer.agent.md)
+> — place it as a project subagent at `.claude/agents/lint-fixer.md`, or spawn it directly via the Agent
+> tool with `model: haiku` and this briefing). Mini-briefing: changed files, linter
+> output, allowed write paths, iteration limit. **Code core (step 5) and security findings (6e) stay opus.**
+> The `meta.json` schema (`skill_invoked: implement-iterations`, `model_tier: haiku`) already reflects this;
+> tier source `bootstrap/references/model-tiers.json`. If the subagent is unavailable, the parent keeps
+> iterating itself (no hard block).
 
 ```bash
 # Check all JS files changed in this commit — mandatory run + per-iteration SARIF persistence
