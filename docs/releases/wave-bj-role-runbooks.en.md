@@ -1,4 +1,4 @@
-# Wave BI — Role-specific runbooks: CISO · DPO · CTO · managing director (BOO-158–163)
+# Wave BJ — Role-specific runbooks: CISO · DPO · CTO · managing director (BOO-158–163)
 
 **What's now here:** Four narrative entry-point runbooks explain INTENTRON from one leadership role's point of view — managing director, CISO/IT lead, data protection officer, CTO. Each reads in under 10 minutes, answers "what does the framework mean for me, which gatekeepers apply, where do I take control", and is **not new machinery** but a lens on what already exists (like `audit-perspective.md`). Linked from the README in EN + DE, plus a shared role map as a sketch. Pure docs. DE+EN.
 
@@ -23,7 +23,7 @@
 To the question "is there a role-appropriate introduction to the framework?", there are now four lenses instead of a 230 KB handbook as the only entry point. A CISO, DPO, CTO or managing director understands in under 10 minutes what the framework means for their own role.
 
 ## Scope note
-Pure docs, no code, no new machinery. Wave letter `bi` (bh = knowledge-onboarding-sketches, bg = BOO-156). Project-local artefacts in the CTO runbook are code spans (no dead links), with a template link under "Further reading". Builds on `artefakt-landkarte` (sign-off roles) + `audit-perspective.md` (style pattern).
+Pure docs, no code, no new machinery. wave letter `bj` (bh = knowledge-onboarding-sketches, bg = BOO-156). Project-local artefacts in the CTO runbook are code spans (no dead links), with a template link under "Further reading". Builds on `artefakt-landkarte` (sign-off roles) + `audit-perspective.md` (style pattern).
 
 ## References
 Spec: `specs/BOO-158.md`. Branch: `tobiaschschmidt/boo-158-rollenspezifische-runbooks-ciso-dpo-cto-geschaftsfuhrung`. Operator source: Tobias, 2026-06-05.
