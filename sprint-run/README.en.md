@@ -40,6 +40,21 @@ Linear status, waiting for the tests and ending the sprint. `/implement`, `/back
 
 ---
 
+## Two modes — both execute the sprint
+
+| Invocation | What happens |
+|---|---|
+| `/sprint-run` | Plans the sprint, shows you the plan and **waits once for your OK** — and then runs the **entire** sprint (implement stories, test, **merge to `main`**). |
+| `/sprint-run --auto` | **Identical, just without** that one OK — for unattended/daemon runs. |
+
+Both **actually execute** the sprint (incl. merge). There is **no** pure "check-only" mode — if you only want to see what would come, start `/sprint-run`, read the plan and abort **before** the approval. After the approval the loop runs without further intermediate questions (except at safety gate blocks).
+
+> **Don't confuse:** The **plan** shown here is the **skill's sprint plan** (story list + budget), **not** the Claude Code plan mode. The latter is read-only and would even **block** the execution — so do **not** use plan mode to run `/sprint-run`.
+>
+> **Claude Code mode (recommendation):** supervised on the Mac → `acceptEdits`; unattended (`--auto`, VPS/daemon) → `dontAsk` + allowlist (`bypassPermissions` only isolated). Details: HANDBUCH §6 "Claude Code mode".
+
+---
+
 ## How a sprint runs
 
 ![Sprint-Run flow — the daemon loop from /sprint-run to /sprint-review](docs/sprint-run-flow.en.png)

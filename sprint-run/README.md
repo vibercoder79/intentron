@@ -40,6 +40,21 @@ Linear-Status, das Warten auf die Tests und das Sprint-Ende. `/implement`, `/bac
 
 ---
 
+## Zwei Modi — beide führen den Sprint aus
+
+| Aufruf | Was passiert |
+|---|---|
+| `/sprint-run` | Plant den Sprint, zeigt dir den Plan und **wartet einmal auf dein OK** — und faehrt dann den **ganzen** Sprint durch (Stories umsetzen, testen, **nach `main` mergen**). |
+| `/sprint-run --auto` | **Identisch, nur ohne** das eine OK — fuer unbeaufsichtigte/Daemon-Laeufe. |
+
+Beide setzen den Sprint **echt um** (inkl. Merge). Es gibt **keinen** reinen „Nur-Pruefen"-Modus — willst du nur sehen, was kaeme, starte `/sprint-run`, lies den Plan und brich **vor** der Freigabe ab. Nach der Freigabe laeuft der Loop ohne weitere Zwischenfragen (ausser an Sicherheits-Gate-Blocks).
+
+> **Nicht verwechseln:** Der hier gezeigte **Plan** ist der **Sprint-Plan des Skills** (Story-Liste + Budget), **nicht** der Claude-Code-Planungsmodus. Letzterer ist read-only und wuerde die Umsetzung sogar **blockieren** — zum Ausfuehren von `/sprint-run` also **nicht** Plan Mode nutzen.
+>
+> **Claude-Code-Modus (Empfehlung):** beaufsichtigt am Mac → `acceptEdits`; unbeaufsichtigt (`--auto`, VPS/Daemon) → `dontAsk` + Allowlist (`bypassPermissions` nur isoliert). Details: HANDBUCH §6 „Claude-Code-Modus".
+
+---
+
 ## So laeuft ein Sprint
 
 ![Sprint-Run-Flow — der Daemon-Loop von /sprint-run bis /sprint-review](docs/sprint-run-flow.png)

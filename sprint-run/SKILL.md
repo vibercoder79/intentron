@@ -160,11 +160,21 @@ Verweis auf das `/sprint-review`-Ergebnis.
 
 ## Daemon-Modus
 
+**Default vs. `--auto` — beide fuehren aus.** Im interaktiven Default-Lauf zeigt `/sprint-run` in
+Schritt 3 den Sprint-Plan und wartet **einmal** auf Freigabe; **danach** laeuft der Loop (Schritt 4)
+ohne weitere Zwischenfragen durch. `--auto` (Webhook/Daemon) ueberspringt **nur** diese eine
+Freigabe — sonst identisch. Es gibt **keinen** reinen Pruef-Modus; beide setzen den Sprint real um.
+
 Wie `/implement` kennt `/sprint-run` einen Daemon-Modus (`--auto` / Webhook): die
 **Operator-Freigabe in Schritt 3 wird uebersprungen**, der Loop laeuft ohne Zwischenfragen —
 **ausser** an Gate-Blocks (Schritt 4.4), die **immer** anhalten. Alle `/implement`-Gates
 (Spec-Gate, Quality-Gates, CI-Loop) bleiben in jeder Story aktiv, und Schritt 4.5b verifiziert
 nach jedem Lauf **maschinell** gegen `meta.json`, dass kein Gate still uebersprungen wurde.
+
+> **Claude-Code-Modus (nicht verwechseln):** Der „Plan" in Schritt 3 ist der **Sprint-Plan des
+> Skills**, **nicht** der Claude-Code-Planungsmodus — der ist read-only und wuerde die Umsetzung
+> blockieren. Empfehlung: beaufsichtigt → `acceptEdits`, unbeaufsichtigt (`--auto`) → `dontAsk` +
+> Allowlist; nie Plan Mode fuer die Umsetzung. Details: HANDBUCH §6 „Claude-Code-Modus".
 
 ## Integration mit anderen Skills
 

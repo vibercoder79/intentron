@@ -58,6 +58,8 @@ Open Claude Code **in the project folder** and type `/sprint-run` (interactive, 
 
 The daemon first shows the sprint plan (stories, order, projected token budget), then runs per story: `git worktree add` → `/implement` (daemon) → `gh run watch` → merge (green only) → Linear → Done → `git worktree remove`. With `--auto` the plan approval is skipped — **except** at gate blocks, which always halt.
 
+> **Both modes actually execute the sprint** (incl. merge to `main`); `--auto` only drops the one-time plan approval — there is no pure "check-only" mode. **Claude Code mode:** supervised → `acceptEdits`, unattended → `dontAsk` + allowlist; **not** plan mode (read-only, blocks execution). The sprint plan is the skill's plan, **not** the Claude Code plan mode. Details: HANDBUCH §6 "Claude Code mode".
+
 ## Typical failure scenarios + fixes
 
 | Scenario | What the daemon does | What you do |
