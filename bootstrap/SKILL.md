@@ -16,6 +16,8 @@ metadata:
 
 Setzt ein neues Projekt mit Governance-Framework auf. Der Flow ist in **4 Bloecke (A-D)** strukturiert — jeder Block mit klarem Fokus, keine Fragen-Batches.
 
+> **Hinweis zur Einordnung:** Das Setup richtet Governance fuer einen **sequenziellen, kontrollierten Entwicklungsflow** ein — kein autonom laufendes Agentensystem. Die gewaehlten KI-Tools (Claude, Codex) sind Adapter auf den Story-Vertrag, nicht die Governance selbst.
+
 Referenzen:
 - `references/info-gathering.md` — Kern-Fragen (Block A)
 - `references/existing-infra-check.md` — Bestehende Infrastruktur (Block B)

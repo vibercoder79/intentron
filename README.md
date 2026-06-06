@@ -17,6 +17,8 @@ INTENTRON turns the method described in Matthias Schrader's book "Code Crash" in
 
 **The name — INTENT + -TRON:** *Intent* is Schrader's core idea — we extend spec-driven development by the layer *above* the spec: every story is aligned to an **intent** (the *why*), not just a specification (the *what*). The *-tron* suffix names a **machine** (cyclotron, magnetron). Together, INTENTRON is **the engine that turns intent into production** — enforced and traceable.
 
+**What INTENTRON is not.** INTENTRON is not itself an autonomous, agentic AI. It is primarily a human-steered, **sequential** engineering pipeline with quality gates and review points — not a fully autonomous developer agent. The AI tools (Claude, Codex, Cursor) are *adapters* onto this contract: they may drive the framework, but they stay inside its declared specs, gates, reports and review points. The governance itself does not run off on its own.
+
 ---
 
 ## Why INTENTRON? The edge
@@ -63,11 +65,13 @@ A dimension-by-dimension comparison against the agent-orchestration tools (an ho
 | **Self-healing** | ✅ Cron, 15 min, auto-corrects | ❌ | ❌ | ❌ | ❌ |
 | **Learning loop** | ✅ Outcome check + LEARNINGS.md | ❌ | ❌ | ❌ | ❌ |
 | **Model routing** | ✅ Opus/Sonnet/Haiku per task type | ⚠️ configurable | ✅ good | ❌ | ❌ |
-| **Multi-agent orchestration** | ✅ Agent teams + parallel subagents | ✅ strong | ✅ very strong | ⚠️ manual | ❌ |
+| **Multi-agent orchestration** | ✅ Agent teams + parallel subagents¹ | ✅ strong | ✅ very strong | ⚠️ manual | ❌ |
 | **Deploy automation** | ⚠️ partial (Git push + manual) | ❌ | ❌ | ❌ | ❌ |
 | **Portability** | ✅ Zero dependencies, 1 folder | ⚠️ pip install | ⚠️ pip install | ⚠️ prompt files | ✅ |
 | **Project setup time** | ~30 min (guided) | hours | hours | ~1h | minutes |
 | **Target audience** | Solo dev → enterprise team | Enterprise teams | Research / quality | Agile teams | Individual devs |
+
+> ¹ "Multi-agent orchestration" here means delegated sub-skills inside one controlled story — not autonomous agents running on their own.
 
 **Where others are genuinely stronger** — and when to prefer them:
 
@@ -289,7 +293,7 @@ Installing INTENTRON at a customer needs information that the generic bootstrap 
 | 2 | [`integration-discovery.md`](docs/onboarding/integration-discovery.md) | **How does the solution integrate into your live systems?** CI/CD, interfaces, network, secrets, compliance, go-live. | Customer IT |
 | 3 | [`artefakt-landkarte.md`](docs/onboarding/artefakt-landkarte.md) | **Which artifacts exist, what purpose each serves, which stakeholders you must talk to, and where the resulting rules go?** The bridge that turns customer specifications into framework rules. | Operator + all sign-off roles |
 
-Checklists 1 and 2 gather input. Checklist 3 is the planning and sign-off layer: it maps every framework artifact to the customer-side role that reconciles it and to the rule sink where the resulting rule is stored — so an autonomous team can later develop in a compliant way on its own. Each document has an English `.en.md` sibling.
+Checklists 1 and 2 gather input. Checklist 3 is the planning and sign-off layer: it maps every framework artifact to the customer-side role that reconciles it and to the rule sink where the resulting rule is stored — so an autonomous (human) team can later develop in a compliant way on its own. Each document has an English `.en.md` sibling.
 
 ---
 
@@ -345,6 +349,8 @@ INTENTRON setzt die im Buch »Code Crash« von Matthias Schrader beschriebene Me
 
 **Der Name — INTENT + -TRON:** *Intent* ist Schraders Kernbegriff — wir erweitern Spec-Driven Development um die Ebene *über* der Spec: Jede Story ist auf einen **Intent** ausgerichtet (das *Warum*), nicht nur auf eine Spezifikation (das *Was*). Die Endung *-tron* benennt eine **Maschine** (Zyklotron, Magnetron). Zusammen ist INTENTRON **die Engine, die Intent in Produktion überführt** — erzwungen und nachvollziehbar.
 
+**Was INTENTRON nicht ist.** INTENTRON ist selbst **keine** autonome, agentische KI. Es ist zuerst eine menschlich gesteuerte, **sequenzielle** Engineering-Pipeline mit Quality-Gates und Review-Punkten — kein vollautonomer Developer-Agent. Die KI-Tools (Claude, Codex, Cursor) sind *Adapter* auf diesen Vertrag: Sie können das Framework agentisch nutzen, bleiben aber innerhalb seiner Specs, Gates, Reports und Review-Punkte. Die Governance selbst läuft nicht selbstständig los.
+
 ---
 
 ## Warum INTENTRON? Der Vorteil
@@ -391,11 +397,13 @@ Ein Dimension-für-Dimension-Vergleich gegen die Agent-Orchestrierungs-Tools (eh
 | **Self-Healing** | ✅ Cron, 15 Min, auto-korrigiert | ❌ | ❌ | ❌ | ❌ |
 | **Learning-Loop** | ✅ Outcome-Check + LEARNINGS.md | ❌ | ❌ | ❌ | ❌ |
 | **Modell-Routing** | ✅ Opus/Sonnet/Haiku je Task-Typ | ⚠️ Konfigurierbar | ✅ Gut | ❌ | ❌ |
-| **Multi-Agent Orchestrierung** | ✅ Agent-Teams + Parallel-Subagents | ✅ Stark | ✅ Sehr stark | ⚠️ Manuell | ❌ |
+| **Multi-Agent Orchestrierung** | ✅ Agent-Teams + Parallel-Subagents¹ | ✅ Stark | ✅ Sehr stark | ⚠️ Manuell | ❌ |
 | **Deploy-Automation** | ⚠️ Teilweise (Git Push + Manual) | ❌ | ❌ | ❌ | ❌ |
 | **Portabilität** | ✅ Zero Dependencies, 1 Ordner | ⚠️ pip install | ⚠️ pip install | ⚠️ Prompt-Files | ✅ |
 | **Projekt-Setup-Zeit** | ~30 Min (geführt) | Stunden | Stunden | ~1h | Minuten |
 | **Zielgruppe** | Solo-Dev → Enterprise-Team | Enterprise-Teams | Forschung / Quality | Agile Teams | Einzelentwickler |
+
+> ¹ „Multi-Agent-Orchestrierung" meint hier delegierte Sub-Skills innerhalb einer kontrollierten Story — keine autonom laufenden Agenten.
 
 **Was andere Frameworks besser machen** — und wann du sie bevorzugen solltest:
 
@@ -617,7 +625,7 @@ Die Installation von INTENTRON beim Kunden braucht Informationen, die der generi
 | 2 | [`integration-discovery.md`](docs/onboarding/integration-discovery.md) | **Wie integriert sich die Solution in eure Live-Systeme?** CI/CD, Schnittstellen, Netzwerk, Secrets, Compliance, Go-Live. | Kunden-IT |
 | 3 | [`artefakt-landkarte.md`](docs/onboarding/artefakt-landkarte.md) | **Welche Artefakte gibt es, welchen Zweck erfüllt jedes, mit welchen Stakeholdern musst du sprechen, und wo landen die resultierenden Regeln?** Die Brücke, die Kunden-Vorgaben in Framework-Regeln übersetzt. | Operator + alle Abnehmer-Rollen |
 
-Checkliste 1 und 2 sammeln Input. Checkliste 3 ist der Planungs- und Abnahme-Layer: Sie verknüpft jedes Framework-Artefakt mit der Kundenseiten-Rolle, die es abgleicht, und mit der Regel-Senke, in der die resultierende Regel landet — damit ein autonomes Team anschließend regelkonform selbst entwickeln kann. Jedes Dokument hat eine englische `.en.md`-Schwester.
+Checkliste 1 und 2 sammeln Input. Checkliste 3 ist der Planungs- und Abnahme-Layer: Sie verknüpft jedes Framework-Artefakt mit der Kundenseiten-Rolle, die es abgleicht, und mit der Regel-Senke, in der die resultierende Regel landet — damit ein autonomes (menschliches) Team anschließend regelkonform selbst entwickeln kann. Jedes Dokument hat eine englische `.en.md`-Schwester.
 
 ---
 

@@ -50,6 +50,8 @@ Das ist **nicht** das Problem von KI. Das ist das Problem von **fehlendem System
 Vibe Coding ist mächtig — aber nur wenn die KI versteht **was du gebaut hast** und **warum**.
 Ohne Dokumentation und Struktur gibt jede neue Session bei null an.
 
+> **Was INTENTRON NICHT ist.** Das Framework ist selbst keine autonome, agentische KI: Es ist zuerst eine sequenzielle Engineering-Pipeline mit Quality-Gates, nicht ein vollautonomer Developer-Agent. KI-Tools (Claude, Codex, Hermes) koennen es agentisch nutzen, aber das Framework bleibt die Struktur, die Autonomie durch Intent, Specs, Gates, Reports und menschliche Review-Punkte begrenzt. Ausfuehrlich in §8e.
+
 ### Das zweite Problem: der nachgelagerte Compliance-Befund
 
 Es gibt ein zweites, teureres Problem — und das trifft nicht den Solo-Entwickler, sondern Teams in regulierten Organisationen. Ohne Leitplanken merkt niemand *während* der Entwicklung, ob Security-, Datenschutz- und Governance-Regeln eingehalten wurden. Der Befund kommt **nachgelagert**: im Security-Review, im Datenschutz-Audit, beim CISO — oft Monate später, wenn die Software längst läuft. Dann heißt es „ihr habt euch nicht an die Regeln gehalten", und es wird teuer nachgebessert.
@@ -90,7 +92,7 @@ GitHub Repository (vibercoder79/intentron)
 |----------------|----------------|
 | Claude vergisst zwischen Sessions | Claude kennt das System immer |
 | "Bau mir X" → irgendwas entsteht | `/ideation` → strukturierte Story → `/implement` |
-| Bugs tauchen aus dem Nichts auf | Self-Healing Agent überwacht 24/7 |
+| Bugs tauchen aus dem Nichts auf | automatisierte Self-Healing-Pruefung (optional, Cron — Block D) |
 | Keine Ahnung ob Version stabil | Jede Änderung ist versioniert + dokumentiert |
 | Rollback? Welches Rollback? | Git + Changelog = jederzeit zurückrollbar |
 | 3 Wochen später: komplettes Chaos | Sprint Review hält alles sauber |

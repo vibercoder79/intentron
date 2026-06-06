@@ -12,6 +12,8 @@
 
 You probably arrived here for one of three reasons. The document is written so each reader finds the right starting point fast.
 
+> **Not an autonomous agent.** INTENTRON is primarily a sequential engineering pipeline with quality gates, not a fully autonomous developer agent. If you arrive from Codex or Cursor expecting "the framework is the agent", read it the other way round: the AI tool is an adapter that drives this contract; the contract — specs, gates, reports, review points — is the governance, and it does not act on its own.
+
 ### As an operator setting up a new project
 
 Read §1 (project layout) and §6 (tool-portability checklist) first. Everything you need to scaffold a compliant repository is in those two sections. The other sections explain *why* the layout looks the way it does — useful when you want to deviate intentionally.
@@ -458,6 +460,8 @@ If yes → operator can switch AI coding tools (Claude Code → Codex → Cursor
 ## §0. Fuer wen ist dieses Dokument
 
 Du bist wahrscheinlich aus einem von drei Gruenden hier. Das Dokument ist so geschrieben, dass jeder Leser schnell die richtige Stelle findet.
+
+> **Kein autonomer Agent.** INTENTRON ist zuerst eine sequenzielle Engineering-Pipeline mit Quality-Gates, nicht ein vollautonomer Developer-Agent. Wer von Codex oder Cursor kommt und erwartet „das Framework ist der Agent", liest es andersherum richtig: Das KI-Tool ist ein Adapter, der diesen Vertrag ausfuehrt; der Vertrag — Specs, Gates, Reports, Review-Punkte — ist die Governance, und er handelt nicht von selbst.
 
 ### Als Operator beim Aufsetzen eines neuen Projekts
 
