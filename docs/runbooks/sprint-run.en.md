@@ -67,6 +67,7 @@ The daemon first shows the sprint plan (stories, order, projected token budget),
 | Personal-data hit | **pause** + notify (GDPR) | DPO review, then `privacy-ok: ...` |
 | Remote CI stays red (3×) | no merge, escalation, story stays In Progress | check log (`gh run view --log-failed`), fix |
 | `/implement` fails | story back to Backlog; `daemon_fail_policy` (stop/continue) | find the cause, re-schedule the story |
+| Unjustified gate skip / missing `meta.json` (4.5b) | assertion fails → story back to Backlog + notify | check `meta.json`; run the gate or justify the override |
 | 80% token boundary reached | end loop + `/sprint-review` + note | plan the next sprint |
 | `main` not clean | STOP before merge | clean the working tree, restart |
 

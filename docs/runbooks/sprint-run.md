@@ -67,6 +67,7 @@ Der Daemon zeigt zuerst den Sprint-Plan (Stories, Reihenfolge, projiziertes Toke
 | Personal-Data-Treffer | **Pause** + Notify (DSGVO) | DPO-Review, dann `privacy-ok: ...` |
 | Remote-CI bleibt rot (3×) | kein Merge, Eskalation, Story bleibt In Progress | Logauszug prüfen (`gh run view --log-failed`), fixen |
 | `/implement` schlägt fehl | Story zurück auf Backlog; `daemon_fail_policy` (stop/continue) | Ursache klären, Story erneut einplanen |
+| Unbegründeter Gate-Skip / fehlende `meta.json` (4.5b) | Assertion failt → Story zurück auf Backlog + Notify | `meta.json` prüfen; Gate nachholen oder Override begründen |
 | 80%-Token-Boundary erreicht | Loop-Ende + `/sprint-review` + Hinweis | nächsten Sprint planen |
 | `main` nicht clean | STOPP vor Merge | Arbeitsbaum aufräumen, neu starten |
 

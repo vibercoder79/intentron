@@ -4765,7 +4765,8 @@ Pro Story in der Sprint-Reihenfolge:
 | 4.3 | `/implement` im Daemon-Modus (Schritt-4-Freigabe uebersprungen, alle Gates aktiv) |
 | 4.4 | Gate-Block-Pause (s.u.) bei Sensitive-/Personal-Data-Treffer |
 | 4.5 | Remote-CI-Wait (`gh run watch --exit-status`, BOO-148) — rot → max 3 Fix-Iterationen |
-| 4.6 | Merge **nur** bei gruener CI → `main`; `git worktree remove` |
+| 4.5b | **Post-Story-Gate-Assertion** — `meta.json` lesen; unbegruendeter `skipped_gates`-Eintrag oder fehlende `meta.json` → Story-Fail |
+| 4.6 | Merge **nur** bei gruener CI **und** gruener Assertion → `main`; `git worktree remove` |
 | 4.7 | Linear → Done (mit AC-Evidenz); bei Fehler Story zurueck + `daemon_fail_policy` |
 | 4.8 | Token-Check gegen 80%-Boundary |
 
@@ -4793,9 +4794,14 @@ Pro Story entsteht ein Branch `feat/boo-<n>-<slug>` in einem eigenen Worktree. `
 
 ![GitHub-Integration — Story → Branch → PR → CI → Merge](sprint-run/docs/github-integration.png)
 
+### Gate-Assertion (Schritt 4.5b)
+
+Nach jedem `/implement`-Lauf liest `/sprint-run` die `meta.json` des Story-Runs (geschrieben von `/implement` Schritt 6f-bis, BOO-36/84) und verifiziert **maschinell**, dass kein Pflicht-Gate still uebersprungen wurde. Ein `skipped_gates`-Eintrag ist nur legitim, wenn er durch `change_type` (Non-Code 5.7) gedeckt **oder** in `override_audit` belegt ist; sonst — oder bei fehlender `meta.json` — faellt die Story zurueck auf `Backlog` (Operator-Notify). Merge (4.6) erst nach gruener Assertion. So wird die prompt-getriebene Gate-Ausfuehrung gegen den Maschinen-Output abgesichert. Details: `sprint-run/references/gate-assertion.md`.
+
 ### Fehlerbehandlung
 
 - **`/implement` schlaegt fehl:** Story zurueck auf `Backlog`; `daemon_fail_policy` = `stop` (Default, Sprint anhalten + Notify) oder `continue` (naechste Story).
+- **Unbegruendeter Gate-Skip / fehlende `meta.json` (Schritt 4.5b):** Story zurueck auf `Backlog` + Operator-Notify (Story-ID + Gate); kein Merge.
 - **CI bleibt rot** nach 3 Iterationen: kein Merge, Story bleibt `In Progress`, Eskalation mit Log-Auszug.
 - **Dirty `main` / Worktree-Konflikt:** STOPP — niemals mit unsauberem Baum mergen.
 
@@ -4816,4 +4822,4 @@ Pro Story entsteht ein Branch `feat/boo-<n>-<slug>` in einem eigenen Worktree. `
 
 *Dieses Handbuch ist Teil des INTENTRONs.*
 *GitHub: github.com/vibercoder79/intentron*
-*Letzte Aktualisierung: 2026-06-03 (v0.3.0–v0.6.2: Security-/Governance-Welle, Onboarding-Fix + Doku-Sync — BOO-86 bis BOO-97; u.a. Layer-0-Edit-Bodyguard, dpo-Kontrollkatalog, CONTEXT.md Ubiquitous Language, raw-pii-guard, Anhang Y VPS/Cloud-Team-Runbook, Quickstart mit Self-Install/Self-Update-Prompts; Anhang Z Kunden-Onboarding-Checklisten + Artefakt-Landkarte — BOO-108; 2026-06-03 Bootstrap-UX-Härtung BOO-114–129 / Wellen AT–AV — Pre-Flight-Gate, Tool-Install-Führung, Guided Stack-Discovery + TypeScript-first, gh-Voraussetzung + GitHub-Connect-Runbook, intent im Minimum, projekt-spezifische MCP-Abfrage, Sonar-Merge-Warnung + Anhang AA SonarCloud-Runbook, Branching-Standard-ADR + Sketch, Leichtgewicht-SecondBrain Session-Start, Design-Story-ADR; 2026-06-03 Wave AW Doku-Härtung BOO-130–136 — konsolidierter `docs/how-we-document.md`, Klartext-Glossar, GitHub Issues als empfohlener Backlog-Default, Anhang AB Linear-MCP-auf-VPS-Runbook, kanonischer `DEVELOPER_ONBOARDING.md`-Dateiname, GitHub-Pro/Team-Hinweis, SECURITY.md-Next-Step; 2026-06-03 Wave AX Knowledge-Onboarding BOO-137 — neuer Bundle-Skill `knowledge-onboarding` (Routing-Rubrik SSoT + Manifest + Anti-Fabrikation), Anhang AC; 2026-06-05 Wave BH knowledge-onboarding v1.1.0 — 5 Erklaer-Sketches DE+EN in README/SKILL eingebettet; 2026-06-05 Wave BI `/sprint-run` BOO-157 — neuer Orchestrator-Skill (Backlog → implement im Daemon-Modus → sprint-review, Worktree pro Story, 80%-Token-Boundary, Gate-Block-Pause), §6-Eintrag + Anhang AD mit 5 Owlist-Sketches)*
+*Letzte Aktualisierung: 2026-06-03 (v0.3.0–v0.6.2: Security-/Governance-Welle, Onboarding-Fix + Doku-Sync — BOO-86 bis BOO-97; u.a. Layer-0-Edit-Bodyguard, dpo-Kontrollkatalog, CONTEXT.md Ubiquitous Language, raw-pii-guard, Anhang Y VPS/Cloud-Team-Runbook, Quickstart mit Self-Install/Self-Update-Prompts; Anhang Z Kunden-Onboarding-Checklisten + Artefakt-Landkarte — BOO-108; 2026-06-03 Bootstrap-UX-Härtung BOO-114–129 / Wellen AT–AV — Pre-Flight-Gate, Tool-Install-Führung, Guided Stack-Discovery + TypeScript-first, gh-Voraussetzung + GitHub-Connect-Runbook, intent im Minimum, projekt-spezifische MCP-Abfrage, Sonar-Merge-Warnung + Anhang AA SonarCloud-Runbook, Branching-Standard-ADR + Sketch, Leichtgewicht-SecondBrain Session-Start, Design-Story-ADR; 2026-06-03 Wave AW Doku-Härtung BOO-130–136 — konsolidierter `docs/how-we-document.md`, Klartext-Glossar, GitHub Issues als empfohlener Backlog-Default, Anhang AB Linear-MCP-auf-VPS-Runbook, kanonischer `DEVELOPER_ONBOARDING.md`-Dateiname, GitHub-Pro/Team-Hinweis, SECURITY.md-Next-Step; 2026-06-03 Wave AX Knowledge-Onboarding BOO-137 — neuer Bundle-Skill `knowledge-onboarding` (Routing-Rubrik SSoT + Manifest + Anti-Fabrikation), Anhang AC; 2026-06-05 Wave BH knowledge-onboarding v1.1.0 — 5 Erklaer-Sketches DE+EN in README/SKILL eingebettet; 2026-06-05 Wave BI `/sprint-run` BOO-157 — neuer Orchestrator-Skill (Backlog → implement im Daemon-Modus → sprint-review, Worktree pro Story, 80%-Token-Boundary, Gate-Block-Pause), §6-Eintrag + Anhang AD mit 5 Owlist-Sketches; 2026-06-06 Wave BK `/sprint-run` BOO-165 — Schritt 4.5b Post-Story-Gate-Assertion (`meta.json`-Verifikation), Sketches sprint-run-flow + story-breakdown aktualisiert, sprint-run v1.1.0)*

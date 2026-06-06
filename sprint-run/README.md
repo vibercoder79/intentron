@@ -8,7 +8,7 @@
 > triggert am 80%-Token-Boundary `/sprint-review`. Reiner Orchestrator — die orchestrierten
 > Skills bleiben unveraendert.
 
-**Version:** 1.0.0 · **Befehl:** `/sprint-run`
+**Version:** 1.1.0 · **Befehl:** `/sprint-run`
 
 ---
 
@@ -33,7 +33,7 @@ durchgehenden Sprint-Lauf. Er schreibt **keinen** Produktcode und veraendert `/i
 | 1 | **Sprint-Pre-Flight** ⛔ | Backlog priorisiert? Specs vollstaendig? Gates gruen? Werkzeug bereit? |
 | 2 | Sprint-Token-Budget planen | 80%-Budget, Reihenfolge nach Abhaengigkeit + Prioritaet |
 | 3 | Sprint-Plan + Operator-Freigabe | Daemon-Modus ueberspringt die Freigabe |
-| 4 | **Daemon-Loop pro Story** | Worktree → `/implement` → CI-Wait → Merge → Linear → Cleanup |
+| 4 | **Daemon-Loop pro Story** | Worktree → `/implement` → CI-Wait → **Gate-Assertion** → Merge → Linear → Cleanup |
 | 5 | Fehlerbehandlung | Story zurueck, `daemon_fail_policy` (stop/continue) |
 | 6 | Sprint-Boundary → `/sprint-review` | bei 80% Token / Backlog leer / stop-on-fail |
 | 7 | Sprint-Report | Tabelle: Stories, Token, CI, Worktrees |
@@ -46,6 +46,17 @@ Loest `/implement` ein **Sensitive-Paths-** oder **Personal-Data-Gate** aus, **p
 Daemon und benachrichtigt den Operator (Story-ID + Grund). Resume nur nach explizitem
 `review-ok` / `privacy-ok`. **Kein** automatischer Bypass, **kein** Timeout-Resume — auch im
 `--auto`-Modus.
+
+---
+
+## Gate-Assertion — verifiziert, dass Gates wirklich liefen (Schritt 4.5b)
+
+Nach jedem `/implement`-Lauf liest `/sprint-run` die `meta.json` des Story-Runs und prueft, dass
+kein Pflicht-Gate **still** uebersprungen wurde: jeder `skipped_gates`-Eintrag muss legitim sein
+(durch `change_type`/Non-Code gedeckt **oder** in `override_audit` belegt), sonst → Story-Fail
+(zurueck auf Backlog) + Operator-Notify. Fehlt `meta.json` → Fail. Merge erst nach gruener
+Assertion — die **maschinelle** Bruecke zwischen prompt-getriebener Gate-Ausfuehrung und dem
+Remote-CI-Gate (BOO-148). Details: [references/gate-assertion.md](references/gate-assertion.md).
 
 ---
 
@@ -102,6 +113,7 @@ sprint-run/
 └── references/
     ├── orchestration-checklist.md   (+ .en.md)  ← Sprint-Pre-Flight + Loop-Checks
     ├── gate-block-handling.md       (+ .en.md)  ← Pause/Resume-Protokoll
+    ├── gate-assertion.md            (+ .en.md)  ← Post-Story-Gate-Assertion (meta.json)
     ├── worktree-flow.md             (+ .en.md)  ← Worktree pro Story
     └── token-boundary.md            (+ .en.md)  ← 80%-Boundary-Logik
 ```

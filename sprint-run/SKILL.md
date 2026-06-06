@@ -9,7 +9,7 @@ description: |
   Orchestrator — `/implement`, `/backlog`, `/sprint-review` bleiben unveraendert.
   Verwenden wenn der Operator "Sprint laufen lassen", "fahr den Sprint", "automation-cycle"
   oder "/sprint-run" sagt. Auch vom Automation-Daemon (ohne Human-in-the-Loop) nutzbar.
-version: 1.0.0
+version: 1.1.0
 metadata:
   hermes:
     category: governance
@@ -90,6 +90,7 @@ Fuer jede Story in der Sprint-Reihenfolge:
 | 4.3 | **`/implement` im Daemon-Modus** im Worktree aufrufen (Schritt-4-Freigabe uebersprungen). Alle `/implement`-Gates bleiben aktiv. |
 | 4.4 | **Gate-Block-Pause** (s.u.) — bei Sensitive-Paths/Personal-Data-STOPP: pausieren, Operator benachrichtigen, **nie** automatisch ueberbruecken. |
 | 4.5 | **Remote-CI-Wait (BOO-148):** `/implement` Schritt 6h (`gh run watch --exit-status`). Rot → max 3 Fix-Iterationen, sonst Eskalation. |
+| 4.5b | **Post-Story-Gate-Assertion** (s.u.) — `meta.json` des Story-Runs lesen; unbegruendeter `skipped_gates`-Eintrag **oder** fehlende `meta.json` → Story-Fail. Merge nur bei gruener Assertion. |
 | 4.6 | **Merge nur bei gruener CI** → `main`; danach `git worktree remove ../wt-<ISSUE>` + Branch aufraeumen. |
 | 4.7 | **Linear → Done** (mit AC-Evidenz-Kommentar). Bei Fehler: Story zurueck (`In Progress → Backlog`) + `daemon_fail_policy` anwenden. |
 | 4.8 | **Token-Check:** aktueller Verbrauch gegen 80%-Boundary. Ueberschritten → Loop verlassen → Schritt 6. |
@@ -106,6 +107,28 @@ Loest `/implement` einen **Sensitive-Paths-Gate** (Schritt 5.5) oder **Personal-
    Daemon hier an.
 
 Details: [references/gate-block-handling.md](references/gate-block-handling.md).
+
+### Schritt 4.5b: Post-Story-Gate-Assertion ⛔ (maschinelle Verifikation)
+
+`/implement` schreibt in Schritt 6f-bis eine `journal/reports/local/<run>/meta.json` (BOO-36/84)
+mit u.a. `skipped_gates`, `change_type`, `override_audit`. `/sprint-run` liest sie **nach jedem
+Story-Lauf** und verifiziert, dass kein Pflicht-Gate **still** uebersprungen wurde — die maschinelle
+Ergaenzung zur prompt-getriebenen Gate-Ausfuehrung (Ebene 1) und zum Remote-CI-Gate (Ebene 2).
+
+**Regel:** jeder Eintrag in `skipped_gates` muss **legitim** sein, sonst → Story-Fail (zurueck auf
+`Backlog`) + Operator-Notify (Story-ID + welches Gate). **Fehlt `meta.json` ganz → Fail** (kein
+„leise gruen"). Merge (Schritt 4.6) erst nach gruener Assertion.
+
+| Befund | Legitim? | Aktion |
+|---|---|---|
+| `skipped_gates` leer | ✅ | weiter |
+| Skip durch `change_type` gedeckt (Non-Code 5.7: workflow/config/infrastructure/content) | ✅ | weiter |
+| Skip mit Eintrag in `override_audit` (z.B. Coverage-Override mit Begruendung) | ✅ | weiter |
+| Skip ohne Deckung/Override | ❌ | **Story-Fail** → Backlog + Notify |
+| `meta.json` fehlt | ❌ | **Story-Fail** |
+| Non-Code-Story: 6c/6d/6e ohne Evidenz | ❌ | **Story-Fail** |
+
+Details: [references/gate-assertion.md](references/gate-assertion.md).
 
 ### Schritt 5: Fehlerbehandlung
 
@@ -140,7 +163,8 @@ Verweis auf das `/sprint-review`-Ergebnis.
 Wie `/implement` kennt `/sprint-run` einen Daemon-Modus (`--auto` / Webhook): die
 **Operator-Freigabe in Schritt 3 wird uebersprungen**, der Loop laeuft ohne Zwischenfragen —
 **ausser** an Gate-Blocks (Schritt 4.4), die **immer** anhalten. Alle `/implement`-Gates
-(Spec-Gate, Quality-Gates, CI-Loop) bleiben in jeder Story aktiv.
+(Spec-Gate, Quality-Gates, CI-Loop) bleiben in jeder Story aktiv, und Schritt 4.5b verifiziert
+nach jedem Lauf **maschinell** gegen `meta.json`, dass kein Gate still uebersprungen wurde.
 
 ## Integration mit anderen Skills
 
@@ -173,14 +197,15 @@ Felder (in `.claude/environment.json` bzw. `CONVENTIONS.md`, plus pro Story im S
 
 ```
 sprint-run/
-├── SKILL.md                                  ← Skill-Definition (1.0.0)
+├── SKILL.md                                  ← Skill-Definition (1.1.0)
 ├── SKILL.en.md                               ← English Mirror
-├── README.md                                 ← Deutsch README (Version: 1.0.0)
+├── README.md                                 ← Deutsch README (Version: 1.1.0)
 ├── README.en.md                              ← English README
 ├── overview.excalidraw / .png                ← Skill-Overview-Sketch (+ .en)
 └── references/
     ├── orchestration-checklist.md            ← Sprint-Pre-Flight + Loop-Checks (+ .en.md)
     ├── gate-block-handling.md                ← Pause/Resume-Protokoll (+ .en.md)
+    ├── gate-assertion.md                     ← Post-Story-Gate-Assertion (meta.json) (+ .en.md)
     ├── worktree-flow.md                      ← Worktree pro Story: add → merge → remove (+ .en.md)
     └── token-boundary.md                     ← 80%-Boundary-Logik + Sprint-Budget (+ .en.md)
 ```
