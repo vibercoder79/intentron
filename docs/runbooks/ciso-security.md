@@ -1,10 +1,10 @@
 # Runbook: CISO-Sicht — was INTENTRON für Ihre Cyber-Security bedeutet
 
-> **Für wen.** Sie sind CISO oder IT-Leiter und bewerten, ob Ihr Team dieses Framework einsetzen
-> darf — oder Sie führen es gerade ein. Sie haben keine 30 Minuten, um das HANDBUCH zu lesen. Dieses
-> Runbook beantwortet in unter 10 Minuten die eine Frage: *Wenn meine Entwickler mit KI-Agenten Code
-> bauen und dieses Framework darüberlegen — welche Sicherheits-Gatekeeper greifen, wie greift das
-> ineinander, und wo nehme ich Einfluss?*
+> **Zielgruppe:** CISO oder IT-Leiter.
+>
+> In unter 10 Minuten beantwortet dieses Runbook die eine Frage: *Wenn meine Entwickler mit
+> KI-Agenten Code bauen und dieses Framework darüberlegen — welche Sicherheits-Gatekeeper greifen,
+> wie greift das ineinander, und wo nehme ich Einfluss?*
 >
 > Das ist **keine neue Sicherheits-Mechanik**, die Sie zusätzlich betreiben müssen. Es ist eine
 > Lesebrille auf das, was im Framework bereits eingebaut ist. Wenn Sie nach den Belegen für ein Audit
@@ -50,7 +50,7 @@ der Weg, den eine Änderung nimmt.
 
 | Lebenszyklus-Schritt | Mechanik / Gate | Artefakt / Beleg |
 |---|---|---|
-| **Idee / Planung** | `security-architect` im **DESIGN**-Modus: Threat Modeling mit STRIDE + DREAD, Trust Boundaries. | Threat-Model-Report → `SECURITY.md` |
+| **Idee / Planung** | `security-architect` im **DESIGN**-Modus: Threat Modeling mit STRIDE + DREAD, Trust Boundaries. | Threat-Model-Report → [`SECURITY.md`](../../SECURITY.md) |
 | **Vor dem Schreiben** | **Edit-Bodyguard (BOO-86)** — PreToolUse-Hook, fängt Secrets und unsichere Muster ab, bevor die KI sie auf die Platte schreibt (Layer 0, Claude-Code-spezifisch). | abgefangener Schreibvorgang (Warnung; Hard-Block per Schalter) |
 | **Bei jeder Code-Änderung** | `security-architect` im **REVIEW**-Modus: OWASP Top 10:2025 Schnellcheck, Secrets-Check, Security Headers, Risiko-Klassifizierung. | Security-Review-Report; **HOCH-Befund = Blocker** |
 | **Bei jeder Code-Änderung** | **Semgrep SAST** als Pre-Commit- und CI-Gate; **Dependency-Gate** gegen Slopsquatting (Existenz-, Age-, CVE-Check). | SARIF unter `journal/reports/` |
@@ -81,7 +81,7 @@ Evidence-Based. Standards: STRIDE/DREAD, OWASP Top 10:2025, ASVS 5.0, Agentic AI
 
 | Modus | Wann | Was er tut | Output |
 |---|---|---|---|
-| **DESIGN** | vor Code, bei Ideation/Planung | STRIDE + DREAD Threat Modeling, Trust Boundaries | Threat-Model-Report → `SECURITY.md` |
+| **DESIGN** | vor Code, bei Ideation/Planung | STRIDE + DREAD Threat Modeling, Trust Boundaries | Threat-Model-Report → [`SECURITY.md`](../../SECURITY.md) |
 | **REVIEW** | bei jeder Code-Änderung | OWASP Top 10:2025 Schnellcheck, Secrets-Check, Security Headers, Risiko-Klassifizierung HOCH/MITTEL/NIEDRIG | Security-Review-Report (HOCH = Blocker) |
 | **AUDIT** | auf Abruf / periodisch | Vollscan, Dependency-Analyse, Angriffsflächen-Analyse, Agentic AI Security (ASI01–ASI10) | Audit-Report |
 | **SKILL-SCAN** | vor Installation fremder Skills | Prompt-Injection-Scan über 8 Kategorien: Override/Hijacking, Exfiltration, Privilege Escalation, Destructive Actions, Settings Manipulation, Indirect Injection, Hidden Instructions, Social Engineering | Bewertung SICHER / VERDÄCHTIG / GEFÄHRLICH |
@@ -127,7 +127,7 @@ kritische Systeme `heavy`.
 - **`.claude/sensitive-paths.json`** — Sie legen fest, welche Pfade eine menschliche
   Pflicht-Freigabe erzwingen (z. B. `auth/**`, Zahlungslogik, alles mit „credential").
 - **Semgrep-Pack-Auswahl** — welche SAST-Regelsätze laufen.
-- **Branch-Protection aktivieren** — über `setup-branch-protection.sh` (BOO-29). Das ist die Schicht,
+- **Branch-Protection aktivieren** — über [`setup-branch-protection.sh`](../../bootstrap/scripts/setup-branch-protection.sh) (BOO-29). Das ist die Schicht,
   die den lokalen Bypass abfängt; ohne sie ist Layer 3 nicht scharf.
 - **ASVS-Level festlegen** — wie tief die Prüfung nach ASVS 5.0 geht.
 - **DESIGN-Modus bei der Ideation triggern** — Sie können (und sollten) verlangen, dass für neue

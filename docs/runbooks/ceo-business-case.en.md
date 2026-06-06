@@ -1,8 +1,9 @@
 # Runbook: Business Case — why a decision-maker invests in INTENTRON
 
-> **Who this is for.** You are a CEO, managing director or decision-maker, and you want to know in
-> under ten minutes: why should we invest in this framework? What business risk does it lower? What
-> does it cost, and when does it pay off?
+> **Audience:** CEO, managing director or decision-maker.
+>
+> In under ten minutes this runbook answers: why should we invest in this framework? What business
+> risk does it lower? What does it cost, and when does it pay off?
 >
 > **What this runbook is — and is not.** This is the entry-point lens: the investment and decision
 > view. It is **not** about technical detail, gate mechanics or audit steps. If you want to go
@@ -58,11 +59,11 @@ For you as a decision-maker, the benefit reads in business terms:
 
 | Business risk | How the framework lowers it | Evidence / runbook |
 |---|---|---|
-| Non-compliant software surfaces only in the audit — when the fix is expensive | Rules are enforced at commit time, not checked after the fact | CISO runbook, DPO runbook, `audit-perspective.md` |
-| Tech debt makes the product unmaintainable in twelve months | Spec-first plus quality gates plus learning loop keep quality measurable | CTO runbook |
-| A key developer leaves — and the knowledge leaves with them | Specs, audit trail and onboarding docs keep the knowledge in the project | CTO runbook |
-| A privacy breach means a fine plus reputational damage | A DPO catalogue and a privacy gate check processing of personal data | DPO runbook |
-| Vendor lock-in to a single AI tool | A tool-neutral adapter contract instead of binding to one vendor | README / HANDBUCH |
+| Non-compliant software surfaces only in the audit — when the fix is expensive | Rules are enforced at commit time, not checked after the fact | [CISO runbook](ciso-security.en.md), [DPO runbook](dpo-privacy.en.md), [auditor view](audit-perspective.en.md) |
+| Tech debt makes the product unmaintainable in twelve months | Spec-first plus quality gates plus learning loop keep quality measurable | [CTO runbook](cto-code-quality.en.md) |
+| A key developer leaves — and the knowledge leaves with them | Specs, audit trail and onboarding docs keep the knowledge in the project | [CTO runbook](cto-code-quality.en.md) |
+| A privacy breach means a fine plus reputational damage | A DPO catalogue and a privacy gate check processing of personal data | [DPO runbook](dpo-privacy.en.md) |
+| Vendor lock-in to a single AI tool | A tool-neutral adapter contract instead of binding to one vendor | [README](../../README.md) / [HANDBUCH — Annex K](../../HANDBUCH.md#anhang-k-tool-adapter--dieses-framework-mit-anderen-ki-tools-nutzen-boo-49) |
 
 Three properties make this benefit hold up over time:
 

@@ -25,7 +25,7 @@
 10. [Governance für dein Projekt anpassen](#10-governance-für-dein-projekt-anpassen)
 11. [Tägliche Nutzung — ein typischer Workflow](#11-tägliche-nutzung--ein-typischer-workflow)
 12. [Häufige Fragen](#12-häufige-fragen) — inkl. Claude Agent SDK Migration
-13. [Anhänge — Wegweiser](#13-anhänge--wegweiser) — A bis AB im Überblick
+13. [Anhänge — Wegweiser](#13-anhänge--wegweiser) — A bis AD im Überblick
 
 ---
 
@@ -2162,7 +2162,26 @@ und Provider-Postflight.
 
 ## 13. Anhänge — Wegweiser
 
-Das Handbuch hat 28 Anhänge (A–Z + AA + AB). Sie sind **Nachschlage- und Vertiefungs-Schicht** — du musst sie nicht von vorn bis hinten lesen. Diese Tabelle sagt dir, **wann welcher Anhang relevant ist**. Anhänge A–M sind die Grundlagen-/Tooling-Schicht, N–AA die Themen ab v0.2.0 (Wellen J–AV): Effizienz, Privacy, Deployment, Skalierung, Verifikation, Edit-Bodyguard, Contribute-Back, Ubiquitous Language, VPS/Cloud-Team-Runbook, Kunden-Onboarding, SonarCloud-Setup.
+### Rollen-Runbooks — INTENTRON aus Sicht einer Rolle
+
+Neben den Anhängen liegen unter `docs/runbooks/` eigenständige **Rollen-Runbooks**. Sie erklären, was das Framework aus der Perspektive einer bestimmten Rolle leistet — kompakt, in 5–10 Minuten lesbar, mit Belegen statt Behauptungen.
+
+| Runbook | Für wen | Worum es geht |
+|---------|---------|---------------|
+| [`ceo-business-case.md`](docs/runbooks/ceo-business-case.md) | Geschäftsführung / Entscheider | Warum sich die Investition in INTENTRON geschäftlich rechnet. |
+| [`ciso-security.md`](docs/runbooks/ciso-security.md) | CISO / IT-Leitung | Was das Framework für die Cyber-Security der Organisation bedeutet. |
+| [`cto-code-quality.md`](docs/runbooks/cto-code-quality.md) | CTO / Head of Engineering | Wie Codequalität gesichert und Tech-Debt früh gefangen wird. |
+| [`dpo-privacy.md`](docs/runbooks/dpo-privacy.md) | Datenschutzbeauftragte:r (DPO) | Wie Datenschutz by Design im Framework verankert ist. |
+| [`audit-perspective.md`](docs/runbooks/audit-perspective.md) | Auditor:in | Zu jeder Audit-Frage: welcher Beleg an welchem Ort liegt. |
+
+Zwei weitere Runbooks decken konkrete Setup-Aufgaben ab:
+
+- [`framework-update.md`](docs/runbooks/framework-update.md) — ein Bestandsprojekt auf den aktuellen Framework-Stand heben.
+- [`sonarcloud-setup.md`](docs/runbooks/sonarcloud-setup.md) — SonarQube Cloud für ein GitHub-Repo einrichten (siehe auch Anhang AA).
+
+---
+
+Das Handbuch hat 30 Anhänge (A–Z + AA bis AD). Sie sind **Nachschlage- und Vertiefungs-Schicht** — du musst sie nicht von vorn bis hinten lesen. Diese Tabelle sagt dir, **wann welcher Anhang relevant ist**. Anhänge A–M sind die Grundlagen-/Tooling-Schicht, N–AD die Themen ab v0.2.0 (Wellen J–BI): Effizienz, Privacy, Deployment, Skalierung, Verifikation, Edit-Bodyguard, Contribute-Back, Ubiquitous Language, VPS/Cloud-Team-Runbook, Kunden-Onboarding, SonarCloud-Setup, Linear-MCP-auf-VPS, Knowledge-Onboarding, Sprint-Orchestrator.
 
 | Anhang | Thema | Wann relevant |
 |--------|-------|---------------|
@@ -2194,6 +2213,8 @@ Das Handbuch hat 28 Anhänge (A–Z + AA + AB). Sie sind **Nachschlage- und Vert
 | **Z** | Kunden-Onboarding — drei Checklisten + Artefakt-Landkarte | Kunden/Projekt onboarden; komplementäres Maschinen-Setup |
 | **AA** | SonarCloud-Setup-Runbook (zwei Szenarien) | externes SonarQube Cloud einrichten (D.5 = ja) |
 | **AB** | Linear-MCP auf headless VPS | Linear-MCP per OAuth/SSH-Tunnel auf einer VPS verbinden + Token-Setup |
+| **AC** | Knowledge-Onboarding | Bestands-Doku in Governance-Artefakte routen |
+| **AD** | /sprint-run — Sprint-Orchestrator | Backlog im Daemon-Modus abarbeiten, Worktree pro Story, Token-Boundary |
 
 ---
 

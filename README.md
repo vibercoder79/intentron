@@ -21,6 +21,22 @@ INTENTRON turns the method described in Matthias Schrader's book "Code Crash" in
 
 ---
 
+## 🧭 Who are you? Pick your entry point
+
+INTENTRON reads differently depending on your role. Each runbook below is a 10-minute lens on what the framework already does — no new machinery. Jump straight to yours:
+
+| Your role | Start here |
+|---|---|
+| 👔 **Managing director / decision-maker** | [`ceo-business-case.md`](docs/runbooks/ceo-business-case.md) — the business case |
+| 🛡 **CISO / IT lead** | [`ciso-security.md`](docs/runbooks/ciso-security.md) — security gatekeepers |
+| 🏗 **CTO / head of engineering** | [`cto-code-quality.md`](docs/runbooks/cto-code-quality.md) — code quality & tech debt |
+| 🔐 **Data protection officer (DPO)** | [`dpo-privacy.md`](docs/runbooks/dpo-privacy.md) — privacy, auditable |
+| 🔎 **Auditor (security / code quality)** | [`audit-perspective.md`](docs/runbooks/audit-perspective.md) — question → proof → place |
+
+> 🚀 **The 60-second pitch:** [`docs/pitch/elevator-pitch.en.md`](docs/pitch/elevator-pitch.en.md) · 🗂 **All documents at a glance:** [`docs/INDEX.en.md`](docs/INDEX.en.md) · full role table [below](#role-specific-runbooks--read-the-framework-through-your-lens).
+
+---
+
 ## Why INTENTRON? The edge
 
 Most spec-driven frameworks (Spec Kit & co.) optimize exactly one thing: turning a specification into code. Quality, governance, security, privacy, team-readiness — they leave those out. INTENTRON flips the focus: the generated code is not the product, the *path from intent to production* is — with guardrails a team would otherwise have to build itself.
@@ -350,6 +366,22 @@ INTENTRON setzt die im Buch »Code Crash« von Matthias Schrader beschriebene Me
 **Der Name — INTENT + -TRON:** *Intent* ist Schraders Kernbegriff — wir erweitern Spec-Driven Development um die Ebene *über* der Spec: Jede Story ist auf einen **Intent** ausgerichtet (das *Warum*), nicht nur auf eine Spezifikation (das *Was*). Die Endung *-tron* benennt eine **Maschine** (Zyklotron, Magnetron). Zusammen ist INTENTRON **die Engine, die Intent in Produktion überführt** — erzwungen und nachvollziehbar.
 
 **Was INTENTRON nicht ist.** INTENTRON ist selbst **keine** autonome, agentische KI. Es ist zuerst eine menschlich gesteuerte, **sequenzielle** Engineering-Pipeline mit Quality-Gates und Review-Punkten — kein vollautonomer Developer-Agent. Die KI-Tools (Claude, Codex, Cursor) sind *Adapter* auf diesen Vertrag: Sie können das Framework agentisch nutzen, bleiben aber innerhalb seiner Specs, Gates, Reports und Review-Punkte. Die Governance selbst läuft nicht selbstständig los.
+
+---
+
+## 🧭 Wer bist du? Wähle deinen Einstieg
+
+INTENTRON liest sich je nach Rolle anders. Jedes Runbook unten ist eine 10-Minuten-Lesebrille auf das, was das Framework ohnehin tut — keine neue Mechanik. Spring direkt zu deiner Rolle:
+
+| Deine Rolle | Hier starten |
+|---|---|
+| 👔 **Geschäftsführung / Entscheider** | [`ceo-business-case.md`](docs/runbooks/ceo-business-case.md) — der Business Case |
+| 🛡 **CISO / IT-Leitung** | [`ciso-security.md`](docs/runbooks/ciso-security.md) — Security-Gatekeeper |
+| 🏗 **CTO / Head of Engineering** | [`cto-code-quality.md`](docs/runbooks/cto-code-quality.md) — Codequalität & Tech Debt |
+| 🔐 **Datenschutzbeauftragte:r (DPO)** | [`dpo-privacy.md`](docs/runbooks/dpo-privacy.md) — Datenschutz, auditierbar |
+| 🔎 **Auditor (Security / Code-Quality)** | [`audit-perspective.md`](docs/runbooks/audit-perspective.md) — Frage → Beleg → Ort |
+
+> 🚀 **In 60 Sekunden erklärt:** [`docs/pitch/elevator-pitch.md`](docs/pitch/elevator-pitch.md) · 🗂 **Alle Dokumente im Überblick:** [`docs/INDEX.md`](docs/INDEX.md) · ausführliche Rollen-Tabelle [weiter unten](#rollenspezifische-runbooks--das-framework-durch-ihre-brille).
 
 ---
 

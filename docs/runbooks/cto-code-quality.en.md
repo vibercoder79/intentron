@@ -1,9 +1,9 @@
 # Runbook: Code Quality & Tech Debt — how a CTO secures quality with INTENTRON
 
-> **Who this is for.** You are a CTO or Head of Engineering evaluating whether to adopt this
-> framework. You want to know, in under ten minutes: when my team writes code with AI — how is code
-> quality ensured? How do I keep a silent pile of technical debt from growing? Which quality gates
-> apply, how does a story move from idea to merge, and where do I, as a leader, take control?
+> **Audience:** CTO or Head of Engineering evaluating whether to adopt this framework.
+> Answered in under ten minutes: when my team writes code with AI — how is code quality ensured? How
+> do I keep a silent pile of technical debt from growing? Which quality gates apply, how does a story
+> move from idea to merge, and where do I, as a leader, take control?
 >
 > **What this runbook is — and is not.** This is the entry-point lens for the engineering view. It
 > introduces **no new mechanism** — it bundles what already lives in the repo: the gates, the story
@@ -85,8 +85,8 @@ artefact behind.
 The most important building block against "undocumented AI code" is the audit trail (BOO-19). Every
 `/implement` run writes a `## Session-Referenz` block into the spec — commit SHA, session ID, log
 path. With it, any commit can later be traced back: from commit to spec to intent to AI session. The
-script `audit-trace.sh` reconstructs this chain. You see not only *what* changed, but *from which
-intent*.
+script [`audit-trace.sh`](../../bootstrap/scripts/audit-trace.sh) reconstructs this chain. You see not
+only *what* changed, but *from which intent*.
 
 ### How the Learning Loop prevents tech-debt repetition
 
@@ -104,8 +104,9 @@ That way, what was learned yesterday flows into today's story definition.
 
 ### `governance_mode` — gate strictness scales with risk
 
-Not every project needs full severity. `governance_mode` in `CONVENTIONS.md` scales the gates along
-the risk.
+Not every project needs full severity. `governance_mode` in
+[`CONVENTIONS.md`](../../CONVENTIONS.md) scales the gates along the risk (the three modes are
+described in detail in the [HANDBUCH](../../HANDBUCH.md#governance-modi-lite-standard-heavy)).
 
 | Mode | Adds over the previous one |
 |---|---|
@@ -171,10 +172,15 @@ not do.
 
 - [`CONVENTIONS.md`](../../CONVENTIONS.md) — the gate architecture (4 layers, Spec-Gate),
   `governance_mode`, `execution_isolation`, active gates in detail.
-- [`HANDBUCH.md`](../../HANDBUCH.md) — the complete setup and operations handbook.
+- [`HANDBUCH.md`](../../HANDBUCH.md) — the complete setup and operations handbook; the gates are in
+  [chapter 8 — Die Guardrails](../../HANDBUCH.md#8-die-guardrails--dein-sicherheitsnetz), the
+  artefacts in [chapter 7](../../HANDBUCH.md#7-die-artefakte--was-entsteht-wo-und-warum).
 - [`ARCHITECTURE_DESIGN` template](../../bootstrap/references/architecture-design-template.en.md) — the
   template base of the architecture hub (your project turns it into `ARCHITECTURE_DESIGN.md` with the
   active quality dimensions §5).
+- [`GOVERNANCE` template](../../bootstrap/references/governance-template.en.md) and
+  [`DEVELOPER_ONBOARDING` template](../../bootstrap/references/developer-onboarding-template.en.md) — the
+  template bases from which `GOVERNANCE.md` and `DEVELOPER_ONBOARDING.md` are generated in your project.
 - [`audit-perspective.en.md`](audit-perspective.en.md) — how an auditor checks the proof
   (question → proof → place).
 - [`../quality-gate-four-layers.excalidraw`](../quality-gate-four-layers.excalidraw) — the source of

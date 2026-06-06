@@ -25,7 +25,7 @@
 10. [Tailoring Governance to Your Project](#10-tailoring-governance-to-your-project)
 11. [Daily Usage — A Typical Workflow](#11-daily-usage--a-typical-workflow)
 12. [FAQ](#12-faq) — incl. Claude Agent SDK migration
-13. [Appendices — signpost](#13-appendices--signpost) — A through AB at a glance
+13. [Appendices — signpost](#13-appendices--signpost) — A through AD at a glance
 
 ---
 
@@ -2032,7 +2032,26 @@ postflight.
 
 ## 13. Appendices — signpost
 
-The handbook has 28 appendices (A–Z + AA + AB). They are a **reference and deep-dive layer** — you don't need to read them front to back. This table tells you **when which appendix is relevant**. A–M are the foundations/tooling layer, N–AA the themes from v0.2.0 onward (waves J–AV): efficiency, privacy, deployment, scaling, verification, edit bodyguard, contribute-back, ubiquitous language, VPS/cloud team runbook, customer onboarding, SonarCloud setup.
+### Role runbooks — INTENTRON from a role's point of view
+
+Alongside the appendices, `docs/runbooks/` holds standalone **role runbooks**. Each explains what the framework delivers from a specific role's perspective — compact, readable in 5–10 minutes, with evidence instead of claims.
+
+| Runbook | Audience | What it covers |
+|---------|----------|----------------|
+| [`ceo-business-case.en.md`](docs/runbooks/ceo-business-case.en.md) | Executive / decision-maker | Why investing in INTENTRON pays off commercially. |
+| [`ciso-security.en.md`](docs/runbooks/ciso-security.en.md) | CISO / IT leadership | What the framework means for the organisation's cyber security. |
+| [`cto-code-quality.en.md`](docs/runbooks/cto-code-quality.en.md) | CTO / Head of Engineering | How code quality is secured and tech debt caught early. |
+| [`dpo-privacy.en.md`](docs/runbooks/dpo-privacy.en.md) | Data Protection Officer (DPO) | How data protection by design is anchored in the framework. |
+| [`audit-perspective.en.md`](docs/runbooks/audit-perspective.en.md) | Auditor | For every audit question: which evidence lives at which location. |
+
+Two further runbooks cover concrete setup tasks:
+
+- [`framework-update.en.md`](docs/runbooks/framework-update.en.md) — lift an existing project to the current framework version.
+- [`sonarcloud-setup.en.md`](docs/runbooks/sonarcloud-setup.en.md) — set up SonarQube Cloud for a GitHub repo (see also Appendix AA).
+
+---
+
+The handbook has 30 appendices (A–Z + AA through AD). They are a **reference and deep-dive layer** — you don't need to read them front to back. This table tells you **when which appendix is relevant**. A–M are the foundations/tooling layer, N–AD the themes from v0.2.0 onward (waves J–BI): efficiency, privacy, deployment, scaling, verification, edit bodyguard, contribute-back, ubiquitous language, VPS/cloud team runbook, customer onboarding, SonarCloud setup, Linear MCP on VPS, knowledge onboarding, sprint orchestrator.
 
 | Appendix | Topic | When relevant |
 |----------|-------|---------------|
@@ -2064,6 +2083,8 @@ The handbook has 28 appendices (A–Z + AA + AB). They are a **reference and dee
 | **Z** | Customer onboarding — three checklists + artifact map | onboard customers/projects; complementary machine setup |
 | **AA** | SonarCloud setup runbook (two scenarios) | set up external SonarQube Cloud (D.5 = yes) |
 | **AB** | Linear MCP on a headless VPS | connect the Linear MCP via OAuth/SSH tunnel on a VPS + token setup |
+| **AC** | Knowledge onboarding | route existing docs into governance artefacts |
+| **AD** | /sprint-run — sprint orchestrator | work the backlog in daemon mode, worktree per story, token boundary |
 
 ---
 

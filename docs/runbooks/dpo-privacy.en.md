@@ -1,10 +1,9 @@
 # Runbook: DPO View — Data Protection in the INTENTRON Framework
 
-> **Who this is for.** You are a Data Protection Officer (DPO) and you have to assess this framework
-> or shepherd its rollout. You have no time to read the whole HANDBUCH. This runbook answers your one
-> core question in under 10 minutes: *If a team builds with this framework — what does that mean for
-> data protection? Where is privacy anchored, how is it auditable, which artifacts and skills kick
-> in, where do I take influence?*
+> **Audience:** Data Protection Officer (DPO) assessing this framework or shepherding its rollout.
+> Answered in under 10 minutes is your one core question: *If a team builds with this framework —
+> what does that mean for data protection? Where is privacy anchored, how is it auditable, which
+> artifacts and skills kick in, where do I take influence?*
 >
 > **No new machinery.** This document invents nothing. It bundles the data-protection mechanisms that
 > already exist in the repo into a lens for your role. The technical deep dive lives in
