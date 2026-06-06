@@ -508,6 +508,23 @@ Jeder Skill hat eine eigene README mit visueller Übersicht:
 | skill-creator | [README](skill-creator/README.md) · [Sketch](skill-creator/overview.png) |
 | design-md-generator | [README](design-md-generator/README.md) · [Sketch](design-md-generator/overview.png) |
 
+### Claude-Code-Modus: welcher Berechtigungs-Modus zu welchem Skill?
+
+Claude Code hat sechs Berechtigungs-Modi (Wechsel mit **Shift+Tab**; Default setzbar in `settings.json` unter `permissions.defaultMode`). Welcher passt, haengt davon ab, ob ein Skill **denkt** (nichts schreibt) oder **umsetzt** (Dateien aendert, committet, merged):
+
+| Skill-Phase | Beispiele | Empfohlener Claude-Code-Modus |
+|---|---|---|
+| **Denken / Planen** (schreibt noch nichts) | `/ideation`, `/backlog`, `/architecture-review` | **`plan`** (Plan Mode) — explorieren + Vorschlag, du gibst frei |
+| **Umsetzen, beaufsichtigt** (am Mac, du schaust zu) | `/implement`, `/sprint-run` | **`acceptEdits`** — Edits laufen ohne Einzel-Nachfrage |
+| **Umsetzen, unbeaufsichtigt** (VPS/Daemon, `--auto`) | `/sprint-run --auto`, Automation-Daemon | **`dontAsk` + Allowlist** (git/gh/Test-Befehle vorab erlauben); `bypassPermissions` nur in echter Isolation (Container/VM) |
+
+**Zwei Dinge, die oft verwechselt werden:**
+
+- **Claude-Code-Plan-Mode ≠ der Plan-Schritt eines Skills.** `/implement` (Schritt 4) und `/sprint-run` (Schritt 3) zeigen ihren **eigenen** Plan und holen eine Freigabe ein — dafuer brauchst du den Claude-Code-Plan-Mode **nicht**.
+- **Plan Mode ist read-only.** Startest du `/implement` oder `/sprint-run` im Plan Mode, koennen sie **nichts** umsetzen (keine Edits/Commits/Merges), bis du den Plan freigibst und den Modus verlaesst. Fuer die **Umsetzung** also nie Plan Mode — der ist fuer die vorgelagerten Denk-Skills.
+
+Sicherheitsnetz bei `acceptEdits`/`dontAsk`/`--auto`: die skill-eigenen Gates (Spec-Gate; sensitive-paths/personal-data — halten **immer** an; Quality-Gates; Remote-CI; Post-Story-Gate-Assertion) und Protected Paths (`.git`/`.claude` werden nie automatisch freigegeben). `auto` (Klassifizierer-geprueft) ist vielversprechend, aber noch Research-Preview.
+
 ### `/ideation` — Von der Idee zur Story
 
 ![Ideation Skill](ideation/overview.png)

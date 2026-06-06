@@ -160,11 +160,21 @@ reference to the `/sprint-review` result.
 
 ## Daemon mode
 
+**Default vs. `--auto` — both execute.** In the interactive default run, `/sprint-run` shows
+the sprint plan in step 3 and waits **once** for approval; **afterwards** the loop (step 4) runs
+through without further intermediate questions. `--auto` (webhook/daemon) skips **only** this one
+approval — otherwise identical. There is **no** pure check mode; both actually execute the sprint.
+
 Like `/implement`, `/sprint-run` knows a daemon mode (`--auto` / webhook): the
 **operator approval in step 3 is skipped**, the loop runs without intermediate questions —
 **except** at gate blocks (step 4.4), which **always** stop. All `/implement` gates
 (spec gate, quality gates, CI loop) remain active in every story, and step 4.5b verifies
 **by machine** against `meta.json` after every run that no gate was silently skipped.
+
+> **Claude Code mode (don't confuse):** The "plan" in step 3 is the **skill's sprint plan**,
+> **not** the Claude Code plan mode — that one is read-only and would block the execution.
+> Recommendation: supervised → `acceptEdits`, unattended (`--auto`) → `dontAsk` +
+> allowlist; never plan mode for execution. Details: HANDBUCH §6 "Claude Code mode".
 
 ## Integration with other skills
 

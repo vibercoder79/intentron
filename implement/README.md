@@ -8,6 +8,8 @@
 
 > 🔗 Sprint-Automation: **`/sprint-run`** faehrt einen ganzen Sprint und orchestriert die Kette `backlog → implement → sprint-review`. Siehe [`sprint-run/`](../sprint-run/README.md) · HANDBUCH Anhang AD.
 
+> **Claude-Code-Modus:** `/implement` setzt um → beaufsichtigt `acceptEdits`, unbeaufsichtigt (Daemon/Auto-Execute) `dontAsk` + Allowlist; **nicht** Plan Mode (read-only, blockiert die Umsetzung). Der „Plan" in Schritt 4 ist der Implementierungsplan des Skills, nicht der Claude-Code-Planungsmodus. Details: HANDBUCH §6 „Claude-Code-Modus".
+
 ---
 
 ## Was der Skill tut

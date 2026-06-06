@@ -502,6 +502,23 @@ Every skill in this handbook has its own README with a visual overview:
 | skill-creator | [README](skill-creator/README.md) · [Sketch](skill-creator/overview.en.png) |
 | design-md-generator | [README](design-md-generator/README.md) · [Sketch](design-md-generator/overview.en.png) |
 
+### Claude Code mode: which permission mode for which skill?
+
+Claude Code has six permission modes (switch with **Shift+Tab**; default settable in `settings.json` under `permissions.defaultMode`). Which one fits depends on whether a skill **thinks** (writes nothing) or **executes** (edits files, commits, merges):
+
+| Skill phase | Examples | Recommended Claude Code mode |
+|---|---|---|
+| **Think / plan** (writes nothing yet) | `/ideation`, `/backlog`, `/architecture-review` | **`plan`** (plan mode) — explore + propose, you approve |
+| **Execute, supervised** (on your Mac, you watch) | `/implement`, `/sprint-run` | **`acceptEdits`** — edits run without per-edit prompts |
+| **Execute, unattended** (VPS/daemon, `--auto`) | `/sprint-run --auto`, automation daemon | **`dontAsk` + allowlist** (pre-approve git/gh/test commands); `bypassPermissions` only in true isolation (container/VM) |
+
+**Two things people often confuse:**
+
+- **Claude Code plan mode ≠ a skill's plan step.** `/implement` (step 4) and `/sprint-run` (step 3) show their **own** plan and ask for approval — you do **not** need Claude Code plan mode for that.
+- **Plan mode is read-only.** If you start `/implement` or `/sprint-run` in plan mode, they can execute **nothing** (no edits/commits/merges) until you approve the plan and leave the mode. So for **execution**, never plan mode — that's for the upstream thinking skills.
+
+Safety net under `acceptEdits`/`dontAsk`/`--auto`: the skills' own gates (spec gate; sensitive-paths/personal-data — which **always** stop; quality gates; remote CI; post-story gate assertion) and protected paths (`.git`/`.claude` are never auto-approved). `auto` (classifier-checked) is promising but still a research preview.
+
 ### `/ideation` — From idea to story
 
 ![Ideation Skill](ideation/overview.en.png)

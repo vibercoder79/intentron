@@ -58,6 +58,8 @@ Richtung   Story+Spec   Reihenfolge  Orchestrator   pro Story         Lessons +
 
 Der Daemon zeigt zuerst den Sprint-Plan (Stories, Reihenfolge, projiziertes Token-Budget) und fährt dann pro Story: `git worktree add` → `/implement` (Daemon) → `gh run watch` → Merge (nur grün) → Linear → Done → `git worktree remove`. Bei `--auto` entfällt die Plan-Freigabe — **außer** an Gate-Blocks, die immer anhalten.
 
+> **Beide Modi führen den Sprint real aus** (inkl. Merge nach `main`); `--auto` lässt nur die einmalige Plan-Freigabe weg — es gibt keinen reinen „Nur-Prüfen"-Modus. **Claude-Code-Modus:** beaufsichtigt → `acceptEdits`, unbeaufsichtigt → `dontAsk` + Allowlist; **nicht** Plan Mode (read-only, blockiert die Umsetzung). Der Sprint-Plan ist der Plan des Skills, **nicht** der Claude-Code-Planungsmodus. Details: HANDBUCH §6 „Claude-Code-Modus".
+
 ## Typische Fehlerszenarien + Lösungen
 
 | Szenario | Was der Daemon tut | Was du tust |
