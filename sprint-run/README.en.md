@@ -8,7 +8,7 @@
 > triggers `/sprint-review` at the 80% token boundary. Pure orchestrator — the orchestrated
 > skills remain unchanged.
 
-**Version:** 1.0.0 · **Command:** `/sprint-run`
+**Version:** 1.1.0 · **Command:** `/sprint-run`
 
 ---
 
@@ -33,7 +33,7 @@ continuous sprint run. It writes **no** product code and does not change `/imple
 | 1 | **Sprint pre-flight** ⛔ | Backlog prioritized? Specs complete? Gates green? Tooling ready? |
 | 2 | Plan sprint token budget | 80% budget, order by dependency + priority |
 | 3 | Sprint plan + operator approval | daemon mode skips the approval |
-| 4 | **Daemon loop per story** | worktree → `/implement` → CI wait → merge → Linear → cleanup |
+| 4 | **Daemon loop per story** | worktree → `/implement` → CI wait → **gate assertion** → merge → Linear → cleanup |
 | 5 | Error handling | story back, `daemon_fail_policy` (stop/continue) |
 | 6 | Sprint boundary → `/sprint-review` | at 80% token / backlog empty / stop-on-fail |
 | 7 | Sprint report | table: stories, token, CI, worktrees |
@@ -46,6 +46,17 @@ If `/implement` triggers a **sensitive-paths** or **personal-data gate**, the
 daemon **pauses** and notifies the operator (story ID + reason). Resume only after explicit
 `review-ok` / `privacy-ok`. **No** automatic bypass, **no** timeout resume — even in
 `--auto` mode.
+
+---
+
+## Gate assertion — verifies gates actually ran (step 4.5b)
+
+After every `/implement` run, `/sprint-run` reads the story run's `meta.json` and checks that
+no mandatory gate was **silently** skipped: every `skipped_gates` entry must be legitimate
+(covered by `change_type`/non-code **or** documented in `override_audit`), otherwise → story fail
+(back to Backlog) + operator notify. If `meta.json` is missing → fail. Merge only after a green
+assertion — the **machine** bridge between prompt-driven gate execution and the
+remote CI gate (BOO-148). Details: [references/gate-assertion.en.md](references/gate-assertion.en.md).
 
 ---
 
@@ -102,6 +113,7 @@ sprint-run/
 └── references/
     ├── orchestration-checklist.md   (+ .en.md)  ← Sprint pre-flight + loop checks
     ├── gate-block-handling.md       (+ .en.md)  ← Pause/resume protocol
+    ├── gate-assertion.md            (+ .en.md)  ← Post-story gate assertion (meta.json)
     ├── worktree-flow.md             (+ .en.md)  ← Worktree per story
     └── token-boundary.md            (+ .en.md)  ← 80% boundary logic
 ```

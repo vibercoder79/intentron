@@ -9,7 +9,7 @@ description: |
   orchestrator — `/implement`, `/backlog`, `/sprint-review` remain unchanged.
   Use when the operator says "run the sprint", "drive the sprint", "automation-cycle"
   or "/sprint-run". Also usable by the automation daemon (without human-in-the-loop).
-version: 1.0.0
+version: 1.1.0
 metadata:
   hermes:
     category: governance
@@ -90,6 +90,7 @@ For each story in the sprint order:
 | 4.3 | Call **`/implement` in daemon mode** in the worktree (step-4 approval skipped). All `/implement` gates remain active. |
 | 4.4 | **Gate-block pause** (see below) — on sensitive-paths/personal-data STOP: pause, notify operator, **never** bridge automatically. |
 | 4.5 | **Remote CI wait (BOO-148):** `/implement` step 6h (`gh run watch --exit-status`). Red → max 3 fix iterations, otherwise escalation. |
+| 4.5b | **Post-story gate assertion** (see below) — read the story run's `meta.json`; an unjustified `skipped_gates` entry **or** a missing `meta.json` → story fail. Merge only on green assertion. |
 | 4.6 | **Merge only on green CI** → `main`; then `git worktree remove ../wt-<ISSUE>` + clean up branch. |
 | 4.7 | **Linear → Done** (with AC evidence comment). On error: story back (`In Progress → Backlog`) + apply `daemon_fail_policy`. |
 | 4.8 | **Token check:** current consumption against the 80% boundary. Exceeded → leave loop → step 6. |
@@ -106,6 +107,28 @@ If `/implement` triggers a **sensitive-paths gate** (step 5.5) or **personal-dat
    daemon stops here.
 
 Details: [references/gate-block-handling.en.md](references/gate-block-handling.en.md).
+
+### Step 4.5b: Post-story gate assertion ⛔ (machine verification)
+
+In step 6f-bis `/implement` writes a `journal/reports/local/<run>/meta.json` (BOO-36/84)
+containing, among others, `skipped_gates`, `change_type`, `override_audit`. `/sprint-run` reads it
+**after every story run** and verifies that no mandatory gate was **silently** skipped — the machine
+complement to prompt-driven gate execution (layer 1) and to the remote CI gate (layer 2).
+
+**Rule:** every entry in `skipped_gates` must be **legitimate**, otherwise → story fail (back to
+`Backlog`) + operator notify (story ID + which gate). **If `meta.json` is missing entirely → fail** (no
+"silently green"). Merge (step 4.6) only after a green assertion.
+
+| Finding | Legitimate? | Action |
+|---|---|---|
+| `skipped_gates` empty | ✅ | continue |
+| Skip covered by `change_type` (non-code 5.7: workflow/config/infrastructure/content) | ✅ | continue |
+| Skip with an entry in `override_audit` (e.g. coverage override with justification) | ✅ | continue |
+| Skip without coverage/override | ❌ | **story fail** → Backlog + notify |
+| `meta.json` missing | ❌ | **story fail** |
+| Non-code story: 6c/6d/6e without evidence | ❌ | **story fail** |
+
+Details: [references/gate-assertion.en.md](references/gate-assertion.en.md).
 
 ### Step 5: Error handling
 
@@ -140,7 +163,8 @@ reference to the `/sprint-review` result.
 Like `/implement`, `/sprint-run` knows a daemon mode (`--auto` / webhook): the
 **operator approval in step 3 is skipped**, the loop runs without intermediate questions —
 **except** at gate blocks (step 4.4), which **always** stop. All `/implement` gates
-(spec gate, quality gates, CI loop) remain active in every story.
+(spec gate, quality gates, CI loop) remain active in every story, and step 4.5b verifies
+**by machine** against `meta.json` after every run that no gate was silently skipped.
 
 ## Integration with other skills
 
@@ -173,14 +197,15 @@ Fields (in `.claude/environment.json` or `CONVENTIONS.md`, plus per story in the
 
 ```
 sprint-run/
-├── SKILL.md                                  ← Skill definition (1.0.0)
+├── SKILL.md                                  ← Skill definition (1.1.0)
 ├── SKILL.en.md                               ← English mirror
-├── README.md                                 ← German README (Version: 1.0.0)
+├── README.md                                 ← German README (Version: 1.1.0)
 ├── README.en.md                              ← English README
 ├── overview.excalidraw / .png                ← Skill overview sketch (+ .en)
 └── references/
     ├── orchestration-checklist.md            ← Sprint pre-flight + loop checks (+ .en.md)
     ├── gate-block-handling.md                ← Pause/resume protocol (+ .en.md)
+    ├── gate-assertion.md                     ← Post-story gate assertion (meta.json) (+ .en.md)
     ├── worktree-flow.md                      ← Worktree per story: add → merge → remove (+ .en.md)
     └── token-boundary.md                     ← 80% boundary logic + sprint budget (+ .en.md)
 ```

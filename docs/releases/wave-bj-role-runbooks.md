@@ -1,4 +1,4 @@
-# Wave BI — Rollenspezifische Runbooks: CISO · DPO · CTO · Geschäftsführung (BOO-158–163)
+# Wave BJ — Rollenspezifische Runbooks: CISO · DPO · CTO · Geschäftsführung (BOO-158–163)
 
 **Was jetzt da ist:** Vier narrative Einstiegs-Runbooks erklären INTENTRON aus Sicht je einer Führungsrolle — Geschäftsführung, CISO/IT-Leitung, Datenschutzbeauftragte:r, CTO. Jedes liest sich in unter 10 Minuten, beantwortet „was bedeutet das Framework für mich, welche Gatekeeper greifen, wo nehme ich Einfluss" und ist **keine neue Mechanik**, sondern eine Lesebrille auf Bestehendes (analog `audit-perspective.md`). Aus dem README in EN + DE verlinkt, plus eine gemeinsame Rollen-Landkarte als Sketch. Reine Doku. DE+EN.
 
@@ -23,7 +23,7 @@
 Auf die Frage „gibt es eine rollengerechte Einführung ins Framework?" gibt es jetzt vier Lesebrillen statt eines 230-KB-Handbuchs als einzigen Einstieg. Ein CISO, DPO, CTO oder Geschäftsführer versteht in unter 10 Minuten, was das Framework für die eigene Rolle bedeutet.
 
 ## Abgrenzung
-Reine Doku, kein Code, keine neue Mechanik. Wave-Buchstabe `bi` (bh = knowledge-onboarding-sketches, bg = BOO-156). Projekt-lokale Artefakte im CTO-Runbook als Code-Spans (keine toten Links), Template-Verweis unter „Weiterlesen". Baut auf `artefakt-landkarte` (Abnehmer-Rollen) + `audit-perspective.md` (Stil-Muster) auf.
+Reine Doku, kein Code, keine neue Mechanik. Wave-Buchstabe `bj` (bh = knowledge-onboarding-sketches, bg = BOO-156). Projekt-lokale Artefakte im CTO-Runbook als Code-Spans (keine toten Links), Template-Verweis unter „Weiterlesen". Baut auf `artefakt-landkarte` (Abnehmer-Rollen) + `audit-perspective.md` (Stil-Muster) auf.
 
 ## Verweise
 Spec: `specs/BOO-158.md`. Branch: `tobiaschschmidt/boo-158-rollenspezifische-runbooks-ciso-dpo-cto-geschaftsfuhrung`. Operator-Quelle: Tobias, 2026-06-05.
