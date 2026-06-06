@@ -31,8 +31,8 @@
     },
     "opus": {
       "current_version": "claude-opus-4-7",
-      "description": "Hoechstes Tier. Fuer Architektur-Reviews, Security-Findings, Threat Modeling, komplexe Analyse. Bleibt NACHWEISBAR auf Opus bei security-relevanten Skills — Audit-Argument fuer FINMA, BaFin, MaRisk.",
-      "default_for_skills": ["architecture-review", "cloud-system-engineer", "security-architect", "implement-security-findings"],
+      "description": "Hoechstes Tier. Fuer Produktcode-Implementierung (implement Schritt 5 — bestes Modell fuer den Code-Kern, BOO-170), Architektur-Reviews, Security-Findings, Threat Modeling, komplexe Analyse. Bleibt NACHWEISBAR auf Opus bei security-relevanten Skills — Audit-Argument fuer FINMA, BaFin, MaRisk. Die mechanischen implement-Iterations-Loops (Lint/Test-Fix) laufen weiter auf haiku.",
+      "default_for_skills": ["architecture-review", "cloud-system-engineer", "security-architect", "implement", "implement-security-findings"],
       "security_critical": true,
       "pricing": {
         "input_per_million": 15.00,

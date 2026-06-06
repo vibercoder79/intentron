@@ -1,12 +1,12 @@
 ---
 name: implement
-recommended_model: sonnet  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
+recommended_model: opus  # BOO-170 — Produktcode auf bestem Modell; Iterations-Loops haiku, Security-Findings opus (model-tiers.json)
 description: |
   Implementierungs-Protokoll fuer CLAW User Stories. 8-Schritte-Workflow von Issue-Identifikation
   bis Ergebnis-Tabelle inkl. Post-Implement Validation. Verwenden wenn der Operator "los" sagt,
   eine Story umsetzen will, oder "/implement" ausfuehrt. Wird auch vom Automation Daemon genutzt
   (ohne Human-in-the-Loop).
-version: 2.13.0
+version: 2.14.0
 metadata:
   hermes:
     category: coding

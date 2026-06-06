@@ -3096,13 +3096,15 @@ INTENTRON operators waste Anthropic tokens when every skill runs on the operator
 
 Each skill carries `recommended_model: haiku | sonnet | opus` in its frontmatter — a **tier**, not a version number. Tier-to-version mapping (Haiku 4.5, Sonnet 4.6, Opus 4.7) lives centrally in `bootstrap/references/model-tiers.json` and is updated once per Anthropic release. No operator has to touch 11 skill files when a new model ships.
 
+**Enforcement (BOO-170):** Interactively the `recommended_model` values are a **recommendation** — Claude Code cannot switch the running loop's model from within a skill. In the **`/sprint-run --auto` daemon** they are **enforced**: per story, `sprint-run/scripts/resolve-model.py <skill>` resolves the tier→version chain and starts `/implement` as a subprocess with `--model <version> --permission-mode dontAsk` (sprint-run step 4.3). The operator override hierarchy is preserved (an explicit `--model` beats the default). `implement` is multi-tier here — code core (step 5) and security findings (6e) on **opus**, mechanical iteration loops (6a) on **haiku**; the finer split *within* one subprocess is reserved for implement-internal subagent routing (follow-up story).
+
 **Routing table**
 
 | Tier | Model class | What for | Default skills |
 |------|-------------|----------|----------------|
 | `haiku` | Claude Haiku | Iteration loops, lints, question generation, small smoke tests | `/implement` steps 6a/6a-bis/6a-tris/6a-quart, lint loops |
 | `sonnet` | Claude Sonnet | Safe default for most skill tasks | `bootstrap`, `backlog`, `visualize`, `sprint-review`, `pitch`, `ideation`, `intent`, `grafana` |
-| `opus` | Claude Opus | Architecture reviews, security findings, threat modeling | `architecture-review`, `cloud-system-engineer`, `/implement` step 6e (security findings) |
+| `opus` | Claude Opus | Product code, architecture reviews, security findings, threat modeling | `architecture-review`, `cloud-system-engineer`, `security-architect`, `/implement` (code core step 5 + security findings 6e, BOO-170) |
 
 **Operator override (two-tier)**
 

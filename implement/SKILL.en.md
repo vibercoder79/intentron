@@ -1,12 +1,12 @@
 ---
 name: implement
-recommended_model: sonnet  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
+recommended_model: opus  # BOO-170 — product code on the best model; iteration loops haiku, security findings opus (model-tiers.json)
 description: |
   Implementation protocol for user stories. 8-step workflow from issue identification
   to closing table including post-implement validation. Use when the operator says "go",
   wants to implement a story, or runs "/implement". Also used by the automation daemon
   (no human in the loop).
-version: 2.13.0
+version: 2.14.0
 language: en
 metadata:
   hermes:

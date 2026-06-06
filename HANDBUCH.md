@@ -3234,13 +3234,15 @@ INTENTRON-Operatoren bezahlen unnoetig viele Anthropic-Tokens, wenn jeder Skill 
 
 Jeder Skill traegt im Frontmatter `recommended_model: haiku | sonnet | opus` — ein **Tier**, keine Versionsnummer. Die Zuordnung Tier-zu-Version (z.B. Haiku 4.5, Sonnet 4.6, Opus 4.7) lebt zentral in `bootstrap/references/model-tiers.json` und wird einmalig pro Anthropic-Release zentral aktualisiert. So muss kein Operator 11 Skill-Files anfassen, wenn ein neues Modell erscheint.
 
+**Enforcement (BOO-170):** Interaktiv sind die `recommended_model`-Werte eine **Empfehlung** — Claude Code kann das Modell des laufenden Loops nicht per Skill wechseln. Im **`/sprint-run --auto`-Daemon** werden sie **erzwungen**: pro Story loest `sprint-run/scripts/resolve-model.py <skill>` die Kette Tier→Version auf und startet `/implement` als Subprozess mit `--model <version> --permission-mode dontAsk` (sprint-run Schritt 4.3). Die Operator-Override-Hierarchie bleibt gewahrt (ein explizites `--model` schlaegt den Default). `implement` ist dabei Multi-Tier — Code-Kern (Schritt 5) und Security-Findings (6e) auf **opus**, mechanische Iterations-Loops (6a) auf **haiku**; die feinere Trennung *innerhalb* eines Subprozesses bleibt implement-internem Subagent-Routing vorbehalten (Folge-Story).
+
 **Routing-Tabelle**
 
 | Tier | Modell-Klasse | Wofuer | Default-Skills |
 |------|---------------|--------|----------------|
 | `haiku` | Claude Haiku | Iterations-Loops, Lints, Frage-Generierung, kleine Smoke-Tests | `/implement` Schritte 6a/6a-bis/6a-tris/6a-quart, Lint-Loops |
 | `sonnet` | Claude Sonnet | Sicherer Default fuer die meisten Skill-Aufgaben | `bootstrap`, `backlog`, `visualize`, `sprint-review`, `pitch`, `ideation`, `intent`, `grafana` |
-| `opus` | Claude Opus | Architektur-Reviews, Security-Findings, Threat Modeling | `architecture-review`, `cloud-system-engineer`, `/implement` Schritt 6e (Security-Findings) |
+| `opus` | Claude Opus | Produktcode, Architektur-Reviews, Security-Findings, Threat Modeling | `architecture-review`, `cloud-system-engineer`, `security-architect`, `/implement` (Code-Kern Schritt 5 + Security-Findings 6e, BOO-170) |
 
 **Operator-Override (zweistufig)**
 
