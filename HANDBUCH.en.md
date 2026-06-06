@@ -50,6 +50,8 @@ That's **not** an AI problem. That's a **missing-system** problem.
 Vibe coding is powerful — but only if the AI understands **what you built** and **why**.
 Without documentation and structure, every new session starts from zero.
 
+> **What INTENTRON is NOT.** The framework is not itself an autonomous, agentic AI: it is primarily a sequential engineering pipeline with quality gates, not a fully autonomous developer agent. AI tools (Claude, Codex, Hermes) may use it agentically, but the framework stays the structure that bounds autonomy through intent, specs, gates, reports and human review points. Full detail in §8e.
+
 ### The second problem: the after-the-fact compliance finding
 
 There is a second, more expensive problem — and it hits not the solo developer but teams in regulated organizations. Without guardrails, nobody notices *during* development whether security, privacy and governance rules were followed. The finding arrives **after the fact**: in a security review, a data-protection audit, at the CISO — often months later, when the software is long live. Then it's "you didn't follow the rules", and the rework is expensive.
@@ -94,7 +96,7 @@ GitHub Repository (vibercoder79/intentron)
 |--------------------|------------------|
 | Claude forgets between sessions | Claude always knows the system |
 | "Build me X" → random output | `/ideation` → structured story → `/implement` |
-| Bugs appear out of nowhere | Self-healing agent monitors 24/7 |
+| Bugs appear out of nowhere | automated self-healing check (optional, cron — Block D) |
 | No idea if version is stable | Every change is versioned + documented |
 | Rollback? What rollback? | Git + changelog = rollback anytime |
 | 3 weeks later: total chaos | Sprint review keeps everything clean |

@@ -17,6 +17,8 @@ metadata:
 
 Sets up a new project with a governance framework. The flow is structured in **4 blocks (A–D)** — each block has a clear focus, no question batches.
 
+> **Scope note:** This setup establishes governance for a **sequential, controlled development flow** — not an autonomously running agent system. The chosen AI tools (Claude, Codex) are adapters onto the story contract, not the governance itself.
+
 References:
 - `references/info-gathering.en.md` — core questions (block A)
 - `references/existing-infra-check.en.md` — existing infrastructure (block B)
