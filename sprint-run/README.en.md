@@ -10,7 +10,7 @@
 > the sprint automatically once the token budget is reached. **Pure orchestrator:** it only calls
 > the existing skills and does not change them.
 
-**Version:** 1.1.0 · **Command:** `/sprint-run`
+**Version:** 1.2.0 · **Command:** `/sprint-run`
 
 ![Sprint-Run — overview: Backlog -> Pre-Flight -> Daemon loop per story -> 80% boundary -> /sprint-review](overview.en.png)
 

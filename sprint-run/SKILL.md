@@ -9,7 +9,7 @@ description: |
   Orchestrator — `/implement`, `/backlog`, `/sprint-review` bleiben unveraendert.
   Verwenden wenn der Operator "Sprint laufen lassen", "fahr den Sprint", "automation-cycle"
   oder "/sprint-run" sagt. Auch vom Automation-Daemon (ohne Human-in-the-Loop) nutzbar.
-version: 1.1.0
+version: 1.2.0
 metadata:
   hermes:
     category: governance
@@ -87,13 +87,41 @@ Fuer jede Story in der Sprint-Reihenfolge:
 |---|--------|
 | 4.1 | **Linear → In Progress** setzen (Adapter aus CONVENTIONS; bei `none` lokal protokollieren). |
 | 4.2 | **Worktree anlegen:** `git worktree add ../wt-<ISSUE> -b feat/boo-<n>-<slug>` (eigener Branch je Story). |
-| 4.3 | **`/implement` im Daemon-Modus** im Worktree aufrufen (Schritt-4-Freigabe uebersprungen). Alle `/implement`-Gates bleiben aktiv. |
+| 4.3 | **`/implement` im Daemon-Modus** im Worktree als **Subprozess** starten — Modell + Modus aufgeloest (BOO-170, s.u.): `claude -p "/implement <ISSUE>" --model "$(python3 <skill-dir>/scripts/resolve-model.py implement --repo-root .)" --permission-mode dontAsk`. Schritt-4-Freigabe uebersprungen; Operator-`--model`-Override hat Vorrang. Alle `/implement`-Gates bleiben aktiv. |
 | 4.4 | **Gate-Block-Pause** (s.u.) — bei Sensitive-Paths/Personal-Data-STOPP: pausieren, Operator benachrichtigen, **nie** automatisch ueberbruecken. |
 | 4.5 | **Remote-CI-Wait (BOO-148):** `/implement` Schritt 6h (`gh run watch --exit-status`). Rot → max 3 Fix-Iterationen, sonst Eskalation. |
 | 4.5b | **Post-Story-Gate-Assertion** (s.u.) — `meta.json` des Story-Runs lesen; unbegruendeter `skipped_gates`-Eintrag **oder** fehlende `meta.json` → Story-Fail. Merge nur bei gruener Assertion. |
 | 4.6 | **Merge nur bei gruener CI** → `main`; danach `git worktree remove ../wt-<ISSUE>` + Branch aufraeumen. |
 | 4.7 | **Linear → Done** (mit AC-Evidenz-Kommentar). Bei Fehler: Story zurueck (`In Progress → Backlog`) + `daemon_fail_policy` anwenden. |
 | 4.8 | **Token-Check:** aktueller Verbrauch gegen 80%-Boundary. Ueberschritten → Loop verlassen → Schritt 6. |
+
+### Schritt 4.3: Modell-/Modus-Routing (BOO-170)
+
+Damit jede Story mit dem **empfohlenen Modell** und im **unbeaufsichtigten Modus** laeuft, startet der
+Daemon `/implement` als **eigenen Subprozess** mit aufgeloesten Flags — nicht inline im Loop-Modell:
+
+```bash
+MODEL="$(python3 <skill-dir>/scripts/resolve-model.py implement --repo-root .)"
+claude -p "/implement <ISSUE>" --model "$MODEL" --permission-mode dontAsk
+```
+
+- **Modell:** `scripts/resolve-model.py <skill>` loest die Kette `<skill>/SKILL.md recommended_model`
+  (Tier) → `bootstrap/references/model-tiers.json current_version` (Version) auf — bestehende SSoT,
+  kein neues Konfig-Feld. Fallback: `sonnet`. Beispiel: `implement` → `claude-opus-4-7` (BOO-170:
+  Produktcode auf bestem Modell).
+- **Permission-Modus:** im Daemon konstant **`dontAsk`** + Allowlist (unbeaufsichtigt). `bypassPermissions`
+  nur in echter Isolation (Container/VM). Entspricht HANDBUCH §6 Zeile „Umsetzen, unbeaufsichtigt".
+- **Override-Hierarchie gewahrt:** ein dem Daemon explizit vorgegebenes `--model` (oder `CLAUDE.md`
+  `model_overrides`) schlaegt den Skill-Default; der Entscheid wird in `meta.json` (`model_used`,
+  `override_origin`) protokolliert.
+- **Bekannte Grenze — `implement` ist Multi-Tier:** `implement` routet intern haiku (Iterations-Loops)
+  und opus (Security-Findings, Schritt 6e). Ein einzelnes `--model` pro Subprozess bildet das **nicht**
+  ab — es setzt das Top-Level-Modell (opus, fuer den Code-Kern). Die feinere Loop-/Findings-Trennung
+  erfordert implement-**internes** Subagent-Routing (`model:` je Subagent) und ist eine **Folge-Story**.
+- **Effort:** kein CLI-Flag — bleibt Session-/`/config`-Einstellung (nicht pro Story erzwingbar).
+- **Nur Daemon (`--auto`):** Dieses Routing gilt fuer den unbeaufsichtigten Lauf. **Interaktiv** laeuft
+  der Loop im Modell/Modus deiner Session; dort ist die §6-Zuordnung eine **Empfehlung** (Shift+Tab),
+  kein Zwang — Claude Code kann das Modell des laufenden Loops nicht per Skill wechseln.
 
 ### Schritt 4.4: Gate-Block-Verhalten ⛔ (sicherheitskritisch)
 

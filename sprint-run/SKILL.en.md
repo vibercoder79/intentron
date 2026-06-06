@@ -9,7 +9,7 @@ description: |
   orchestrator — `/implement`, `/backlog`, `/sprint-review` remain unchanged.
   Use when the operator says "run the sprint", "drive the sprint", "automation-cycle"
   or "/sprint-run". Also usable by the automation daemon (without human-in-the-loop).
-version: 1.1.0
+version: 1.2.0
 metadata:
   hermes:
     category: governance
@@ -87,13 +87,41 @@ For each story in the sprint order:
 |---|--------|
 | 4.1 | Set **Linear → In Progress** (adapter from CONVENTIONS; with `none` log locally). |
 | 4.2 | **Create worktree:** `git worktree add ../wt-<ISSUE> -b feat/boo-<n>-<slug>` (own branch per story). |
-| 4.3 | Call **`/implement` in daemon mode** in the worktree (step-4 approval skipped). All `/implement` gates remain active. |
+| 4.3 | Start **`/implement` in daemon mode** in the worktree as a **subprocess** — model + mode resolved (BOO-170, see below): `claude -p "/implement <ISSUE>" --model "$(python3 <skill-dir>/scripts/resolve-model.py implement --repo-root .)" --permission-mode dontAsk`. Step-4 approval skipped; operator `--model` override takes precedence. All `/implement` gates remain active. |
 | 4.4 | **Gate-block pause** (see below) — on sensitive-paths/personal-data STOP: pause, notify operator, **never** bridge automatically. |
 | 4.5 | **Remote CI wait (BOO-148):** `/implement` step 6h (`gh run watch --exit-status`). Red → max 3 fix iterations, otherwise escalation. |
 | 4.5b | **Post-story gate assertion** (see below) — read the story run's `meta.json`; an unjustified `skipped_gates` entry **or** a missing `meta.json` → story fail. Merge only on green assertion. |
 | 4.6 | **Merge only on green CI** → `main`; then `git worktree remove ../wt-<ISSUE>` + clean up branch. |
 | 4.7 | **Linear → Done** (with AC evidence comment). On error: story back (`In Progress → Backlog`) + apply `daemon_fail_policy`. |
 | 4.8 | **Token check:** current consumption against the 80% boundary. Exceeded → leave loop → step 6. |
+
+### Step 4.3: Model/mode routing (BOO-170)
+
+So that every story runs on the **recommended model** and in **unattended mode**, the daemon starts
+`/implement` as its **own subprocess** with resolved flags — not inline in the loop's model:
+
+```bash
+MODEL="$(python3 <skill-dir>/scripts/resolve-model.py implement --repo-root .)"
+claude -p "/implement <ISSUE>" --model "$MODEL" --permission-mode dontAsk
+```
+
+- **Model:** `scripts/resolve-model.py <skill>` resolves the chain `<skill>/SKILL.md recommended_model`
+  (tier) → `bootstrap/references/model-tiers.json current_version` (version) — existing SSoT, no new
+  config field. Fallback: `sonnet`. Example: `implement` → `claude-opus-4-7` (BOO-170: product code on
+  the best model).
+- **Permission mode:** constant **`dontAsk`** + allowlist in the daemon (unattended). `bypassPermissions`
+  only in true isolation (container/VM). Matches HANDBUCH §6 row "Execute, unattended".
+- **Override hierarchy preserved:** an explicit `--model` given to the daemon (or `CLAUDE.md`
+  `model_overrides`) beats the skill default; the decision is logged in `meta.json` (`model_used`,
+  `override_origin`).
+- **Known limit — `implement` is multi-tier:** `implement` routes internally to haiku (iteration loops)
+  and opus (security findings, step 6e). A single `--model` per subprocess does **not** capture this —
+  it sets the top-level model (opus, for the code core). The finer loop/findings split requires
+  implement-**internal** subagent routing (`model:` per subagent) and is a **follow-up story**.
+- **Effort:** no CLI flag — stays a session/`/config` setting (not enforceable per story).
+- **Daemon only (`--auto`):** this routing applies to the unattended run. **Interactively** the loop
+  runs in your session's model/mode; there the §6 mapping is a **recommendation** (Shift+Tab), not a
+  constraint — Claude Code cannot switch the running loop's model from within a skill.
 
 ### Step 4.4: Gate-block behavior ⛔ (security-critical)
 

@@ -4,7 +4,7 @@
 
 > Turns a Linear issue into shipped code through a non-skippable 8-step protocol: identify → dependencies → context → governance validation → spec-gate → plan → implement → post-validation. No step optional, no shortcuts. Also usable by the automation daemon without human in the loop.
 
-**Version:** 2.13.0 · **Command:** `/implement`
+**Version:** 2.14.0 · **Command:** `/implement`
 
 > 🔗 Sprint automation: **`/sprint-run`** runs a whole sprint and orchestrates the chain `backlog → implement → sprint-review`. See [`sprint-run/`](../sprint-run/README.en.md) · HANDBUCH Appendix AD.
 

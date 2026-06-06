@@ -10,7 +10,7 @@
 > den Sprint automatisch, wenn das Token-Budget erreicht ist. **Reiner Orchestrator:** er ruft
 > die bestehenden Skills nur auf und veraendert sie nicht.
 
-**Version:** 1.1.0 · **Befehl:** `/sprint-run`
+**Version:** 1.2.0 · **Befehl:** `/sprint-run`
 
 ![Sprint-Run — Ueberblick: Backlog -> Pre-Flight -> Daemon-Loop pro Story -> 80%-Boundary -> /sprint-review](overview.png)
 
