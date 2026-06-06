@@ -6,6 +6,8 @@
 
 **Version:** 2.3.0 · **Befehl:** `/visualize`
 
+> **Claude-Code-Modus:** `/visualize` schreibt keine lokalen Dateien, nur Diagramme nach Miro (via MCP) → beaufsichtigt **`acceptEdits`**. Kein unbeaufsichtigter Betrieb. Details: HANDBUCH §6 „Claude-Code-Modus".
+
 ---
 
 ## Was der Skill tut

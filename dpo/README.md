@@ -2,6 +2,8 @@
 
 Bringt **Datenschutz by Design** in den Entwicklungsprozess mit Claude Code — von der Datenerhebung bis zur Loeschung. Der Skill stellt an den richtigen Stellen die richtigen Pruef-Fragen (Rechtsgrundlage, Zweckbindung, Loeschkonzept, Betroffenenrechte), damit Operatoren keine DSGVO-Experten sein muessen. Deckt **DSGVO/GDPR (EU)**, **BDSG (DE)** und **nDSG (CH)** ab. Der Operator entscheidet — der Skill erfindet keine Rechtsberatung.
 
+> **Claude-Code-Modus:** `/dpo` ist read-only (ASSESS/REVIEW dialogisch, AUDIT deterministisch) → **`plan`** (Plan Mode); der AUDIT-Runner laeuft, vom `/sprint-review` getriggert, unbeaufsichtigt mit **`dontAsk`**. Details: HANDBUCH §6 „Claude-Code-Modus".
+
 ## Installation
 
 ```bash

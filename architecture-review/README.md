@@ -6,6 +6,8 @@
 
 **Version:** 1.12.0 · **Befehl:** `/architecture-review`
 
+> **Claude-Code-Modus:** `/architecture-review` ist read-only Analyse → **`plan`** (Plan Mode); Befunde/Empfehlungen, kein Code. Details: HANDBUCH §6 „Claude-Code-Modus".
+
 ---
 
 ## Was der Skill tut

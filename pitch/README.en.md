@@ -6,6 +6,8 @@
 
 **Version:** 1.1.0 · **Command:** `/pitch`
 
+> **Claude Code mode:** `/pitch` gathers evidence and writes one briefing file → supervised **`acceptEdits`**. No unattended operation (you review the briefing before the meeting). Details: HANDBUCH §6 "Claude Code mode".
+
 ---
 
 ## What the skill does

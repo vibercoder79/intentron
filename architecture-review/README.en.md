@@ -6,6 +6,8 @@
 
 **Version:** 1.12.0 · **Command:** `/architecture-review`
 
+> **Claude Code mode:** `/architecture-review` is read-only analysis → **`plan`** (plan mode); findings / recommendations, no code. Details: HANDBUCH §6 "Claude Code mode".
+
 ---
 
 ## What It Does

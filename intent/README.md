@@ -4,6 +4,8 @@
 
 **Version:** 1.3.0 · **Befehl:** `/intent`
 
+> **Claude-Code-Modus:** `/intent` ist eine reine Denk-/Interview-Session → **`plan`** (Plan Mode): das Intent-Statement entsteht im Dialog, geschrieben wird erst nach deiner Freigabe. Kein unbeaufsichtigter Betrieb. Details: HANDBUCH §6 „Claude-Code-Modus".
+
 ---
 
 ## Was der Skill tut

@@ -6,6 +6,8 @@
 
 **Version:** 1.1.0 · **Befehl:** `/grafana`
 
+> **Claude-Code-Modus:** `/grafana` schreibt remote nach Grafana (`update_dashboard` kann ueberschreiben) → **`default`** (Ask before edits), damit du Dashboard-Writes bewusst bestaetigst. Kein unbeaufsichtigter Betrieb. Details: HANDBUCH §6 „Claude-Code-Modus".
+
 ---
 
 ## Was der Skill tut

@@ -514,9 +514,12 @@ Claude Code hat sechs Berechtigungs-Modi (Wechsel mit **Shift+Tab**; Default set
 
 | Skill-Phase | Beispiele | Empfohlener Claude-Code-Modus |
 |---|---|---|
-| **Denken / Planen** (schreibt noch nichts) | `/ideation`, `/backlog`, `/architecture-review` | **`plan`** (Plan Mode) — explorieren + Vorschlag, du gibst frei |
-| **Umsetzen, beaufsichtigt** (am Mac, du schaust zu) | `/implement`, `/sprint-run` | **`acceptEdits`** — Edits laufen ohne Einzel-Nachfrage |
-| **Umsetzen, unbeaufsichtigt** (VPS/Daemon, `--auto`) | `/sprint-run --auto`, Automation-Daemon | **`dontAsk` + Allowlist** (git/gh/Test-Befehle vorab erlauben); `bypassPermissions` nur in echter Isolation (Container/VM) |
+| **Denken / Planen** (schreibt noch nichts) | `/ideation`, `/intent`, `/backlog`, `/architecture-review`, `/security-architect`, `/dpo` (ASSESS/REVIEW/AUDIT) | **`plan`** (Plan Mode) — explorieren + Vorschlag, du gibst frei |
+| **Umsetzen, beaufsichtigt** (am Mac, du schaust zu) | `/implement`, `/sprint-run`, `/pitch`, `/knowledge-onboarding`, `/sprint-review`, `/visualize`, `/bootstrap` | **`acceptEdits`** — Edits laufen ohne Einzel-Nachfrage |
+| **Umsetzen, unbeaufsichtigt** (VPS/Daemon, `--auto`) | `/sprint-run --auto`, `/sprint-review` + `/dpo`-AUDIT (vom Daemon getriggert), Automation-Daemon | **`dontAsk` + Allowlist** (git/gh/Test-Befehle vorab erlauben); `bypassPermissions` nur in echter Isolation (Container/VM) |
+| **Externe / irreversible Writes** (remote, kein skill-eigenes Gate) | `/grafana` (Dashboard-Overwrite), `/cloud-system-engineer` Modus C (Firewall/DNS/Docker) | **`default`** (Ask before edits) — jeden remote-Write bewusst bestaetigen; **nie** `acceptEdits`/`dontAsk`/unbeaufsichtigt |
+
+> Jeder Skill wiederholt seine Modus-Empfehlung (interaktiv + ggf. unbeaufsichtigt) am Kopf seiner README — diese Tabelle ist die zentrale Quelle.
 
 **Zwei Dinge, die oft verwechselt werden:**
 

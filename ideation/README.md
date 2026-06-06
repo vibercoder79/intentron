@@ -8,6 +8,8 @@
 
 > 🔗 Sprint-Automation: **`/sprint-run`** faehrt einen ganzen Sprint und orchestriert die Kette `backlog → implement → sprint-review`. Siehe [`sprint-run/`](../sprint-run/README.md) · HANDBUCH Anhang AD.
 
+> **Claude-Code-Modus:** `/ideation` denkt und schlaegt vor (Research, Story, Issue) → **`plan`** (Plan Mode): explorieren, du gibst frei, bevor Spec/Linear-Issue geschrieben werden. Kein unbeaufsichtigter Betrieb. Details: HANDBUCH §6 „Claude-Code-Modus".
+
 ---
 
 ## Was der Skill tut

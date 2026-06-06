@@ -2,6 +2,8 @@
 
 Brings **Privacy by Design** into the development process with Claude Code — from data collection through deletion. The skill asks the right review questions at the right points (legal basis, purpose limitation, deletion concept, data subject rights), so that operators don't need to be GDPR experts. Covers **GDPR (EU)**, **BDSG (DE)** and **nDSG (CH)**. The operator decides — the skill does not invent legal advice.
 
+> **Claude Code mode:** `/dpo` is read-only (ASSESS/REVIEW conversational, AUDIT deterministic) → **`plan`** (plan mode); the AUDIT runner runs unattended with **`dontAsk`** when triggered by `/sprint-review`. Details: HANDBUCH §6 "Claude Code mode".
+
 ## Installation
 
 ```bash

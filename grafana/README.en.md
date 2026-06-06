@@ -6,6 +6,8 @@
 
 **Version:** 1.1.0 · **Command:** `/grafana`
 
+> **Claude Code mode:** `/grafana` writes remotely to Grafana (`update_dashboard` can overwrite) → **`default`** (ask before edits) so you confirm dashboard writes deliberately. No unattended operation. Details: HANDBUCH §6 "Claude Code mode".
+
 ---
 
 ## What It Does

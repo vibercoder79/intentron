@@ -5,6 +5,8 @@
 
 **Version:** 1.1.0 | **Lizenz:** MIT | **Plattform:** Claude Code (Anthropic)
 
+> **Claude-Code-Modus:** `/security-architect` ist read-only Analyse (Threat Modeling, Review, Audit, Skill-Scan) → **`plan`** (Plan Mode); Befunde als Report, kein Code. Details: HANDBUCH §6 „Claude-Code-Modus".
+
 ---
 
 ## Was der Skill tut

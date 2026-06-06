@@ -99,6 +99,8 @@ exchange_up{exchange=~".+"}
 
 ## Common tasks
 
+> **Before `overwrite=true` — operator confirmation (required):** `update_dashboard(..., overwrite=true)` **replaces** the existing dashboard in Grafana Cloud — remotely, with no local rollback. Before any overwrite, tell the operator the target dashboard (UID/title) + planned change and wait for approval. When in doubt use `overwrite=false` (create new) or `patch_dashboard` (targeted) instead of a full replace. Matches the recommended Claude Code mode `default` (ask before edits) for `/grafana` — see HANDBUCH §6.
+
 ### Create a new dashboard
 1. `search_dashboards` → check if one already exists
 2. Build the dashboard JSON (panels, datasource, folder)
