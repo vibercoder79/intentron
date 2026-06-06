@@ -6,6 +6,8 @@
 
 **Version:** 1.1.0 · **Befehl:** `/pitch`
 
+> **Claude-Code-Modus:** `/pitch` sammelt Evidenz und schreibt ein Briefing-File → beaufsichtigt **`acceptEdits`**. Kein unbeaufsichtigter Betrieb (du reviewst das Briefing vor dem Termin). Details: HANDBUCH §6 „Claude-Code-Modus".
+
 ---
 
 ## Was der Skill tut

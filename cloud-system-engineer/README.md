@@ -6,6 +6,8 @@
 
 **Version:** 1.1.0 · **Befehl:** `/cloud-system-engineer`
 
+> **Claude-Code-Modus:** Check/Konsultation (Modus A/B) sind read-only → **`plan`**; Aenderungen ausfuehren (Modus C: Firewall/DNS/Docker, remote-irreversibel) → **`default`** (Ask before edits), pro Aktion bewusst freigeben — **nie** `acceptEdits`/`dontAsk`/unbeaufsichtigt. Details: HANDBUCH §6 „Claude-Code-Modus".
+
 ---
 
 ## Was der Skill tut

@@ -1,5 +1,6 @@
 ---
 name: security-architect
+recommended_model: opus  # BOO-169 — security-kritisch, Audit-relevant (analog implement-security-findings; siehe bootstrap/references/model-tiers.json)
 description: |
   Security Architect: Security by Design fuer den gesamten Entwicklungsprozess.
   4 Modi: DESIGN (Threat Modeling bei Ideation/Planung), REVIEW (Security-Check bei Code-Aenderungen),
@@ -11,6 +12,7 @@ description: |
   "security audit", "ist das sicher?", "OWASP", "/security", "scanne diesen skill",
   "skill-scan", "pruefe diesen skill" sagt — oder automatisch wenn andere Skills
   (Ideation, Implement) Security-relevante Arbeit ausfuehren.
+version: 1.1.0
 ---
 
 # Security Architect

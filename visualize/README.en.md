@@ -6,6 +6,8 @@
 
 **Version:** 2.3.0 · **Command:** `/visualize`
 
+> **Claude Code mode:** `/visualize` writes no local files, only diagrams to Miro (via MCP) → supervised **`acceptEdits`**. No unattended operation. Details: HANDBUCH §6 "Claude Code mode".
+
 ---
 
 ## What It Does

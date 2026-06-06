@@ -4,6 +4,8 @@
 
 **Version:** 1.1.0 · **Command:** `/knowledge-onboarding`
 
+> **Claude Code mode:** `/knowledge-onboarding` writes reference blocks and a manifest → supervised **`acceptEdits`** (the skill has its own per-file apply / diff gates). No unattended operation. Details: HANDBUCH §6 "Claude Code mode".
+
 ## What the skill does
 
 `knowledge-onboarding` takes an existing knowledge package — GitHub repo, local folder, upload or chat-provided — and assigns each file to **the right place in the framework artefacts**. Instead of "analyse the repo and take everything over" (LLM whim, fabrication-prone, non-deterministic), the skill uses a **routing rubric (SSoT, Tier 0/1/2/3)** and a **persisted manifest** (`journal/knowledge-onboarding-map.yml`). On re-scan the manifest is read first — known files keep their routing, only new / changed ones are reclassified.

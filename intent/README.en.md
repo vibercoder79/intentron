@@ -4,6 +4,8 @@
 
 **Version:** 1.3.0 · **Command:** `/intent`
 
+> **Claude Code mode:** `/intent` is a pure thinking / interview session → **`plan`** (plan mode): the intent statement emerges in dialogue, files are written only after you approve. No unattended operation. Details: HANDBUCH §6 "Claude Code mode".
+
 ---
 
 ## What the skill does

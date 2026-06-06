@@ -7,6 +7,8 @@
 **Version 3.0 (April 2026)** — generic, interview-friendly, with portable learning loop (L1/L2/L3). No project-type lock-in, no trading-specific residue.
 **Foundation:** Claude Code Best Practice Checklist v10 (OWLIST GmbH, 2026) — context engineering, global settings, context protection, and agent patterns are integrated into the bootstrap process.
 
+> **Claude Code mode:** `/bootstrap` is an interview that then scaffolds many governance files → answer the questions, then **`acceptEdits`** for the scaffold phase. No unattended operation (setup is one-off + interactive). Details: HANDBUCH §6 "Claude Code mode".
+
 ---
 
 ## Big Picture

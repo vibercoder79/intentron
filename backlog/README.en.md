@@ -8,6 +8,8 @@
 
 > 🔗 Sprint automation: **`/sprint-run`** runs a whole sprint and orchestrates the chain `backlog → implement → sprint-review`. See [`sprint-run/`](../sprint-run/README.en.md) · HANDBUCH Appendix AD.
 
+> **Claude Code mode:** `/backlog` only reads and prioritizes (writes nothing) → **`plan`** (plan mode). It rides along read-only inside the `/sprint-run` daemon. Details: HANDBUCH §6 "Claude Code mode".
+
 ---
 
 ## What It Does

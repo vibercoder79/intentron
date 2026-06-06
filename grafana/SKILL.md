@@ -98,6 +98,8 @@ exchange_up{exchange=~".+"}
 
 ## Häufige Aufgaben
 
+> **Vor `overwrite=true` — Operator-Bestaetigung (Pflicht):** `update_dashboard(..., overwrite=true)` **ersetzt** das bestehende Dashboard in Grafana Cloud — remote, ohne lokalen Rollback. Vor jedem Overwrite dem Operator Ziel-Dashboard (UID/Titel) + geplante Aenderung nennen und Freigabe abwarten. Im Zweifel `overwrite=false` (neu anlegen) oder `patch_dashboard` (gezielt) statt Vollersatz. Deckt sich mit dem empfohlenen Claude-Code-Modus `default` (Ask before edits) fuer `/grafana` — siehe HANDBUCH §6.
+
 ### Neues Dashboard erstellen
 1. `search_dashboards` → prüfen ob schon eins existiert
 2. Dashboard-JSON aufbauen (Panels, Datasource, Folder)

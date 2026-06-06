@@ -8,6 +8,8 @@
 
 > 🔗 Sprint automation: **`/sprint-run`** runs a whole sprint and orchestrates the chain `backlog → implement → sprint-review`. See [`sprint-run/`](../sprint-run/README.en.md) · HANDBUCH Appendix AD.
 
+> **Claude Code mode:** `/ideation` thinks and proposes (research, story, issue) → **`plan`** (plan mode): explore, you approve before any spec / Linear issue is written. No unattended operation. Details: HANDBUCH §6 "Claude Code mode".
+
 ---
 
 ## What It Does

@@ -8,6 +8,8 @@
 
 > 🔗 Sprint-Automation: **`/sprint-run`** faehrt einen ganzen Sprint und orchestriert die Kette `backlog → implement → sprint-review`. Siehe [`sprint-run/`](../sprint-run/README.md) · HANDBUCH Anhang AD.
 
+> **Claude-Code-Modus:** `/sprint-review` schreibt Audit-Reports → beaufsichtigt **`acceptEdits`**; unbeaufsichtigt (vom `/sprint-run`-Daemon getriggert) **`dontAsk`** + Allowlist. Details: HANDBUCH §6 „Claude-Code-Modus".
+
 ---
 
 ## Was der Skill tut

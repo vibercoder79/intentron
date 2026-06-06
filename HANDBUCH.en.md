@@ -508,9 +508,12 @@ Claude Code has six permission modes (switch with **Shift+Tab**; default settabl
 
 | Skill phase | Examples | Recommended Claude Code mode |
 |---|---|---|
-| **Think / plan** (writes nothing yet) | `/ideation`, `/backlog`, `/architecture-review` | **`plan`** (plan mode) — explore + propose, you approve |
-| **Execute, supervised** (on your Mac, you watch) | `/implement`, `/sprint-run` | **`acceptEdits`** — edits run without per-edit prompts |
-| **Execute, unattended** (VPS/daemon, `--auto`) | `/sprint-run --auto`, automation daemon | **`dontAsk` + allowlist** (pre-approve git/gh/test commands); `bypassPermissions` only in true isolation (container/VM) |
+| **Think / plan** (writes nothing yet) | `/ideation`, `/intent`, `/backlog`, `/architecture-review`, `/security-architect`, `/dpo` (ASSESS/REVIEW/AUDIT) | **`plan`** (plan mode) — explore + propose, you approve |
+| **Execute, supervised** (on your Mac, you watch) | `/implement`, `/sprint-run`, `/pitch`, `/knowledge-onboarding`, `/sprint-review`, `/visualize`, `/bootstrap` | **`acceptEdits`** — edits run without per-edit prompts |
+| **Execute, unattended** (VPS/daemon, `--auto`) | `/sprint-run --auto`, `/sprint-review` + `/dpo` AUDIT (triggered by the daemon), automation daemon | **`dontAsk` + allowlist** (pre-approve git/gh/test commands); `bypassPermissions` only in true isolation (container/VM) |
+| **External / irreversible writes** (remote, no skill-owned gate) | `/grafana` (dashboard overwrite), `/cloud-system-engineer` mode C (firewall/DNS/Docker) | **`default`** (ask before edits) — confirm each remote write deliberately; **never** `acceptEdits`/`dontAsk`/unattended |
+
+> Each skill restates its mode recommendation (interactive + unattended where applicable) at the top of its README — this table is the central source.
 
 **Two things people often confuse:**
 

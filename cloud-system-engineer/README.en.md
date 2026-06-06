@@ -6,6 +6,8 @@
 
 **Version:** 1.1.0 · **Command:** `/cloud-system-engineer`
 
+> **Claude Code mode:** check / consultation (mode A/B) are read-only → **`plan`**; executing changes (mode C: firewall/DNS/Docker, remotely irreversible) → **`default`** (ask before edits), approve each action deliberately — **never** `acceptEdits`/`dontAsk`/unattended. Details: HANDBUCH §6 "Claude Code mode".
+
 ---
 
 ## What It Does
