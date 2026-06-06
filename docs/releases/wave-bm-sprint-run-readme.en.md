@@ -1,4 +1,4 @@
-# Wave BL — /sprint-run README overhaul (BOO-166)
+# Wave BM — /sprint-run README overhaul (BOO-166)
 
 **What's now in place:** The `sprint-run/README` now explains the skill in depth, **embeds the Owlist sketches inline** (instead of just listing them), cross-links **DE↔EN**, has **plain-language prerequisites** and a **realistic installation** (bootstrap/update instead of a bare `cp -r`). README ↔ HANDBUCH Appendix AD ↔ runbook point at each other. Docs only — `sprint-run` stays **v1.1.0**. DE+EN.
 
@@ -13,7 +13,7 @@
 Anyone opening the README understands what `/sprint-run` does without prior knowledge, sees the diagrams inline, and reaches the EN version, the HANDBUCH deep-dive chapter and the runbook with one click. Follows the embed/cross-link convention of `knowledge-onboarding`.
 
 ## Scope
-Docs only, no code, no functional change (`sprint-run` stays v1.1.0, no version bump). Wave letter **bl** (bk = gate-assertion BOO-165). Repo slot BOO-166 = Linear BOO-166.
+Docs only, no code, no functional change (`sprint-run` stays v1.1.0, no version bump). wave letter **bm** (bk = gate-assertion BOO-165). Repo slot BOO-166 = Linear BOO-166.
 
 ## References
 Spec: `specs/BOO-166.md`. Branch: `feat/boo-166-readme-overhaul`. Model: `knowledge-onboarding` (embed convention). Related: BOO-157 (HANDBUCH §6 + Appendix AD), BOO-165 (gate assertion). Operator source: Tobias, 2026-06-06.
