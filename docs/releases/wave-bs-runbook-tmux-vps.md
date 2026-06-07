@@ -1,5 +1,7 @@
 # Wave BS — Runbook: Sprint unbeaufsichtigt auf der VPS per tmux (BOO-172)
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-bs-runbook-tmux-vps.en.md)
+
 **Was jetzt da ist:** Ein neues Runbook erklärt, wie man `/sprint-run` (oder jede langlaufende Claude-Arbeit) auf der VPS in **`tmux`** startet, sodass sie das **Zuklappen des Laptops / einen SSH-Abbruch überlebt**. Bewusst **statt** eines vollausführbaren VPS-Daemons (zu großer Umbau für den Nutzen) — Bordmittel reichen.
 
 ## Stories

@@ -1,5 +1,7 @@
 # Wave BN — Claude-Code-Modus-Empfehlung + /sprint-run „Zwei Modi" (BOO-168)
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-bn-claude-mode-docs.en.md)
+
 **Was jetzt da ist:** Klarstellung, dass **`/sprint-run` selbst ausführt** (mit einer einmaligen Plan-Freigabe) und **`--auto` nur diese Freigabe weglässt** — beide führen den Sprint real aus, es gibt keinen „Nur-Prüfen"-Modus. Plus ein neuer **HANDBUCH-§6-Abschnitt**, welcher **Claude-Code-Berechtigungsmodus** zu welchem Skill passt, und die Abgrenzung **Skill-Plan ≠ Claude-Code-Planungsmodus** (read-only, blockiert die Umsetzung). Reine Doku — `sprint-run` bleibt v1.1.0. DE+EN.
 
 ## Stories
