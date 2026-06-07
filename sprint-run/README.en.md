@@ -52,6 +52,8 @@ Both **actually execute** the sprint (incl. merge). There is **no** pure "check-
 > **Don't confuse:** The **plan** shown here is the **skill's sprint plan** (story list + budget), **not** the Claude Code plan mode. The latter is read-only and would even **block** the execution — so do **not** use plan mode to run `/sprint-run`.
 >
 > **Claude Code mode (recommendation):** supervised on the Mac → `acceptEdits`; unattended (`--auto`, VPS/daemon) → `dontAsk` + allowlist (`bypassPermissions` only isolated). Details: HANDBUCH §6 "Claude Code mode".
+>
+> **Close the Mac, run keeps going?** For unattended runs on the VPS, start the sprint inside `tmux` — then it survives an SSH/connection drop. Guide: [run a sprint unattended with tmux](../docs/runbooks/sprint-unattended-tmux.en.md). A fully executable daemon is **not** needed for this.
 
 ---
 
