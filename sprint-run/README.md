@@ -52,6 +52,8 @@ Beide setzen den Sprint **echt um** (inkl. Merge). Es gibt **keinen** reinen „
 > **Nicht verwechseln:** Der hier gezeigte **Plan** ist der **Sprint-Plan des Skills** (Story-Liste + Budget), **nicht** der Claude-Code-Planungsmodus. Letzterer ist read-only und wuerde die Umsetzung sogar **blockieren** — zum Ausfuehren von `/sprint-run` also **nicht** Plan Mode nutzen.
 >
 > **Claude-Code-Modus (Empfehlung):** beaufsichtigt am Mac → `acceptEdits`; unbeaufsichtigt (`--auto`, VPS/Daemon) → `dontAsk` + Allowlist (`bypassPermissions` nur isoliert). Details: HANDBUCH §6 „Claude-Code-Modus".
+>
+> **Mac zuklappen, Lauf laeuft weiter?** Fuer unbeaufsichtigte Laeufe auf der VPS den Sprint in `tmux` starten — dann ueberlebt er einen SSH-/Verbindungsabbruch. Anleitung: [Sprint unbeaufsichtigt per tmux](../docs/runbooks/sprint-unattended-tmux.md). Ein vollausfuehrbarer Daemon ist dafuer **nicht** noetig.
 
 ---
 
