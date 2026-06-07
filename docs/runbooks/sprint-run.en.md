@@ -88,4 +88,4 @@ The daemon first shows the sprint plan (stories, order, projected token budget),
 
 ## References
 
-`sprint-run/SKILL.md` (workflow) · `sprint-run/references/{orchestration-checklist,gate-block-handling,worktree-flow,token-boundary}.md` · HANDBUCH Appendix AD (chapter + sketches) · Appendix G (sprint sizing) · `bootstrap/references/framework-upgrade.md` · BOO-148 (remote-CI loop) · BOO-157.
+`sprint-run/SKILL.md` (workflow) · `sprint-run/references/{orchestration-checklist,gate-block-handling,worktree-flow,token-boundary}.md` · HANDBUCH Appendix AD (chapter + sketches) · Appendix G (sprint sizing) · `bootstrap/references/framework-upgrade.md` · BOO-148 (remote-CI loop) · BOO-157 · [run a sprint unattended with tmux](sprint-unattended-tmux.en.md).
