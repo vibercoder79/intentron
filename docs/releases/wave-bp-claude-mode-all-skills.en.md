@@ -1,5 +1,7 @@
 # Wave BP — Claude Code mode recommendation across all skills + grafana/security-architect gaps (BOO-169)
 
+> 🌐 **Language:** English (this file) · [🇩🇪 Deutsch](wave-bp-claude-mode-all-skills.md)
+
 **What's there now:** BOO-168 established the Claude Code mode recommendation for `/implement` and `/sprint-run`. This wave rolls the **same pattern** out to the **13 remaining skills** — every README now carries a `> **Claude Code mode:**` line (DE+EN) at the top, referencing HANDBUCH §6. The §6 table classifies all skills and gains a fourth phase. Two gaps found during review are closed alongside. Pure docs — no version bump except the security-architect frontmatter fix.
 
 ## Stories

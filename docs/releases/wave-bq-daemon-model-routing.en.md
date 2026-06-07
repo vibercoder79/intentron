@@ -1,5 +1,7 @@
 # Wave BQ — Model/mode routing in the sprint-run daemon + implement on Opus (BOO-170)
 
+> 🌐 **Language:** English (this file) · [🇩🇪 Deutsch](wave-bq-daemon-model-routing.md)
+
 **What's there now:** The model/mode recommendation is now **enforced in the `/sprint-run --auto` daemon** (previously pure docs). Per story, a new tested helper script resolves the recommended model and starts `/implement` as a subprocess with `--model` + `--permission-mode dontAsk`. Plus a policy fix: **product code now runs on Opus** (best model for the code core). Interactively it stays a recommendation by design.
 
 ## Stories

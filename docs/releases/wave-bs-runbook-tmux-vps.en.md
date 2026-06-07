@@ -1,5 +1,7 @@
 # Wave BS — Runbook: run a sprint unattended on the VPS with tmux (BOO-172)
 
+> 🌐 **Language:** English (this file) · [🇩🇪 Deutsch](wave-bs-runbook-tmux-vps.md)
+
 **What's there now:** A new runbook explains how to start `/sprint-run` (or any long-running Claude work) on the VPS inside **`tmux`** so it **survives closing the laptop / an SSH drop**. Deliberately **instead of** a fully executable VPS daemon (too big an overhaul for the benefit) — built-in tools are enough.
 
 ## Stories

@@ -1,0 +1,125 @@
+# Release Notes — Convention
+
+> 🌐 **Language:** English (this file) · [🇩🇪 Deutsch](README.md)
+
+This folder is the **source of the release notes**. They are additionally published as **GitHub Releases**:
+<https://github.com/vibercoder79/intentron/releases>
+
+## Two levels
+
+| Level | File | Purpose |
+|-------|------|---------|
+| **Granular (per wave)** | `wave-<x>-<topic>.md` | One file per wave/update — the single change with stories, changes, migration, smoke test. In the repo, permanent. |
+| **Aggregate (per version)** | `v<MAJOR.MINOR.PATCH>-overview.md` | Summarizes all waves of a version (big-picture table + detail sections + appendix/version tables). Becomes the **body of the GitHub Release**. |
+
+## Convention: one GitHub Release per version
+
+**On every version tag** a GitHub Release is created — granularity is **per version** (not per wave). The individual `wave-*.md` stay the granular source in the repo and are linked/summarized in the release body.
+
+How a release is created (example v0.2.0):
+
+```bash
+# 1. Tag the finished state (all waves of the version done, docs DE/EN parity)
+git tag -a v0.2.0 -m "v0.2.0 — <short description>"
+git push origin v0.2.0
+
+# 2. GitHub Release with the overview as body
+gh release create v0.2.0 \
+  --title "v0.2.0 — <title>" \
+  --notes-file docs/releases/v0.2.0-overview.md
+```
+
+Update an existing release afterwards: `gh release edit v0.2.0 --notes-file docs/releases/v0.2.0-overview.md`.
+
+## Rules
+
+1. **Every wave gets a `wave-*.md`** in the same style (purpose, stories, changes, migration, references) — part of the documentation touchpoint quartet (HANDBUCH, release notes, spec, Linear).
+2. **The `v<version>-overview.md` is maintained per wave** (table row + detail section if needed) so it is complete at the version release.
+3. **Before the tag**: docs DE/EN parity, all Linear issues of the version Done, `verify-setup.sh` green.
+4. **Tag = state**: only tag once the release state is truly finished (no tag on a half-finished EN state).
+5. **Release body = overview**: no separate copy-paste — `--notes-file` points directly at the `v<version>-overview.md`.
+6. **Bilingual (DE + EN) mandatory**: each `v<version>-overview.md` has the German part on top, followed by `---` + `# 🇬🇧 English Version` with a faithful English mirror (same structure/tables; code identifiers, BOO numbers, paths, links verbatim). The GitHub release body is thus bilingual itself. Before tagging, check both parts are in sync.
+
+## Predecessors
+
+- `v0.1.0` — GAP hardening (waves A–I), tagged 2026-05-22.
+- `v0.2.0` — Governance OS (waves J–T): privacy, deployment, sovereignty, multi-operator, verification, multi-project, vault harvest, Codex onboarding.
+
+---
+
+## All releases — index (74 waves, newest first)
+
+- **BT** — [Wave BT — Release notes networked: central wave index + DE↔EN language switch (BOO-173)](wave-bt-release-index.en.md) · [DE](wave-bt-release-index.md)
+- **BS** — [Wave BS — Runbook: run a sprint unattended on the VPS with tmux (BOO-172)](wave-bs-runbook-tmux-vps.en.md) · [DE](wave-bs-runbook-tmux-vps.md)
+- **BR** — [Wave BR — implement: lint loops on a Haiku subagent (BOO-171)](wave-br-implement-haiku-loops.en.md) · [DE](wave-br-implement-haiku-loops.md)
+- **BQ** — [Wave BQ — Model/mode routing in the sprint-run daemon + implement on Opus (BOO-170)](wave-bq-daemon-model-routing.en.md) · [DE](wave-bq-daemon-model-routing.md)
+- **BP** — [Wave BP — Claude Code mode recommendation across all skills + grafana/security-architect gaps (BOO-169)](wave-bp-claude-mode-all-skills.en.md) · [DE](wave-bp-claude-mode-all-skills.md)
+- **BO** — [Wave BO — Runbooks & doc interlinking: audit runbook, linked evidence, INDEX + elevator pitch (BOO-167)](wave-bo-runbooks-vernetzung.en.md) · [DE](wave-bo-runbooks-vernetzung.md)
+- **BN** — [Wave BN — Claude Code mode recommendation + /sprint-run "two modes" (BOO-168)](wave-bn-claude-mode-docs.en.md) · [DE](wave-bn-claude-mode-docs.md)
+- **BM** — [Wave BM — /sprint-run README overhaul (BOO-166)](wave-bm-sprint-run-readme.en.md) · [DE](wave-bm-sprint-run-readme.md)
+- **BL** — [Wave BL — Governance framing sharpened: INTENTRON ≠ autonomous agentic AI (BOO-164)](wave-bl-governance-framing.en.md) · [DE](wave-bl-governance-framing.md)
+- **BK** — [Wave BK — /sprint-run: post-story gate assertion (BOO-165)](wave-bk-gate-assertion.en.md) · [DE](wave-bk-gate-assertion.md)
+- **BJ** — [Wave BJ — Role-specific runbooks: CISO · DPO · CTO · managing director (BOO-158–163)](wave-bj-role-runbooks.en.md) · [DE](wave-bj-role-runbooks.md)
+- **BI** — [Wave BI — /sprint-run: sprint orchestrator for fully automatic sprints (BOO-157)](wave-bi-sprint-run.en.md) · [DE](wave-bi-sprint-run.md)
+- **BH** — [Wave BH — Knowledge-Onboarding: explainer sketches (v1.1.0)](wave-bh-knowledge-onboarding-sketches.en.md) · [DE](wave-bh-knowledge-onboarding-sketches.md)
+- **BG** — [Wave BG — "Framework update" runbook for existing projects (BOO-156)](wave-bg-framework-update-runbook.en.md) · [DE](wave-bg-framework-update-runbook.md)
+- **BF** — [Wave BF — Upgrade docs catch-up: misleading `/bootstrap --update` removed (BOO-155)](wave-bf-upgrade-doku-nachziehen.en.md) · [DE](wave-bf-upgrade-doku-nachziehen.md)
+- **BE** — [Wave BE — Convention against cross-session drift in ideation/implement (BOO-154)](wave-be-cross-session-konvention.en.md) · [DE](wave-be-cross-session-konvention.md)
+- **BD** — [Wave BD — Cross-session drift normalized + guard (BOO-153)](wave-bd-drift-normalisieren.en.md) · [DE](wave-bd-drift-normalisieren.md)
+- **BC** — [Wave BC — Clone portability for multi-user (BOO-152)](wave-bc-klon-portabilitaet.en.md) · [DE](wave-bc-klon-portabilitaet.md)
+- **BC** — [Wave BC — eslint.config.mjs DE/EN base block aligned (Linear BOO-146)](wave-bc-eslint-de-en-align.en.md) · [DE](wave-bc-eslint-de-en-align.md)
+- **BB** — [Wave BB — CI Hardening Gaps (BOO-146–149)](wave-bb-ci-hardening-gaps.en.md) · [DE](wave-bb-ci-hardening-gaps.md)
+- **BB** — [Wave BB — Multi-user VPS + three-level collision protection (BOO-151)](wave-bb-multi-user-vps.en.md) · [DE](wave-bb-multi-user-vps.md)
+- **BA** — [Wave BA — Next.js First-CI-Run Hardening (BOO-140–143)](wave-ba-nextjs-ci-hardening.en.md) · [DE](wave-ba-nextjs-ci-hardening.md)
+- **BA** — [Wave BA — Machine context at bootstrap (BOO-145)](wave-ba-maschinen-kontext.en.md) · [DE](wave-ba-maschinen-kontext.md)
+- **AZ** — [Wave AZ — Runbook "Retrofit the SecondBrain" (BOO-144)](wave-az-secondbrain-nachziehen.en.md) · [DE](wave-az-secondbrain-nachziehen.md)
+- **AY** — [Wave AY — VPS Standard Project Path & Daily-Note Loop (BOO-138/139)](wave-ay-vps-projektpfad.en.md) · [DE](wave-ay-vps-projektpfad.md)
+- **AX** — [Wave AX — Knowledge-Onboarding: route existing docs into governance artefacts (BOO-137)](wave-ax-knowledge-onboarding.en.md) · [DE](wave-ax-knowledge-onboarding.md)
+- **AW** — [Wave AW — Documentation hardening & onboarding clarity (BOO-130–136)](wave-aw-doku-haertung.en.md) · [DE](wave-aw-doku-haertung.md)
+- **AV** — [Wave AV — Docs/runbooks, lightweight SecondBrain & design-story decision (BOO-118/119/126/128/129)](wave-av-docs-secondbrain.en.md) · [DE](wave-av-docs-secondbrain.md)
+- **AU** — [Wave AU — Stack polish, MCP, Sonar warning & branching standard (BOO-116/121/122/124/125)](wave-au-stack-mcp-branching.en.md) · [DE](wave-au-stack-mcp-branching.md)
+- **AT** — [Wave AT — Bootstrap UX hardening (BOO-114/115/117/120/123/127)](wave-at-bootstrap-ux-haertung.en.md) · [DE](wave-at-bootstrap-ux-haertung.md)
+- **AS** — [Wave AS — Komplementäres Tooling: setup-checklist (BOO-113)](wave-as-complementary-tooling.md) *(DE only)*
+- **AR** — [Wave AR — README-Refresh + Onboarding-Journey (BOO-112)](wave-ar-readme-refresh.md) *(DE only)*
+- **AQ** — [Wave AQ — 10 Alt-Sketches auf EN (BOO-111)](wave-aq-sketch-en-parity.md) *(DE only)*
+- **AP** — [Wave AP — dpo-Overview-Sketch (BOO-110)](wave-ap-dpo-overview-sketch.md) *(DE only)*
+- **AO** — [Wave AO — README-Paritaet security-architect (BOO-109)](wave-ao-security-readme-split.md) *(DE only)*
+- **AN** — [Wave AN — Artefakt- & Freigabe-Landkarte (BOO-108)](wave-an-artefakt-landkarte.md) *(DE only)*
+- **AM** — [Wave AM — Compliance-Mechanik-Sketch (BOO-107)](wave-am-compliance-sketch.md) *(DE only)*
+- **AL** — [Wave AL — EU-AI-Act-Lebenszyklus + Compliance-Mechanik-Doku (BOO-106)](wave-al-compliance-mechanik.md) *(DE only)*
+- **AK** — [Wave AK — EU AI Act echtes konditionales Opt-in (BOO-105)](wave-ak-eu-ai-act-optin.md) *(DE only)*
+- **AJ** — [Wave AJ — Bootstrap-Vorbereitungs-Checkliste (BOO-104)](wave-aj-bootstrap-prep.md) *(DE only)*
+- **AI** — [Wave AI — Enterprise-Readiness (BOO-100…103)](wave-ai-enterprise-readiness.md) *(DE only)*
+- **AG** — [Wave AG — Doku-Sync-Sweep (BOO-97)](wave-ag-docs-sync-sweep.md) *(DE only)*
+- **AF** — [Wave AF — Onboarding-Fix: Install + Quickstart + Self-Install/Self-Update (BOO-96)](wave-af-onboarding-fix.md) *(DE only)*
+- **AE** — [Wave AE — raw-pii-guard ruff-clean + Hook-Lint-Gate (BOO-95)](wave-ae-raw-pii-guard-ruff-clean.md) *(DE only)*
+- **AD** — [Wave AD — HANDBUCH-Anhang Y: VPS/Cloud-Team-Runbook (BOO-94)](wave-ad-handbuch-appendix-y-vps-runbook.md) *(DE only)*
+- **AC** — [Wave AC — Raw-PII-in-Logs-Guard (BOO-93)](wave-ac-raw-pii-guard.md) *(DE only)*
+- **AB** — [Wave AB — orphan-check Work-Item-Ausnahme (BOO-92)](wave-ab-orphan-check-exception.md) *(DE only)*
+- **AA** — [Wave AA — CONTEXT.md ubiquitous language: canonical + forbidden vocabulary (BOO-91)](wave-aa-context-ubiquitous-language.en.md) · [DE](wave-aa-context-ubiquitous-language.md)
+- **Z** — [Wave Z — Contribute-Back-Schleife: contribute-fix.sh (BOO-90)](wave-z-contribute-back.md) *(DE only)*
+- **Y** — [Wave Y — coverage-check.sh Single-Source + Drift-Guard (BOO-89)](wave-y-hook-single-source.md) *(DE only)*
+- **X** — [Release Notes - Wave X Deterministischer dpo-Kontrollkatalog](wave-x-dpo-control-catalog.md) *(DE only)*
+- **W** — [Release Notes - Wave W Coverage-Hook-Nenner-Fix](wave-w-coverage-denominator-fix.md) *(DE only)*
+- **V** — [Release Notes - Wave V Layer-0 Edit-Bodyguard](wave-v-layer0-bodyguard.md) *(DE only)*
+- **U** — [Release Notes - Wave U Vault-Harvest-Aktivierungs-Anleitung](wave-u-vault-harvest-activation-guide.md) *(DE only)*
+- **T** — [Release Notes - Wave T Vault-Sync-Verbesserungen](wave-t-vault-sync-improvements.md) *(DE only)*
+- **S** — [Release Notes - Wave S Optionales Container-Profil](wave-s-container-profile.md) *(DE only)*
+- **R** — [Release Notes - Wave R Multi-Projekt-Betrieb](wave-r-multi-project-operation.md) *(DE only)*
+- **Q** — [Release Notes - Wave Q Post-Install-Verifikation](wave-q-verification.md) *(DE only)*
+- **P** — [Release Notes - Wave P README-Aktualisierung + Toolchain-Doku](wave-p-readme-and-toolchain-doc.md) *(DE only)*
+- **O** — [Release Notes - Wave O Framework-native Vault-Sync-Engine](wave-o-vault-sync-engine.md) *(DE only)*
+- **N** — [Release Notes - Wave N Vault-Harvest + Skill-Installations-Strategie](wave-n-vault-harvest-and-skill-location.md) *(DE only)*
+- **M** — [Release Notes - Wave M Bundle-Adoption DPO + security-architect](wave-m-bundle-adoption-dpo-security.md) *(DE only)*
+- **L** — [Release Notes - Wave L Multi-Operator-Koordination](wave-l-multi-operator-coordination.md) *(DE only)*
+- **K** — [Release Notes - Wave K Deployment-Szenarien + Souveraenitaets-Stack](wave-k-deployment-and-sovereignty.md) *(DE only)*
+- **J** — [Release Notes - Wave J Privacy-by-Design](wave-j-privacy-by-design.md) *(DE only)*
+- **I** — [Release Notes - Wave I Token-Effizienz-Policy](wave-i-token-efficiency.md) *(DE only)*
+- **H** — [Release Notes - Wave H Documentation-SSoT & Onboarding](wave-h-documentation-ssot-onboarding.md) *(DE only)*
+- **G** — [Release Notes — Wave G Security-Workflow-Sketch](wave-g-security-workflow-sketch.md) *(DE only)*
+- **F** — [Release Notes — Wave F Security-Dokumentationsmodell](wave-f-security-doc-model.md) *(DE only)*
+- **E** — [Release Notes — Wave E Provider und Upgrade](wave-e-provider-upgrade.md) *(DE only)*
+- **D** — [Release Notes — Wave D Sketches](wave-d-sketches.md) *(DE only)*
+- **C** — [Release Notes — Wave C](wave-c.md) *(DE only)*
+- **B** — [Release Notes — Wave B](wave-b.md) *(DE only)*
+- **A** — [Release Notes — Wave A](wave-a.md) *(DE only)*

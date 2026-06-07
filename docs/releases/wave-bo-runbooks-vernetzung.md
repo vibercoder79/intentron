@@ -1,5 +1,7 @@
 # Wave BO — Runbooks & Doku-Vernetzung: Auditor-Runbook, Belege verlinken, INDEX + Elevator-Pitch (BOO-167)
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-bo-runbooks-vernetzung.en.md)
+
 **Was jetzt da ist:** Die Rollen-Runbooks (Wave BJ) werden vom losen Bestand zu einem vernetzten Ganzen. Das Auditor-Runbook ist jetzt vollwertig (mit Audit-Prompt + Persistenz-Zonen + Sketch), alle Beleg-Spalten der Runbooks sind klickbar, ein neuer rollenbasierter Wegweiser steht ganz oben im README, eine alphabetische INDEX-Datei gibt den Gesamtüberblick über alle Dokumente, das HANDBUCH nimmt die Runbooks namentlich auf, und ein laienverständlicher 60-Sekunden-Elevator-Pitch erklärt das Framework am Whiteboard. Reine Doku. DE+EN.
 
 ## Stories

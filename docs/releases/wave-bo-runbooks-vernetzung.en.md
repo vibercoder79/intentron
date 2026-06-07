@@ -1,5 +1,7 @@
 # Wave BO — Runbooks & doc interlinking: audit runbook, linked evidence, INDEX + elevator pitch (BOO-167)
 
+> 🌐 **Language:** English (this file) · [🇩🇪 Deutsch](wave-bo-runbooks-vernetzung.md)
+
 **What's there now:** The role runbooks (Wave BJ) move from a loose set to an interlinked whole. The auditor runbook is now first-class (with an audit prompt, persistence zones and a sketch), every evidence column in the runbooks is clickable, a new role-based signpost sits at the very top of the README, a new alphabetical INDEX file gives the full overview of all documents, the HANDBUCH names the runbooks explicitly, and a plain-language 60-second elevator pitch explains the framework at a whiteboard. Docs only. DE+EN.
 
 ## Stories

@@ -1,5 +1,7 @@
 # Wave BR — implement: Lint-Loops auf Haiku-Subagent (BOO-171)
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-br-implement-haiku-loops.en.md)
+
 **Was jetzt da ist:** `/implement` delegiert seine mechanischen Iterations-Loops (6a ESLint/Ruff, 6a-bis Semgrep) an einen neuen **`lint-fixer`-Subagenten mit `model: haiku`** — der teure Reasoning-Teil (Code-Kern Schritt 5, Security-Findings 6e) bleibt auf **Opus**. Schließt die interne Tier-Lücke, die BOO-170 (ein Top-Level-Modell pro Subprozess) offenließ. Schlanke Variante: genau der eine reale Kostenhebel.
 
 ## Stories
