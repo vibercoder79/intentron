@@ -88,4 +88,4 @@ Der Daemon zeigt zuerst den Sprint-Plan (Stories, Reihenfolge, projiziertes Toke
 
 ## Verweise
 
-`sprint-run/SKILL.md` (Workflow) · `sprint-run/references/{orchestration-checklist,gate-block-handling,worktree-flow,token-boundary}.md` · HANDBUCH Anhang AD (Kapitel + Sketches) · Anhang G (Sprint-Sizing) · `bootstrap/references/framework-upgrade.md` · BOO-148 (Remote-CI-Loop) · BOO-157.
+`sprint-run/SKILL.md` (Workflow) · `sprint-run/references/{orchestration-checklist,gate-block-handling,worktree-flow,token-boundary}.md` · HANDBUCH Anhang AD (Kapitel + Sketches) · Anhang G (Sprint-Sizing) · `bootstrap/references/framework-upgrade.md` · BOO-148 (Remote-CI-Loop) · BOO-157 · [Sprint unbeaufsichtigt per tmux fahren](sprint-unattended-tmux.md).
