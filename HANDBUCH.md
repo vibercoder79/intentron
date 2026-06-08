@@ -1791,6 +1791,23 @@ Kurzform:
 
 *Gleiches Framework, anderes Reibungsbudget. Lite behaelt die Wirbelsaeule, Standard ergaenzt produktfaehige Gates, Heavy ergaenzt Produktions- und Audit-Nachweise. ([Excalidraw-Quelle](docs/governance-modes.excalidraw))*
 
+### `change_type`: Wann Code-Pruefungen legitim uebersprungen werden
+
+`change_type` ist ein Feld im Spec-Frontmatter und steuert, wie `/implement` (Schritt 5.7) die Quality Gates routet. Es ist die eine Stelle, an der Code-Pruefungen bewusst uebersprungen werden duerfen — deshalb gehoert es in den Governance-Kontext, nicht in den Stack-Kram.
+
+**Was ist `change_type`?** Default ist `code-strict`: jede Story durchlaeuft die Code-Gates (ESLint/Ruff, Semgrep, Dependency-Check, Coverage als Hard Gates). Daneben gibt es vier Non-Code-Werte — `workflow`, `config`, `infrastructure`, `content` —, die Stories markieren, die *keinen* klassischen Code-Diff produzieren: ein n8n-Workflow, eine Terraform-Ressource, eine reine Cloud-Config, eine Content-Migration. Fehlt das Feld, faellt es auf `none` (= code-strict) zurueck — bewusst konservativ, kein Auto-Bypass.
+
+**Warum darf Non-Code Code-Gates ueberspringen?** Weil die Code-Gates auf einen Code-Diff angewiesen sind. Bei einer Workflow- oder IaC-Story wuerde ESLint „kein passender Diff" melden und faelschlich `passed` zurueckgeben — obwohl niemand die echten Risiken geprueft hat (Webhook-Auth, IAM-Wildcards, oeffentliche Buckets, Secrets im Klartext). Statt leerlaufender Code-Gates schaltet der Non-Code-Modus deshalb die richtigen Pruefungen hart: 6c (Architektur), 6d (Smoke Test als echte Ausfuehrung) und 6e (Security) werden von Soft auf **Hard** gezogen. Es wird also nicht weniger geprueft, sondern das Passende. Details: `implement/references/non-code-flow.md`.
+
+**Wer entscheidet?** Der **Operator** setzt `change_type` bewusst — beim Ideation-Schritt, wenn die Story nach Workflow/IaC/Config riecht. Es ist **kein** Schalter, den der Agent zieht, um an Code-Gates vorbeizukommen. Genau das ist die Missbrauchs-Gefahr: ein Agent koennte bei einer echten Code-Aenderung `change_type: workflow` setzen und so die Code-Gates legitim-aussehend abschalten.
+
+**Wie verhindert das Framework Missbrauch?** Zwei deterministische Sperren (BOO-176):
+
+- **Plausibilitaets-Pruefung der Post-Story-Gate-Assertion** — liegen Code-Dateien im Diff, der `change_type` steht aber auf Non-Code, ist das ein Widerspruch → **Fail**. Eine gesenkte Gate-Schwelle ohne dokumentierten `override_audit`-Eintrag → ebenfalls **Fail**. Siehe `sprint-run/references/gate-assertion.md`.
+- **Gate-Config-Schutz** — die Gate-Config-Dateien (ESLint-/Ruff-/Semgrep-Config, Coverage-Schwelle, `phpstan.neon`) stehen in `.claude/sensitive-paths.json`; eine Aenderung loest die Bodyguard-Block-Pause mit Operator-Freigabe aus.
+
+So bleibt der Grundsatz technisch verankert: Die Qualitaets-Messlatte verschiebt nur der Operator, nie der Agent. Non-Code ist eine ehrliche Verzweigung fuer echte Nicht-Code-Arbeit — kein Bypass.
+
 ### Execution-Isolation und Worktrees
 
 `execution_isolation` entscheidet, wie parallele KI-Arbeit das Repository bearbeiten darf.

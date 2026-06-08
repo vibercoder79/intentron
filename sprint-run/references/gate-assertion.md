@@ -11,8 +11,20 @@ Relevante Felder:
 
 - `change_type` — `code` (Default) | `workflow` | `config` | `infrastructure` | `content`
 - `skipped_gates` — Liste uebersprungener Gates (mit Grund)
-- `override_audit` — dokumentierte Operator-Overrides (z.B. Coverage < 80 % mit Begruendung)
+- `override_audit` — dokumentierte Operator-Overrides (z.B. Coverage < 80 % mit Begruendung).
+  **Erweitert durch BOO-176:** deckt auch eine bewusst gesenkte Quality-Schwelle ab — ein Eintrag
+  nennt die Gate-Config-Datei, die Schwelle (alt→neu bzw. deaktivierte Regel) und die
+  Operator-Begruendung. Dies ist der **einzige** legitime Weg, eine Messlatte abzusenken.
 - `iterations` — Iterationen pro Gate
+
+### Story-Diff als Eingabe (BOO-176)
+
+Die beiden BOO-176-Pruefungen unten brauchen den **Story-Diff** — nicht nur `meta.json`. Quelle ist
+der Diff des Story-Branch gegen seinen Merge-Base: `git diff <base>..<head>` (bzw.
+`git diff <base>..<head> -- <pfad>` fuer eine einzelne Config-Datei). `<base>` = Merge-Base zu
+`main`, `<head>` = HEAD des Story-Branch (derselbe Diff, den `/implement` bereits gegen die Gates
+fuhrt). Daraus lesen wir (a) **welche** Dateien geaendert wurden und (b) den **alt→neu**-Inhalt der
+Gate-Config-Dateien.
 
 ## Legitimitaets-Regel
 
@@ -29,17 +41,80 @@ Zusatz fuer Non-Code-Stories: die in Non-Code **harten** Gates 6c (Architektur-Q
 
 Fehlt `meta.json` komplett → Fail (Gate-Lauf nicht nachweisbar, kein „leise gruen").
 
+### Regel AC3a — Gate-Config-Diff (Schwellen-Senkung) (BOO-176)
+
+Die Skip-Pruefung oben sieht nur, **ob** ein Gate lief — nicht, ob jemand die **Messlatte gesenkt**
+hat. AC3a schliesst diese Luecke: Wenn der Story-Diff eine **Gate-Config-Datei** anfasst und dabei
+eine **Schwelle senkt** oder eine **Regel deaktiviert**, ist das nur mit dokumentiertem
+`override_audit`-Eintrag legitim.
+
+Gate-Config-Dateien (stack-uebergreifend):
+`eslint.config.*`, `.eslintrc*`, `ruff.toml`, `pyproject.toml`, `.semgrep.yml`, `phpstan.neon*`,
+`.coveragerc`, `jest.config.*`, `vitest.config.*`, `sonar-project.properties`.
+
+Als **Senkung / Deaktivierung** zaehlt (alt→neu aus `git diff` der Config-Datei verglichen):
+
+- PHPStan `level:` **kleiner** (z.B. 7→5),
+- Coverage-Schwelle **kleiner** — `fail_under` (`.coveragerc`/`pyproject.toml`),
+  `coverageThreshold` (`jest.config.*`/`vitest.config.*`), `sonar.coverage`-Mindestwert,
+- eine **Regel entfernt / deaktiviert** — aus `rules` (ESLint), `select` (Ruff), Semgrep-Regelmenge,
+  oder per breitem `eslint-disable` / `# noqa` (vgl. Bodyguard-Muster, BOO-176 AC2).
+
+Verglichen wird **alt→neu** (`git diff <base>..<head> -- <config-datei>`): nur eine echte
+Verschlechterung (Schwelle runter / Regel weg) loest die Regel aus — eine Anhebung oder reine
+Umformatierung nicht. Ohne passenden `override_audit`-Eintrag (Config-Datei + Schwelle alt→neu +
+Operator-Begruendung) → **Fail**. `override_audit` ist der **einzige** legitime Weg; `change_type`
+deckt eine Schwellen-Senkung **nicht** ab.
+
+### Regel AC3b — change_type-Plausibilitaet (BOO-176)
+
+`change_type` setzt der Agent im Spec-Frontmatter selbst (siehe `implement/references/non-code-flow.md`).
+Im Non-Code-Modus werden die Code-Gates 6a/6a-bis/6a-tris/6a-quart legitim uebersprungen — ein Agent
+koennte also `change_type: config|workflow|…` setzen, um Code-Gates zu umgehen, **obwohl** der Diff
+echten Code enthaelt. AC3b prueft die Plausibilitaet:
+
+Wenn `meta.change_type ∈ {workflow, config, infrastructure, content}` (Non-Code) **aber** der
+Story-Diff echte **Code-Dateien** enthaelt — Anwendungs-Code wie `*.ts`/`*.tsx`/`*.js`/`*.py`/
+`*.php`/`*.go`/`*.rs`/`*.java` unter `src/`, `lib/` o.ae. App-Code, **nicht** reine Config/Doku —
+→ **Fail** („`change_type` behauptet Non-Code, Diff enthaelt Code → Code-Gates duerfen nicht
+uebersprungen werden"). Einziger legitimer Ausweg: ein expliziter `override_audit`-Eintrag mit
+Operator-Begruendung. Gate-Config-Dateien selbst zaehlen hier **nicht** als App-Code (sie sind
+Config) — ihre Absenkung faengt bereits AC3a.
+
 ## Pseudocode
 
 ```text
 meta = read(journal/reports/local/<run>/meta.json)        # fehlt -> FAIL
+diff = git_diff(<base>..<head>)                           # Story-Branch gg. Merge-Base (BOO-176)
+
+# --- Skip-Legitimitaet (BOO-165) ---
 for g in meta.skipped_gates:
     if g.gate in CODE_GATES and meta.change_type in {workflow,config,infrastructure,content}: ok
     elif g.gate in meta.override_audit: ok
     else: FAIL(story, gate=g)
+
+# --- Non-Code-Evidenz (BOO-165) ---
 if meta.change_type != "code":
     for g in [6c, 6d, 6e]:
         if not has_evidence(meta, g): FAIL(story, gate=g)
+
+# --- AC3a: Gate-Config-Diff / Schwellen-Senkung (BOO-176) ---
+GATE_CONFIGS = {eslint.config.*, .eslintrc*, ruff.toml, pyproject.toml, .semgrep.yml,
+                phpstan.neon*, .coveragerc, jest.config.*, vitest.config.*,
+                sonar-project.properties}
+for f in changed_files(diff):
+    if f matches GATE_CONFIGS:
+        old, new = git_show(<base>:f), git_show(<head>:f)   # alt -> neu
+        if threshold_lowered(old, new) or rule_disabled(old, new):
+            # phpstan level kleiner | fail_under/coverageThreshold kleiner | Regel aus rules/select entfernt
+            if not override_audit_covers(meta, f): FAIL(story, gate="gate-config-downgrade", file=f)
+
+# --- AC3b: change_type-Plausibilitaet (BOO-176) ---
+if meta.change_type in {workflow,config,infrastructure,content}:
+    if has_app_code(diff):    # *.ts/*.tsx/*.js/*.py/*.php/*.go/*.rs/*.java unter src/|lib/, kein reines Config/Doku
+        if not override_audit_covers(meta, "change_type"):
+            FAIL(story, gate="change_type-implausible")   # Non-Code behauptet, Diff enthaelt Code
+
 PASS   # erst dann Merge (Schritt 4.6)
 ```
 

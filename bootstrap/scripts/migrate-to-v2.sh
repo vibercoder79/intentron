@@ -2919,6 +2919,9 @@ migrate_all() {
     migrate_boo_148
     migrate_boo_149
 
+    # Wave — Quality-Gate-Integritaet (BOO-176): Gate-Configs unter Bodyguard-Schutz
+    migrate_boo_176
+
     log_info "DE: Migration abgeschlossen. Status pro Projekt in migration-status.md eintragen."
     log_info "EN: Migration finished. Record per-project status in migration-status.md."
 }
@@ -4245,6 +4248,152 @@ migrate_boo_149() {
     return 0
 }
 
+migrate_boo_176() {
+    # BOO-176 — Quality-Gate-Integritaet: Gate-Configs unter Bodyguard-Schutz
+    # https://linear.app/owlist/issue/BOO-176
+    #
+    # Der Agent darf die Qualitaets-Messlatte nicht selbst absenken (PHPStan-Level
+    # runter, Coverage-Schwelle senken, Linter-Regeln deaktivieren). Diese Funktion
+    # ruestet Bestandsprojekte nach:
+    #   (1) Gate-Config-Pfade in .claude/sensitive-paths.json -> Aenderung loest
+    #       Gate-Block-Pause (Operator-Freigabe) aus (gleiche Mechanik wie BOO-86).
+    #   (2) bodyguard/patterns/gate-configs.yml -> Muster fuer Regel-Deaktivierung
+    #       (bare eslint-disable, @ts-nocheck, nacktes # noqa / # type: ignore,
+    #       modulweite Test-Skips) + WARN bei Edit der Schwellen-Zeilen.
+    # Idempotent, nicht-destruktiv, .bak-Backup vor Aenderung. Fehlt das Projekt-
+    # Setup (.claude/sensitive-paths.json bzw. bodyguard/patterns/), wird nur ein
+    # Hinweis geloggt und uebersprungen — nichts neu angelegt.
+    log_info "BOO-176: Gate-Configs unter Bodyguard-Schutz nachruesten (sensitive-paths + Pattern)"
+
+    # --- 1. Gate-Config-Pfade in .claude/sensitive-paths.json ergaenzen ---
+    local spaths=".claude/sensitive-paths.json"
+    if [[ ! -f "$spaths" ]]; then
+        log_skip "BOO-176: $spaths fehlt — Projekt nicht gebootstrapped (BOO-18), Gate-Config-Pfade uebersprungen"
+    elif [[ "$DRY_RUN" == "true" ]]; then
+        log_dry "patch $spaths: Gate-Config-Pfade in patterns[] ergaenzen (falls fehlend)"
+    else
+        local result
+        result=$(python3 - "$spaths" <<'PYEOF'
+import json, sys
+p = sys.argv[1]
+gate_paths = [
+    "**/eslint.config.*",
+    "**/.eslintrc*",
+    "**/ruff.toml",
+    "**/pyproject.toml",
+    "**/.semgrep.yml",
+    "**/.semgrep.yaml",
+    "**/phpstan.neon",
+    "**/phpstan.neon.dist",
+    "**/.coveragerc",
+    "**/jest.config.*",
+    "**/vitest.config.*",
+    "**/sonar-project.properties",
+]
+try:
+    with open(p) as f:
+        data = json.load(f)
+except Exception as e:
+    print("parse-error: %s" % e)
+    sys.exit(0)
+patterns = data.get("patterns")
+if not isinstance(patterns, list):
+    print("no-patterns-array")
+    sys.exit(0)
+missing = [g for g in gate_paths if g not in patterns]
+if not missing:
+    print("already-present")
+    sys.exit(0)
+# Backup nur schreiben, wenn wir tatsaechlich aendern (nicht-destruktiv).
+import shutil
+shutil.copyfile(p, p + ".bak")
+patterns.extend(missing)
+data["patterns"] = patterns
+with open(p, "w") as f:
+    json.dump(data, f, indent=2, ensure_ascii=False)
+    f.write("\n")
+print("added:%d" % len(missing))
+PYEOF
+)
+        case "$result" in
+            already-present)
+                log_skip "BOO-176: $spaths enthaelt bereits alle Gate-Config-Pfade — nichts zu tun (idempotent)"
+                ;;
+            added:*)
+                log_info "BOO-176: ${result#added:} Gate-Config-Pfade in $spaths ergaenzt (Backup: $spaths.bak)"
+                ;;
+            no-patterns-array)
+                log_warn "BOO-176: $spaths hat kein 'patterns'-Array — Operator: Datei manuell pruefen"
+                ;;
+            *)
+                log_warn "BOO-176: $spaths konnte nicht gepatcht werden ($result) — Operator: manuell pruefen"
+                ;;
+        esac
+    fi
+
+    # --- 2. Bodyguard-Pattern gate-configs.yml installieren (falls Pattern-Dir existiert) ---
+    local pattern_dir=".claude/hooks/bodyguard/patterns"
+    local pattern_file="$pattern_dir/gate-configs.yml"
+    if [[ ! -d "$pattern_dir" ]]; then
+        log_skip "BOO-176: $pattern_dir fehlt — Bodyguard (BOO-86) nicht installiert, Gate-Config-Pattern uebersprungen"
+    elif [[ -f "$pattern_file" ]]; then
+        log_skip "BOO-176: $pattern_file existiert bereits — nicht ueberschrieben (idempotent)"
+    elif [[ "$DRY_RUN" == "true" ]]; then
+        log_dry "install $pattern_file (Regel-Deaktivierungs-Muster fuer Gate-Configs)"
+    else
+        cat > "$pattern_file" <<'YMLEOF'
+# Bodyguard Layer-0 — Quality-Gate-Aufweichung (sprachunabhaengig)
+# Schema: - name / pattern / sprache / quelle / action(block|warn)
+# Immer geladen (wie _universal.yml), weil Gate-Configs auf vielen Datei-Endungen leben.
+# KANONISCH identisch zu bootstrap/references/file-templates.md (SSoT) — bei Aenderung beide ziehen.
+- name: eslint-disable-file-wide
+  pattern: '/\*\s*eslint-disable\s*\*/'
+  sprache: alle
+  quelle: 'BOO-176 / Quality-Gate-Integritaet'
+  action: warn
+- name: ts-nocheck
+  pattern: '@ts-nocheck'
+  sprache: alle
+  quelle: 'BOO-176 / Quality-Gate-Integritaet'
+  action: warn
+- name: python-bare-noqa
+  pattern: '#\s*noqa(?!\s*:)'
+  sprache: alle
+  quelle: 'BOO-176 / Quality-Gate-Integritaet'
+  action: warn
+- name: python-bare-type-ignore
+  pattern: '#\s*type:\s*ignore(?!\[)'
+  sprache: alle
+  quelle: 'BOO-176 / Quality-Gate-Integritaet'
+  action: warn
+- name: pytest-mark-skip
+  pattern: '@pytest\.mark\.skip\b'
+  sprache: alle
+  quelle: 'BOO-176 / Quality-Gate-Integritaet'
+  action: warn
+- name: js-suite-skip
+  pattern: '\b(describe|it|test|xit)\.skip\s*\(|\bxit\s*\('
+  sprache: alle
+  quelle: 'BOO-176 / Quality-Gate-Integritaet'
+  action: warn
+- name: phpstan-level-edit
+  pattern: '(?m)^\s*level:\s*\d'
+  sprache: alle
+  quelle: 'BOO-176 / Quality-Gate-Integritaet'
+  action: warn
+- name: coverage-threshold-edit
+  pattern: '(?i)(fail_under|coverageThreshold|minimum_coverage)\s*[:=]'
+  sprache: alle
+  quelle: 'BOO-176 / Quality-Gate-Integritaet'
+  action: warn
+YMLEOF
+        log_info "BOO-176: $pattern_file installiert (Regel-Deaktivierungs-Muster)"
+    fi
+
+    log_manual "BOO-176: Die Qualitaets-Messlatte aendert nur der Operator — Gate-Config-Aenderung loest jetzt eine Gate-Block-Pause aus (Freigabe via review-ok). Code fixen statt Gate aufweichen. Override nur explizit + protokolliert (override_audit). Details: HANDBUCH (change_type-Governance)."
+    return 0
+}
+
 # -----------------------------------------------------------------------------
 # CLI / Argument Parsing
 # -----------------------------------------------------------------------------
@@ -4273,6 +4422,7 @@ ALL_ISSUES=(
     BOO-108
     BOO-140 BOO-141 BOO-142 BOO-143
     BOO-146 BOO-148 BOO-149
+    BOO-176
 )
 
 print_help() {

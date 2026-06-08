@@ -129,6 +129,8 @@ estimation_basis: |
 
 `change_type` controls how `/implement` step 5.7 routes the quality gates. Non-code values (`workflow | config | infrastructure | content`) skip code gates explicitly and promote 6c/6d/6e to hard gates — see `implement/references/non-code-flow.md`.
 
+> **Principle — only the operator moves the quality bar.** Gate configs, thresholds and linter rules are changed by the operator alone, never by the agent as a workaround. Fix the code ✅, soften the gate ❌. A lowered threshold is legitimate only with a documented `override_audit` entry; the post-story gate assertion (`sprint-run/references/gate-assertion.md`) enforces this mechanically. Lightweight applies to the *process*, not to the code-quality threshold.
+
 ### Skill frontmatter (`SKILL.md` in any skill)
 
 ```yaml
@@ -577,6 +579,8 @@ estimation_basis: |
 ```
 
 `change_type` steuert, wie `/implement` Schritt 5.7 die Quality Gates routet. Non-Code-Werte (`workflow | config | infrastructure | content`) skippen die Code-Gates explizit und heben 6c/6d/6e auf Hard Gate — Details: `implement/references/non-code-flow.md`.
+
+> **Grundsatz — die Messlatte verschiebt nur der Operator.** Gate-Configs, Schwellen und Linter-Regeln ändert ausschliesslich der Operator, nie der Agent als Workaround. Code fixen ✅, Gate aufweichen ❌. Eine gesenkte Schwelle ist nur mit dokumentiertem `override_audit`-Eintrag legitim; die Post-Story-Gate-Assertion (`sprint-run/references/gate-assertion.md`) erzwingt das maschinell. Leichtgewicht gilt für den *Prozess*, nicht für die Code-Qualitäts-Schwelle.
 
 ### Skill-Frontmatter (`SKILL.md` in jedem Skill)
 

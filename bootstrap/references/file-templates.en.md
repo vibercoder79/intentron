@@ -1384,6 +1384,7 @@ set — NOT a full Semgrep run per edit (depth stays at layer 2/3).
 |-------|------|
 | `.claude/hooks/pre-edit-bodyguard.sh` | the hook (reads stdin JSON, matches patterns) |
 | `.claude/hooks/bodyguard/patterns/_universal.yml` | secrets, language-agnostic |
+| `.claude/hooks/bodyguard/patterns/gate-configs.yml` | quality-gate weakening (rule disable / threshold edit), language-agnostic — BOO-176 |
 | `.claude/hooks/bodyguard/patterns/{python,javascript,java,c-cpp}.yml` | language-specific |
 | `.claude/hooks/bodyguard/SOURCES.md` | origin/versions/maintenance convention |
 | `.claude/bodyguard.local.yml` | **optional** project overlay (overrides base by `name`) |
@@ -1447,7 +1448,8 @@ def parse_patterns(path):
             cur[k.strip()] = v.strip().strip("'\"")
     if cur: out.append(cur)
     return out
-files = [os.path.join(pattern_dir, "_universal.yml")]
+files = [os.path.join(pattern_dir, "_universal.yml"),
+         os.path.join(pattern_dir, "gate-configs.yml")]  # immer geladen (Quality-Gate-Schutz, BOO-176)
 if lang: files.append(os.path.join(pattern_dir, lang + ".yml"))
 files.append(overlay)  # Overlay zuletzt → uebersteuert per name
 patterns, order = {}, []
@@ -1615,6 +1617,66 @@ PYEOF
   action: warn
 ```
 
+**`bodyguard/patterns/gate-configs.yml`** (quality-gate weakening — language-agnostic, always loaded, BOO-176):
+
+These patterns flag **suspicious rule disables / threshold edits** in the new content — the hook
+only sees the NEW content (no old/new comparison), so it does not say "lowering detected" but
+"you are editing a quality threshold / disabling a rule — that is an operator decision, not an
+agent workaround". The real old→new threshold comparison is done by the post-story gate assertion
+(another cluster), not by this hook.
+
+```yaml
+# Bodyguard Layer-0 — Quality-Gate-Aufweichung (sprachunabhaengig)
+# Schema: - name / pattern / sprache / quelle / action(block|warn)
+# Immer geladen (wie _universal.yml), weil Gate-Configs auf vielen Datei-Endungen leben.
+- name: eslint-disable-file-wide
+  pattern: '/\*\s*eslint-disable\s*\*/'
+  sprache: alle
+  quelle: 'BOO-176 / Quality-Gate-Integritaet'
+  action: warn
+- name: ts-nocheck
+  pattern: '@ts-nocheck'
+  sprache: alle
+  quelle: 'BOO-176 / Quality-Gate-Integritaet'
+  action: warn
+- name: python-bare-noqa
+  pattern: '#\s*noqa(?!\s*:)'
+  sprache: alle
+  quelle: 'BOO-176 / Quality-Gate-Integritaet'
+  action: warn
+- name: python-bare-type-ignore
+  pattern: '#\s*type:\s*ignore(?!\[)'
+  sprache: alle
+  quelle: 'BOO-176 / Quality-Gate-Integritaet'
+  action: warn
+- name: pytest-mark-skip
+  pattern: '@pytest\.mark\.skip\b'
+  sprache: alle
+  quelle: 'BOO-176 / Quality-Gate-Integritaet'
+  action: warn
+- name: js-suite-skip
+  pattern: '\b(describe|it|test|xit)\.skip\s*\(|\bxit\s*\('
+  sprache: alle
+  quelle: 'BOO-176 / Quality-Gate-Integritaet'
+  action: warn
+- name: phpstan-level-edit
+  pattern: '(?m)^\s*level:\s*\d'
+  sprache: alle
+  quelle: 'BOO-176 / Quality-Gate-Integritaet'
+  action: warn
+- name: coverage-threshold-edit
+  pattern: '(?i)(fail_under|coverageThreshold|minimum_coverage)\s*[:=]'
+  sprache: alle
+  quelle: 'BOO-176 / Quality-Gate-Integritaet'
+  action: warn
+```
+
+> **Note:** Default is `warn` — these patterns alert the operator, they do not hard-block
+> (false-positive-light: a legitimate `# noqa` without a code is rare but possible). To hard-block
+> gate edits, run the hook with `BODYGUARD_STRICT=1`. The actual review block on gate-config
+> *files* additionally comes from `.claude/sensitive-paths.json` (see there, group
+> "Gate-Config / Quality-Threshold").
+
 **`bodyguard/SOURCES.md`** (origin + maintenance convention):
 
 ```markdown
@@ -1629,6 +1691,7 @@ traegt im `quelle`-Feld seinen Beleg.
 | OWASP (Top 10, ASVS, Cheat Sheets) | Priorisierung/Begruendung |
 | gitleaks (open source) | Secret-Muster (`_universal.yml`) |
 | Semgrep Registry / Bandit / eslint-plugin-security | sprachspezifische Unsafe-Code-Muster |
+| BOO-176 (Quality-Gate-Integritaet) | Quality-Gate-Aufweichung (`gate-configs.yml`): Regel-Deaktivierung / Schwellen-Edit |
 
 ## Pflege-Konvention
 - **Kuratiert + klein halten** — wenige Muster mit hoher Trefferquote. Lieber 30
@@ -1638,7 +1701,8 @@ traegt im `quelle`-Feld seinen Beleg.
 - Optionales `sync-bodyguard-patterns.sh` gleicht gegen Upstream ab und **schlaegt** Muster
   **vor** — Mensch entscheidet, KEIN Auto-Merge (Supply-Chain-Schutz).
 - Default-Schweregrad ist `warn`; `block` nur fuer eindeutige, kontextunabhaengige Treffer
-  (Secrets, abgeschaltete TLS-Pruefung, `gets`).
+  (Secrets, abgeschaltete TLS-Pruefung, `gets`). Die `gate-configs.yml`-Muster bleiben bewusst
+  `warn` (Operator-Alarm bei Gate-Aufweichung), der harte Review-Block kommt aus `sensitive-paths.json`.
 ```
 
 **`.claude/bodyguard.local.yml`** (optional project overlay — overrides/extends the base):
@@ -3612,6 +3676,64 @@ content (mostly English code + comments).
 The German original (`file-templates.md`) contains all templates with German-language
 prose and comments for users who prefer to generate project files in German. Both versions
 produce functionally equivalent project scaffolding.
+
+### `.claude/sensitive-paths.json (BOO-18 — Mandatory Human Review)`
+
+Created by `/bootstrap` Phase 4.4i when the operator configures sensitive paths.
+Placement: `.claude/sensitive-paths.json` (NOT in `.gitignore` — commit explicitly for the audit trail).
+
+```json
+{
+  "patterns": [
+    "auth/**",
+    "authn/**",
+    "authz/**",
+    "payment/**",
+    "billing/**",
+    "**/*credential*",
+    "**/*personal*",
+    "**/*pii*",
+    "**/*gdpr*",
+    "n8n/**",
+    "workflows/**/*.json",
+    "infra/**",
+    "**/*.tf",
+    "**/*.tfvars",
+    "config/production/**",
+    ".env.production",
+
+    "**/eslint.config.*",
+    "**/.eslintrc*",
+    "**/ruff.toml",
+    "**/pyproject.toml",
+    "**/.semgrep.yml",
+    "**/.semgrep.yaml",
+    "**/phpstan.neon",
+    "**/phpstan.neon.dist",
+    "**/.coveragerc",
+    "**/jest.config.*",
+    "**/vitest.config.*",
+    "**/sonar-project.properties"
+  ],
+  "review_required_by": ["{{OPERATOR_NAME}}"],
+  "human_review_reminder": "This story touches sensitive paths — please review line by line, not just approve the plan."
+}
+```
+
+**Replace placeholders:**
+| Placeholder | Value |
+|-------------|-------|
+| `{{OPERATOR_NAME}}` | GitHub handle or name of the responsible reviewer |
+
+> **Group "Gate-Config / Quality-Threshold" (BOO-176):** the last 12 patterns
+> (`**/eslint.config.*` … `**/sonar-project.properties`) are **gate-config files** — they define
+> the quality threshold (linter rules, coverage threshold, PHPStan level, Semgrep rules). **Any**
+> change to them triggers a human-review block (`review-ok`): gate configs define the quality
+> threshold — change only with operator approval (BOO-176). The agent fixes code ✅ — it does not
+> lower the bar ❌. In addition the `gate-configs.yml` bodyguard flags suspicious rule disables
+> already at write time.
+
+**Note:** The pattern list is a minimal default. The non-code patterns (`n8n/**`, `workflows/**/*.json`, `infra/**`, `**/*.tf`, `**/*.tfvars`, `config/production/**`, `.env.production`) were added with BOO-68 — they are mandatory when the project expects non-code stories (workflow / infrastructure / config). The gate-config patterns (`**/eslint.config.*` … `**/sonar-project.properties`) were added with BOO-176 — mandatory for JS/TS and Python stacks (the covered stacks); non-covered stacks add their gate configs via the stack runbook (BOO-178). The operator extends with project-specific sensitive paths (e.g. `src/api/**` for critical API endpoints, `stripe/**` for payment integration).
 
 ### `.claude/personal-data-paths.json (BOO-69 — Personal-Data-Paths-Gate)`
 
