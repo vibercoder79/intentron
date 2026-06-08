@@ -47,8 +47,9 @@ Ein bestehendes Release nachtraeglich aktualisieren: `gh release edit v0.2.0 --n
 
 ---
 
-## Alle Releases — Index (74 Waves, neueste zuerst)
+## Alle Releases — Index (75 Waves, neueste zuerst)
 
+- **BU** — [Wave BU — Quality-Gate-Integrität: der Agent senkt die Messlatte nicht selbst (BOO-176)](wave-bu-quality-gate-integrity.md) · [EN](wave-bu-quality-gate-integrity.en.md)
 - **BT** — [Wave BT — Release-Notes vernetzt: zentraler Wave-Index + DE↔EN-Sprachschalter (BOO-173)](wave-bt-release-index.md) · [EN](wave-bt-release-index.en.md)
 - **BS** — [Wave BS — Runbook: Sprint unbeaufsichtigt auf der VPS per tmux (BOO-172)](wave-bs-runbook-tmux-vps.md) · [EN](wave-bs-runbook-tmux-vps.en.md)
 - **BR** — [Wave BR — implement: Lint-Loops auf Haiku-Subagent (BOO-171)](wave-br-implement-haiku-loops.md) · [EN](wave-br-implement-haiku-loops.en.md)

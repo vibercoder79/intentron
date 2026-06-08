@@ -159,8 +159,10 @@ exit 0
 Layer-0-Gate: Ein Claude-Code-**PreToolUse-Hook** mit Matcher `Edit|Write|MultiEdit`, der unsichere Muster (Secrets, `eval`, abgeschaltete TLS-Pruefung, SQL-Konkatenation) abfaengt, **bevor** die KI sie auf die Platte schreibt. Geschwister-Hook zu `spec-gate.sh` — waehrend spec-gate.sh auf `Bash`/`git commit` feuert (also erst beim Commit greift), sitzt der Bodyguard eine Stufe frueher: direkt am Schreibvorgang.
 
 **Muster-Schichtung:**
-- Framework-Basis unter `.claude/hooks/bodyguard/patterns/*.yml` — `_universal.yml` (Secrets, sprachunabhaengig) + sprachspezifische Sets (`python.yml`, `javascript.yml`, `java.yml`, `c-cpp.yml`, anhand der Datei-Endung gewaehlt).
+- Framework-Basis unter `.claude/hooks/bodyguard/patterns/*.yml` — `_universal.yml` (Secrets, sprachunabhaengig) + `gate-configs.yml` (Quality-Gate-Aufweichung, sprachunabhaengig, **immer geladen** — BOO-176) + sprachspezifische Sets (`python.yml`, `javascript.yml`, `java.yml`, `c-cpp.yml`, anhand der Datei-Endung gewaehlt).
 - Optionales Projekt-Overlay `.claude/bodyguard.local.yml` — wird zuletzt geladen und uebersteuert/ergaenzt die Basis per `name`. Kundeneigen, ueberlebt Framework-Updates.
+
+**Quality-Gate-Schutz (BOO-176):** `gate-configs.yml` flaggt verdaechtige Regel-Deaktivierung / Schwellen-Edits (breites `eslint-disable`, `@ts-nocheck`, nacktes `# noqa` / `# type: ignore`, Suite-weites Test-Skip, PHPStan-`level:`, Coverage-Schwellen) schon beim Schreiben — als `warn`, damit der Agent die Messlatte nicht klammheimlich absenkt. Den harten Human-Review-Block bei Aenderung an Gate-Config-**Dateien** (eslint/ruff/pyproject/semgrep/phpstan/coverage/jest/vitest/sonar) liefert zusaetzlich `.claude/sensitive-paths.json` (Gruppe „Gate-Config / Quality-Threshold"). Der echte Alt→Neu-Schwellen-Vergleich ist Sache der Post-Story-Gate-Assertion, nicht dieses Hooks.
 
 **Verhalten:**
 - Default: **Warnung** (low-false-positive, keine Alarm-Muedigkeit) — `warn`-Muster melden auf stderr, blockieren aber nicht.

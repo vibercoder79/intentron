@@ -159,8 +159,10 @@ exit 0
 Layer-0 gate: a Claude Code **PreToolUse hook** with matcher `Edit|Write|MultiEdit` that catches unsafe patterns (secrets, `eval`, disabled TLS verification, SQL concatenation) **before** the AI writes them to disk. Sibling hook to `spec-gate.sh` — while spec-gate.sh fires on `Bash`/`git commit` (i.e. only at commit time), the bodyguard sits one stage earlier: directly at the write operation.
 
 **Pattern layering:**
-- Framework base under `.claude/hooks/bodyguard/patterns/*.yml` — `_universal.yml` (secrets, language-agnostic) + language-specific sets (`python.yml`, `javascript.yml`, `java.yml`, `c-cpp.yml`, selected by file extension).
+- Framework base under `.claude/hooks/bodyguard/patterns/*.yml` — `_universal.yml` (secrets, language-agnostic) + `gate-configs.yml` (quality-gate weakening, language-agnostic, **always loaded** — BOO-176) + language-specific sets (`python.yml`, `javascript.yml`, `java.yml`, `c-cpp.yml`, selected by file extension).
 - Optional project overlay `.claude/bodyguard.local.yml` — loaded last, overrides/extends the base by `name`. Project-owned, survives framework updates.
+
+**Quality-gate protection (BOO-176):** `gate-configs.yml` flags suspicious rule disables / threshold edits (file-wide `eslint-disable`, `@ts-nocheck`, bare `# noqa` / `# type: ignore`, suite-wide test skips, PHPStan `level:`, coverage thresholds) already at write time — as `warn`, so the agent cannot quietly lower the bar. The hard human-review block on changes to gate-config **files** (eslint/ruff/pyproject/semgrep/phpstan/coverage/jest/vitest/sonar) is additionally provided by `.claude/sensitive-paths.json` (group "Gate-Config / Quality-Threshold"). The real old→new threshold comparison is the job of the post-story gate assertion, not this hook.
 
 **Behavior:**
 - Default: **warning** (low false positive, no alarm fatigue) — `warn` patterns report to stderr but do not block.

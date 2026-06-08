@@ -47,8 +47,9 @@ Update an existing release afterwards: `gh release edit v0.2.0 --notes-file docs
 
 ---
 
-## All releases — index (74 waves, newest first)
+## All releases — index (75 waves, newest first)
 
+- **BU** — [Wave BU — Quality-gate integrity: the agent cannot lower the bar itself (BOO-176)](wave-bu-quality-gate-integrity.en.md) · [DE](wave-bu-quality-gate-integrity.md)
 - **BT** — [Wave BT — Release notes networked: central wave index + DE↔EN language switch (BOO-173)](wave-bt-release-index.en.md) · [DE](wave-bt-release-index.md)
 - **BS** — [Wave BS — Runbook: run a sprint unattended on the VPS with tmux (BOO-172)](wave-bs-runbook-tmux-vps.en.md) · [DE](wave-bs-runbook-tmux-vps.md)
 - **BR** — [Wave BR — implement: lint loops on a Haiku subagent (BOO-171)](wave-br-implement-haiku-loops.en.md) · [DE](wave-br-implement-haiku-loops.md)
