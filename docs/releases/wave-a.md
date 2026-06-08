@@ -1,5 +1,7 @@
 # Release Notes — Wave A
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-a.en.md)
+
 Stand: 2026-05-19
 
 ## Zweck

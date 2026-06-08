@@ -1,5 +1,7 @@
 # Release Notes - Wave K Deployment-Szenarien + Souveraenitaets-Stack
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-k-deployment-and-sovereignty.en.md)
+
 Stand: 2026-05-27
 
 ## Zweck

@@ -1,5 +1,7 @@
 # Wave AD — HANDBUCH-Anhang Y: VPS/Cloud-Team-Runbook (BOO-94)
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-ad-handbuch-appendix-y-vps-runbook.en.md)
+
 **Linear:** [BOO-94](https://linear.app/owlist/issue/BOO-94/) · Folge aus dem VPS-Team-Runbook PR #16
 
 ## Problem

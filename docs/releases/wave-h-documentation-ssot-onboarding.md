@@ -1,5 +1,7 @@
 # Release Notes - Wave H Documentation-SSoT & Onboarding
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-h-documentation-ssot-onboarding.en.md)
+
 Stand: 2026-05-20
 
 ## Zweck

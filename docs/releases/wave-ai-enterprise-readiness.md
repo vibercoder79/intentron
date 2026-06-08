@@ -1,5 +1,7 @@
 # Wave AI — Enterprise-Readiness (BOO-100…103)
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-ai-enterprise-readiness.en.md)
+
 Vier zusammenhaengende Bausteine aus der Konzern-Vorbereitung 2026-06-01. Reine Doku + ein modularer opt-in Compliance-Katalog. Kein Eingriff in die Kern-Pipeline.
 
 ## BOO-100 — Value-Prop-Frame

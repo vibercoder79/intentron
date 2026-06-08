@@ -1,5 +1,7 @@
 # Release Notes — Wave E Provider und Upgrade
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-e-provider-upgrade.en.md)
+
 Stand: 2026-05-19
 
 ## Zweck

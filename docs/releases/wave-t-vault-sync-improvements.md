@@ -1,5 +1,7 @@
 # Release Notes - Wave T Vault-Sync-Verbesserungen
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-t-vault-sync-improvements.en.md)
+
 Stand: 2026-05-28
 
 ## Zweck

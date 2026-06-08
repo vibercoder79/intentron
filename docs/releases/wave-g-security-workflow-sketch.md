@@ -1,5 +1,7 @@
 # Release Notes — Wave G Security-Workflow-Sketch
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-g-security-workflow-sketch.en.md)
+
 Stand: 2026-05-19
 
 ## Zweck

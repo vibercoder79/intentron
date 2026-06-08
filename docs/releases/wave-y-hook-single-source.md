@@ -1,5 +1,7 @@
 # Wave Y — coverage-check.sh Single-Source + Drift-Guard (BOO-89)
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-y-hook-single-source.en.md)
+
 **Linear:** [BOO-89](https://linear.app/owlist/issue/BOO-89/) · Folge-Story aus BOO-88
 
 ## Problem

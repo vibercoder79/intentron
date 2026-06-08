@@ -1,5 +1,7 @@
 # Wave AN — Artefakt- & Freigabe-Landkarte (BOO-108)
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-an-artefakt-landkarte.en.md)
+
 **Was jetzt da ist:** ein drittes Onboarding-Dokument, das die Bruecke zwischen den Discovery-Boegen und den Phasen-Artefakten schliesst — plus Bootstrap-Kopplung, Migration, HANDBUCH-Anhang und Sketch.
 
 ## Stories

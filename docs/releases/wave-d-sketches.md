@@ -1,5 +1,7 @@
 # Release Notes — Wave D Sketches
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-d-sketches.en.md)
+
 Stand: 2026-05-19
 
 ## Zweck

@@ -1,5 +1,7 @@
 # Release Notes - Wave P README-Aktualisierung + Toolchain-Doku
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-p-readme-and-toolchain-doc.en.md)
+
 Stand: 2026-05-28
 
 ## Zweck

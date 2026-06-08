@@ -1,5 +1,7 @@
 # Wave Z — Contribute-Back-Schleife: contribute-fix.sh (BOO-90)
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-z-contribute-back.en.md)
+
 **Linear:** [BOO-90](https://linear.app/owlist/issue/BOO-90/) · Folge-Story aus BOO-88
 
 ## Problem

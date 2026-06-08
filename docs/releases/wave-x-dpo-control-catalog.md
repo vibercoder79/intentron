@@ -1,5 +1,7 @@
 # Release Notes - Wave X Deterministischer dpo-Kontrollkatalog
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-x-dpo-control-catalog.en.md)
+
 Stand: 2026-05-31
 
 ## Zweck

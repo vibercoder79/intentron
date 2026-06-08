@@ -1,5 +1,7 @@
 # Release Notes - Wave L Multi-Operator-Koordination
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-l-multi-operator-coordination.en.md)
+
 Stand: 2026-05-27
 
 ## Zweck

@@ -1,5 +1,7 @@
 # Wave AM — Compliance-Mechanik-Sketch (BOO-107)
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-am-compliance-sketch.en.md)
+
 **Was jetzt da ist:** ein visueller Uebersichts-Sketch der Compliance-Mechanik (DE + EN, OWLIST-Farben), gerendert als PNG:
 
 - `docs/assets/compliance-mechanik.png` / `.en.png` (+ `.excalidraw`-Quellen).

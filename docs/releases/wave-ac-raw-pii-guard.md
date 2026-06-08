@@ -1,5 +1,7 @@
 # Wave AC — Raw-PII-in-Logs-Guard (BOO-93)
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-ac-raw-pii-guard.en.md)
+
 **Linear:** [BOO-93](https://linear.app/owlist/issue/BOO-93/) · Quelle: Upstream-Beitrag privacy-proxy / PP-004 (Martin), 2026-05-31 — Pattern nachgebaut, **kein PolyForm-Code uebernommen**
 
 ## Problem

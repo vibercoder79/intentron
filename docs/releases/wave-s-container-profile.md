@@ -1,5 +1,7 @@
 # Release Notes - Wave S Optionales Container-Profil
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-s-container-profile.en.md)
+
 Stand: 2026-05-28
 
 ## Zweck

@@ -1,5 +1,7 @@
 # Release Notes - Wave N Vault-Harvest + Skill-Installations-Strategie
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-n-vault-harvest-and-skill-location.en.md)
+
 Stand: 2026-05-28
 
 ## Zweck

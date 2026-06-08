@@ -1,5 +1,7 @@
 # Release Notes - Wave R Multi-Projekt-Betrieb
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-r-multi-project-operation.en.md)
+
 Stand: 2026-05-28
 
 ## Zweck

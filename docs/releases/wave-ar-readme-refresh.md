@@ -1,5 +1,7 @@
 # Wave AR — README-Refresh + Onboarding-Journey (BOO-112)
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-ar-readme-refresh.en.md)
+
 **Was jetzt da ist:** die README ist auf dem aktuellen Stand (v0.7.7) und fuehrt einen Neuling ab der ersten Bildschirmseite zu den richtigen Onboarding-Fragen.
 
 ## Stories

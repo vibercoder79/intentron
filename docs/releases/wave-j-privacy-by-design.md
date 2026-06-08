@@ -1,5 +1,7 @@
 # Release Notes - Wave J Privacy-by-Design
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-j-privacy-by-design.en.md)
+
 Stand: 2026-05-27
 
 ## Zweck
