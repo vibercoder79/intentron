@@ -1369,6 +1369,41 @@ exit 0
 
 ---
 
+## hooks/anti-placeholder-check.py (BOO-177 — anti-placeholder check for test files)
+
+**Fifth gate since BOO-177, in the `/implement` skill at step 6a-quint (after coverage), NOT in the pre-commit hook:** a targeted, deterministic check **on test files only** — it flags tests that lift the coverage number without testing anything. Same root problem as the sister story BOO-176 ("agent gamed the gate"), here at the test level.
+
+> [!important] Test quality ≠ test quantity
+> Coverage (BOO-15) measures *how much* code is touched by tests. Trivial/empty tests (`expect(true).toBe(true)`, `assert True`, empty body) and unjustified skips lift that number without asserting anything. The anti-placeholder check closes exactly this gap — deterministically, without a linter.
+
+**NOT a linter:** ESLint/Ruff/PHPStan check style/types, not test meaningfulness. This is a **dedicated, targeted check** (Python AST like `raw-pii-guard.py` + JS/TS heuristic), not "all linters".
+
+**Detects test files** by: `*.test.{js,ts,jsx,tsx,mjs,cjs}`, `*.spec.{js,ts,jsx,tsx,mjs,cjs}`, `test_*.py`, `*_test.py`, plus everything under `tests/**` / `__tests__/**` (Jest/Vitest and pytest conventions). Non-test files are ignored.
+
+**Flags two classes:**
+- **Trivial/empty tests** — `expect(true).toBe(true|toEqual|toBeTruthy)`, `assert(true)`, `assert True`, `assert 1 == 1` / `assert x == x` (same constant), empty test body (only `pass` / `...` / docstring).
+- **Unjustified skips** — `it.skip`/`test.skip`/`describe.skip`/`xit`/`xdescribe`/`xtest`, `@pytest.mark.skip`/`@pytest.mark.skipif` **without** `reason=` (Python) or without a justifying comment on the same or the preceding line (JS/TS).
+
+**Prerequisites:** `python3` stdlib only (`ast`, `re`) — NO `semgrep`, NO npm/pip dependency. Default = warning (exit 0); `--strict` or `STRICT=1` turns every hit into a hard fail (exit 1) — consistent with `raw-pii-guard.py` (BOO-93) and the Layer-0 bodyguard (BOO-86).
+
+**Project allowlist** (optional) `.claude/anti-placeholder-check.local` — one glob per line, `#` comments; prefix `path:` declares additional test paths, otherwise the glob is **excluded** from the check.
+
+> **Script body: single source.** The full script body lives canonically in
+> `bootstrap/references/hooks/anti-placeholder-check.py`. Bootstrap/migration (`migrate_boo_177`)
+> **copies it verbatim** to `.claude/hooks/anti-placeholder-check.py` — no embedded heredoc.
+> **Do NOT maintain it inline here** (would drift) — same convention as `coverage-check.sh`
+> and `raw-pii-guard.py` (BOO-89).
+
+**Anti-patterns:**
+- NOT a linter and NOT a linter rule — test meaningfulness is its own concern.
+- NO call from the pre-commit hook — runs exclusively in the `/implement` skill (step 6a-quint).
+- NO block on diffs without test files — gate skipped.
+- NO generic patterns (e.g. every `expect`) — deliberately specific, low false-positive rate.
+
+**Self-test:** `python3 .claude/hooks/anti-placeholder-check.py --self-test` (must print `SELF-TEST OK`).
+
+---
+
 ## hooks/pre-edit-bodyguard.sh (BOO-86 — Layer-0 Edit-Bodyguard)
 
 **Layer-0 gate since BOO-86:** a Claude Code **PreToolUse hook** on `Edit|Write` that

@@ -30,6 +30,16 @@ For bug fixes, refactors, and small changes. Less overhead than the feature temp
 ### 5. Acceptance criteria
 - Checkboxes, testable
 
+### 5a. Test block / unit tests (MANDATORY)
+Concrete unit test cases the fix closes with. (Section `5a` so 6–7 and cross-references stay stable.)
+
+- **Test cases** (at least a regression/happy path + 1 error/edge case), each with expected behavior.
+- **AC mapping** — which test covers which acceptance criterion.
+- **No placeholder tests:** `assert true`, `expect(true).toBe(true)`, empty test bodies, or
+  unjustified `skip`/`xit`/`@pytest.mark.skip` — the anti-placeholder check (BOO-177) in the
+  implement test gate (`/implement` step 6a-quart) flags them.
+- **Scope:** Unit tests only — NOT integration/E2E.
+
 ### 6. Security Impact (MANDATORY)
 - Change type: `none | api | auth | data | dependency | ci | governance | external-provider | workflow | config | infrastructure | content`
 - Does the fix touch sensitive paths, external inputs, secrets, auth, data storage, or CI/governance?

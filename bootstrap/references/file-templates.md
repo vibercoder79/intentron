@@ -255,6 +255,7 @@ Regeln:
 | Semgrep | nach Modus | `.semgrep.yml` |
 | Dependency-Check | nach Modus | `.claude/hooks/dependency-check.sh` |
 | Coverage-Gate | nach Modus | `.claude/hooks/coverage-check.sh` |
+| Anti-Platzhalter-Check | nach Modus | `.claude/hooks/anti-placeholder-check.py` |
 | Performance-Gate | nach Modus | `.github/workflows/perf.yml` |
 | Sensitive-Paths-Review | nach Modus | `.claude/sensitive-paths.json` |
 
@@ -1625,6 +1626,41 @@ exit 0
 - KEINE `diff-cover` als Python-Dependency — selber Grund.
 - KEIN Aufruf im Pre-Commit-Hook (`.git/hooks/pre-commit`) — Tests dauern zu lange, sprengen das 10s-Budget. Wird ausschliesslich vom `/implement`-Skill in Schritt 6a-quart aufgerufen.
 - KEIN Block bei nur-Test-/Config-/Doc-Diffs — Gate uebersprungen.
+
+---
+
+## hooks/anti-placeholder-check.py (BOO-177 — Anti-Platzhalter-Check fuer Test-Dateien)
+
+**Fuenftes Gate seit BOO-177, im `/implement`-Skill in Schritt 6a-quint (nach Coverage), NICHT im Pre-Commit-Hook:** Ein gezielter, deterministischer Check **nur auf Test-Dateien** — er flaggt Tests, die die Coverage-Zahl heben, ohne etwas zu testen. Gleiches Grundproblem wie die Schwester-Story BOO-176 ("Agent gamed das Gate"), hier auf der Test-Ebene.
+
+> [!important] Test-Qualitaet ≠ Test-Quantitaet
+> Coverage (BOO-15) misst *wie viel* Code von Tests beruehrt wird. Triviale/leere Tests (`expect(true).toBe(true)`, `assert True`, leerer Koerper) und unbegruendete Skips heben diese Zahl, ohne eine Aussage zu pruefen. Der Anti-Platzhalter-Check schliesst genau diese Luecke — deterministisch, ohne Linter.
+
+**KEIN Linter:** ESLint/Ruff/PHPStan pruefen Stil/Typen, nicht Test-Sinnhaftigkeit. Dies ist ein **eigener, gezielter Check** (Python-AST wie `raw-pii-guard.py` + JS/TS-Heuristik), kein "alle Linter".
+
+**Erkennt Test-Dateien** an: `*.test.{js,ts,jsx,tsx,mjs,cjs}`, `*.spec.{js,ts,jsx,tsx,mjs,cjs}`, `test_*.py`, `*_test.py`, sowie alles unter `tests/**` / `__tests__/**` (Jest/Vitest- und pytest-Konventionen). Nicht-Test-Dateien werden ignoriert.
+
+**Flaggt zwei Klassen:**
+- **Triviale/leere Tests** — `expect(true).toBe(true|toEqual|toBeTruthy)`, `assert(true)`, `assert True`, `assert 1 == 1` / `assert x == x` (gleiche Konstante), leerer Testkoerper (nur `pass` / `...` / Docstring).
+- **Unbegruendete Skips** — `it.skip`/`test.skip`/`describe.skip`/`xit`/`xdescribe`/`xtest`, `@pytest.mark.skip`/`@pytest.mark.skipif` **ohne** `reason=` (Python) bzw. ohne Begruendungskommentar in derselben oder der Vorgaengerzeile (JS/TS).
+
+**Voraussetzungen:** Nur `python3`-Stdlib (`ast`, `re`) — KEIN `semgrep`, KEIN npm/pip-Dependency. Default = Warnung (Exit 0); `--strict` bzw. `STRICT=1` macht jeden Treffer zum Hard-Fail (Exit 1) — konsistent mit `raw-pii-guard.py` (BOO-93) und dem Layer-0-Bodyguard (BOO-86).
+
+**Projekt-Allowlist** (optional) `.claude/anti-placeholder-check.local` — ein Glob pro Zeile, `#`-Kommentare; Praefix `path:` deklariert zusaetzliche Test-Pfade, sonst wird der Glob von der Pruefung **ausgenommen**.
+
+> **Skript-Inhalt: Single-Source.** Der vollstaendige Skript-Body lebt kanonisch in
+> `bootstrap/references/hooks/anti-placeholder-check.py`. Bootstrap/Migration (`migrate_boo_177`)
+> **kopiert ihn verbatim** nach `.claude/hooks/anti-placeholder-check.py` — kein eingebetteter
+> Heredoc. **Hier NICHT inline pflegen** (sonst Drift) — gleiche Konvention wie `coverage-check.sh`
+> und `raw-pii-guard.py` (BOO-89).
+
+**Anti-Patterns:**
+- KEIN Linter und KEINE Linter-Regel — Test-Sinnhaftigkeit ist ein eigenes Thema.
+- KEIN Aufruf im Pre-Commit-Hook — laeuft ausschliesslich im `/implement`-Skill (Schritt 6a-quint).
+- KEIN Block bei Diffs ohne Test-Dateien — Gate uebersprungen.
+- KEINE generischen Muster (z.B. jedes `expect`) — bewusst spezifisch, niedrige Fehlalarm-Quote.
+
+**Selbsttest:** `python3 .claude/hooks/anti-placeholder-check.py --self-test` (muss `SELF-TEST OK` zeigen).
 
 ---
 

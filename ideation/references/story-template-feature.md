@@ -43,6 +43,19 @@ Jede Feature-Story MUSS folgende Struktur haben.
 ### 7. Acceptance Criteria
 - Checkboxen, testbar, konkret
 
+### 7a. Test-Block / Unit-Tests (PFLICHT)
+Hier werden beim Story-Schreiben die konkreten Unit-Testfaelle definiert, mit denen die
+Implementation abschliesst. (Eigene Sektion `7a`, damit die Nummerierung 8–10 + Verweise stabil bleibt.)
+
+- **Testfaelle** (mind. 1 Happy-Path + mind. 1 Fehlerfall/Edge-Case), je mit erwartetem Verhalten:
+  - `[Happy-Path]` — Eingabe → erwartetes Ergebnis
+  - `[Fehlerfall/Edge-Case]` — Eingabe → erwartetes Verhalten (Exception, Fallback, Grenzwert)
+- **AC-Bezug** — welcher Test deckt welches Acceptance Criterion ab (z.B. `Test 1 → AC 7.1`).
+- **Keine Platzhalter-Tests:** `assert true`, `expect(true).toBe(true)`, leere Testkoerper oder
+  unbegruendetes `skip`/`xit`/`@pytest.mark.skip` sind verboten — der Anti-Platzhalter-Check (BOO-177)
+  im implement-Test-Gate (`/implement` Schritt 6a-quart) flaggt sie.
+- **Abgrenzung:** Nur Unit-Tests — NICHT Integration-/E2E-Tests (eigenes kuenftiges Thema).
+
 ### 8. Security Impact (PFLICHT)
 - Change-Type: `none | api | auth | data | dependency | ci | governance | external-provider | workflow | config | infrastructure | content`
 - Neue oder veraenderte Angriffsoberflaeche?

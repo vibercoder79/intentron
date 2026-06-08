@@ -43,6 +43,19 @@ Every feature story MUST follow this structure.
 ### 7. Acceptance criteria
 - Checkboxes, testable, concrete
 
+### 7a. Test block / unit tests (MANDATORY)
+Define the concrete unit test cases here while writing the story — the implementation closes
+with exactly these tests. (Dedicated section `7a` so the numbering of 8–10 and its cross-references stay stable.)
+
+- **Test cases** (at least 1 happy path + at least 1 error/edge case), each with expected behavior:
+  - `[Happy path]` — input → expected result
+  - `[Error/edge case]` — input → expected behavior (exception, fallback, boundary value)
+- **AC mapping** — which test covers which acceptance criterion (e.g. `Test 1 → AC 7.1`).
+- **No placeholder tests:** `assert true`, `expect(true).toBe(true)`, empty test bodies, or
+  unjustified `skip`/`xit`/`@pytest.mark.skip` are forbidden — the anti-placeholder check (BOO-177)
+  in the implement test gate (`/implement` step 6a-quart) flags them.
+- **Scope:** Unit tests only — NOT integration/E2E tests (a separate future topic).
+
 ### 8. Security Impact (MANDATORY)
 - Change type: `none | api | auth | data | dependency | ci | governance | external-provider | workflow | config | infrastructure | content`
 - New or changed attack surface?

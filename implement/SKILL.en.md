@@ -674,18 +674,65 @@ take too long — would blow the hook's 10s budget).
 **Runtime budget:** script run <2 seconds. The test run itself can take several
 minutes — that is why it is NOT in the pre-commit hook.
 
+**6a-quint) Anti-placeholder check — test quality instead of just test quantity (BOO-177)**
+
+> **Tool chain:** `git diff --cached --name-only` -> test-file filter -> hooks/anti-placeholder-check.py
+> -> deterministic finding (Python AST + JS/TS heuristic) -> gate decision.
+> Same root problem as BOO-176 ("agent gamed the gate"), here at the test level:
+> trivial/empty tests lift the coverage number without testing anything.
+
+**Important:** runs **after** the coverage run (6a-quart), in the skill — NOT in the pre-commit hook.
+Coverage measures *how much* code is tested, the anti-placeholder check whether it is *actually*
+tested. It is **not a linter** (ESLint/Ruff check style/types, not test meaningfulness) — a dedicated,
+targeted check on test files only.
+
+**Checked** are only the changed test files from `git diff --cached`
+(detected by `*.test.{js,ts,jsx,tsx}`, `*.spec.{js,ts}`, `test_*.py`, `*_test.py`, `tests/**`):
+
+```bash
+bash -c 'python3 .claude/hooks/anti-placeholder-check.py --strict'
+# without arguments the check detects the staged test files itself
+```
+
+**Flags two classes:**
+1. **Trivial/empty tests** — `expect(true).toBe(true)`, `assert True`, `assert 1 == 1`,
+   empty test body (only `pass` / `{}` / docstring).
+2. **Unjustified skips** — `it.skip`/`test.skip`/`describe.skip`/`xit`/`xdescribe`,
+   `@pytest.mark.skip`/`@pytest.mark.skipif` **without** `reason=` or a justifying comment.
+
+**Gate behavior:**
+- **0 findings:** gate passed — proceed to step 2 (syntax & runtime).
+- **>=1 finding (block):** gate **fail** — replace the placeholder test with a real assertion or
+  justify the skip (`reason=` / comment), then repeat iteration step 1 of 6a-quart.
+- **Operator override:** explicit + logged only — record finding + reason as an
+  `override_audit` entry in `meta.json` (same discipline as BOO-176: only the operator lowers the
+  test bar, never the agent). No test file in `git diff --cached` -> gate skipped
+  (`skipped_gates.anti_placeholder`).
+
+**Documentation in `meta.json`:** iterations under `iterations.anti_placeholder`, a skip reason
+under `skipped_gates.anti_placeholder` (e.g. `"no test files in diff"`), an operator override
+under `override_audit[]`.
+
+**Configuration:** default = warning; `--strict` / `STRICT=1` turns every hit into a hard fail
+(always strict inside the gate). Optional project allowlist in
+`.claude/anti-placeholder-check.local` (one glob per line; prefix `path:` for additional test
+paths). Self-test: `python3 .claude/hooks/anti-placeholder-check.py --self-test`.
+
+**Runtime budget:** <1 second (only the changed test files, dependency-free).
+
 Step 2 — syntax & runtime:
 - `node --check` on all changed .js files (syntax errors?)
 - If agent: run 1× in DRY_RUN/TEST_MODE — does it run without crashing?
 - If library/module: does it import correctly for all consumers?
 
-**Background of the 6 tools:**
+**Background of the 7 tools:**
 | Tool | Role | When active |
 |------|------|-------------|
 | **ESLint** (`.eslintrc.js`) | Defines + checks coding rules (syntax, security, style) | CLI in step 6a + passively in VS Code |
 | **Semgrep** (`.semgrep.yml`) | Pre-commit SAST with pack-based ruleset | CLI in step 6a-bis + pre-commit hook + CI layer |
 | **Slopsquatting hook** (`.claude/hooks/dependency-check.sh`) | Supply-chain check (existence + age + CVE) | Pre-commit hook after Semgrep, only on manifest diff |
 | **Coverage hook** (`.claude/hooks/coverage-check.sh`) | Diff-coverage gate (>=80% added lines) | When active: /implement step 6a-quart, NOT the pre-commit hook |
+| **Anti-placeholder check** (`.claude/hooks/anti-placeholder-check.py`) | Test quality: flags trivial/empty tests + unjustified skips (BOO-177) | When active: /implement step 6a-quint, NOT the pre-commit hook |
 | **SonarQube for IDE** (SonarLint) | Deeper security analysis, code smells, bug patterns | Passive in editor while coding |
 | **Error Lens** | Shows ESLint + SonarLint findings inline in the line | Passive in editor — no hiding of errors |
 

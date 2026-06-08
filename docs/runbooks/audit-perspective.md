@@ -81,6 +81,8 @@ entstehen, nicht im Framework-Repo. Die Spalte **Zone** verweist auf die Persist
 | Hatte jeder Change einen dokumentierten Intent? | `spec-gate.sh` blockiert Commit ohne Spec | `specs/{ISSUE-ID}.md`; [`verify-setup.sh`](../../bootstrap/references/verify-setup.sh) Check 3 | A |
 | Jeder Commit auf Prompt/Session rückführbar? | `## Session-Referenz`-Block + Trace-Werkzeug | `specs/{ISSUE-ID}.md`; [`audit-trace.sh`](../../bootstrap/scripts/audit-trace.sh); [CONVENTIONS §Audit-Trail](../../CONVENTIONS.md) | A |
 | Haben Linter/SAST/Coverage lokal gegriffen? | `/implement` legt SARIF/JUnit/Coverage je Iteration ab | `journal/reports/local/{date}_{story}/` + `meta.json` ([HANDBUCH Anhang E](../../HANDBUCH.md)). Flüchtig → für den Nachweis Zone B/A | C |
+| Liefen Unit-Tests (Existenz)? | Test-Gate 6a-quart schreibt JUnit-XML + Coverage je Iteration | `journal/reports/local/{date}_{story}/tests-iter{N}.junit.xml`, `meta.json.iterations.tests`; [Runbook Unit-Tests](./unit-tests.md) | C |
+| Sind die Tests **echt** (Qualität, nicht nur Existenz)? | Anti-Platzhalter-Check (Hook `anti-placeholder-check.py`) flaggt leere/triviale Tests + unbegründete Skips im Test-Gate (BOO-177) | [`specs/BOO-177.md`](../../specs/BOO-177.md); [Runbook Unit-Tests §Anti-Platzhalter](./unit-tests.md) | A |
 | GitHub Actions gelaufen/grün? | CI-Workflows + Aggregator lädt Reports als Artifact (Retention 30 T.) | `journal/reports/ci/run-{id}/`; Workflows unter `.github/workflows/` (`docs-drift.yml` / `hook-sources.yml` / `ruff-hooks.yml`) | B |
 | Merge ohne grüne Gates möglich? (Bypass) | Branch-Protection Required Status Checks; CI als Layer 3 gegen `--no-verify` | [`setup-branch-protection.sh`](../../bootstrap/scripts/setup-branch-protection.sh) (BOO-29); `gh api .../branches/main/protection` | A |
 | Datenschutz/Compliance nachgewiesen? | `dpo-audit.py` → PASS/GAP/REVIEW-NEEDED; Sprint-Review 7c | [`dpo-audit.py`](../../dpo/scripts/dpo-audit.py); `dpo/reports/<date>_audit.{md,json}`; Kataloge [`gdpr.yml`](../../dpo/controls/gdpr.yml) / [`ndsg.yml`](../../dpo/controls/ndsg.yml) | A |
@@ -215,6 +217,14 @@ hier der Grund. Das Feld liegt in **Zone C** (gitignored) — der belastbare Nac
 liefen, kommt aus den CI-Artifacts (Schritt 3). Schema:
 [`file-templates.md`](../../bootstrap/references/file-templates.md).
 
+**Unit-Tests: Existenz und Qualität.** Der Test-Lauf (Gate 6a-quart) hinterlässt pro Iteration
+`tests-iter{N}.junit.xml` und den Zähler `meta.json.iterations.tests` (Zone C) — das belegt, **dass**
+Tests liefen. Ob die Tests **echt** sind (keine leeren/trivialen Körper, keine unbegründeten Skips),
+sichert der **Anti-Platzhalter-Check** (Hook `anti-placeholder-check.py` im selben Gate, BOO-177). Für den Auditor
+heißt das: Coverage-Zahl allein ist kein Qualitätsnachweis — die Test-Existenz (JUnit-XML) und die
+Test-Qualität (Anti-Platzhalter-Check) sind zwei getrennte Belege. Detail-Ablauf:
+[`unit-tests.md`](./unit-tests.md).
+
 ### 8. Vier-Augen-Stichprobe (Konvention, nicht erzwungen)
 
 ```bash
@@ -300,6 +310,7 @@ MODUS-HINWEIS:
 | Security-Sicht: welche Gatekeeper greifen, was sie hinterlassen | [`ciso-security.md`](./ciso-security.md) |
 | Datenschutz-Sicht: DPO-Kataloge, Gates, deterministischer Audit | [`dpo-privacy.md`](./dpo-privacy.md) |
 | Code-Qualität-Sicht: Quality-Gates, Coverage, Architektur-Dimensionen | [`cto-code-quality.md`](./cto-code-quality.md) |
+| Unit-Test-Ablauf im Detail: Gate 6a-quart, JUnit-XML, Anti-Platzhalter-Check | [`unit-tests.md`](./unit-tests.md) |
 | Compliance-Mechanik End-to-End (Gates vs. Kataloge, Lebenszyklus) | [`../compliance/compliance-mechanik.md`](../compliance/compliance-mechanik.md) |
 | Welches Artefakt wer abnimmt und wo es liegt | [`../onboarding/artefakt-landkarte.md`](../onboarding/artefakt-landkarte.md) |
 | Reports-Konvention, `meta.json`-Schema, Persistenz-Zonen im Detail | [`../../HANDBUCH.md`](../../HANDBUCH.md) — Anhang E |

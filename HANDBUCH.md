@@ -1239,6 +1239,42 @@ Schrader behandelt in Kap. 3 §Production Readiness und Kap. 4 §Run the System 
 
 ---
 
+## 8c-bis. Unit-Tests
+
+Unit-Tests laufen im Framework nicht als separater Skill, sondern als **Test-Gate innerhalb von `/implement`** — Schritt **6a-quart**. Dieses Kapitel erklärt aus Operator-Sicht, wie der Ablauf greift und welche Belege er hinterlässt. Der Detail-Ablauf (lokaler Testlauf, Fehlerbehebung) liegt im Runbook `docs/runbooks/unit-tests.md`.
+
+**Abgrenzung vorweg: Unit ≠ Integration/E2E.** Dieses Gate prüft **Unit-Tests** — einzelne Funktionen/Module isoliert. Integration- und E2E-Tests (mehrere Komponenten nach dem Deployment) sind ein **eigenes, hier nicht behandeltes** Thema. Es gibt bewusst keinen Integration-Test-Skill.
+
+### Das Test-Gate 6a-quart
+
+Der Schritt läuft **im Skill, nicht im Pre-Commit-Hook** — Tests dauern zu lange für das 10-Sekunden-Budget des Hooks. Pro Iteration:
+
+1. **Test-Lauf mit Coverage + JUnit-XML** — Node: `npx c8 … npx jest … --reporters=jest-junit`; Python: `pytest --cov … --junit-xml=…`. Die JUnit-XML landet als `tests-iter${N}.junit.xml`, die Coverage als `coverage-final.json` unter `journal/reports/local/<run>/`.
+2. **`coverage-check.sh`** korreliert die Added-Lines aus `git diff --cached -U0` mit den Coverage-Daten — **Diff-Coverage**, nicht Gesamt-Coverage (fair auf Legacy-Repos).
+3. **Gate-Entscheidung** über zwei Schwellen: **≥ 80 % = Pass**, **60–80 % = Warn** (Operator entscheidet, Begründung in den Linear-Kommentar), **< 60 % = Block** (Tests nachziehen, Iteration wiederholen). Maximal **5 Iterationen**, dann Operator-Eingriff.
+
+Jede Iteration wird in `meta.json.iterations.tests` mitgezählt. Kann der Test-Runner kein JUnit-XML (z. B. Mocha ohne Reporter), bleibt `iterations.tests` auf 0 — der Coverage-Lauf selbst läuft trotzdem weiter.
+
+### Anti-Platzhalter-Check (BOO-177) — Qualität statt nur Zahl
+
+Coverage misst, **ob** eine Zeile von einem Test berührt wurde — nicht, **ob der Test etwas prüft**. Triviale Testkörper (`expect(true).toBe(true)`, leerer Body, `assert True`) und unbegründete Skips (`it.skip`, `xit`, `@pytest.mark.skip` ohne Grund) heben die Coverage-Zahl, ohne etwas zu testen. Das ist dasselbe Grundproblem wie bei der Schwester-Story BOO-176 (*„Agent gamed das Gate"*), hier auf der Test-Ebene.
+
+Der **Anti-Platzhalter-Check** ist deshalb ein **eigener, gezielter Check auf Test-Dateien** (der Hook `anti-placeholder-check.py` — AST für Python, Heuristik für JS/TS; **kein** Linter — Linter prüfen Stil/Typen, nicht Test-Sinnhaftigkeit). Er greift im selben Test-Gate 6a-quart und flaggt leere/triviale Testkörper sowie Skips ohne Begründung. Coverage **und** Anti-Platzhalter-Check zusammen ergeben das vollständige Gate: *„genug Tests"* (Coverage) **und** *„echte Tests"* (Anti-Platzhalter). Quelle: `specs/BOO-177.md`.
+
+### Belege für das Audit
+
+| Beleg | Was er zeigt | Ort | Persistenz-Zone |
+| -- | -- | -- | -- |
+| `tests-iter{N}.junit.xml` | Welche Tests liefen, mit welchem Ergebnis | `journal/reports/local/<run>/` | C (lokal, flüchtig) |
+| `coverage-final.json` | Diff-Coverage des neuen Codes | `journal/reports/local/<run>/` | C (lokal, flüchtig) |
+| `meta.json.iterations.tests` | Wie oft der Test-Loop lief | `journal/reports/local/<run>/meta.json` | C (lokal, flüchtig) |
+
+Der **belastbare** Nachweis kommt aus den CI-Artifacts (Zone B, Retention 30 Tage) bzw. dem Coverage-Trend im Sprint-Frontmatter (Zone A). Wie ein Auditor diese Belege zieht — inklusive der Test-**Qualität** über den Anti-Platzhalter-Check —, steht im Runbook `docs/runbooks/audit-perspective.md`.
+
+> **Vertiefung:** Detail-Ablauf, lokaler Testlauf je Stack und Fehlerbehebung → `docs/runbooks/unit-tests.md`.
+
+---
+
 ## 8d. Coding-Umgebungen Mac / VPS / CI
 
 Die Toolchain läuft in vier Umgebungen unterschiedlich. **Kernpunkt:** Keine Qualitäts-Einbuße beim VPS-Coding — die Gates sind dieselben (ESLint, Semgrep, Coverage, Performance). Was anders ist: die Tooling-Liste. IDE-spezifische Plugins (Error Lens, SonarQube for IDE) gibt es nur auf dem Mac in VS Code; auf dem VPS arbeitest du mit den CLI-Varianten. SonarQube Cloud läuft serverseitig und unabhängig von der Coding-Umgebung — der Server analysiert nach jedem CI-Lauf.
@@ -2198,6 +2234,7 @@ Zwei weitere Runbooks decken konkrete Setup-Aufgaben ab:
 
 - [`framework-update.md`](docs/runbooks/framework-update.md) — ein Bestandsprojekt auf den aktuellen Framework-Stand heben.
 - [`sonarcloud-setup.md`](docs/runbooks/sonarcloud-setup.md) — SonarQube Cloud für ein GitHub-Repo einrichten (siehe auch Anhang AA).
+- [`unit-tests.md`](docs/runbooks/unit-tests.md) — Unit-Test-Ablauf im Detail: Test-Gate 6a-quart, Diff-Coverage, JUnit-XML, Anti-Platzhalter-Check (siehe auch Kapitel 8c-bis).
 
 ---
 
