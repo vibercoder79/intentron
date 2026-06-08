@@ -1,5 +1,7 @@
 # Wave AS — Komplementäres Tooling: setup-checklist (BOO-113)
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-as-complementary-tooling.en.md)
+
 **Was jetzt da ist:** die Best-Practice-Setup-Checkliste fuer Claude Code ist als eigenes oeffentliches Repo verfuegbar, und intentron verweist mit klarer Reihenfolge-Regel darauf.
 
 ## Stories

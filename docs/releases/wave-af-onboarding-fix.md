@@ -1,5 +1,7 @@
 # Wave AF — Onboarding-Fix: Install + Quickstart + Self-Install/Self-Update (BOO-96)
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-af-onboarding-fix.en.md)
+
 **Linear:** [BOO-96](https://linear.app/owlist/issue/BOO-96/) · Quelle: Onboarding-Frage Operator, 2026-06-01
 
 ## Problem

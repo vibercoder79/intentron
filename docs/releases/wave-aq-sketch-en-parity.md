@@ -1,5 +1,7 @@
 # Wave AQ — 10 Alt-Sketches auf EN (BOO-111)
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-aq-sketch-en-parity.en.md)
+
 **Was jetzt da ist:** die letzten 10 nur-deutschen Sketches sind auf Englisch nachgezogen — damit sind alle Skill-/Doku-Sketches DE+EN-paritaetisch und das englische HANDBUCH zeigt durchgaengig englische Schaubilder.
 
 ## Stories

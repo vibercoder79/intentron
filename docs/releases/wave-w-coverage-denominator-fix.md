@@ -1,5 +1,7 @@
 # Release Notes - Wave W Coverage-Hook-Nenner-Fix
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-w-coverage-denominator-fix.en.md)
+
 Stand: 2026-05-31
 
 ## Zweck

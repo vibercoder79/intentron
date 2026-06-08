@@ -1,5 +1,7 @@
 # Wave AG — Doku-Sync-Sweep (BOO-97)
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-ag-docs-sync-sweep.en.md)
+
 **Linear:** [BOO-97](https://linear.app/owlist/issue/BOO-97/)
 
 ## Problem

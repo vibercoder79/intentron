@@ -1,5 +1,7 @@
 # Release Notes — Wave C
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-c.en.md)
+
 Stand: 2026-05-19
 
 ## Zweck

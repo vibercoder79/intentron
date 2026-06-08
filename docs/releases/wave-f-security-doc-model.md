@@ -1,5 +1,7 @@
 # Release Notes — Wave F Security-Dokumentationsmodell
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-f-security-doc-model.en.md)
+
 Stand: 2026-05-19
 
 ## Zweck

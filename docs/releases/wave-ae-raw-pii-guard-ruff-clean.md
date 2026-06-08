@@ -1,5 +1,7 @@
 # Wave AE — raw-pii-guard ruff-clean + Hook-Lint-Gate (BOO-95)
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-ae-raw-pii-guard-ruff-clean.en.md)
+
 **Linear:** [BOO-95](https://linear.app/owlist/issue/BOO-95/) · Quelle: Upstream-Feld-Feedback privacy-proxy / 2XT (Martin), 2026-06-01
 
 ## Problem

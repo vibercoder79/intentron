@@ -1,5 +1,7 @@
 # Wave AL — EU-AI-Act-Lebenszyklus + Compliance-Mechanik-Doku (BOO-106)
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-al-compliance-mechanik.en.md)
+
 **Problem vorher:** EU AI Act war nur in Bootstrap (Phase 4.4n-bis) + periodischem Audit (sprint-review 7c) verdrahtet — **nicht** in `/ideation`/`/implement` wie Privacy. Und es fehlte ein Dokument, das die Compliance-Mechanik als Ganzes erklaert (Gates vs. Kataloge, automatisch vs. REVIEW-NEEDED), sodass ein CISO/Operator sie nachvollziehen kann.
 
 **Was jetzt da ist:**

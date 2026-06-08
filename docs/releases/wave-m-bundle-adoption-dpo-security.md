@@ -1,5 +1,7 @@
 # Release Notes - Wave M Bundle-Adoption DPO + security-architect
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-m-bundle-adoption-dpo-security.en.md)
+
 Stand: 2026-05-27
 
 ## Zweck

@@ -1,5 +1,7 @@
 # Release Notes - Wave I Token-Effizienz-Policy
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-i-token-efficiency.en.md)
+
 Stand: 2026-05-25
 
 ## Zweck

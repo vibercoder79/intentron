@@ -47,8 +47,9 @@ Update an existing release afterwards: `gh release edit v0.2.0 --notes-file docs
 
 ---
 
-## All releases — index (81 waves, newest first)
+## All releases — index (82 waves, newest first)
 
+- **CB** — [Wave CB — EN catch-up for the 43 legacy wave release notes: DE+EN parity, retroactively (BOO-174)](wave-cb-en-parity-altwaves.en.md) · [DE](wave-cb-en-parity-altwaves.md)
 - **CA** — [Wave CA — Make observability visible: docs + logging/monitoring runbook (BOO-179)](wave-ca-observability-sichtbar.en.md) · [DE](wave-ca-observability-sichtbar.md)
 - **BZ** — [Wave BZ — Integrate a new stack/linter: runbook + HANDBOOK chapter (BOO-178)](wave-bz-stack-linter-runbook.en.md) · [DE](wave-bz-stack-linter-runbook.md)
 - **BY** — [Wave BY — Doc index catch-up: missing runbooks in the central index (BOO-181)](wave-by-doku-index-nachzug.en.md) · [DE](wave-by-doku-index-nachzug.md)
@@ -86,47 +87,47 @@ Update an existing release afterwards: `gh release edit v0.2.0 --notes-file docs
 - **AV** — [Wave AV — Docs/runbooks, lightweight SecondBrain & design-story decision (BOO-118/119/126/128/129)](wave-av-docs-secondbrain.en.md) · [DE](wave-av-docs-secondbrain.md)
 - **AU** — [Wave AU — Stack polish, MCP, Sonar warning & branching standard (BOO-116/121/122/124/125)](wave-au-stack-mcp-branching.en.md) · [DE](wave-au-stack-mcp-branching.md)
 - **AT** — [Wave AT — Bootstrap UX hardening (BOO-114/115/117/120/123/127)](wave-at-bootstrap-ux-haertung.en.md) · [DE](wave-at-bootstrap-ux-haertung.md)
-- **AS** — [Wave AS — Komplementäres Tooling: setup-checklist (BOO-113)](wave-as-complementary-tooling.md) *(DE only)*
-- **AR** — [Wave AR — README-Refresh + Onboarding-Journey (BOO-112)](wave-ar-readme-refresh.md) *(DE only)*
-- **AQ** — [Wave AQ — 10 Alt-Sketches auf EN (BOO-111)](wave-aq-sketch-en-parity.md) *(DE only)*
-- **AP** — [Wave AP — dpo-Overview-Sketch (BOO-110)](wave-ap-dpo-overview-sketch.md) *(DE only)*
-- **AO** — [Wave AO — README-Paritaet security-architect (BOO-109)](wave-ao-security-readme-split.md) *(DE only)*
-- **AN** — [Wave AN — Artefakt- & Freigabe-Landkarte (BOO-108)](wave-an-artefakt-landkarte.md) *(DE only)*
-- **AM** — [Wave AM — Compliance-Mechanik-Sketch (BOO-107)](wave-am-compliance-sketch.md) *(DE only)*
-- **AL** — [Wave AL — EU-AI-Act-Lebenszyklus + Compliance-Mechanik-Doku (BOO-106)](wave-al-compliance-mechanik.md) *(DE only)*
-- **AK** — [Wave AK — EU AI Act echtes konditionales Opt-in (BOO-105)](wave-ak-eu-ai-act-optin.md) *(DE only)*
-- **AJ** — [Wave AJ — Bootstrap-Vorbereitungs-Checkliste (BOO-104)](wave-aj-bootstrap-prep.md) *(DE only)*
-- **AI** — [Wave AI — Enterprise-Readiness (BOO-100…103)](wave-ai-enterprise-readiness.md) *(DE only)*
-- **AG** — [Wave AG — Doku-Sync-Sweep (BOO-97)](wave-ag-docs-sync-sweep.md) *(DE only)*
-- **AF** — [Wave AF — Onboarding-Fix: Install + Quickstart + Self-Install/Self-Update (BOO-96)](wave-af-onboarding-fix.md) *(DE only)*
-- **AE** — [Wave AE — raw-pii-guard ruff-clean + Hook-Lint-Gate (BOO-95)](wave-ae-raw-pii-guard-ruff-clean.md) *(DE only)*
-- **AD** — [Wave AD — HANDBUCH-Anhang Y: VPS/Cloud-Team-Runbook (BOO-94)](wave-ad-handbuch-appendix-y-vps-runbook.md) *(DE only)*
-- **AC** — [Wave AC — Raw-PII-in-Logs-Guard (BOO-93)](wave-ac-raw-pii-guard.md) *(DE only)*
-- **AB** — [Wave AB — orphan-check Work-Item-Ausnahme (BOO-92)](wave-ab-orphan-check-exception.md) *(DE only)*
+- **AS** — [Wave AS — Complementary tooling: setup-checklist (BOO-113)](wave-as-complementary-tooling.en.md) · [DE](wave-as-complementary-tooling.md)
+- **AR** — [Wave AR — README refresh + onboarding journey (BOO-112)](wave-ar-readme-refresh.en.md) · [DE](wave-ar-readme-refresh.md)
+- **AQ** — [Wave AQ — 10 legacy sketches to EN (BOO-111)](wave-aq-sketch-en-parity.en.md) · [DE](wave-aq-sketch-en-parity.md)
+- **AP** — [Wave AP — dpo overview sketch (BOO-110)](wave-ap-dpo-overview-sketch.en.md) · [DE](wave-ap-dpo-overview-sketch.md)
+- **AO** — [Wave AO — README parity security-architect (BOO-109)](wave-ao-security-readme-split.en.md) · [DE](wave-ao-security-readme-split.md)
+- **AN** — [Wave AN — Artifact & sign-off map (BOO-108)](wave-an-artefakt-landkarte.en.md) · [DE](wave-an-artefakt-landkarte.md)
+- **AM** — [Wave AM — Compliance mechanics sketch (BOO-107)](wave-am-compliance-sketch.en.md) · [DE](wave-am-compliance-sketch.md)
+- **AL** — [Wave AL — EU AI Act lifecycle + compliance mechanics docs (BOO-106)](wave-al-compliance-mechanik.en.md) · [DE](wave-al-compliance-mechanik.md)
+- **AK** — [Wave AK — EU AI Act real conditional opt-in (BOO-105)](wave-ak-eu-ai-act-optin.en.md) · [DE](wave-ak-eu-ai-act-optin.md)
+- **AJ** — [Wave AJ — Bootstrap-Preparation-Checklist (BOO-104)](wave-aj-bootstrap-prep.en.md) · [DE](wave-aj-bootstrap-prep.md)
+- **AI** — [Wave AI — Enterprise-Readiness (BOO-100…103)](wave-ai-enterprise-readiness.en.md) · [DE](wave-ai-enterprise-readiness.md)
+- **AG** — [Wave AG — Docs-Sync-Sweep (BOO-97)](wave-ag-docs-sync-sweep.en.md) · [DE](wave-ag-docs-sync-sweep.md)
+- **AF** — [Wave AF — Onboarding-Fix: Install + Quickstart + Self-Install/Self-Update (BOO-96)](wave-af-onboarding-fix.en.md) · [DE](wave-af-onboarding-fix.md)
+- **AE** — [Wave AE — raw-pii-guard ruff-clean + Hook-Lint-Gate (BOO-95)](wave-ae-raw-pii-guard-ruff-clean.en.md) · [DE](wave-ae-raw-pii-guard-ruff-clean.md)
+- **AD** — [Wave AD — HANDBUCH Anhang Y: VPS/Cloud team runbook (BOO-94)](wave-ad-handbuch-appendix-y-vps-runbook.en.md) · [DE](wave-ad-handbuch-appendix-y-vps-runbook.md)
+- **AC** — [Wave AC — Raw-PII-in-Logs-Guard (BOO-93)](wave-ac-raw-pii-guard.en.md) · [DE](wave-ac-raw-pii-guard.md)
+- **AB** — [Wave AB — orphan-check work-item exception (BOO-92)](wave-ab-orphan-check-exception.en.md) · [DE](wave-ab-orphan-check-exception.md)
 - **AA** — [Wave AA — CONTEXT.md ubiquitous language: canonical + forbidden vocabulary (BOO-91)](wave-aa-context-ubiquitous-language.en.md) · [DE](wave-aa-context-ubiquitous-language.md)
-- **Z** — [Wave Z — Contribute-Back-Schleife: contribute-fix.sh (BOO-90)](wave-z-contribute-back.md) *(DE only)*
-- **Y** — [Wave Y — coverage-check.sh Single-Source + Drift-Guard (BOO-89)](wave-y-hook-single-source.md) *(DE only)*
-- **X** — [Release Notes - Wave X Deterministischer dpo-Kontrollkatalog](wave-x-dpo-control-catalog.md) *(DE only)*
-- **W** — [Release Notes - Wave W Coverage-Hook-Nenner-Fix](wave-w-coverage-denominator-fix.md) *(DE only)*
-- **V** — [Release Notes - Wave V Layer-0 Edit-Bodyguard](wave-v-layer0-bodyguard.md) *(DE only)*
-- **U** — [Release Notes - Wave U Vault-Harvest-Aktivierungs-Anleitung](wave-u-vault-harvest-activation-guide.md) *(DE only)*
-- **T** — [Release Notes - Wave T Vault-Sync-Verbesserungen](wave-t-vault-sync-improvements.md) *(DE only)*
-- **S** — [Release Notes - Wave S Optionales Container-Profil](wave-s-container-profile.md) *(DE only)*
-- **R** — [Release Notes - Wave R Multi-Projekt-Betrieb](wave-r-multi-project-operation.md) *(DE only)*
-- **Q** — [Release Notes - Wave Q Post-Install-Verifikation](wave-q-verification.md) *(DE only)*
-- **P** — [Release Notes - Wave P README-Aktualisierung + Toolchain-Doku](wave-p-readme-and-toolchain-doc.md) *(DE only)*
-- **O** — [Release Notes - Wave O Framework-native Vault-Sync-Engine](wave-o-vault-sync-engine.md) *(DE only)*
-- **N** — [Release Notes - Wave N Vault-Harvest + Skill-Installations-Strategie](wave-n-vault-harvest-and-skill-location.md) *(DE only)*
-- **M** — [Release Notes - Wave M Bundle-Adoption DPO + security-architect](wave-m-bundle-adoption-dpo-security.md) *(DE only)*
-- **L** — [Release Notes - Wave L Multi-Operator-Koordination](wave-l-multi-operator-coordination.md) *(DE only)*
-- **K** — [Release Notes - Wave K Deployment-Szenarien + Souveraenitaets-Stack](wave-k-deployment-and-sovereignty.md) *(DE only)*
-- **J** — [Release Notes - Wave J Privacy-by-Design](wave-j-privacy-by-design.md) *(DE only)*
-- **I** — [Release Notes - Wave I Token-Effizienz-Policy](wave-i-token-efficiency.md) *(DE only)*
-- **H** — [Release Notes - Wave H Documentation-SSoT & Onboarding](wave-h-documentation-ssot-onboarding.md) *(DE only)*
-- **G** — [Release Notes — Wave G Security-Workflow-Sketch](wave-g-security-workflow-sketch.md) *(DE only)*
-- **F** — [Release Notes — Wave F Security-Dokumentationsmodell](wave-f-security-doc-model.md) *(DE only)*
-- **E** — [Release Notes — Wave E Provider und Upgrade](wave-e-provider-upgrade.md) *(DE only)*
-- **D** — [Release Notes — Wave D Sketches](wave-d-sketches.md) *(DE only)*
-- **C** — [Release Notes — Wave C](wave-c.md) *(DE only)*
-- **B** — [Release Notes — Wave B](wave-b.md) *(DE only)*
-- **A** — [Release Notes — Wave A](wave-a.md) *(DE only)*
+- **Z** — [Wave Z — Contribute-Back Loop: contribute-fix.sh (BOO-90)](wave-z-contribute-back.en.md) · [DE](wave-z-contribute-back.md)
+- **Y** — [Wave Y — coverage-check.sh Single-Source + Drift Guard (BOO-89)](wave-y-hook-single-source.en.md) · [DE](wave-y-hook-single-source.md)
+- **X** — [Release Notes - Wave X Deterministic dpo Control Catalog](wave-x-dpo-control-catalog.en.md) · [DE](wave-x-dpo-control-catalog.md)
+- **W** — [Release Notes - Wave W Coverage Hook Denominator Fix](wave-w-coverage-denominator-fix.en.md) · [DE](wave-w-coverage-denominator-fix.md)
+- **V** — [Release Notes - Wave V Layer-0 Edit Bodyguard](wave-v-layer0-bodyguard.en.md) · [DE](wave-v-layer0-bodyguard.md)
+- **U** — [Release Notes - Wave U Vault Harvest Activation Guide](wave-u-vault-harvest-activation-guide.en.md) · [DE](wave-u-vault-harvest-activation-guide.md)
+- **T** — [Release Notes - Wave T Vault Sync Improvements](wave-t-vault-sync-improvements.en.md) · [DE](wave-t-vault-sync-improvements.md)
+- **S** — [Release Notes - Wave S Optional Container Profile](wave-s-container-profile.en.md) · [DE](wave-s-container-profile.md)
+- **R** — [Release Notes - Wave R Multi-Project Operation](wave-r-multi-project-operation.en.md) · [DE](wave-r-multi-project-operation.md)
+- **Q** — [Release Notes - Wave Q Post-Install Verification](wave-q-verification.en.md) · [DE](wave-q-verification.md)
+- **P** — [Release Notes - Wave P README Update + Toolchain Doc](wave-p-readme-and-toolchain-doc.en.md) · [DE](wave-p-readme-and-toolchain-doc.md)
+- **O** — [Release Notes - Wave O Framework-native Vault-Sync Engine](wave-o-vault-sync-engine.en.md) · [DE](wave-o-vault-sync-engine.md)
+- **N** — [Release Notes - Wave N Vault Harvest + Skill Installation Strategy](wave-n-vault-harvest-and-skill-location.en.md) · [DE](wave-n-vault-harvest-and-skill-location.md)
+- **M** — [Release Notes - Wave M Bundle Adoption DPO + security-architect](wave-m-bundle-adoption-dpo-security.en.md) · [DE](wave-m-bundle-adoption-dpo-security.md)
+- **L** — [Release Notes - Wave L Multi-Operator Coordination](wave-l-multi-operator-coordination.en.md) · [DE](wave-l-multi-operator-coordination.md)
+- **K** — [Release Notes - Wave K Deployment Scenarios + Sovereignty Stack](wave-k-deployment-and-sovereignty.en.md) · [DE](wave-k-deployment-and-sovereignty.md)
+- **J** — [Release Notes - Wave J Privacy-by-Design](wave-j-privacy-by-design.en.md) · [DE](wave-j-privacy-by-design.md)
+- **I** — [Release Notes - Wave I Token Efficiency Policy](wave-i-token-efficiency.en.md) · [DE](wave-i-token-efficiency.md)
+- **H** — [Release Notes - Wave H Documentation SSoT & Onboarding](wave-h-documentation-ssot-onboarding.en.md) · [DE](wave-h-documentation-ssot-onboarding.md)
+- **G** — [Release Notes — Wave G Security Workflow Sketch](wave-g-security-workflow-sketch.en.md) · [DE](wave-g-security-workflow-sketch.md)
+- **F** — [Release Notes — Wave F Security Documentation Model](wave-f-security-doc-model.en.md) · [DE](wave-f-security-doc-model.md)
+- **E** — [Release Notes — Wave E Provider and Upgrade](wave-e-provider-upgrade.en.md) · [DE](wave-e-provider-upgrade.md)
+- **D** — [Release Notes — Wave D Sketches](wave-d-sketches.en.md) · [DE](wave-d-sketches.md)
+- **C** — [Release Notes — Wave C](wave-c.en.md) · [DE](wave-c.md)
+- **B** — [Release Notes — Wave B](wave-b.en.md) · [DE](wave-b.md)
+- **A** — [Release Notes — Wave A](wave-a.en.md) · [DE](wave-a.md)

@@ -1,5 +1,7 @@
 # Release Notes - Wave U Vault-Harvest-Aktivierungs-Anleitung
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-u-vault-harvest-activation-guide.en.md)
+
 Stand: 2026-05-28 · **v0.2.1-Linie** (erste Doku-Politur nach dem v0.2.0-Release)
 
 ## Zweck

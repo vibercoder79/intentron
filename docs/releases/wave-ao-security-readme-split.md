@@ -1,5 +1,7 @@
 # Wave AO — README-Paritaet security-architect (BOO-109)
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-ao-security-readme-split.en.md)
+
 **Was jetzt da ist:** `security-architect` folgt jetzt der Repo-Konvention **zwei Dateien pro Skill** (`README.md` = DE, `README.en.md` = EN) — vorher war es eine einzelne zweisprachige Datei.
 
 ## Stories

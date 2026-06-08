@@ -1,5 +1,7 @@
 # Wave AK — EU AI Act echtes konditionales Opt-in (BOO-105)
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-ak-eu-ai-act-optin.en.md)
+
 **Problem vorher (aus BOO-101):** „Strikt opt-in" stimmte am Runner-Ende nicht. `dpo-audit.py` laedt per `glob` alle `dpo/controls/*.yml` — der EU-AI-Act-Katalog lief also bei jedem dpo-Audit mit, auch in Privacy-Projekten ohne KI-Anteil (`AI_SYSTEM.md fehlt`-GAP = Rauschen). Ausserdem gab es nur eine A.4-Notiz, keine ausfuehrbare Bootstrap-Phase.
 
 **Was jetzt da ist:**

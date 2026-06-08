@@ -1,5 +1,7 @@
 # Release Notes - Wave V Layer-0 Edit-Bodyguard
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-v-layer0-bodyguard.en.md)
+
 Stand: 2026-05-31
 
 ## Zweck

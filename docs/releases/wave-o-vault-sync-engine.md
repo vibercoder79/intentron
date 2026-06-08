@@ -1,5 +1,7 @@
 # Release Notes - Wave O Framework-native Vault-Sync-Engine
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-o-vault-sync-engine.en.md)
+
 Stand: 2026-05-28
 
 ## Zweck

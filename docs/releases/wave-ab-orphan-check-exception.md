@@ -1,5 +1,7 @@
 # Wave AB — orphan-check Work-Item-Ausnahme (BOO-92)
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-ab-orphan-check-exception.en.md)
+
 **Linear:** [BOO-92](https://linear.app/owlist/issue/BOO-92/) · Quelle: Upstream-Feedback Feld-Installation privacy-proxy / 2XT (Martin), 2026-05-31
 
 ## Problem

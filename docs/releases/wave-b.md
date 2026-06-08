@@ -1,5 +1,7 @@
 # Release Notes — Wave B
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-b.en.md)
+
 Stand: 2026-05-19
 
 ## Zweck

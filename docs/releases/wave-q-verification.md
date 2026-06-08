@@ -1,5 +1,7 @@
 # Release Notes - Wave Q Post-Install-Verifikation
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-q-verification.en.md)
+
 Stand: 2026-05-28
 
 ## Zweck

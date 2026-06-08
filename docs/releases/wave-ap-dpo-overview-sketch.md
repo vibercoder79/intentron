@@ -1,5 +1,7 @@
 # Wave AP — dpo-Overview-Sketch (BOO-110)
 
+> 🌐 **Sprache:** Deutsch (diese Datei) · [🇬🇧 English](wave-ap-dpo-overview-sketch.en.md)
+
 **Was jetzt da ist:** ein visueller Overview-Sketch fuer den `dpo`-Skill (DE + EN, OWLIST-Farben), gerendert als PNG — der letzte der 13 Skills, der bisher keinen eigenen Sketch hatte.
 
 ## Stories
