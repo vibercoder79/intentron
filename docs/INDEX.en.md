@@ -42,6 +42,7 @@ The **Languages** column shows whether a document is bilingual (`DE+EN`) or Germ
 | [SonarCloud setup (runbook)](./runbooks/sonarcloud-setup.md) | SonarCloud integration for new GitHub repos via GitHub Actions. | Operator, DevOps | DE+EN |
 | [Sprint run (runbook)](./runbooks/sprint-run.md) | Run an entire sprint fully automatically with `/sprint-run`. | Operator | DE+EN |
 | [Sprint unattended via tmux (runbook)](./runbooks/sprint-unattended-tmux.md) | Run a sprint unattended on the VPS with tmux. | Operator, DevOps | DE+EN |
+| [Integrate a stack linter (runbook)](./runbooks/stack-linter-integrieren.md) | Integrate a non-covered stack/linter (e.g. PHP/TYPO3, Go) step by step — the 5 places + verification. | Operator, DevOps | DE+EN |
 | [Unit tests (runbook)](./runbooks/unit-tests.md) | Unit-test flow in detail: 6a-quart test gate, diff coverage, JUnit XML, anti-placeholder check. | Operator | DE+EN |
 | [Vercel CI/CD setup (runbook)](./runbooks/vercel-cicd-setup.md) | Vercel CI/CD integration via GitHub Actions, deploy after green checks. | Operator, DevOps | DE |
 | [VPS team setup (runbook)](./runbooks/vps-team-setup.md) | Set up INTENTRON on a developer VPS for teams. | Operator, DevOps | DE |

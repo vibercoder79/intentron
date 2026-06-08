@@ -1272,6 +1272,36 @@ gh api -X PUT "repos/${OWNER}/${REPO}/branches/main/protection" \
 
 ---
 
+## 8d-bis. Integrating a stack linter (BOO-178)
+
+The framework covers **JS/TS and Python** out of the box — ESLint/Ruff as linters, the matching CI workflows (§8d), Semgrep SAST and the coverage/performance gates are all wired up. Other stacks (PHP/TYPO3, Go, Java/Kotlin, …) are not — **on purpose**.
+
+**Why we don't build every language in.** Every additional hard-wired stack bloats the framework: a deterministic skill would have to know PHPStan, golangci-lint, Checkstyle and Ruff and maintain them against each other. That is the bloat trap we avoid. Instead there is a **documented, verifiable path**: the operator integrates the stack following this chapter — and the guarantee does not come from a prompt but from the **verification step** in the runbook (deliberately introduce a lint/type error → the gates must turn red → remove the error again). Only once that red-green cycle works does the stack truly bite.
+
+**The 5 places.** A new stack/linter is integrated at exactly these five places — no more, no fewer:
+
+1. **`.claude/environment.json` → `tools_available`** — declare the linter(s) + test runner (e.g. `phpstan: true`, `tests: "phpunit"`) so `/implement` knows the gates (see `file-templates.md` §environment.json).
+2. **CI workflow** — add `.github/workflows/<linter>.yml` analogous to `eslint.yml`/`semgrep.yml` (Layer 3, required status check).
+3. **`.semgrep.yml` pack** — add the matching Semgrep rule set/pack for the language (the 6a-bis SAST gate is language-agnostic).
+4. **Coverage tool** — pick the stack's own coverage tool (PHPUnit/JaCoCo/`go test -cover`) and wire it to the 6a-quart coverage gate.
+5. **ADR** in `docs/domain/adrs/` — record the stack/linter decision (the bootstrap `e)` convention).
+
+**Mandatory bridge to BOO-176.** The new gate-config files (see the table below, column "Gate config file(s)") must be entered into `.claude/sensitive-paths.json` — otherwise the "only the operator moves the bar" protection (the bodyguard block pause) does not cover the freshly integrated stack, and an agent could silently lower the quality threshold.
+
+**Canonical linter table** (ground truth, identical to the runbook and the bootstrap `e)` path — do not re-invent):
+
+| Stack | Linter | Formatter | Typecheck | Coverage | Gate config file(s) |
+|---|---|---|---|---|---|
+| JS/TS | ESLint (+ `typescript-eslint`) | Prettier | `tsc --noEmit` | c8 + jest/vitest | `eslint.config.mjs` |
+| Python | Ruff (+ Black) | Black | — | pytest-cov | `pyproject.toml` / `ruff.toml` |
+| PHP | PHPStan / Psalm + PHP-CS-Fixer | PHP-CS-Fixer | (PHPStan) | PHPUnit `--coverage` | `phpstan.neon` |
+| Java / Kotlin | Checkstyle / ktlint + SpotBugs | — | (javac) | JaCoCo | `checkstyle.xml` |
+| Go | golangci-lint (+ gofmt) | gofmt | (go vet) | `go test -cover` | `.golangci.yml` |
+
+**Step-by-step, verification and copy templates** (PHP/TYPO3, Go) live in the runbook → `docs/runbooks/stack-linter-integrieren.md`. External stack/version docs (e.g. TYPO3 specifics) do not belong in the runbook; route them into the project knowledge via `knowledge-onboarding`. The runbook is a **living document** — further stacks are added as needed.
+
+---
+
 ## 8g. Linear setup per project (BOO-30)
 
 > **MCP connection on a headless VPS (BOO-133):** this section covers the **Linear↔GitHub integration**. The **Claude Code Linear MCP OAuth on a VPS without a browser** (SSH port-forward tunnel + token setup without a leak) is described in **Appendix AB**.

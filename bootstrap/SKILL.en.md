@@ -149,7 +149,7 @@ Which technology / language? (e.g. Go, Rust, Java, PHP, Ruby — or "not decided
   | Ruby | `RuboCop` |
   | other | operator names the linter |
 
-  `STACK_CHOICE` stays `e`; the linter/tooling setup follows the hint (operator sets it up), **not** the ESLint default. Record the decision as an ADR in `docs/domain/adrs/`.
+  `STACK_CHOICE` stays `e`; the linter/tooling setup follows the hint (operator sets it up), **not** the ESLint default. Record the decision as an ADR in `docs/domain/adrs/`. For the concrete integration (the 5 places + verification + copy templates) → HANDBUCH chapter "Integrating a stack linter" (§8d-bis) + runbook `docs/runbooks/stack-linter-integrieren.md`.
 - **"not decided yet"** → mark it explicitly as open (no JS default) **or** use guided discovery (A.1a) to derive a proposal from a source/description.
 
 ### A.1a Guided stack discovery (BOO-127 — on `e)` or uncertainty)
