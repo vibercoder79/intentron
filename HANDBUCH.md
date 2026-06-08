@@ -935,6 +935,8 @@ Schrader Code Crash Kap. 3 §Production Readiness §Observability + Kap. 4 §Run
 
 Bestands-Projekte: `bash <skill-repo>/bootstrap/scripts/migrate-to-v2.sh --issue BOO-14` legt die drei Files idempotent an. Operator-Schritte zur Service-Befuellung: siehe `bootstrap/references/migration-checklist-v1-to-v2.md §BOO-14`.
 
+> **Hier gehoeren Logging-/Monitoring-Vorgaben hin.** `observability.md` ist der Ort, an dem der Operator die abgeglichenen Logging-/Monitoring-Vorgaben eintraegt (Konzern-Schema, Log-Ziele, Retention, Alert-Routing). `ARCHITECTURE_DESIGN.md §5/§6` referenziert die Datei, und `/architecture-review` prueft sie als Dimension #5 — so nimmt die Architektur-Doku + Review die Vorgaben auf. Konzept, Onboarding-Fragen und Beispiele: §8d-ter „Logging & Monitoring" + Runbook `docs/runbooks/logging-monitoring.md`.
+
 #### Gruppe H — Reliability-Skelett (BOO-25)
 
 | Artefakt | Zweck |
@@ -1369,6 +1371,26 @@ Das Framework deckt **JS/TS und Python** out-of-the-box ab — ESLint/Ruff als L
 | Go | golangci-lint (+ gofmt) | gofmt | (go vet) | `go test -cover` | `.golangci.yml` |
 
 **Schritt für Schritt, Verifikation und Kopiervorlagen** (PHP/TYPO3, Go) stehen im Runbook → `docs/runbooks/stack-linter-integrieren.md`. Externe Stack-/Versions-Doku (z.B. TYPO3-Spezifika) gehört nicht ins Runbook, sondern wird über `knowledge-onboarding` ins Projektwissen eingeroutet. Das Runbook ist ein **lebendes Dokument** — weitere Stacks werden bei Bedarf ergänzt.
+
+---
+
+## 8d-ter. Logging & Monitoring (BOO-179)
+
+Observability ist im Framework **schon vollständig verdrahtet** — als Architektur-Dimension #5, mit dem Bootstrap-Skelett `observability.md` (Gruppe G, BOO-14) und der Aufnahme in `ARCHITECTURE_DESIGN.md §5/§6`. Was bisher fehlte, war nicht die Mechanik, sondern die **Sichtbarkeit**: wo Logging-/Monitoring-Vorgaben hingehören und wann man sie einträgt. Dieses Kapitel schließt genau diese Lücke.
+
+**Logging/Monitoring ist ein nachgelagerter Track — kein ideation-Thema.** Das **Framework ≠ Architektur-Workshop.** Beim Bootstrap legt niemand fest, ob in JSON oder nach Konzern-Schema geloggt wird, ob ein Log-File reicht oder Prometheus/Grafana Pflicht ist, welche Retention gilt. Das ist ein **eigener Track nach dem Bootstrap**, getrieben von Konzern-Vorgaben und Betriebsrealität. Deshalb gibt es **bewusst kein ideation-Interview** dazu (es würde die Ideation aufblähen) — sondern einen sichtbaren Ort für die Vorgaben plus einen Hinweis am Bootstrap-Ende.
+
+**Durchsetzung passiert natürlich, nicht über ein Gate.** Wer Logging/Monitoring vergisst, fällt bei der **Architektur-Review** (`/architecture-review` prüft Dimension #5) bzw. der **Konzern-IT-Abnahme** durch — denn die Vorgaben gehören in `observability.md`, und `ARCHITECTURE_DESIGN.md §5/§6` referenziert sie. Es braucht keinen zusätzlichen Erzwingungs-Mechanismus: die bestehende Review-Kette ist der Durchsetzungspunkt.
+
+**Rolle von `observability.md`.** Das vom Bootstrap generierte Observability-Skelett im Projekt-Root (Gruppe G, BOO-14) hat **drei Pflicht-Sektionen** — hier trägt der Operator die abgeglichenen Vorgaben ein:
+
+1. **Logging-Schema** — strukturiertes Log-Format, Felder, Log-Level, Ziele.
+2. **Metrics-Endpoint** — was exponiert wird (z. B. `/metrics` für Prometheus), `lib/metrics`-Konvention.
+3. **Alert-Rules** — `observability/alerts/<service>.yml` (Pflicht-Alerts: `{service}_down`, `{service}_error_rate_high` >5%, `{service}_p95_slow` p95 >1s); Routing via `observability/.env.observability` (Telegram/Slack/Email, gitignored).
+
+Wer hier Vorgaben einträgt, sorgt dafür, dass die Architektur-Doku (`ARCHITECTURE_DESIGN.md §5/§6`) und die `/architecture-review` (Dimension #5) sie aufnehmen. Details zur Skelett-Struktur: §7 Gruppe G.
+
+**Welche Fragen zu klären sind, und 1–2 Beispiele, wie man `observability.md` schreibt**, stehen im Runbook → `docs/runbooks/logging-monitoring.md` (Onboarding-Fragen: Konzern-Vorgaben, Log-Ziele, Log-File vs. Prometheus/Grafana, Retention). Das Runbook ist ein **lebendes Dokument**.
 
 ---
 

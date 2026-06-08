@@ -32,6 +32,7 @@ Die Spalte **Sprachen** zeigt, ob ein Dokument zweisprachig vorliegt (`DE+EN`) o
 | [KI-Architektur-Prinzipien](../references/ki-architektur-prinzipien.md) | Die vier KI-Architektur-Prinzipien als verbindliche Voraussetzung (Schrader Kap. 4). | Architekten, Operator | DE+EN |
 | [Kollisionsschutz: drei Ebenen](./kollisionsschutz-drei-ebenen.md) | Trennt die drei Ebenen der Parallelität und ihre jeweiligen Schutzmechanismen. | Entwickler, Operator | DE+EN |
 | [LICENSE](../LICENSE.md) | Lizenztext (PolyForm Perimeter License 1.0.0) des Frameworks. | Alle | DE |
+| [Logging & Monitoring (Runbook)](./runbooks/logging-monitoring.md) | Logging/Monitoring nach dem Bootstrap einrichten: `observability.md` füllen — Onboarding-Fragen + Beispiele. | Operator, DevOps | DE+EN |
 | [Multi-User-VPS (Runbook)](./runbooks/multi-user-vps.md) | Ein neues Teammitglied auf einer geteilten VPS onboarden. | Operator, DevOps | DE+EN |
 | [Pitch](./pitch/README.md) | Beschreibung der standalone 30-Minuten-Pitch-Präsentation im OWLIST-Layout. | Vertrieb, Operator | DE |
 | [Q&A](./qa.md) | Sammlung operativer Praxisfragen ergänzend zum Handbuch. | Operator, Entwickler | DE |

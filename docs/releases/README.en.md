@@ -47,8 +47,9 @@ Update an existing release afterwards: `gh release edit v0.2.0 --notes-file docs
 
 ---
 
-## All releases — index (80 waves, newest first)
+## All releases — index (81 waves, newest first)
 
+- **CA** — [Wave CA — Make observability visible: docs + logging/monitoring runbook (BOO-179)](wave-ca-observability-sichtbar.en.md) · [DE](wave-ca-observability-sichtbar.md)
 - **BZ** — [Wave BZ — Integrate a new stack/linter: runbook + HANDBOOK chapter (BOO-178)](wave-bz-stack-linter-runbook.en.md) · [DE](wave-bz-stack-linter-runbook.md)
 - **BY** — [Wave BY — Doc index catch-up: missing runbooks in the central index (BOO-181)](wave-by-doku-index-nachzug.en.md) · [DE](wave-by-doku-index-nachzug.md)
 - **BX** — [Wave BX — PR & merge hygiene: guard against duplicate PRs (BOO-175)](wave-bx-pr-merge-hygiene.en.md) · [DE](wave-bx-pr-merge-hygiene.md)
