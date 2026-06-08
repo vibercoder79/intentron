@@ -1169,6 +1169,42 @@ In ch. 3 §Production Readiness and ch. 4 §Run the System, Schrader covers the 
 
 ---
 
+## 8c-bis. Unit Tests
+
+Unit tests don't run as a separate skill in the framework — they run as a **test gate inside `/implement`**, step **6a-quart**. This chapter explains, from the operator's perspective, how the flow works and what evidence it leaves behind. The detailed flow (local test run, troubleshooting) lives in the runbook `docs/runbooks/unit-tests.en.md`.
+
+**Boundary first: unit ≠ integration/E2E.** This gate checks **unit tests** — individual functions/modules in isolation. Integration and E2E tests (multiple components after deployment) are a **separate topic not covered here**. There is deliberately no integration-test skill.
+
+### The 6a-quart test gate
+
+The step runs **in the skill, not in the pre-commit hook** — tests take too long for the hook's 10-second budget. Per iteration:
+
+1. **Test run with coverage + JUnit XML** — Node: `npx c8 … npx jest … --reporters=jest-junit`; Python: `pytest --cov … --junit-xml=…`. The JUnit XML lands as `tests-iter${N}.junit.xml`, coverage as `coverage-final.json` under `journal/reports/local/<run>/`.
+2. **`coverage-check.sh`** correlates the added lines from `git diff --cached -U0` with the coverage data — **diff coverage**, not total coverage (fair on legacy repos).
+3. **Gate decision** over two thresholds: **≥ 80 % = Pass**, **60–80 % = Warn** (operator decides, reason in the Linear comment), **< 60 % = Block** (add tests, repeat the iteration). At most **5 iterations**, then operator intervention.
+
+Each iteration is counted in `meta.json.iterations.tests`. If the test runner can't emit JUnit XML (e.g. Mocha without a reporter), `iterations.tests` stays at 0 — the coverage run itself still proceeds.
+
+### Anti-placeholder check (BOO-177) — quality, not just the number
+
+Coverage measures **whether** a line was touched by a test — not **whether the test checks anything**. Trivial test bodies (`expect(true).toBe(true)`, empty body, `assert True`) and unjustified skips (`it.skip`, `xit`, `@pytest.mark.skip` without a reason) raise the coverage number without testing anything. This is the same root problem as sister story BOO-176 (*"agent gamed the gate"*), here at the test level.
+
+The **anti-placeholder check** is therefore a **dedicated, targeted check on test files** (the `anti-placeholder-check.py` hook — AST for Python, heuristics for JS/TS; **not** a linter — linters check style/types, not test meaningfulness). It fires in the same 6a-quart test gate and flags empty/trivial test bodies as well as unjustified skips. Coverage **and** the anti-placeholder check together form the complete gate: *"enough tests"* (coverage) **and** *"real tests"* (anti-placeholder). Source: `specs/BOO-177.md`.
+
+### Evidence for the audit
+
+| Evidence | What it shows | Location | Persistence zone |
+| -- | -- | -- | -- |
+| `tests-iter{N}.junit.xml` | Which tests ran, with what result | `journal/reports/local/<run>/` | C (local, ephemeral) |
+| `coverage-final.json` | Diff coverage of the new code | `journal/reports/local/<run>/` | C (local, ephemeral) |
+| `meta.json.iterations.tests` | How often the test loop ran | `journal/reports/local/<run>/meta.json` | C (local, ephemeral) |
+
+The **load-bearing** proof comes from the CI artifacts (zone B, 30-day retention) or the coverage trend in the sprint frontmatter (zone A). How an auditor pulls this evidence — including test **quality** via the anti-placeholder check — is in the runbook `docs/runbooks/audit-perspective.en.md`.
+
+> **Deep dive:** detailed flow, local test run per stack, and troubleshooting → `docs/runbooks/unit-tests.en.md`.
+
+---
+
 ## 8d. Coding Environments — Mac / VPS / CI
 
 The toolchain runs differently in four environments. **Key point:** no quality penalty for coding on the VPS — the gates are the same (ESLint, Semgrep, coverage, performance). What differs is the tooling list. IDE-specific plugins (Error Lens, SonarQube for IDE) only exist on the Mac in VS Code; on the VPS you work with the CLI variants. SonarQube Cloud runs server-side and is independent of the coding environment — the server analyses after every CI run.
@@ -2068,6 +2104,7 @@ Two further runbooks cover concrete setup tasks:
 
 - [`framework-update.en.md`](docs/runbooks/framework-update.en.md) — lift an existing project to the current framework version.
 - [`sonarcloud-setup.en.md`](docs/runbooks/sonarcloud-setup.en.md) — set up SonarQube Cloud for a GitHub repo (see also Appendix AA).
+- [`unit-tests.en.md`](docs/runbooks/unit-tests.en.md) — unit-test flow in detail: 6a-quart test gate, diff coverage, JUnit XML, anti-placeholder check (see also chapter 8c-bis).
 
 ---
 

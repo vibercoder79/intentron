@@ -30,6 +30,16 @@ Fuer Bug-Fixes, Refactorings und kleine Aenderungen. Weniger Overhead als Featur
 ### 5. Acceptance Criteria
 - Checkboxen, testbar
 
+### 5a. Test-Block / Unit-Tests (PFLICHT)
+Konkrete Unit-Testfaelle, mit denen der Fix abschliesst. (Sektion `5a`, damit 6–7 + Verweise stabil bleiben.)
+
+- **Testfaelle** (mind. Regressions-/Happy-Path + 1 Fehlerfall/Edge-Case), je mit erwartetem Verhalten.
+- **AC-Bezug** — welcher Test deckt welches Acceptance Criterion ab.
+- **Keine Platzhalter-Tests:** `assert true`, `expect(true).toBe(true)`, leere Testkoerper oder
+  unbegruendetes `skip`/`xit`/`@pytest.mark.skip` — der Anti-Platzhalter-Check (BOO-177) im
+  implement-Test-Gate (`/implement` Schritt 6a-quart) flaggt sie.
+- **Abgrenzung:** Nur Unit-Tests — NICHT Integration/E2E.
+
 ### 6. Security Impact (PFLICHT)
 - Change-Type: `none | api | auth | data | dependency | ci | governance | external-provider | workflow | config | infrastructure | content`
 - Beruehrt der Fix sensible Pfade, externe Inputs, Secrets, Auth, Datenhaltung oder CI/Governance?

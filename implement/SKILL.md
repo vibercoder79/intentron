@@ -725,18 +725,65 @@ dauern zu lange — wuerde 10s-Budget des Hooks sprengen).
 **Laufzeit-Budget:** Skript-Lauf <2 Sekunden. Test-Lauf selbst kann mehrere
 Minuten dauern — daher NICHT im Pre-Commit-Hook.
 
+**6a-quint) Anti-Platzhalter-Check — Test-Qualitaet statt nur Test-Quantitaet (BOO-177)**
+
+> **Tool-Kette:** `git diff --cached --name-only` -> Test-Datei-Filter -> hooks/anti-placeholder-check.py
+> -> deterministischer Befund (Python-AST + JS/TS-Heuristik) -> Gate-Entscheidung.
+> Gleiches Grundproblem wie BOO-176 ("Agent gamed das Gate"), hier auf Test-Ebene:
+> triviale/leere Tests heben die Coverage-Zahl, ohne etwas zu testen.
+
+**Wichtig:** Laeuft **nach** dem Coverage-Lauf (6a-quart), im Skill — NICHT im Pre-Commit-Hook.
+Coverage misst *wie viel* Code getestet ist, der Anti-Platzhalter-Check ob *echt* getestet wird.
+Es ist **kein Linter** (ESLint/Ruff pruefen Stil/Typen, nicht Test-Sinnhaftigkeit) — ein eigener,
+gezielter Check nur auf Test-Dateien.
+
+**Geprueft werden** nur die geaenderten Test-Dateien aus `git diff --cached`
+(erkannt an `*.test.{js,ts,jsx,tsx}`, `*.spec.{js,ts}`, `test_*.py`, `*_test.py`, `tests/**`):
+
+```bash
+bash -c 'python3 .claude/hooks/anti-placeholder-check.py --strict'
+# ohne Argumente erkennt der Check die gestageten Test-Dateien selbst
+```
+
+**Flaggt zwei Klassen:**
+1. **Triviale/leere Tests** — `expect(true).toBe(true)`, `assert True`, `assert 1 == 1`,
+   leerer Testkoerper (nur `pass` / `{}` / Docstring).
+2. **Unbegruendete Skips** — `it.skip`/`test.skip`/`describe.skip`/`xit`/`xdescribe`,
+   `@pytest.mark.skip`/`@pytest.mark.skipif` **ohne** `reason=` bzw. ohne Begruendungskommentar.
+
+**Gate-Verhalten:**
+- **0 Findings:** Gate bestanden — weiter zu Schritt 2 (Syntax & Laufzeit).
+- **>=1 Finding (Block):** Gate **fail** — Platzhalter-Test durch echte Assertion ersetzen oder
+  Skip begruenden (`reason=` / Kommentar), dann Iterations-Schritt 1 von 6a-quart wiederholen.
+- **Operator-Override:** nur explizit + protokolliert — Befund + Begruendung als
+  `override_audit`-Eintrag in `meta.json` festhalten (gleiche Disziplin wie BOO-176:
+  die Test-Messlatte senkt nur der Operator, nie der Agent). Im `git diff --cached` ist
+  kein Test-File enthalten -> Gate uebersprungen (`skipped_gates.anti_placeholder`).
+
+**Doku in `meta.json`:** Iterationen unter `iterations.anti_placeholder`, ein
+Skip-Grund unter `skipped_gates.anti_placeholder` (z.B. `"no test files in diff"`),
+ein Operator-Override unter `override_audit[]`.
+
+**Konfiguration:** Default = Warnung; `--strict` / `STRICT=1` macht jeden Treffer zum
+Hard-Fail (im Gate immer strict). Projekt-Allowlist optional in
+`.claude/anti-placeholder-check.local` (ein Glob pro Zeile; Praefix `path:` fuer zusaetzliche
+Test-Pfade). Selbsttest: `python3 .claude/hooks/anti-placeholder-check.py --self-test`.
+
+**Laufzeit-Budget:** <1 Sekunde (nur die geaenderten Test-Dateien, dependency-frei).
+
 Schritt 2 — Syntax & Laufzeit:
 - `node --check` auf alle geaenderten .js Files (Syntax-Fehler?)
 - Falls Agent: 1x ausfuehren im DRY_RUN/TEST_MODE — laeuft er durch ohne Crash?
 - Falls Library/Modul: Wird es korrekt importiert von allen Consumern?
 
-**Hintergrund der 6 Tools:**
+**Hintergrund der 7 Tools:**
 | Tool | Rolle | Wann aktiv |
 |------|-------|-----------|
 | **ESLint** (`.eslintrc.js`) | Definiert + prueft Coding-Regeln (Syntax, Security, Style) | CLI in Schritt 6a + passiv in VS Code |
 | **Semgrep** (`.semgrep.yml`) | Pre-Commit-SAST mit Pack-basiertem Regelset | CLI in Schritt 6a-bis + Pre-Commit-Hook + CI-Layer |
 | **Slopsquatting-Hook** (`.claude/hooks/dependency-check.sh`) | Supply-Chain-Pruefung (Existenz + Age + CVE) | Pre-Commit-Hook nach Semgrep, nur bei Manifest-Diff |
 | **Coverage-Hook** (`.claude/hooks/coverage-check.sh`) | Diff-Coverage-Gate (>=80% added lines) | Wann aktiv: /implement Schritt 6a-quart, NICHT Pre-Commit-Hook |
+| **Anti-Platzhalter-Check** (`.claude/hooks/anti-placeholder-check.py`) | Test-Qualitaet: flaggt triviale/leere Tests + unbegruendete Skips (BOO-177) | Wann aktiv: /implement Schritt 6a-quint, NICHT Pre-Commit-Hook |
 | **SonarQube for IDE** (SonarLint) | Tiefere Security-Analyse, Code Smells, Bug-Patterns | Passiv im Editor waehrend Coding |
 | **Error Lens** | Zeigt ESLint + SonarLint Findings inline in der Zeile | Passiv im Editor — kein Verstecken von Fehlern |
 

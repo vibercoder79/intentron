@@ -420,3 +420,50 @@ Guard ist die optionale automatische Enforcement-Schicht dazu.
 Ruff-Profil (`line-length 100`, `select = E,F,S`) sauber — eine `per-file-ignore`-Ausnahme im
 Downstream-Projekt ist **nicht** noetig. Das Framework lintet die Quelle selbst via CI
 (`.github/workflows/ruff-hooks.yml`, Profil `bootstrap/references/hooks/ruff.toml`).
+
+## anti-placeholder-check.py — Anti-Platzhalter-Check fuer Test-Dateien (BOO-177)
+
+Ein gezielter, **deterministischer** Check **nur auf Test-Dateien** (KEIN Linter), der Tests
+flaggt, die die Coverage-Zahl heben, ohne etwas zu testen: triviale/leere Assertions
+(`expect(true).toBe(true)`, `assert True`, `assert 1 == 1`, leerer Testkoerper) und
+unbegruendete Skips (`it.skip`/`xit`/`@pytest.mark.skip` ohne `reason=`/Begruendungskommentar).
+Gleiches Grundproblem wie BOO-176 ("Agent gamed das Gate"), hier auf der Test-Ebene.
+
+Eigenschaften: **Python-AST** (wie `raw-pii-guard.py`, ignoriert Kommentare/Strings) +
+zeilen-basierte **JS/TS-Heuristik**, **dependency-frei** (nur python3-Stdlib), **Default = Warnung**
+(Hard-Block via `--strict` bzw. `STRICT=1`). Erkennt Test-Dateien an `*.test.{js,ts,jsx,tsx}`,
+`*.spec.{js,ts}`, `test_*.py`, `*_test.py`, `tests/**` (Jest/Vitest- und pytest-Konventionen).
+
+**Aktivieren:** Die kanonische Quelle liegt unter
+`bootstrap/references/hooks/anti-placeholder-check.py` (Single-Source). Per Migration scaffolden:
+
+```bash
+bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-177   # kopiert nach .claude/hooks/anti-placeholder-check.py
+```
+
+**Test-Gate (Standard-Verdrahtung):** Wird vom `/implement`-Skill in Schritt **6a-quint**
+(nach dem Coverage-Lauf) aufgerufen — die geaenderten Test-Dateien aus `git diff --cached`
+werden im Strict-Modus geprueft; jeder Treffer ist ein Gate-Fail:
+
+```bash
+python3 .claude/hooks/anti-placeholder-check.py --strict   # ohne Argumente: gestagete Test-Dateien
+```
+
+**Projekt-Allowlist** (optional) `.claude/anti-placeholder-check.local` — ein Glob pro Zeile,
+`#`-Kommentare; Praefix `path:` deklariert zusaetzliche Test-Pfade, sonst wird der Glob von der
+Pruefung ausgenommen:
+
+```
+# generierte Test-Fixtures ausnehmen
+**/__generated__/*.test.ts
+# zusaetzliches Test-Verzeichnis als Test-Pfad behandeln
+path:spec/
+```
+
+Selbsttest: `python3 .claude/hooks/anti-placeholder-check.py --self-test`. Querverweis:
+Coverage-Gate (`coverage-check.sh`, BOO-15) misst die *Menge* getesteten Codes — dieser Check
+sichert die *Qualitaet* der Tests; beide laufen im selben Test-Gate (Schritt 6a).
+
+**Ruff-Kompatibilitaet (BOO-95):** Die kanonische `anti-placeholder-check.py` ist gegen dasselbe
+strikte Ruff-Profil (`line-length 100`, `select = E,F,S`) sauber — das Framework lintet die Quelle
+selbst via CI (`.github/workflows/ruff-hooks.yml`, Profil `bootstrap/references/hooks/ruff.toml`).

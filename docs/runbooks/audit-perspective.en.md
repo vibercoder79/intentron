@@ -80,6 +80,8 @@ The **Zone** column points to the persistence zone above.
 | Did every change have a documented intent? | `spec-gate.sh` blocks any commit without a spec | `specs/{ISSUE-ID}.md`; [`verify-setup.sh`](../../bootstrap/references/verify-setup.sh) check 3 | A |
 | Is every commit traceable to a prompt/session? | `## Session-Referenz` block + trace tool | `specs/{ISSUE-ID}.md`; [`audit-trace.sh`](../../bootstrap/scripts/audit-trace.sh); [CONVENTIONS §Audit-Trail](../../CONVENTIONS.md) | A |
 | Did linters/SAST/coverage fire locally? | `/implement` writes SARIF/JUnit/coverage per iteration | `journal/reports/local/{date}_{story}/` + `meta.json` ([HANDBUCH Appendix E](../../HANDBUCH.md)). Ephemeral → use zone B/A for proof | C |
+| Did unit tests run (existence)? | 6a-quart test gate writes JUnit XML + coverage per iteration | `journal/reports/local/{date}_{story}/tests-iter{N}.junit.xml`, `meta.json.iterations.tests`; [Unit-tests runbook](./unit-tests.en.md) | C |
+| Are the tests **real** (quality, not just existence)? | Anti-placeholder check (hook `anti-placeholder-check.py`) flags empty/trivial tests + unjustified skips in the test gate (BOO-177) | [`specs/BOO-177.md`](../../specs/BOO-177.md); [Unit-tests runbook §Anti-placeholder](./unit-tests.en.md) | A |
 | Did GitHub Actions run/go green? | CI workflows + aggregator uploads reports as artifact (30-day retention) | `journal/reports/ci/run-{id}/`; workflows under `.github/workflows/` (`docs-drift.yml` / `hook-sources.yml` / `ruff-hooks.yml`) | B |
 | Can a merge bypass green gates? (Bypass) | Branch protection required status checks; CI as Layer 3 against `--no-verify` | [`setup-branch-protection.sh`](../../bootstrap/scripts/setup-branch-protection.sh) (BOO-29); `gh api .../branches/main/protection` | A |
 | Is data-protection/compliance proven? | `dpo-audit.py` → PASS/GAP/REVIEW-NEEDED; sprint-review 7c | [`dpo-audit.py`](../../dpo/scripts/dpo-audit.py); `dpo/reports/<date>_audit.{md,json}`; catalogs [`gdpr.yml`](../../dpo/controls/gdpr.yml) / [`ndsg.yml`](../../dpo/controls/ndsg.yml) | A |
@@ -215,6 +217,14 @@ is here. The field lives in **zone C** (gitignored) — the defensible proof tha
 from the CI artifacts (step 3). Schema:
 [`file-templates.en.md`](../../bootstrap/references/file-templates.en.md).
 
+**Unit tests: existence and quality.** The test run (gate 6a-quart) leaves `tests-iter{N}.junit.xml`
+and the counter `meta.json.iterations.tests` per iteration (zone C) — that proves **that** tests ran.
+Whether the tests are **real** (no empty/trivial bodies, no unjustified skips) is secured by the
+**anti-placeholder check** (hook `anti-placeholder-check.py` in the same gate, BOO-177). For the auditor this means:
+the coverage number alone is not a quality proof — test existence (JUnit XML) and test quality
+(anti-placeholder check) are two separate pieces of evidence. Detailed flow:
+[`unit-tests.en.md`](./unit-tests.en.md).
+
 ### 8. Four-eyes spot check (convention, not enforced)
 
 ```bash
@@ -301,6 +311,7 @@ MODE NOTE:
 | Security view: which gatekeepers fire, what they leave behind | [`ciso-security.en.md`](./ciso-security.en.md) |
 | Privacy view: DPO catalogs, gates, deterministic audit | [`dpo-privacy.en.md`](./dpo-privacy.en.md) |
 | Code-quality view: quality gates, coverage, architecture dimensions | [`cto-code-quality.en.md`](./cto-code-quality.en.md) |
+| Unit-test flow in detail: gate 6a-quart, JUnit XML, anti-placeholder check | [`unit-tests.en.md`](./unit-tests.en.md) |
 | Compliance mechanics end-to-end (gates vs. catalogs, lifecycle) | [`../compliance/compliance-mechanik.en.md`](../compliance/compliance-mechanik.en.md) |
 | Which artifact is signed off by whom and where it lives | [`../onboarding/artefakt-landkarte.en.md`](../onboarding/artefakt-landkarte.en.md) |
 | Reports convention, `meta.json` schema, persistence zones in detail | [`../../HANDBUCH.md`](../../HANDBUCH.md) — Appendix E |

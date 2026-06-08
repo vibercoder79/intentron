@@ -2922,6 +2922,9 @@ migrate_all() {
     # Wave — Quality-Gate-Integritaet (BOO-176): Gate-Configs unter Bodyguard-Schutz
     migrate_boo_176
 
+    # Wave — Unit-Test-Haertung (BOO-177): Anti-Platzhalter-Check fuer Test-Dateien
+    migrate_boo_177
+
     log_info "DE: Migration abgeschlossen. Status pro Projekt in migration-status.md eintragen."
     log_info "EN: Migration finished. Record per-project status in migration-status.md."
 }
@@ -4394,6 +4397,39 @@ YMLEOF
     return 0
 }
 
+migrate_boo_177() {
+    # BOO-177 — Anti-Platzhalter-Check fuer Test-Dateien (Unit-Test-Haertung)
+    # https://linear.app/owlist/issue/BOO-177
+    #
+    # Gezielter, deterministischer Check NUR auf Test-Dateien (kein Linter): flaggt
+    # triviale/leere Tests (expect(true).toBe(true), assert True, leerer Koerper) und
+    # unbegruendete Skips (it.skip/xit/@pytest.mark.skip ohne reason=). Greift im
+    # implement-Test-Gate (Schritt 6a-quint, nach Coverage). Gleiches Grundproblem wie
+    # BOO-176 ("Agent gamed das Gate"), hier auf der Test-Ebene.
+    #
+    # Single-Source-Konvention (BOO-89, wie raw-pii-guard/coverage-check): die kanonische
+    # Quelle wird VERBATIM kopiert — kein eingebetteter Heredoc (sonst Drift). Idempotent,
+    # nicht-destruktiv: existiert das Ziel bereits byte-identisch, passiert nichts.
+    log_info "BOO-177: anti-placeholder-check (Test-Qualitaet) scaffolden"
+    local script_dir; script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    local src="$script_dir/../references/hooks/anti-placeholder-check.py"
+    local dest=".claude/hooks/anti-placeholder-check.py"
+    if [[ ! -f "$src" ]]; then
+        log_skip "BOO-177: Kanonische Quelle fehlt ($src) — anti-placeholder-check uebersprungen"
+    elif [[ -f "$dest" ]] && cmp -s "$src" "$dest"; then
+        log_skip "BOO-177: $dest bereits aktuell (byte-identisch zur Quelle) — idempotent"
+    elif [[ "$DRY_RUN" == "true" ]]; then
+        log_dry "copy $src -> $dest (Anti-Platzhalter-Check fuer Test-Dateien)"
+    else
+        mkdir -p "$(dirname "$dest")"
+        cp "$src" "$dest"
+        chmod +x "$dest"
+        log_info "BOO-177: scaffolded $dest (Default = Warnung; im Test-Gate --strict)"
+    fi
+    log_manual "BOO-177: Anti-Platzhalter-Check laeuft im /implement-Test-Gate (Schritt 6a-quint, nach Coverage) gegen die gestageten Test-Dateien. Treffer = Gate-Fail; echte Assertion schreiben oder Skip begruenden (reason=/Kommentar). Override nur explizit + protokolliert (override_audit). Details: hooks-setup.md."
+    return 0
+}
+
 # -----------------------------------------------------------------------------
 # CLI / Argument Parsing
 # -----------------------------------------------------------------------------
@@ -4423,6 +4459,7 @@ ALL_ISSUES=(
     BOO-140 BOO-141 BOO-142 BOO-143
     BOO-146 BOO-148 BOO-149
     BOO-176
+    BOO-177
 )
 
 print_help() {
