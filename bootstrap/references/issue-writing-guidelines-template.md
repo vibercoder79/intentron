@@ -260,6 +260,18 @@ Story may only move to Linear status "Done" when:
 * [ ] All required status checks green (see BOO-29)
 * [ ] No open "QA Failed" status
 * [ ] Spec file `specs/BOO-XX.md` updated with result summary (Implement Skill Step 8)
+
+## Documentation Definition of Done (when the story adds or changes docs)
+
+When the story touches documentation, additionally:
+* [ ] Cross-linked — new/changed docs linked from and to the relevant places (README, HANDBOOK chapter, related runbooks); no dead links
+* [ ] Three indices updated — `docs/INDEX.md` (+ `.en`), `docs/onboarding/artefakt-landkarte.md` (+ `.en`), `docs/releases/README.md` (+ `.en`)
+* [ ] DE+EN parity — both language versions equivalent
+* [ ] Release note (wave doc, DE+EN) for the issue, linked in the release index
+* [ ] Sketch where operationally helpful (write JSON → render PNG → review loop)
+* [ ] `docs-drift` green, no dead links
+
+**Touchpoint quartet** — keep these four in sync per "Done": HANDBOOK/doc · release note · spec · Linear.
 ```
 
 **Rules:**

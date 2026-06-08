@@ -266,6 +266,18 @@ Story darf erst auf Linear-Status "Done" wenn:
 * [ ] Alle Required Status Checks gruen (siehe BOO-29)
 * [ ] Kein offener "QA Failed"-Status
 * [ ] Spec-File `specs/BOO-XX.md` aktualisiert mit Result-Summary (Implement-Skill Schritt 8)
+
+## Doku-Definition-of-Done (wenn die Story Doku anlegt oder aendert)
+
+Wenn die Story Dokumentation beruehrt, zusaetzlich:
+* [ ] Vernetzt — neue/geaenderte Doku von und zu den relevanten Stellen verlinkt (README, HANDBUCH-Kapitel, verwandte Runbooks); keine toten Links
+* [ ] Drei Indizes aktualisiert — `docs/INDEX.md` (+ `.en`), `docs/onboarding/artefakt-landkarte.md` (+ `.en`), `docs/releases/README.md` (+ `.en`)
+* [ ] DE+EN-Paritaet — beide Sprachversionen aequivalent
+* [ ] Release-Note (Wave-Doc, DE+EN) pro Issue, im Release-Index verknuepft
+* [ ] Sketch wo operativ hilfreich (JSON schreiben → PNG rendern → Review-Schleife)
+* [ ] `docs-drift` gruen, keine toten Links
+
+**Touchpoint-Quartett** — diese vier pro "Done" synchron halten: HANDBUCH/Doku · Release-Note · Spec · Linear.
 ```
 
 **Regeln:**
