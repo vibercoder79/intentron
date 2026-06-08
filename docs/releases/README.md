@@ -47,8 +47,9 @@ Ein bestehendes Release nachtraeglich aktualisieren: `gh release edit v0.2.0 --n
 
 ---
 
-## Alle Releases — Index (78 Waves, neueste zuerst)
+## Alle Releases — Index (79 Waves, neueste zuerst)
 
+- **BY** — [Wave BY — Doku-Index-Nachzug: fehlende Runbooks im zentralen Index (BOO-181)](wave-by-doku-index-nachzug.md) · [EN](wave-by-doku-index-nachzug.en.md)
 - **BX** — [Wave BX — PR- & Merge-Hygiene: Guard gegen doppelte PRs (BOO-175)](wave-bx-pr-merge-hygiene.md) · [EN](wave-bx-pr-merge-hygiene.en.md)
 - **BW** — [Wave BW — Doku-Definition-of-Done als Konvention (BOO-180)](wave-bw-doku-definition-of-done.md) · [EN](wave-bw-doku-definition-of-done.en.md)
 - **BV** — [Wave BV — Unit-Test-Härtung: echte Tests statt nur Coverage (BOO-177)](wave-bv-unit-test-hardening.md) · [EN](wave-bv-unit-test-hardening.en.md)

@@ -41,6 +41,8 @@ Die Spalte **Sprachen** zeigt, ob ein Dokument zweisprachig vorliegt (`DE+EN`) o
 | [SecondBrain-Setup nachziehen (Runbook)](./runbooks/secondbrain-nachziehen.md) | SecondBrain-Anbindung ohne Re-Bootstrap in einem Bestandsprojekt nachziehen. | Operator | DE+EN |
 | [SonarCloud-Setup (Runbook)](./runbooks/sonarcloud-setup.md) | SonarCloud-Integration für neue GitHub-Repos via GitHub Actions. | Operator, DevOps | DE+EN |
 | [Sprint-Run (Runbook)](./runbooks/sprint-run.md) | Einen ganzen Sprint mit `/sprint-run` vollautomatisch fahren. | Operator | DE+EN |
+| [Sprint unbeaufsichtigt per tmux (Runbook)](./runbooks/sprint-unattended-tmux.md) | Einen Sprint unbeaufsichtigt auf der VPS per tmux fahren. | Operator, DevOps | DE+EN |
+| [Unit-Tests (Runbook)](./runbooks/unit-tests.md) | Unit-Test-Ablauf im Detail: Test-Gate 6a-quart, Diff-Coverage, JUnit-XML, Anti-Platzhalter-Check. | Operator | DE+EN |
 | [Vercel-CI/CD-Setup (Runbook)](./runbooks/vercel-cicd-setup.md) | Vercel-CI/CD-Integration via GitHub Actions, Deploy nach grünen Checks. | Operator, DevOps | DE |
 | [VPS-Team-Setup (Runbook)](./runbooks/vps-team-setup.md) | INTENTRON auf einer Developer-VPS für Teams einrichten. | Operator, DevOps | DE |
 
