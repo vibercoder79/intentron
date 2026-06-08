@@ -2925,6 +2925,9 @@ migrate_all() {
     # Wave — Unit-Test-Haertung (BOO-177): Anti-Platzhalter-Check fuer Test-Dateien
     migrate_boo_177
 
+    # Wave — Doku-Definition-of-Done (BOO-180): Doku-DoD als Konvention
+    migrate_boo_180
+
     log_info "DE: Migration abgeschlossen. Status pro Projekt in migration-status.md eintragen."
     log_info "EN: Migration finished. Record per-project status in migration-status.md."
 }
@@ -4430,6 +4433,21 @@ migrate_boo_177() {
     return 0
 }
 
+migrate_boo_180() {
+    # BOO-180 — Doku-Definition-of-Done als Konvention
+    # https://linear.app/owlist/issue/BOO-180
+    #
+    # Reine Doku-Konvention: die Doku-DoD (Vernetzung, 3 Indizes, DE+EN, Release-Note,
+    # Touchpoint-Quartett) ist im kanonischen Guidelines-Template
+    # (issue-writing-guidelines-template) + CONVENTIONS.md §3 verankert. Neue Projekte
+    # erben sie ueber den Guidelines-Copy beim Bootstrap. Bestandsprojekte: die
+    # projektlokale Kopie neu ziehen, ohne eigene Anpassungen zu ueberschreiben —
+    # daher nur Hinweis (log_manual), kein Auto-Overwrite.
+    log_info "BOO-180: Doku-Definition-of-Done als Konvention (reine Doku, kein Code)"
+    log_manual "BOO-180: Doku-DoD neu in issue-writing-guidelines-template + CONVENTIONS.md §3 (Vernetzung, 3 Indizes, DE+EN, Release-Note pro Issue, Touchpoint-Quartett: HANDBUCH/Doku - Release-Note - Spec - Linear). Bestandsprojekt: docs/issue-writing-guidelines.md aus bootstrap/references/issue-writing-guidelines-template.de.md neu ziehen (eigene Anpassungen vorher sichern)."
+    return 0
+}
+
 # -----------------------------------------------------------------------------
 # CLI / Argument Parsing
 # -----------------------------------------------------------------------------
@@ -4460,6 +4478,7 @@ ALL_ISSUES=(
     BOO-146 BOO-148 BOO-149
     BOO-176
     BOO-177
+    BOO-180
 )
 
 print_help() {

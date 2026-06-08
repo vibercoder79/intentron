@@ -221,6 +221,18 @@ Before any commit that references an issue (e.g. `BOO-42: Add feature`), a spec 
 
 `hooks/doc-version-sync.sh` checks that version strings across CLAUDE.md, ARCHITECTURE_DESIGN.md, GOVERNANCE.md, package.json, and pyproject.toml stay in sync. Tool-agnostic bash.
 
+### Documentation Definition of Done (BOO-180)
+
+New or changed documentation has its own Definition of Done, layered on top of the canonical DoD (`bootstrap/references/issue-writing-guidelines-template`). When a story touches docs:
+
+1. **Cross-link** — link the new/changed doc from and to the relevant places (README, HANDBOOK chapter, related runbooks); no dead links.
+2. **Update the three indices** — `docs/INDEX.md` (+ `.en`), `docs/onboarding/artefakt-landkarte.md` (+ `.en`), `docs/releases/README.md` (+ `.en`).
+3. **DE+EN parity** — both language versions equivalent (enforced by `docs-drift`).
+4. **Release note** — a wave doc (`docs/releases/wave-<x>-*.md` + `.en`) per issue, linked in the release index.
+5. **Sketch** only where operationally helpful (write JSON → render PNG → review loop).
+
+**Touchpoint quartet** — per "Done", keep these four in sync: **HANDBOOK/doc · release note · spec · Linear**. This was lived practice; BOO-180 makes it an explicit convention.
+
 ### Audit-Trail (BOO-19)
 
 Every `/implement` run writes a `## Session-Referenz` block into the spec file (commit-SHA + session-ID + log path + audit-trace.sh command). `bootstrap/scripts/audit-trace.sh` reads the spec and reconstructs the conversation log. Tool-agnostic bash.
@@ -671,6 +683,18 @@ Vor jedem Commit, der eine Issue-ID referenziert (z.B. `BOO-42: Add feature`), m
 ### Doc-Version-Sync
 
 `hooks/doc-version-sync.sh` prueft, ob Versions-Strings ueber CLAUDE.md, ARCHITECTURE_DESIGN.md, GOVERNANCE.md, package.json und pyproject.toml synchron sind. Tool-agnostisches Bash.
+
+### Doku-Definition-of-Done (BOO-180)
+
+Neue oder geaenderte Dokumentation hat eine eigene Definition of Done, aufgesetzt auf die kanonische DoD (`bootstrap/references/issue-writing-guidelines-template`). Wenn eine Story Doku beruehrt:
+
+1. **Vernetzen** — die neue/geaenderte Doku von und zu den relevanten Stellen verlinken (README, HANDBUCH-Kapitel, verwandte Runbooks); keine toten Links.
+2. **Drei Indizes aktualisieren** — `docs/INDEX.md` (+ `.en`), `docs/onboarding/artefakt-landkarte.md` (+ `.en`), `docs/releases/README.md` (+ `.en`).
+3. **DE+EN-Paritaet** — beide Sprachversionen aequivalent (von `docs-drift` erzwungen).
+4. **Release-Note** — ein Wave-Doc (`docs/releases/wave-<x>-*.md` + `.en`) pro Issue, im Release-Index verknuepft.
+5. **Sketch** nur wo operativ hilfreich (JSON schreiben → PNG rendern → Review-Schleife).
+
+**Touchpoint-Quartett** — pro "Done" diese vier synchron halten: **HANDBUCH/Doku · Release-Note · Spec · Linear**. War gelebte Praxis; BOO-180 macht daraus eine explizite Konvention.
 
 ### Audit-Trail (BOO-19)
 
