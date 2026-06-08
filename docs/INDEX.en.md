@@ -32,6 +32,7 @@ The **Languages** column shows whether a document is bilingual (`DE+EN`) or Germ
 | [AI architecture principles](../references/ki-architektur-prinzipien.md) | The four AI architecture principles as a mandatory prerequisite (Schrader ch. 4). | Architects, operator | DE+EN |
 | [Collision protection: three layers](./kollisionsschutz-drei-ebenen.md) | Separates the three layers of parallelism and their respective protection mechanisms. | Developers, operator | DE+EN |
 | [LICENSE](../LICENSE.md) | License text (PolyForm Perimeter License 1.0.0) of the framework. | Everyone | DE |
+| [Logging & monitoring (runbook)](./runbooks/logging-monitoring.md) | Set up logging/monitoring after bootstrap: fill `observability.md` — onboarding questions + examples. | Operator, DevOps | DE+EN |
 | [Multi-user VPS (runbook)](./runbooks/multi-user-vps.md) | Onboard a new team member on a shared VPS. | Operator, DevOps | DE+EN |
 | [Pitch](./pitch/README.md) | Description of the standalone 30-minute pitch presentation in OWLIST layout. | Sales, operator | DE |
 | [Q&A](./qa.md) | Collection of operational practice questions complementing the handbook. | Operator, developers | DE |

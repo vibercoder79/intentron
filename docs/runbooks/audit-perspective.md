@@ -93,6 +93,7 @@ entstehen, nicht im Framework-Repo. Die Spalte **Zone** verweist auf die Persist
 | Übersprungene Gates dokumentiert? | `skipped_gates` (+ Grund) in `meta.json` | `meta.json.skipped_gates`; [Schema](../../bootstrap/references/file-templates.md) | C |
 | Vier-Augen bei sensiblen Pfaden? | Konvention (NICHT erzwungen) — `git log` / `git blame`, Author Gate ≠ Author Change | [HANDBUCH Anhang R §Vier-Augen-Konvention](../../HANDBUCH.md) | A |
 | Lebt das Projekt seinen `governance_mode`? | Sprint-Review Schritt 1 „Governance Drift" | [`sprint-review/SKILL.md`](../../sprint-review/SKILL.md); [CONVENTIONS Governance-Matrix](../../CONVENTIONS.md) | A |
+| Sind Logging-/Monitoring-Vorgaben dokumentiert? | `observability.md` (drei Pflicht-Sektionen) wird in `ARCHITECTURE_DESIGN.md §5/§6` referenziert; `/architecture-review` prüft Dimension #5 | `observability.md`; `ARCHITECTURE_DESIGN.md` §5/§6; [Runbook Logging & Monitoring](./logging-monitoring.md) | A |
 
 ---
 

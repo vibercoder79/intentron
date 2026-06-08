@@ -92,6 +92,7 @@ The **Zone** column points to the persistence zone above.
 | Are skipped gates documented? | `skipped_gates` (+ reason) in `meta.json` | `meta.json.skipped_gates`; [schema](../../bootstrap/references/file-templates.en.md) | C |
 | Four-eyes on sensitive paths? | Convention (NOT enforced) — `git log` / `git blame`, author of gate ≠ author of change | [HANDBUCH Appendix R §Four-Eyes convention](../../HANDBUCH.md) | A |
 | Does the project live its `governance_mode`? | Sprint-review step 1 "Governance Drift" | [`sprint-review/SKILL.md`](../../sprint-review/SKILL.md); [CONVENTIONS governance matrix](../../CONVENTIONS.md) | A |
+| Are logging/monitoring requirements documented? | `observability.md` (three required sections) is referenced in `ARCHITECTURE_DESIGN.md §5/§6`; `/architecture-review` checks dimension #5 | `observability.md`; `ARCHITECTURE_DESIGN.md` §5/§6; [Logging & monitoring runbook](./logging-monitoring.md) | A |
 
 ---
 

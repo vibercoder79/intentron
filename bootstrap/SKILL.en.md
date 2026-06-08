@@ -1639,6 +1639,7 @@ Bootstrap done. Continue with:
   5. Check the setup anytime: `bash scripts/verify-setup.sh` (`--strict` for CI) — read-only, PASS/WARN/FAIL. Details + sketch: HANDBUCH Appendix T.
   6. Fill SECURITY.md: run `security-architect` (DESIGN) — threat model (STRIDE) + mitigations (especially for governance standard/heavy).
   7. If existing docs / preliminary material present (block-B flag `bestands_doku_erkannt: true` or operator knows): run `/knowledge-onboarding` — routes GAP analyses, research, design files, plan, README etc. deterministically into the governance artefacts (rubric + manifest). Details: knowledge-onboarding/SKILL.en.md (BOO-137).
+  8. Logging/monitoring a requirement? → enter the requirements in `observability.md` so `ARCHITECTURE_DESIGN.md` picks them up (runbook: docs/runbooks/logging-monitoring.md, concept: HANDBUCH §8d-ter).
 ```
 
 > **Fill SECURITY.md (BOO-136):** the bootstrap scaffolds `SECURITY.md` only as a **skeleton**. `security-architect` (DESIGN mode) fills it based on the **STRIDE/OWASP review questions** — the operator needs no security expertise; the skill asks the questions.
