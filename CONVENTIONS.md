@@ -217,6 +217,18 @@ Set by `/implement` step 6f-bis (BOO-36):
 
 Before any commit that references an issue (e.g. `BOO-42: Add feature`), a spec file `specs/BOO-42.md` must exist. The git hook `hooks/spec-gate.sh` enforces this. Tool-agnostic — runs in any git workflow.
 
+### PR & Merge Hygiene (BOO-175)
+
+One issue → one PR → one merge. Two guards keep the PR/merge history clean and the Linear linkage correct:
+
+1. **Check for an existing PR before `gh pr create`.** A feature branch must not get a second PR. If you push more commits to a branch whose PR is still open, they land in that PR automatically — do **not** open another. If the first PR is already merged and more work is needed, branch fresh from `main`.
+   ```bash
+   gh pr list --head "$(git branch --show-current)" --state all --json number,state   # inspect before `gh pr create`
+   ```
+2. **The PR title must contain the issue number** (`BOO-NNN`). A generic, branch-derived title (e.g. "Feat/boo 172 …") can link the wrong issue — or none — on merge (Linear-first, BOO-154). Use `gh pr create --title "type: summary (BOO-NNN)"`.
+
+Background: BOO-172 was merged twice — #69 with a clean title, then #70 from the **same** branch with a generic title and extra commits. `main` stayed consistent (no content lost), but the history was unclean and the second PR could have mislinked. After merge, delete the feature branch so it cannot spawn a second PR.
+
 ### Doc-Version-Sync
 
 `hooks/doc-version-sync.sh` checks that version strings across CLAUDE.md, ARCHITECTURE_DESIGN.md, GOVERNANCE.md, package.json, and pyproject.toml stay in sync. Tool-agnostic bash.
@@ -679,6 +691,18 @@ Gesetzt von `/implement` Schritt 6f-bis (BOO-36):
 ### Spec-Gate (BOO-23)
 
 Vor jedem Commit, der eine Issue-ID referenziert (z.B. `BOO-42: Add feature`), muss die Datei `specs/BOO-42.md` existieren. Der Git-Hook `hooks/spec-gate.sh` setzt das durch. Tool-agnostisch — laeuft in jedem Git-Workflow.
+
+### PR- & Merge-Hygiene (BOO-175)
+
+Ein Issue → ein PR → ein Merge. Zwei Guards halten die PR-/Merge-Historie sauber und die Linear-Verknuepfung korrekt:
+
+1. **Vor `gh pr create` auf einen bestehenden PR pruefen.** Ein Feature-Branch darf keinen zweiten PR bekommen. Pusht man weitere Commits auf einen Branch, dessen PR noch offen ist, landen sie automatisch in diesem PR — **keinen** zweiten oeffnen. Ist der erste PR bereits gemergt und es ist mehr Arbeit noetig, frisch von `main` branchen.
+   ```bash
+   gh pr list --head "$(git branch --show-current)" --state all --json number,state   # vor `gh pr create` pruefen
+   ```
+2. **Der PR-Titel muss die Issue-Nummer enthalten** (`BOO-NNN`). Ein generischer, aus dem Branch abgeleiteter Titel (z.B. „Feat/boo 172 …") kann beim Merge das falsche Issue — oder keins — verknuepfen (Linear-first, BOO-154). `gh pr create --title "type: summary (BOO-NNN)"` verwenden.
+
+Hintergrund: BOO-172 wurde zweimal gemergt — #69 mit sauberem Titel, dann #70 vom **selben** Branch mit generischem Titel und zusaetzlichen Commits. `main` blieb konsistent (kein Inhalt verloren), aber die Historie war unsauber und der zweite PR haette falsch verknuepfen koennen. Nach dem Merge den Feature-Branch loeschen, damit er keinen zweiten PR erzeugen kann.
 
 ### Doc-Version-Sync
 

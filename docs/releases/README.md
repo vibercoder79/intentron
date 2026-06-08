@@ -47,8 +47,9 @@ Ein bestehendes Release nachtraeglich aktualisieren: `gh release edit v0.2.0 --n
 
 ---
 
-## Alle Releases — Index (77 Waves, neueste zuerst)
+## Alle Releases — Index (78 Waves, neueste zuerst)
 
+- **BX** — [Wave BX — PR- & Merge-Hygiene: Guard gegen doppelte PRs (BOO-175)](wave-bx-pr-merge-hygiene.md) · [EN](wave-bx-pr-merge-hygiene.en.md)
 - **BW** — [Wave BW — Doku-Definition-of-Done als Konvention (BOO-180)](wave-bw-doku-definition-of-done.md) · [EN](wave-bw-doku-definition-of-done.en.md)
 - **BV** — [Wave BV — Unit-Test-Härtung: echte Tests statt nur Coverage (BOO-177)](wave-bv-unit-test-hardening.md) · [EN](wave-bv-unit-test-hardening.en.md)
 - **BU** — [Wave BU — Quality-Gate-Integrität: der Agent senkt die Messlatte nicht selbst (BOO-176)](wave-bu-quality-gate-integrity.md) · [EN](wave-bu-quality-gate-integrity.en.md)
