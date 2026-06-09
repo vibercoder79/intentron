@@ -93,7 +93,7 @@ Abgeleitet aus [`integration-discovery.md`](./integration-discovery.md) (RACI, A
 
 | Artefakt | Pfad (Framework → Output) | Phase | Default-Template | Wann noetig | Abnehmer | Regel-Senke | Status |
 |---|---|---|---|---|---|---|---|
-| Implement-Report + Quality Gates | `journal/reports/local/` | implement | ja | immer | IT/Architekt | `CONVENTIONS.md` (Gates) | _offen_ |
+| Implement-Report + Quality Gates | `journal/reports/local/` | implement | ja | immer | IT/Architekt | `CONVENTIONS.md` (Gates); End-to-End-Bild der Linter-Verdrahtung: HANDBUCH-Kapitel 8d-quart | _offen_ |
 | Integrations-/Deploy-Modell | `docs/runbooks/` — Beispiele: [`vercel-cicd-setup.md`](../runbooks/vercel-cicd-setup.md), [`sonarcloud-setup.md`](../runbooks/sonarcloud-setup.md), [`sprint-unattended-tmux.md`](../runbooks/sprint-unattended-tmux.md) | cloud-system-engineer | ja | eigener Betrieb / Go-Live | Betrieb + Kunden-IT | Runbook + `.claude/environment.json` | _offen_ |
 | Monitoring-/Logging-Setup + Alert Rules | Grafana | grafana | ja | Monitoring gewuenscht / Audit-Pflicht | Betrieb | `ARCHITECTURE_DESIGN.md` §5 + Grafana | _offen_ |
 | Compliance-Nachweismechanik | `docs/compliance/compliance-mechanik.md` | docs/compliance | ja | „streng" / regulierte Branche | Audit + Sponsor | `CONVENTIONS.md` (Gates, Vier-Augen) | _offen_ |

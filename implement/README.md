@@ -66,6 +66,8 @@ Schritt 6 ist eine Schleife, kein Einmal-Check: `Validate → Interpret → Deci
 | 6f-bis | **meta.json schreiben** (BOO-36 + BOO-84) | Run-Metadaten inkl. `change_type`, `iterations`, `skipped_gates`, `environment`, 3-Ebenen-`token_tracking`, `cache_hit_rate`, `override_audit` |
 | 6g | **Intent-Verifikation** (non-blocking) | Nur wenn `intents/INTENT-XX.md` existiert — Metriken messen, ins Spec eintragen, nie blockieren |
 
+> Wie diese Gates lokal (Pre-Commit) und in CI dieselbe Config-Reader-Logik teilen, zeigt HANDBUCH-Kapitel 8d-quart.
+
 ### Non-Code-Stories (Schritt 5.7 — BOO-68)
 
 Nicht jede Story produziert Code. n8n-/Make-/Zapier-Workflows, Terraform/Pulumi/IaC, reine

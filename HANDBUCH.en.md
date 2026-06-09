@@ -998,6 +998,8 @@ This is the whole framework in one sentence.
 Guardrails are **automatic safety mechanisms** that prevent you from accidentally doing
 things you'll regret. Not punishment — your parachute.
 
+→ How the lint/SAST guardrails technically interlock (hook + CI, config through report) is shown in **chapter 8d-quart**.
+
 ### Guardrail 1: Spec-gate (Git hook)
 
 **Problem:** You change code without knowing why — and in 3 weeks you won't remember.
@@ -1229,6 +1231,8 @@ Rule of thumb: when you work on the VPS via SSH, do not expect inline hints in t
 
 *Defense in depth across four layers: Layer 0 Edit-Bodyguard as a PreToolUse reflex that catches unsafe patterns before the AI writes them (BOO-86); IDE plugins for real-time feedback while typing; CLI tools as a hard pre-commit block; GitHub Actions as the merge gate after push. The earlier a defect is caught, the cheaper the fix. ([Excalidraw source](docs/quality-gate-four-layers.en.excalidraw))*
 
+→ The full end-to-end picture of the linter wiring (control file through /sprint-review) is bundled in **chapter 8d-quart**.
+
 > **Note on the sketch caption:** The Excalidraw still shows BOO-28 as "planned". As of v3.17.0 (2026-05-12) BOO-28 is done — `migrate_boo_28()` drops `.github/workflows/eslint.yml` (Node stacks) or `.github/workflows/ruff.yml` (Python stacks) with mandatory SARIF output to `.ci-reports/` (prepares BOO-32 Hermes consumption). The PNG re-render is out of scope for this task.
 
 **CI layer (Layer 3) — GitHub Actions:** Bootstrap drops the following workflow files stack-dependent into `.github/workflows/` — all three write SARIF to `.ci-reports/` and upload it via `github/codeql-action/upload-sarif@v4` into the GitHub Security tab.
@@ -1301,6 +1305,71 @@ The framework covers **JS/TS and Python** out of the box — ESLint/Ruff as lint
 | Go | golangci-lint (+ gofmt) | gofmt | (go vet) | `go test -cover` | `.golangci.yml` |
 
 **Step-by-step, verification and copy templates** (PHP/TYPO3, Go) live in the runbook → `docs/runbooks/stack-linter-integrieren.md`. External stack/version docs (e.g. TYPO3 specifics) do not belong in the runbook; route them into the project knowledge via `knowledge-onboarding`. The runbook is a **living document** — further stacks are added as needed.
+
+→ How the linters integrated here interlock end-to-end is shown in **chapter 8d-quart**.
+
+---
+
+## 8d-quart. How the linter wiring fits together (end-to-end) (BOO-182)
+
+The linter wiring is factually correct and documented in many places — but each only as a slice: `file-templates.md` shows **config + trigger**, this handbook (§8d) the **concept** and the four-layer gate picture, the `implement` skill the **runtime order**, the runbook (§8d-bis) the **extension to new stacks**. What was missing was **one picture of the whole chain in one piece** — from the control file to consumption in `/sprint-review`. That is exactly what this chapter delivers. It changes nothing in the mechanics (pure docs): it bundles and links the existing detail sections, it does not replace them.
+
+![How the linter wiring fits together — control file → trigger → linter → gate → report persistence → /sprint-review](docs/linter-verdrahtung-e2e.en.png)
+
+*The whole chain in one piece: control file (`.semgrep.yml` manifest / `eslint.config.mjs` flat config) → trigger (local pre-commit hook or GitHub Actions CI) → linter execution → gate result (block/pass) → report persistence in two separate streams → consumption in `/sprint-review`. ([Excalidraw source](docs/linter-verdrahtung-e2e.en.excalidraw))*
+
+### The chain in words
+
+For **both linters** (Semgrep ↔ manifest, ESLint ↔ flat config) and **both layers** (local, CI) the same chain runs:
+
+1. **Control file.** `.semgrep.yml` lists the active Semgrep packs (manifest), `eslint.config.mjs` is the native ESLint flat config. They are the only place where the bar is set.
+2. **Trigger.** Locally the **pre-commit hook** (`.git/hooks/pre-commit`) fires on `git commit`; in CI the **GitHub Actions** fire on `push`/`pull_request`.
+3. **Linter execution.** The hook or the workflow reads the control file and invokes the linter with the flags built from it.
+4. **Gate result.** ESLint runs with `--max-warnings=0` (BOO-2), Semgrep blocks on High/Critical (`--error`, BOO-4). Exit 1 = **block** (local: commit aborted; CI: status check red), exit 0 = **pass**.
+5. **Report persistence.** The result is written as SARIF — into two separate streams (see below).
+6. **Consumption.** `/sprint-review` reads the persisted reports and derives iteration counts, patterns and CI success rates from them.
+
+### Two layers, one reader logic
+
+The key point: **the same pure Bash reader logic** reads the Semgrep manifest in both layers. There is no `yq`, no YAML parser — deliberately just `grep` + `sed`:
+
+```bash
+grep -E '^[[:space:]]*-[[:space:]]+p/' .semgrep.yml | sed -E 's/^[[:space:]]*-[[:space:]]+//'
+```
+
+This yields the active packs (commented-out `# - p/` lines are ignored) and builds the `--config p/...` flags from them.
+
+| Layer | Trigger | What reads the config | Gate effect |
+|---|---|---|---|
+| **Local** | `.git/hooks/pre-commit` (BOO-2/BOO-4) | identical Bash reader (`grep`+`sed`) → `--config` flags; ESLint via `npx eslint --max-warnings=0` | exit 1 blocks the commit |
+| **CI** | GitHub Action `semgrep.yml`/`eslint.yml`/`ruff.yml` (BOO-4/BOO-28) | identical Bash reader; SARIF output to `.ci-reports/` | required status check red → no merge (BOO-29) |
+
+Why CI **duplicates** the reader logic: `git commit --no-verify` skips the local hook. The CI layer catches exactly that bypass — no green run, no merge. That is why both layers must read the bar identically.
+
+> **Note — manifest vs. native config:** `.semgrep.yml` is a **manifest**, not a native Semgrep config. Its `include:` list contains pack names (`- p/...`); Semgrep's native `include`, by contrast, is meant for file patterns. A direct run `semgrep --config=.semgrep.yml` therefore deliberately returns **"No config given"** — that is expected, not a bug. `semgrep --validate` passes (the file is YAML-conformant). This is exactly why the Bash reader logic exists: it translates the manifest into real `--config p/...` flags. Source: `bootstrap/references/file-templates.md` §`.semgrep.yml`.
+
+### Report persistence — two streams (do not merge!)
+
+The reports land in **two independent streams** — the shorthand "`.ci-reports/*.sarif → journal/reports/local/...`" would be inaccurate:
+
+| Stream | Source | Target path | Content |
+|---|---|---|---|
+| **Local (BOO-36)** | `/implement` writes SARIF **directly** | `journal/reports/local/{YYYY-MM-DD_HHMM}_{STORY-ID}/` | `eslint-iter{N}.sarif`, `ruff-iter{N}.sarif`, `semgrep-final.sarif`, `meta.json` |
+| **CI (BOO-32)** | aggregator step **copies** from `.ci-reports/` | `journal/reports/ci/run-{github.run_id}/` | `cp -f .ci-reports/*.sarif ...` + GitHub artifact upload |
+
+The local stream does **not** copy from `.ci-reports/` — `/implement` writes directly into the `local/` tree (gitignored). The CI stream feeds the `ci/` tree only. Both streams are consumed by `/sprint-review` (`meta.json` + iter SARIF for patterns; `ci/run-{id}/` for success rates/failures). Details → Appendix E (reports convention, BOO-32).
+
+> **Known limit — Codex path:** The local hook layer is currently documented **for Claude Code only**. A `.codex/hooks.json` wiring is named in artefact lists (and the hooks-setup comparison table mentions "Codex `.codex/hooks.json`"), but there is **no schema, no example and no implementation guide** for it in the repo. The Codex onboarding (Appendix J/K) covers the actually wired setup — `AGENTS.md`, `CONVENTIONS.md`, skills symlink, `.codex/automations/*.toml` — the pre-commit/hook enforcement for Codex is a **known gap**. The CI layer (Layer 3) applies to Codex just the same, since it is commit-agnostic.
+
+### Where the details live
+
+This chapter bundles — it does not replace the detail sections:
+
+- **`bootstrap/references/file-templates.md`** — config + trigger (manifest, hook, workflows).
+- **§8d** — the four-layer gate picture (Edit-Bodyguard / IDE / CLI / CI).
+- **§8d-bis + runbook `docs/runbooks/stack-linter-integrieren.md`** — integrating new stacks.
+- **`implement` skill** — the runtime order (step 6: 6a → 6a-bis → 6a-tris → 6a-quart → 6a-quint, each gate max. 5 iterations).
+- **Appendix E** — the reports convention (`journal/reports/`, BOO-32).
 
 ---
 

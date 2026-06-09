@@ -10,6 +10,8 @@ Dieses Runbook ist zugleich **Prompt-Vorlage**: Du kannst es einem Agenten geben
 
 **Abgrenzung:** Die Schutz-Mechanik der Gate-Configs (Human-Review-Block bei Änderung) ist Thema von BOO-176 — hier nur der **Eintrag-Schritt** ([Schritt 6](#schritt-6--gate-configs-in-sensitive-pathsjson-eintragen-pflicht)). Konzept + Hintergrund stehen im HANDBUCH-Kapitel „Stack-Linter integrieren".
 
+→ Das zentrale End-to-End-Bild der bestehenden Linter-Verdrahtung (JS/TS, Python) zeigt HANDBUCH-Kapitel 8d-quart; dieses Runbook erweitert die Kette um neue Stacks.
+
 ## Die kanonische Linter-Tabelle
 
 Die Spalten je Stack — Linter, Formatter, Typecheck, Coverage und die **Gate-Config-Datei(en)**, die du in Schritt 6 schützt. Aus dem Bootstrap-`e)`-Pfad übernommen, nicht neu erfunden:
