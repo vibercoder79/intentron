@@ -10,6 +10,8 @@ This runbook also doubles as a **prompt template**: you can hand it to an agent 
 
 **Scope:** the protection mechanic of the gate configs (human-review block on change) is the subject of BOO-176 — here only the **entry step** ([step 6](#step-6--register-gate-configs-in-sensitive-pathsjson-mandatory)). Concept and background are in the HANDBUCH chapter "Integrate a new stack/linter".
 
+→ The central end-to-end picture of the existing linter wiring (JS/TS, Python) is in HANDBUCH chapter 8d-quart; this runbook extends the chain to new stacks.
+
 ## The canonical linter table
 
 The columns per stack — linter, formatter, typecheck, coverage, and the **gate-config file(s)** you protect in step 6. Taken from the bootstrap `e)` path, not re-invented:

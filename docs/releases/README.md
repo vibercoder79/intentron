@@ -47,8 +47,9 @@ Ein bestehendes Release nachtraeglich aktualisieren: `gh release edit v0.2.0 --n
 
 ---
 
-## Alle Releases — Index (82 Waves, neueste zuerst)
+## Alle Releases — Index (83 Waves, neueste zuerst)
 
+- **CC** — [Wave CC — Linter-Verdrahtung end-to-end: zentrales Bild + Sketch (BOO-182)](wave-cc-linter-verdrahtung-e2e.md) · [EN](wave-cc-linter-verdrahtung-e2e.en.md)
 - **CB** — [Wave CB — EN-Nachzug der 43 Alt-Wave-Release-Notes: DE+EN-Parität rückwirkend (BOO-174)](wave-cb-en-parity-altwaves.md) · [EN](wave-cb-en-parity-altwaves.en.md)
 - **CA** — [Wave CA — Observability sichtbar machen: Doku + Logging/Monitoring-Runbook (BOO-179)](wave-ca-observability-sichtbar.md) · [EN](wave-ca-observability-sichtbar.en.md)
 - **BZ** — [Wave BZ — Neuen Stack/Linter integrieren: Runbook + HANDBUCH-Kapitel (BOO-178)](wave-bz-stack-linter-runbook.md) · [EN](wave-bz-stack-linter-runbook.en.md)

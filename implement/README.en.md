@@ -66,6 +66,8 @@ Step 6 is a loop, not a one-shot check: `Validate → Interpret → Decide → F
 | 6f-bis | **Write meta.json** (BOO-36 + BOO-84) | Run metadata incl. `change_type`, `iterations`, `skipped_gates`, `environment`, 3-level `token_tracking`, `cache_hit_rate`, `override_audit` |
 | 6g | **Intent verification** (non-blocking) | Only if `intents/INTENT-XX.md` exists — measure metrics, write to spec, never block |
 
+> How these gates share the same config-reader logic locally (pre-commit) and in CI is shown in HANDBUCH chapter 8d-quart.
+
 ### Non-code stories (Step 5.7 — BOO-68)
 
 Not every story produces code. n8n / Make / Zapier workflows, Terraform / Pulumi / IaC, pure

@@ -79,7 +79,7 @@ Example:
 
 1. `/ideation` writes `Security Impact` and, when relevant, `Security Validation` into the story.
 2. `/implement` reads `ARCHITECTURE_DESIGN.md`, `SECURITY.md`, and the matching sub-artifacts.
-3. `/implement` runs gates: lint, Semgrep/SAST, tests/smoke, and security checklist.
+3. `/implement` runs gates: lint, Semgrep/SAST, tests/smoke, and security checklist. How these gates share the same config-reader logic locally and in CI is shown in HANDBUCH chapter 8d-quart.
 4. `/security-architect` adds threat models, policies, or security reviews for risky changes.
 5. `/sprint-review` checks whether security debt, open findings, or recurring patterns appeared.
 
